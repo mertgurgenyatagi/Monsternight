@@ -2,7 +2,7 @@
 
 A Gemini prompt for each of the 84 images in [assets.md](assets.md), except the paper texture, which Claude made with a script. Fonts and sounds aren't included. Every path below is inside `assets/art/`.
 
-**Status:** all 83 images are made and approved by the user. They're in `images_raw/` as `.jfif` files (JPEG), waiting for processing.
+**Status:** all 83 images are made, approved by the user, and processed. The raws are in `images_raw/` as `.jfif` files (JPEG), and `tools/images/process_images.py` turns them into `assets/art/`.
 
 The prompts are in the order to make them, not the order of assets.md. Some prompts need an earlier image attached so that a set matches: the icons follow the coin, the monsters follow Dracula, each portrait follows its body, and the scenery strips follow the village's.
 
@@ -36,14 +36,19 @@ The shared Style block:
 
 ## Processing
 
-Each prompt ends with a one-line note: the background to remove, the final size, and any extra step. Claude's script does this for each image:
+Each prompt ends with a one-line note: the background to remove, the final size, and any extra step. `tools/images/process_images.py` reads these notes and does this for each image:
 
-1. Remove the background color everywhere it appears, and clean up the colored fringe it leaves along the edges.
+1. Remove the background color everywhere it appears, including gaps inside the shape. Gemini's green isn't pure and drifts across the image, so the script measures each image's real background. Along the outline, it works out how much paper is in each pixel and takes the background back out of its color, so there's no light or green fringe on dark scenes.
 2. Trim to the shape.
-3. Mirror it, if the note says so and it faces left.
-4. Resize it, keeping its proportions. "600 tall" sets the height. A square size fits the shape inside the square and centers it. Strips are scaled to their width, then cut to their height on the plain side (the earth, water or cloth), never on the detailed edge.
-5. If it tiles, fix the seam so the copies join without a visible line.
+3. Mirror it, if the note says so and it faces left. Every image was checked, and all of them already face right, so nothing is mirrored.
+4. Resize it, keeping its proportions. "600 tall" sets the height. A box size fits the shape inside the box and centers it. The cursor goes in the top-left corner instead.
+   - The panel, button, card and curtain fill their box exactly: they're fitted, then their plain middle third is stretched, so the corners keep their shape.
+   - Strips are scaled to their width, then cut to their height on the plain side (the earth, water or posts), never on the detailed edge. A strip that comes out too short is extended on its plain side with a mirror image of itself.
+   - The curtain's top border was drawn much narrower than 1920 × 200, so it's made into a seamless strip that repeats twice across its width, cut on its straight top edge.
+5. If it tiles, fix the seam: cut each end where the two ends match best, then join them along the line where they differ least, so the copies meet without a visible line or a ghosted double.
 6. Save it as a PNG with transparency, under its name and folder in `assets/art/`.
+
+Run it with `python tools/images/process_images.py . [<name> ...]` from the repository root. It rebuilds every image, or only the named ones.
 
 ## Icons: `icons/`
 

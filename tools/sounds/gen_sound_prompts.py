@@ -273,7 +273,7 @@ INTRO = """# Sound prompts
 
 An ElevenLabs prompt for each of the {files} non-music sounds in [assets.md](assets.md#sounds): 31 sound effects, 24 monster voices and 5 ambience loops. The 11 music tracks are made separately. Every path below is inside `assets/audio/`.
 
-**Status:** all 60 are made with `tools/sounds/make_sounds.py` and approved by the user. They're in `audio_raw/` as WAV files, waiting for processing. The music isn't made yet.
+**Status:** all 60 are made with `tools/sounds/make_sounds.py` and approved by the user. They're in `audio_raw/` as WAV files, and `tools/sounds/process_sounds.py` has processed them into `assets/audio/`. The user reviewed and approved the processed files. The music isn't made yet.
 
 The prompts are in the order to make them, not the order of assets.md. Matching sets come one after another: the die, the cards, the candle, the coins, the drips, the countdown, and each monster's three voices. The three hops share one prompt, and the thief is made in two parts, so there are {count} prompts for {files} files.
 
@@ -343,7 +343,7 @@ Each prompt ends with a one-line note: the length, and whether it loops. Claude'
 6. Make effects and voices mono. Ambience stays stereo.
 7. Save it as OGG under its name and folder in `assets/audio/`.
 
-This needs ffmpeg, which isn't installed yet.
+`tools/sounds/process_sounds.py` does all of this with ffmpeg. The loudness targets are -28 LUFS for the interface, -22 for the other effects, -19 for the voices and -34 for the ambience, with peaks at most -1.5 dBFS. One-shots are measured by their loudest 200 ms, and ambience over its whole length. A few sharp hits, like the hops and the card slam, reach the peak limit first and come out up to 4 dB quieter.
 """
 
 

@@ -15,20 +15,13 @@ What they mean in practice is in [Art and audio](docs/art_and_audio.md#principle
 ## Status
 
 - **Design** is done, after 15 questionnaires.
-- **Images:** all 83 Gemini images are made and approved, in `images_raw/` as `.jfif` (JPEG). `paper_texture.png` is already finished in `assets/`.
-- **Sounds:** all 60 effects, voices and ambience loops are made and approved, in `audio_raw/` as WAV.
+- **Images:** all 84 are done. The 83 Gemini raws are in `images_raw/` as `.jfif` (JPEG), and `tools/images/process_images.py` has processed them into `assets/art/`. `paper_texture.png` was made separately.
+- **Sounds:** all 60 effects, voices and ambience loops are done. The raws are in `audio_raw/` as WAV, and `tools/sounds/process_sounds.py` has processed them into the OGGs in `assets/audio/`, which the user reviewed and approved.
 - **Missing:** the 11 music tracks, which the user makes separately, and the 2 fonts.
 - **No code yet.**
-- **Next, on the `asset-processing` branch:** turn the raw files into the game's assets (see below).
-- **After that:** build the [first playable](docs/roadmap.md#1-first-playable).
+- **Next:** build the [first playable](docs/roadmap.md#1-first-playable), on a new branch from `development`. Set Godot's import settings for the assets there, like looping the ambience.
 
-## Next: asset processing
-
-Write scripts in `tools/` that turn the raw files into the files listed in [assets.md](docs/assets.md). The steps for each file are in its prompt doc.
-
-- **Images:** read `images_raw/<name>.jfif` and write `assets/art/<folder>/<name>.png`. The folder and the processing line for each image are in [asset_prompts.md](docs/asset_prompts.md): remove the background, mirror where needed, fix the seams of tiling strips, and set the size. The raws are JPEGs, so the background color needs a tolerance and the edges need cleaning.
-- **Sounds:** read `audio_raw/<folder>/<name>.wav` and write `assets/audio/<folder>/<name>.ogg`. The steps are in [sound_prompts.md](docs/sound_prompts.md#processing): trim, cut to length, join the thief's two parts, loop the ambience, even out loudness, and convert to mono OGG. This needs ffmpeg, which isn't installed. Ask the user before installing it.
-- **Keep the raws.** They're the sources, and the processed files can always be rebuilt from them.
+**Keep the raws.** They're the sources, and the processed files can always be rebuilt from them.
 
 ## Docs
 
@@ -49,10 +42,12 @@ Write scripts in `tools/` that turn the raw files into the files listed in [asse
 
 - `assets/`: the game's finished assets, which Godot uses
 - `images_raw/`, `audio_raw/`: the raw images and sounds. Each has a `.gdignore`, so Godot skips them.
+- `tools/images/process_images.py` turns `images_raw/` into `assets/art/`, following the Processing notes in `docs/asset_prompts.md`. Run it from the repository root with `python tools/images/process_images.py . [<name> ...]`. It needs numpy, scipy and Pillow.
 - `tools/sounds/`: sound scripts
+  - `process_sounds.py` turns `audio_raw/` into `assets/audio/`. Run it from the repository root with `python tools/sounds/process_sounds.py . [<name> ...]`. It needs ffmpeg (installed with winget as `Gyan.FFmpeg`; open a new shell for it to be on the PATH, or set `FFMPEG` to its path), numpy and scipy.
   - `gen_sound_prompts.py` rebuilds `docs/sound_prompts.md`. Change sound prompts here, never by hand in the doc.
   - `make_sounds.py` generates sounds through the ElevenLabs API. It needs the key in the `ELEVENLABS_API_KEY` environment variable (ask the user for it), and it skips files that already exist.
-  - `build_review.py` and `review_template.html` build a phone page for the user to rate sounds.
+  - `build_review.py` and `review_template.html` build a phone page for the user to rate sounds: `python tools/sounds/build_review.py . tools/sounds/review_template.html <out.html> [--raw] [<name> ...]`. By default it plays the processed OGGs and decodes WAV copies into `review_wav/` beside the page, for phones without OGG support. Publish the page with `assets/audio/` and `review_wav/` as its files. `--raw` plays `audio_raw/` instead.
 - `docs/`: the design
 
 ## Handover: how this project works

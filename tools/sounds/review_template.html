@@ -105,7 +105,7 @@ button:focus-visible, textarea:focus-visible { outline: 2px solid var(--accent);
     <p class="lede">Tap to play. Mark each sound Good or Redo, and write what's off.</p>
     <div class="bar" aria-hidden="true"><i id="barfill"></i></div>
     <div class="meta">
-      <span id="count">0 of 60 reviewed</span>
+      <span id="count">0 reviewed</span>
       <div class="filters" role="group" aria-label="Show">
         <button type="button" id="f-all" data-f="all" aria-pressed="true">All</button>
         <button type="button" id="f-todo" data-f="todo" aria-pressed="false">To review</button>
@@ -241,7 +241,7 @@ function toggle(s) {
   if (current === k && !audio.paused) { audio.pause(); setPlaying(k, false); current = null; return; }
   setPlaying(current, false);
   current = k;
-  audio.src = "audio_raw/" + s.path + ".wav";
+  audio.src = s.fallback && !audio.canPlayType('audio/ogg; codecs="vorbis"') ? s.fallback : s.src;
   audio.loop = s.loop;
   setPlaying(k, true);
   audio.play().catch(() => { setPlaying(k, false); cards[k].status.textContent = "Couldn't play this file. Check your connection and tap again."; });
