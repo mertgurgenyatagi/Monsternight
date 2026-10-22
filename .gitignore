@@ -1,0 +1,9 @@
+# Godot
+.godot/
+
+# Local tool settings
+.claude/settings.local.json
+.serena/
+
+# Python
+__pycache__/
