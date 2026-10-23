@@ -38,7 +38,7 @@ The choice is about which games you'd rather duel in.
 
 ## Space mix
 
-- Roughly 3 quick spaces for every 2 minigame spaces, on every stretch.
+- **Two of every three spaces are empty** (the user's call, 2026-10-23): plain paper, where nothing happens. That is 28 empty and 14 filled on the way through the graveyard, and 31 and 15 past the church. The filled spaces are mostly quick ones, with one or two minigame spaces on a stretch. The exact order is in `BoardPath`.
 - Coin, spikes, thief, and church show up about equally often everywhere except the first split.
 - Outside the second split, the minigame spaces are shared evenly between Pong, Haxball, racing, and the FPS. The sword fight gets spaces once its rules are settled.
 

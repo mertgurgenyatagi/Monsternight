@@ -17,6 +17,11 @@ const FOG_OVERLAP := 900.0
 ## How thick the fog lies over each location: the foreground wisps, and a thick bank behind the
 ## houses where it's high.
 const FOG := {"village": 0.75, "graveyard": 0.35, "forest": 0.0, "swamp": 0.7, "castle": 0.0}
+## How much of the foreground fog stays, so the road and what stands on it read clearly.
+const FOREGROUND_FOG := 0.5
+## The brightness of the layers behind the road and of the ground itself: dimmer, so the spaces
+## and the monsters stand out.
+const DIM := {"far": 0.78, "mid": 0.74, "ground": 0.8}
 const FOG_BANK_FROM := 0.6
 ## How much lower a location's ground lies than the others, to show what's behind it.
 const GROUND_DROP := {"swamp": 110.0}
@@ -35,6 +40,8 @@ var _rng := RandomNumberGenerator.new()
 
 func _ready() -> void:
 	_rng.seed = 6
+	_far.modulate = Color.WHITE * DIM.far
+	_mid.modulate = Color.WHITE * DIM.mid
 	var locations := BoardLayout.locations()
 	for i in locations.size():
 		var location := locations[i]
@@ -52,12 +59,13 @@ func _ready() -> void:
 	_castle(BoardLayout.location("castle"))
 	for i in locations.size():
 		var location := locations[i]
-		_strip(_lanes, location.id + "_ground", location, _ground_y(location), 1.0,
+		var ground := _strip(_lanes, location.id + "_ground", location, _ground_y(location), 1.0,
 				GROUND_OVERLAP, i == 0, i == locations.size() - 1)
+		ground.self_modulate = Color.WHITE * DIM.ground
 		var fog: float = FOG[location.id]
 		if fog > 0.0:
-			_fog_band(_fog, "fog_1", location, 930.0, 0.75, fog * 0.6, 11.0)
-			_fog_band(_fog, "fog_2", location, 975.0, 0.6, fog * 0.5, -6.0)
+			_fog_band(_fog, "fog_1", location, 930.0, 0.75, fog * 0.6 * FOREGROUND_FOG, 11.0)
+			_fog_band(_fog, "fog_2", location, 975.0, 0.6, fog * 0.5 * FOREGROUND_FOG, -6.0)
 
 
 # ---- the locations ----
