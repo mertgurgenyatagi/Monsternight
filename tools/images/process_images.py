@@ -213,9 +213,22 @@ def stretch(pm, w, h):
     return pm
 
 
+def tile_both_ways(pm, w, h):
+    """Makes a full-frame image tile in both directions: the horizontal seam first, then the vertical one on the turned image."""
+    across = tile_sideways(pm, w)
+    down = tile_sideways(across.transpose(1, 0, 2), h)
+    return down.transpose(1, 0, 2)
+
+
 def process(name, line):
-    bg_name = re.match(r"remove (white|green)", line).group(1)
-    rgb = np.asarray(Image.open(ROOT / "images_raw" / f"{name}.jfif").convert("RGB"), dtype=np.float64)
+    # "from space, ..." means this image is made from another image's raw
+    raw = "space" if line.startswith("from space") else name
+    rgb = np.asarray(Image.open(ROOT / "images_raw" / f"{raw}.jfif").convert("RGB"), dtype=np.float64)
+    if line.startswith("no background"):
+        w, h = map(int, re.search(r"(\d+) × (\d+)", line).groups())
+        pm = np.dstack([rgb / 255, np.ones(rgb.shape[:2])])
+        return resize(tile_both_ways(pm, w, h), w, h)
+    bg_name = re.search(r"remove (white|green)", line).group(1)
     strip = "tiles sideways" in line or name in REPEATS
     pm = trim(cut_out(rgb, bg_name), sideways=not strip)
     if name in MIRROR:
@@ -236,7 +249,7 @@ done = set()
 for folder, name, line in entries:
     if WANTED and name not in WANTED:
         continue
-    if not (ROOT / "images_raw" / f"{name}.jfif").exists():
+    if not (ROOT / "images_raw" / f"{'space' if line.startswith('from space') else name}.jfif").exists():
         print(f"skip {name} (no raw)")
         continue
     out = ROOT / "assets" / "art" / folder / f"{name}.png"

@@ -30,14 +30,28 @@ The whole game runs at **25 FPS**, so every movement steps like stop motion on p
 
 ## Scenery
 
-- **Layers of paper** slide past at different speeds as the camera moves, which gives depth.
+- **A paper diorama.** The ground is a flat paper sheet seen from above, and everything on it (monsters, houses, trees, gravestones, lamps) is an upright cutout drawn from the front, standing on it like a pop-up book. The depth comes from these standing pieces over the flat ground.
 - The scenery is built from separate cutouts (houses, trees, gravestones) placed in the engine, not one big painting, so the board can change length during tuning.
-- The game draws the sky as a gradient, tinted for each location, with a paper moon and stars.
+- **No sky on the board.** The high camera looks down at the ground, so there's no horizon. The sky (a gradient with a paper moon and stars) stays on the menu screens.
 
 ## Camera
 
-- A side view of the board, not a full top-down view.
+The user changed the camera on 2026-10-23, after part 6, because the side view was "like looking at the horizon, almost at eye level".
+
+- **A high camera, like League of Legends:** zoomed out and looking down at the board at a steep angle, about 55°. It's still not a full top-down view, as Q03 asked.
+- The board winds across the ground, so the paths use the screen's height as well as its width.
 - The camera follows whoever is rolling.
+
+## Contrast
+
+The user's rule from the same day: **the players and the spaces must be extremely easy to tell apart from the scenery.** It's as important as the three principles.
+
+- **The ground is quiet:** dark, muted and low in contrast, with nothing round in it that could look like a space.
+- **The spaces are loud:** thick tokens with a dark edge and a pale face, colored in strong, saturated colors.
+- **The monsters are the brightest things on the board,** standing on stands in their own colors.
+- **The game dims the scenery cutouts** a little, so the pieces and the spaces are always the brightest and most saturated things on the board.
+- **Nothing covers them:** fog, bats and other effects never sit over a space or a piece.
+- **The check:** in a greyscale screenshot of any part of the board, every space and every piece can still be found at a glance.
 
 ## Audio
 

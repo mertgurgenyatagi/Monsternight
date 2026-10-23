@@ -29,19 +29,19 @@ This list covers the [first playable](roadmap.md#1-first-playable): 84 images, 2
 |---|---|---|
 | `moon.png` | A big paper full moon | 600 × 600 |
 | `star.png` | A small paper star. The game scatters them and makes them twinkle | 48 × 48 |
-| `fog_1.png` | A long, soft strip of paper fog | 1200 × 300 |
-| `fog_2.png` | Another fog strip with a different shape | 1200 × 300 |
+| `fog_1.png` | A soft patch of paper fog, seen from above | 1000 × 500 |
+| `fog_2.png` | Another fog patch, longer and thinner | 1200 × 400 |
 | `bat.png` | A bat with its wings spread. The game makes it flap | 160 × 80 |
 | `paper_texture.png` | Very faint paper fibers in light grey, laid over everything. Must tile seamlessly | 1024 × 1024 |
 
-Each location below has a far strip (the distant skyline), a ground strip (the earth under the path), and a few props. Far and ground strips must tile seamlessly sideways.
+Each location below has a ground (the earth under the path, seen from above) and a few standing props. Grounds fill the frame and must tile seamlessly both ways. The far strips and the church hill were made for the old side view and are retired from the board (see [art_and_audio.md](art_and_audio.md#camera)).
 
 ### Foggy village: `assets/art/scenery/`
 
 | File | What it shows | Size |
 |---|---|---|
-| `village_far.png` | Distant crooked rooftops and chimneys, a few lit windows | 2048 × 600 |
-| `village_ground.png` | The edge of a cobbled road | 2048 × 300 |
+| `village_far.png` | Retired from the board by the high camera. Distant crooked rooftops and chimneys, a few lit windows | 2048 × 600 |
+| `village_ground.png` | Worn, angular paving slabs, seen from above | 1024 × 1024 |
 | `village_house_1.png` | A crooked house with lit windows | 600 tall |
 | `village_house_2.png` | Another crooked house, a different shape | 600 tall |
 | `village_lamp.png` | A gas street lamp. The game adds the glow | 500 tall |
@@ -50,20 +50,20 @@ Each location below has a far strip (the distant skyline), a ground strip (the e
 
 | File | What it shows | Size |
 |---|---|---|
-| `graveyard_far.png` | Hills dotted with crosses and bare trees | 2048 × 600 |
-| `graveyard_ground.png` | Grassy earth with roots | 2048 × 300 |
+| `graveyard_far.png` | Retired from the board by the high camera. Hills dotted with crosses and bare trees | 2048 × 600 |
+| `graveyard_ground.png` | Dark, mossy grass, seen from above | 1024 × 1024 |
 | `graveyard_stone_1.png` | A rounded tombstone | 250 tall |
 | `graveyard_stone_2.png` | A cross-shaped grave marker | 300 tall |
 | `graveyard_tree.png` | A bare, twisted tree | 800 tall |
-| `church_hill.png` | The hill above the graveyard that the church path runs over | 2400 × 800 |
+| `church_hill.png` | Retired from the board by the high camera. The hill above the graveyard that the church path runs over | 2400 × 800 |
 | `church_building.png` | A small stone church with a bell tower and lit windows | 1000 tall |
 
 ### Dark forest: `assets/art/scenery/`
 
 | File | What it shows | Size |
 |---|---|---|
-| `forest_far.png` | A dense line of pointed trees | 2048 × 600 |
-| `forest_ground.png` | Forest floor with roots and leaves | 2048 × 300 |
+| `forest_far.png` | Retired from the board by the high camera. A dense line of pointed trees | 2048 × 600 |
+| `forest_ground.png` | Forest floor with moss, leaves and twigs, seen from above | 1024 × 1024 |
 | `forest_tree_1.png` | A twisted tree, maybe with a face in the bark | 900 tall |
 | `forest_tree_2.png` | Another twisted tree | 900 tall |
 | `forest_mushrooms.png` | A cluster of glowing toadstools | 200 tall |
@@ -72,10 +72,10 @@ Each location below has a far strip (the distant skyline), a ground strip (the e
 
 | File | What it shows | Size |
 |---|---|---|
-| `swamp_far.png` | Low, misty trees hung with moss | 2048 × 600 |
-| `swamp_ground.png` | A muddy bank | 2048 × 300 |
-| `swamp_water.png` | Murky green water. The game makes it bob. Tiles sideways | 2048 × 200 |
-| `swamp_boardwalk.png` | A rickety plank walkway for the upper path. Tiles sideways | 1024 × 150 |
+| `swamp_far.png` | Retired from the board by the high camera. Low, misty trees hung with moss | 2048 × 600 |
+| `swamp_ground.png` | Swamp mud, seen from above | 1024 × 1024 |
+| `swamp_water.png` | Murky green water, seen from above. The game makes it ripple. Tiles both ways | 1024 × 1024 |
+| `swamp_boardwalk.png` | A rickety plank walkway for the upper path, seen from above. Tiles sideways | 1024 × 256 |
 | `swamp_tree.png` | A cypress hung with moss | 900 tall |
 | `swamp_reeds.png` | A clump of reeds and cattails | 300 tall |
 
@@ -83,9 +83,9 @@ Each location below has a far strip (the distant skyline), a ground strip (the e
 
 | File | What it shows | Size |
 |---|---|---|
-| `castle_far.png` | Jagged mountains | 2048 × 600 |
-| `castle_ground.png` | An old stone road | 2048 × 300 |
-| `castle.png` | Dracula's castle on a cliff, all towers and lit windows | 1600 tall |
+| `castle_far.png` | Retired from the board by the high camera. Jagged mountains | 2048 × 600 |
+| `castle_ground.png` | Worn courtyard flagstones, seen from above | 1024 × 1024 |
+| `castle.png` | Dracula's castle behind its wall, all towers and lit windows. The gate stands in front of it | 1400 tall |
 | `castle_gate.png` | Big castle doors at the end of the road. This is the finish | 700 tall |
 | `castle_torch.png` | A wall torch with no flame. The game adds `flame.png` | 250 tall |
 
@@ -93,7 +93,7 @@ Each location below has a far strip (the distant skyline), a ground strip (the e
 
 | File | What it shows | Size |
 |---|---|---|
-| `space.png` | A plain round paper token for a board space. The game tints it and puts an icon on it | 192 × 192 |
+| `space.png` | A thick round token for a board space, seen from the high camera: a dark edge and a pale face. The game tints it and puts an icon on it | 256 × 192 |
 | `die_1.png` to `die_6.png` | The six faces of a paper die, with 1 to 6 pips (six files) | 160 × 160 |
 | `path_dot.png` | A small paper scrap. The game lines them up between spaces | 32 × 32 |
 | `signpost.png` | A wooden signpost with no writing, one at each split | 400 tall |
@@ -132,7 +132,7 @@ Each monster needs two files: a full body (`<name>.png`, standing, facing right,
 
 | File | What it shows | Size |
 |---|---|---|
-| `stand.png` | A small paper stand that every monster stands on, like a board game piece | 200 × 60 |
+| `stand.png` | The stand every monster stands on, like a board game piece. It's the space token, smaller, made from the same raw | 200 × 150 |
 | `crumpled.png` | A crumpled paper ball. A monster crumples into it when it loses a duel or dies | 256 × 256 |
 
 ### Interface: `assets/art/ui/`
