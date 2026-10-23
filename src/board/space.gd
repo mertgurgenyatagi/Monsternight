@@ -25,6 +25,7 @@ const TINTS := {
 	"pong": DUEL, "haxball": DUEL, "racing": DUEL, "fps": DUEL,
 }
 const DUELS := ["pong", "haxball", "racing", "fps"]
+const JUMP := 22.0 # how high an icon jumps when a piece lands
 const CHURCH_LIGHT := Color(1.0, 0.78, 0.4, 0.5)
 
 static var _pool: GradientTexture2D
@@ -32,6 +33,11 @@ static var _pool: GradientTexture2D
 var kind := ""
 var token: Sprite2D
 var icon: Sprite2D
+var glow: Glow # a church's light
+
+var _breathing: Tween
+var _rise := 3.0
+var _period := 2.6
 
 
 func _init(kind_: String = "") -> void:
@@ -49,7 +55,7 @@ func _ready() -> void:
 	if kind in ["start", "finish", "empty"]:
 		return
 	if kind == "church":
-		var glow := Glow.new(CHURCH_LIGHT, 105.0)
+		glow = Glow.new(CHURCH_LIGHT, 105.0)
 		glow.scale.y *= 0.6
 		glow.position = Vector2(0, -26)
 		add_child(glow)
@@ -74,11 +80,31 @@ func _stand_icon() -> void:
 	icon.position = foot
 	add_child(icon)
 	PaperShadow.add(icon)
-	PaperMotion.breathe(icon, randf_range(2.5, 4.0), randf_range(2.4, 3.4))
+	_rise = randf_range(2.5, 4.0)
+	_period = randf_range(2.4, 3.4)
+	rest()
 	if kind in DUELS:
 		_repeat(func() -> void: PaperMotion.tilt(icon, randf_range(5.0, 8.0)), Vector2(2.5, 6.0))
 	elif kind == "coin":
 		_repeat(func() -> void: PaperMotion.squash(icon), Vector2(3.0, 7.0))
+
+
+## The icon stops breathing and jumps a little, as the piece lands on its space.
+func wake() -> Tween:
+	_breathing.kill()
+	icon.position = Vector2(0, ICON_FOOT)
+	icon.set_meta("rest_position", icon.position)
+	return PaperMotion.hop(icon, JUMP)
+
+
+## The icon breathes again, after `wake`.
+func rest() -> void:
+	_breathing = PaperMotion.breathe(icon, _rise, _period)
+
+
+## Where the top of the icon is on screen, for things that fly from or to it.
+func icon_top() -> Vector2:
+	return icon.get_global_transform_with_canvas() * Vector2(0, -icon.texture.get_height() * 0.8)
 
 
 # Does `action` now and then, never at the same pace twice.

@@ -18,6 +18,7 @@ const TINTS := {
 	"swamp": [Color("1c2612"), Color("7e912f")], # sickly olive-green
 	"castle": [Color("2c0b36"), Color("a5182f")], # blood red and purple
 }
+const QUICK := ["coin", "spikes", "thief", "church"]
 const BAT_LOCATIONS := ["graveyard", "castle"]
 const INTRO_HOLD := 2.0 # on the castle gate, counted from when the board starts to show
 const INTRO_GLIDE := 7.5
@@ -35,6 +36,12 @@ const CANDLE_SCALE := 0.5
 const CANDLE_SIDE := Vector2(126, 70) # from the die's middle to the candle's base
 const SHOW_BEAT := 0.5 # the rolled number stays on show this long
 const TURN_BEAT := 0.4 # after a piece lands, before the camera glides on
+const COIN_ICON := preload("res://assets/art/icons/coin_rim.png")
+const BLOOD_ICON := preload("res://assets/art/icons/blood.png")
+const COIN_SIZE := 78.0 # a flying coin at the token, in px; the HUD's counter is 30
+const COIN_HUD := 30.0
+const BLOOD_SIZE := 60.0
+const BLOOD_HUD := 28.0
 
 @onready var _camera: BoardCamera = $Camera
 @onready var _sky: Control = $SkyLayer/Sky
@@ -49,6 +56,9 @@ var _hud: Hud
 var _crowds := {} # path id -> the pieces standing there, in the order they arrived
 var _die: Die
 var _candle: Candle
+var _path_view: BoardPathView
+var _front: Node2D # over the pieces: an icon that springs up stands here, so no piece hides it
+var _settling: Tween # the camera's glide onto a piece that has just stopped
 
 
 func _ready() -> void:
@@ -57,7 +67,8 @@ func _ready() -> void:
 	for line in BoardPath.report():
 		print("Path ", line)
 	var lanes := $Scenery/Lanes
-	lanes.add_child(BoardPathView.new())
+	_path_view = BoardPathView.new()
+	lanes.add_child(_path_view)
 	# The monsters stand here: sorted by y, so a piece on the lower lane is in front.
 	_pieces = Node2D.new()
 	_pieces.name = "Pieces"
@@ -65,6 +76,9 @@ func _ready() -> void:
 	lanes.add_child(_pieces)
 	for player in Match.players:
 		_add_piece(player)
+	_front = Node2D.new()
+	_front.name = "Front"
+	lanes.add_child(_front)
 	_hud = Hud.new()
 	add_child(_hud)
 	pieces_landed.connect(_hud.come_in)
@@ -107,10 +121,40 @@ func _intro_done() -> void:
 	_land_pieces()
 
 
-## Hook for part 12: what happens to a player who has just stopped on space `id` (coin, spikes,
-## thief, church). PLACEHOLDER: it does nothing yet, and the signal fires on the next frame.
-func land(_player: Dictionary, _id: String) -> Signal:
-	return get_tree().process_frame
+## What happens to a player who has just stopped on space `id`. `Match.land` decides it; here the
+## space springs to life and the coin or blood flies to or from the player's portrait. Empty spaces
+## do nothing, at once. Awaiting it waits for the end of the effect.
+func land(player: Dictionary, id: String) -> void:
+	var result := Match.land(player)
+	var kind: String = result.kind
+	if kind in Space.DUELS:
+		print("Duel here, part 15: ", player.name, " on ", id)
+		return
+	if kind not in QUICK:
+		return
+	var space := _path_view.space_at(id)
+	var piece := piece_for(player)
+	if _settling and _settling.is_running():
+		await _settling.finished # the flight starts from a camera at rest, so it never jumps
+	await space.wake().finished
+	match kind:
+		"coin":
+			await _land_coin(player, space)
+		"spikes":
+			await _land_spikes(player, space, piece)
+		"thief":
+			await _land_thief(player, space, result.coins != 0)
+		"church":
+			await _land_church(player, space, piece, result.blood != 0)
+	space.rest()
+	if kind == "spikes" and result.blood != 0 and player.blood == 0:
+		died(player)
+
+
+## Hook for part 13: the player has lost their last blood. PLACEHOLDER: it only logs for now, and
+## the player plays on at 0 blood.
+func died(player: Dictionary) -> void:
+	print("Died: ", player.name, " (part 13 makes the death)")
 
 
 ## The HUD over the board.
@@ -171,6 +215,127 @@ func _play_turns() -> void:
 		if Match.turn != turn:
 			_hud.set_turn(Match.turn)
 			await get_tree().create_timer(0.5, false).timeout
+
+
+# A coin springs up from the token, spins like a flipped coin and glints, then flies to the
+# player's coin counter, which ticks up as it arrives.
+func _land_coin(player: Dictionary, space: Space) -> void:
+	var coin := _flyer(COIN_ICON, space.icon_top(), COIN_SIZE)
+	var base := coin.scale
+	var rise := coin.create_tween().set_parallel()
+	rise.tween_property(coin, "position:y", coin.position.y - 120.0, 0.4) 			.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	rise.tween_method(func(t: float) -> void: coin.scale.x = base.x * cos(t * TAU * 2.0),
+			0.0, 1.0, 0.4)
+	await rise.finished
+	coin.scale = base
+	_glint(coin)
+	Sound.play("fly")
+	await PaperMotion.fly_to(coin, _hud.anchor(player, "coins"),
+			Vector2.ONE * COIN_HUD / COIN_ICON.get_width(), 0.5, 0.0, 70.0).finished
+	coin.queue_free()
+	_hud.show_coins(player)
+
+
+# The spikes shoot up out of the token and sink back slowly, the piece jolts, and a drop falls
+# off the portrait.
+func _land_spikes(player: Dictionary, space: Space, piece: BoardPiece) -> void:
+	Sound.play("spikes")
+	var spikes := _stand_in(space)
+	PaperMotion.stretch(spikes, 1.6, 0.1)
+	var jolt := PaperMotion.hop(piece, 38.0)
+	await get_tree().create_timer(0.15, false).timeout
+	_hud.show_blood(player)
+	await jolt.finished
+	await PaperMotion.shake(piece).finished
+	await PaperMotion.stretch(spikes, 1.0, 0.45, false).finished
+	_put_back(space, spikes)
+
+
+# The hand darts up. With a coin to take, one flies down from the counter into it, and the hand
+# closes on it and ducks back into the token; without, it grabs at the air and sinks back empty.
+func _land_thief(player: Dictionary, space: Space, steals: bool) -> void:
+	Sound.play("thief")
+	var hand := _stand_in(space)
+	await PaperMotion.stretch(hand, 1.5, 0.12).finished
+	if steals:
+		var coin := _flyer(COIN_ICON, _hud.anchor(player, "coins"), COIN_HUD)
+		Sound.play("fly")
+		_hud.show_coins(player) # the count ticks down as the coin leaves
+		await PaperMotion.fly_to(coin, space.icon_top(),
+				Vector2.ONE * COIN_SIZE * 0.7 / COIN_ICON.get_width(), 0.4, 0.0, -40.0).finished
+		coin.queue_free()
+		await PaperMotion.stretch(hand, 0.7, 0.08, false).finished
+	else:
+		PaperMotion.tilt(hand, 14.0)
+		await get_tree().create_timer(0.45, false).timeout
+	await PaperMotion.stretch(hand, 0.05, 0.18, false).finished
+	await get_tree().create_timer(0.12, false).timeout
+	await PaperMotion.stretch(hand, 1.0, 0.3).finished
+	_put_back(space, hand)
+
+
+# The bell rings and the glow flares. A drop rises from the church and flies to the portrait, or,
+# with full blood, rises above the piece and fades.
+func _land_church(player: Dictionary, space: Space, piece: BoardPiece, gains: bool) -> void:
+	Sound.play("church")
+	space.glow.flare()
+	await get_tree().create_timer(0.25, false).timeout
+	var drop := _flyer(BLOOD_ICON, space.icon_top(), BLOOD_SIZE)
+	var rise := drop.create_tween().set_parallel()
+	rise.tween_property(drop, "position:y", drop.position.y - (70.0 if gains else 150.0), 0.35 if gains else 0.7) 			.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	if gains:
+		await rise.finished
+		Sound.play("fly")
+		await PaperMotion.fly_to(drop, _hud.anchor(player, "blood"),
+				Vector2.ONE * BLOOD_HUD / BLOOD_ICON.get_width(), 0.5, 0.0, 70.0).finished
+		drop.queue_free()
+		_hud.show_blood(player)
+	else:
+		rise.tween_property(drop, "modulate:a", 0.0, 0.7).set_delay(0.2)
+		await rise.finished
+		drop.queue_free()
+
+
+# A copy of the space's icon, in front of the pieces, standing where the icon stands; the icon
+# itself is hidden until `_put_back`.
+func _stand_in(space: Space) -> Sprite2D:
+	var copy := Sprite2D.new()
+	copy.texture = space.icon.texture
+	copy.centered = false
+	copy.offset = space.icon.offset
+	copy.position = _front.to_local(space.icon.global_position)
+	_front.add_child(copy)
+	PaperShadow.add(copy)
+	space.icon.visible = false
+	return copy
+
+
+func _put_back(space: Space, copy: Sprite2D) -> void:
+	space.icon.visible = true
+	copy.queue_free()
+
+
+# A picture that lives on the HUD's layer, so it can fly between the world and the portraits.
+# It starts at `at` on screen, `size` px across.
+func _flyer(texture: Texture2D, at: Vector2, size: float) -> Sprite2D:
+	var sprite := Sprite2D.new()
+	sprite.texture = texture
+	sprite.position = at
+	sprite.scale = Vector2.ONE * size / texture.get_width()
+	_hud.add_child(sprite)
+	PaperShadow.add(sprite)
+	return sprite
+
+
+# A quick bright flash on a flying picture.
+func _glint(sprite: Sprite2D) -> void:
+	var glint := Glow.new(Color(1.0, 0.9, 0.5, 0.5), 52.0)
+	glint.scale /= sprite.scale
+	sprite.add_child(glint)
+	var tween := glint.create_tween().set_parallel()
+	tween.tween_property(glint, "scale", glint.scale * 1.6, 0.25)
+	tween.tween_property(glint, "modulate:a", 0.0, 0.25)
+	tween.chain().tween_callback(glint.queue_free)
 
 
 # Sets the die and the candle over the piece, and waits for a click on the die (true) or for the
@@ -257,7 +422,7 @@ func _walk(player: Dictionary, piece: BoardPiece, steps: int) -> void:
 			await get_tree().create_timer(HOP_BEAT, false).timeout
 	Match.move_to(player, here)
 	piece.start_sway()
-	_camera.glide_to(piece.global_position.x, 0.6)
+	_settling = _camera.glide_to(piece.global_position.x, 0.6)
 	piece.walked.emit()
 
 

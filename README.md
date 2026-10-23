@@ -33,7 +33,8 @@ What they mean in practice is in [Art and audio](docs/art_and_audio.md#principle
 - **Microplan 4 is done:** parts 10 to 12 are planned in `docs/microplan.md`. The user decided the board on 2026-10-23: 57 spaces on the graveyard way (61 past the church), one empty space for every filled one, still one die, and 17 turns. Part 10 builds it, and rolls the layout once with a script.
 - **Part 10 is built** (the longer, random board), built and merged.
 - **Part 11 is built** (the die and the turn loop), built and merged.
-- **Next:** part 12 (quick spaces).
+- **Part 12 is built** (quick spaces), built and merged.
+- **Next:** part 13 (death and respawn).
 
 **Keep the raws.** They're the sources, and the processed files can always be rebuilt from them.
 

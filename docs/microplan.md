@@ -185,6 +185,13 @@ Each part session adds a few lines when it finishes: what got built, what change
 - **Surprises:** the MCP's click coordinates are the window's (1920 × 1080 in the editor's run), not 1280 × 720 as the README says. A timed-out roll shakes the die for 0.25 s first.
 - **Left over:** nobody has listened to the die sounds or judged the tumble by eye in motion.
 
+### Part 12 notes
+
+- **Built:** `Match.land(player)` returns `{kind, coins, blood}` with the real changes. `Board.land(player, id)` (now a coroutine) calls it, wakes the space (`Space.wake` / `rest`: the icon jumps), and plays the effect: a coin that springs, spins, glints and flies to the counter; spikes that stretch up (`PaperMotion.stretch`) with the piece's jolt and shake; the thief's hand and a coin flying down from the counter, or a grab at the air; the church bell, `Glow.flare` and a blood drop flying to the portrait (or fading above the piece on full blood). Flyers live on the HUD's layer, and the board waits for the camera's settling glide before they leave. `Board.died(player)` only logs (part 13); duel spaces log "Duel here, part 15".
+- **Changed from the plan:** the spikes and the hand are drawn as a stand-in copy in a `Front` node over the pieces, because the piece stands right in front of the icon and hid them. The spikes stretch 1.6x.
+- **Checked:** a temporary script landed a player on each kind and on the edge cases (thief on 0 coins, church on full blood, spikes on 1 blood: `died` logged); `Match` and the HUD agreed every time. A sped-up 17-turn match with 5 players ran with no errors and logged "Match over". 25 FPS during the coin's flight. Screenshots are in `screenshots/part_12/`.
+- **Left over:** nobody has listened to the effects' sounds or judged them in motion. The music following the leader was meant for part 13 and is still undone.
+
 ### Built so far (parts 1 to 9, absorbed by Microplans 3 and 4)
 
 - **Code** is in `src/`:
