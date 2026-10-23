@@ -178,6 +178,13 @@ Each part session adds a few lines when it finishes: what got built, what change
 - **Checked:** every route walked in a script (57, 57, 61, 61 spaces), and 4 players with random rolls all reached the finish in 20 rounds with `Match` and every piece agreeing. 25 FPS during the intro glide. One screenshot of each location was looked at.
 - **Left over:** the forest has six empty spaces in a row (its spaces 6 to 11), which the rules allow. If the user dislikes it, rerun with `--seed N`. The castle's own building stands at 0.4 of its length as before, and between it and the gate there are only torches.
 
+### Part 11 notes
+
+- **Built:** `Match` has `current`, `active()`, `roll()`, `next_player()` and a `finished` flag on every player. `Die` (`src/board/die.gd`: `place`, `offer`, `nudge`, `tumble`, `leave`, and the `clicked` signal) and the turn loop in `Board._play_turns`. `Board.land(player, id)` is the hook for part 12 (marked PLACEHOLDER; it returns the next frame). The die sits `DIE_RISE` (300 px) over the piece, and 34 px higher per extra crowd row. The candle is at half size, to its right, and lifts away on a click.
+- **Checked:** with 8 players at 12x speed and one forced to `finished`, all 17 turns ran, the finished player never rolled, and the loop logged "Match over" after turn 17. With 2 players, MCP clicks beside the die and on the HUD did nothing, and a click on the die snuffed the candle and rolled. The intro skip click doesn't roll. 25 FPS with 8 pieces, the die and the candle (dips only while screenshots were being saved). Screenshots are in `screenshots/part_11/`.
+- **Surprises:** the MCP's click coordinates are the window's (1920 × 1080 in the editor's run), not 1280 × 720 as the README says. A timed-out roll shakes the die for 0.25 s first.
+- **Left over:** nobody has listened to the die sounds or judged the tumble by eye in motion.
+
 ### Built so far (parts 1 to 9, absorbed by Microplans 3 and 4)
 
 - **Code** is in `src/`:

@@ -16,6 +16,9 @@ var players: Array[Dictionary] = []
 ## The turn the match is on, from 1 to `TURNS`.
 var turn := 1
 
+## The index in `players` of the player whose turn it is.
+var current := 0
+
 
 ## A typed name as it will be kept: trimmed, capped, and "Player N" when blank.
 static func clean_name(raw: String, index: int) -> String:
@@ -45,8 +48,9 @@ func start(raw_names: Array[String]) -> bool:
 	players.clear()
 	for i in raw_names.size():
 		players.append({"name": clean_name(raw_names[i], i), "monster": "", "space": BoardPath.START,
-				"blood": MAX_BLOOD, "coins": 0})
+				"blood": MAX_BLOOD, "coins": 0, "finished": false})
 	turn = 1
+	current = 0
 	print("Match started: ", players)
 	return true
 
@@ -77,6 +81,39 @@ func pick_monster(player: Dictionary, id: String) -> bool:
 	player.monster = id
 	print("Monster picked: ", player.name, " is ", id)
 	return true
+
+
+## The player whose turn it is.
+func active() -> Dictionary:
+	return players[current]
+
+
+## The die: 1 to 6. The rules decide the number; the die only shows it.
+func roll() -> int:
+	var value := randi_range(1, 6)
+	print("Rolled: ", active().name, " ", value)
+	return value
+
+
+## Passes the turn to the next player who hasn't finished, and to the next turn after the last
+## player. Returns false, changing nothing, when turn `TURNS` is over or everyone has finished.
+func next_player() -> bool:
+	var index := current
+	var wrapped := false
+	for _step in players.size():
+		index += 1
+		if index >= players.size():
+			index = 0
+			wrapped = true
+		if wrapped and turn >= TURNS:
+			return false
+		if not players[index].finished:
+			if wrapped:
+				turn += 1
+			current = index
+			print("Next: ", players[index].name, ", turn ", turn)
+			return true
+	return false
 
 
 ## Puts the player on this space of the path, the one rules call that changes where they stand.
