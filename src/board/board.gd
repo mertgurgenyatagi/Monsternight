@@ -1,7 +1,8 @@
 extends Node2D
 ## The board. It opens on the castle gate, so everyone sees where the race ends, then glides
 ## back to the village start. Wherever the camera's centre is, the sky takes that location's
-## tint and its ambience plays. The path, the pieces and the turns come in later parts.
+## tint and its ambience plays. It lays the road across the scenery; the pieces and the turns come
+## in later parts.
 
 ## Each location's sky, top and bottom: colorful, never bleak.
 const TINTS := {
@@ -28,6 +29,15 @@ var _skipped := false
 func _ready() -> void:
 	Sound.play_music("")
 	print("Board: ", Match.players)
+	for line in BoardPath.report():
+		print("Path ", line)
+	var lanes := $Scenery/Lanes
+	lanes.add_child(BoardPathView.new())
+	# Part 8 puts the monsters here: sorted by y, so a piece on the lower lane is in front.
+	var pieces := Node2D.new()
+	pieces.name = "Pieces"
+	pieces.y_sort_enabled = true
+	lanes.add_child(pieces)
 	_camera.jump_to(BoardLayout.width())
 	_track()
 	_lightning_loop()

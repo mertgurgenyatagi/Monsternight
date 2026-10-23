@@ -64,7 +64,7 @@ When the match ends, everyone counts their trophies and the leaderboard is ranke
 | Church | Gain 1 blood (up to 3) |
 | Minigame spaces | Each minigame has its own space. Landing on one starts a duel of that game. See [minigames.md](minigames.md). |
 
-- For every **3 quick spaces** (coin, spikes, thief, church) there are roughly **2 minigame spaces**.
+- **Two of every three spaces are empty**: nothing happens when a piece lands there. The filled third is mostly quick spaces (coin, spikes, thief, church), with a minigame space or two on each stretch.
 - The four quick spaces show up about equally often, in every area of the board. The two paths of the first split are the one exception (see [board.md](board.md#first-split-graveyard-or-church)).
 
 ## Decision timers

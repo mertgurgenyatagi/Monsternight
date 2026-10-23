@@ -14,21 +14,22 @@ const LEAD_OUT := 900.0 # after the last space: the castle gate, then the board'
 const HILL_WIDTH := 2400.0 # church_hill.png: the first split spans it
 
 ## The locations in order, with board.md's space counts. A split's width is set by its longer
-## path; the first split is the hill's width instead.
+## path; the first split is the hill's width instead. A split can also have `pad`, in spaces of
+## extra width, so its ramps lie outside its paths' spaces.
 const LOCATIONS := [
 	{"id": "village", "spaces": 9},
 	{"id": "graveyard", "spaces": 10, "split": true, "ramp": 600.0},
 	{"id": "forest", "spaces": 9},
-	{"id": "swamp", "spaces": 7, "split": true, "ramp": 220.0},
+	{"id": "swamp", "spaces": 7, "split": true, "ramp": 220.0, "pad": 2.0},
 	{"id": "castle", "spaces": 11},
 ]
 
-const MAIN_Y := 900.0 # the road
-const UPPER_Y := 640.0 # over the church hill, and the boardwalk
-const LOWER_Y := 990.0 # through the graveyard, and the bog
+const MAIN_Y := 880.0 # the road
+const UPPER_Y := 650.0 # over the church hill, and the boardwalk
+const LOWER_Y := 930.0 # through the graveyard, and the bog
 const GROUND_Y := 780.0 # the top of the ground strips
 const PROP_BASE_Y := 840.0 # where tall props stand, their feet hidden behind the ground strip
-const HILL_TOP_Y := 625.0 # the top of the hill's plateau, just under the upper lane
+const HILL_TOP_Y := 565.0 # the top of the hill's plateau, well over the upper lane so its spaces stand on the grass
 
 static var _locations: Array[Dictionary] = []
 
@@ -40,7 +41,7 @@ static func locations() -> Array[Dictionary]:
 		var x := 0.0
 		for i in LOCATIONS.size():
 			var location: Dictionary = LOCATIONS[i].duplicate()
-			var span: float = location.spaces * SPACE
+			var span: float = (location.spaces + location.get("pad", 0.0)) * SPACE
 			if location.id == "graveyard":
 				span = HILL_WIDTH
 			if i == 0:

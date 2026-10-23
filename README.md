@@ -26,7 +26,9 @@ What they mean in practice is in [Art and audio](docs/art_and_audio.md#principle
 - **Part 5 is built** (monster select), built and merged.
 - **Part 6 is built** (the board's scenery), built and merged.
 - **Reverted (2026-10-23):** the user tried the high-camera board in a part 7 build, found the scenery looked fake and unlike a real environment, and chose to revert the design adjustment with git, as if it never happened. The side view of part 6 stands. A high camera or a contrast rule is not part of the design now. Ask the user before reviving either.
-- **Next:** Microplan 3, in its own session, to plan parts 7 to 9.
+- **Microplan 3 is done:** parts 7 to 9 are planned in `docs/microplan.md`.
+- **Part 7 is built** (the board path), built and merged. The user's feedback during the build changed the plan: two of every three spaces are empty plain tokens, and everything on the road has an outline and sits on a dark road strip, with dimmer scenery and thinner fog, for contrast. See the part notes in `docs/microplan.md`.
+- **Next:** part 8 (monster pieces), in its own session.
 
 **Keep the raws.** They're the sources, and the processed files can always be rebuilt from them.
 
@@ -53,6 +55,7 @@ What they mean in practice is in [Art and audio](docs/art_and_audio.md#principle
 - `assets/`: the game's finished assets, which Godot uses
 - `images_raw/`, `audio_raw/`: the raw images and sounds. Each has a `.gdignore`, so Godot skips them.
 - `tools/images/process_images.py` turns `images_raw/` into `assets/art/`, following the Processing notes in `docs/asset_prompts.md`. Run it from the repository root with `python tools/images/process_images.py . [<name> ...]`. It needs numpy, scipy and Pillow.
+- `tools/images/make_outlines.py` bakes the board's space token and icons, with their outlines, into `assets/art/board/space_rim.png` and `icons/*_rim.png`. Run it from the repository root: `python tools/images/make_outlines.py .`. It needs numpy, scipy and Pillow.
 - `tools/sounds/`: sound scripts
   - `process_sounds.py` turns `audio_raw/` into `assets/audio/`. Run it from the repository root with `python tools/sounds/process_sounds.py . [<name> ...]`. It needs ffmpeg (installed with winget as `Gyan.FFmpeg`; open a new shell for it to be on the PATH, or set `FFMPEG` to its path), numpy and scipy.
   - `gen_sound_prompts.py` rebuilds `docs/sound_prompts.md`. Change sound prompts here, never by hand in the doc.
@@ -80,4 +83,6 @@ What they mean in practice is in [Art and audio](docs/art_and_audio.md#principle
    - The MCP's screenshots come back as a huge base64 file, so save screenshots from a plain run with a temporary script instead.
    - The MCP's simulated mouse uses window coordinates (1280 × 720). Use it only to prove a click works.
    - Don't reload the MCP plugin from the editor, because it can switch itself off. Restart the editor instead.
+   - **The MCP is required.** Never fall back to scripted input because it isn't connected. Fix it.
+   - **When the MCP acts up** ("Connection closed", or its tools are missing), the usual cause is another Claude session's server holding port 6505: every session starts its own server on that fixed port, and only the first one gets it. **Killing every other Claude session is always allowed, without asking.** Kill every `claude.exe` except your own (find yours by walking up from your shell's process) and any `node` running `godot-mcp`. Then check port 6505 is free (`Get-NetTCPConnection -LocalPort 6505`) and reconnect with `/mcp`. The Godot editor must also be open on this project.
 6. **This README** is the handover for a fresh session. Keep it brief and current.

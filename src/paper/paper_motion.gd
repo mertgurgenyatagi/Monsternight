@@ -202,6 +202,26 @@ static func tuck(piece: Node2D, side: Vector2, at_apex := Callable(), duration :
 	return tween
 
 
+## Rises and sinks a few pixels from its rest position, slowly and forever, starting at a random
+## point so no two keep step.
+static func breathe(piece: Node2D, rise := 3.0, period := 2.6) -> Tween:
+	var rest := _rest_position(piece)
+	var tween := _fresh(piece, "breathe").set_loops().set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	tween.tween_property(piece, "position:y", rest.y - rise, period / 2)
+	tween.tween_property(piece, "position:y", rest.y, period / 2)
+	tween.custom_step(randf_range(0.0, period))
+	return tween
+
+
+## Tips over one way, then the other, and settles: like something about to start.
+static func tilt(piece: Node2D, degrees := 7.0) -> Tween:
+	var tween := _fresh(piece, "tilt")
+	tween.tween_property(piece, "rotation_degrees", degrees, 0.14) 			.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+	tween.tween_property(piece, "rotation_degrees", -degrees * 0.6, 0.16) 			.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	tween.tween_property(piece, "rotation_degrees", 0.0, 0.4) 			.set_trans(Tween.TRANS_ELASTIC).set_ease(Tween.EASE_OUT)
+	return tween
+
+
 ## Jerks from side to side, for "no".
 static func shake(piece: CanvasItem) -> Tween:
 	var rest := _rest_position(piece)
