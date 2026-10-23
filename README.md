@@ -30,13 +30,9 @@ What they mean in practice is in [Art and audio](docs/art_and_audio.md#principle
 - **Part 7 is built** (the board path), built and merged. The user's feedback during the build changed the plan: two of every three spaces are empty plain tokens, and everything on the road has an outline and sits on a dark road strip, with dimmer scenery and thinner fog, for contrast. See the part notes in `docs/microplan.md`.
 - **Part 8 is built** (monster pieces), built and merged.
 - **Part 9 is built** (the HUD), built and merged.
-- **Next:** Microplan 4 (parts 10 to 12), in its own session, which also plans the board's length, randomness and ratio below.
-- **For the next Microplan to plan, not to fix now (the user's words, 2026-10-23):** the board is too short, and its spaces are too predictable.
-  - **Length:** the way to the end should be about 100 spaces. It is 42 on the shortest way and 46 on the longest now. Part 22 was to tune the length; this moves it up front.
-  - **Randomness:** the board's layout should be absolutely random, not a predictable pattern like the hand-written `kinds` strings in `BoardPath`. It is still the same every match: randomize it once, then fix the result in `BoardPath` (the user's correction). So nothing is rolled at runtime and online play needs no syncing. Decide in the plan how far the randomizing goes (the kinds of the spaces, and perhaps where the forks are), and how it's done, for example a script that rolls the layout once and writes it out.
-  - **Ruled out:** a repeating pattern, such as 3 empty spaces, then 2 filled, again and again. The ratio below holds over the whole board, but the order must show no pattern.
-  - **Ratio:** 1.5 empty spaces to every filled one (60% empty, 40% filled), instead of the current 2 to 1.
-  - The docs (board.md, game_rules.md) and the part 7 notes need updating to match once it's planned.
+- **Microplan 4 is done:** parts 10 to 12 are planned in `docs/microplan.md`. The user decided the board on 2026-10-23: 57 spaces on the graveyard way (61 past the church), one empty space for every filled one, still one die, and 17 turns. Part 10 builds it, and rolls the layout once with a script.
+- **Part 10 is built** (the longer, random board), built and merged.
+- **Next:** part 11 (the die and the turn loop).
 
 **Keep the raws.** They're the sources, and the processed files can always be rebuilt from them.
 
@@ -64,6 +60,7 @@ What they mean in practice is in [Art and audio](docs/art_and_audio.md#principle
 - `images_raw/`, `audio_raw/`: the raw images and sounds. Each has a `.gdignore`, so Godot skips them.
 - `tools/images/process_images.py` turns `images_raw/` into `assets/art/`, following the Processing notes in `docs/asset_prompts.md`. Run it from the repository root with `python tools/images/process_images.py . [<name> ...]`. It needs numpy, scipy and Pillow.
 - `tools/images/make_outlines.py` bakes the board's space token and icons, with their outlines, into `assets/art/board/space_rim.png` and `icons/*_rim.png`. Run it from the repository root: `python tools/images/make_outlines.py .`. It needs numpy, scipy and Pillow.
+- `tools/board/roll_board.py` rolls the kinds of the board's spaces and writes them into `BoardPath`. Run it from the repository root: `python tools/board/roll_board.py [--seed N]`. The board in the game was rolled with seed 1031 (the default). It needs only Python.
 - `tools/sounds/`: sound scripts
   - `process_sounds.py` turns `audio_raw/` into `assets/audio/`. Run it from the repository root with `python tools/sounds/process_sounds.py . [<name> ...]`. It needs ffmpeg (installed with winget as `Gyan.FFmpeg`; open a new shell for it to be on the PATH, or set `FFMPEG` to its path), numpy and scipy.
   - `gen_sound_prompts.py` rebuilds `docs/sound_prompts.md`. Change sound prompts here, never by hand in the doc.
@@ -83,7 +80,7 @@ What they mean in practice is in [Art and audio](docs/art_and_audio.md#principle
    - It leaves `development` checked out, ready for the next session.
 
    It still asks the user about anything else it needs to.
-4. **Microplan.** The first playable is built in about 23 parts. `/microplan` plans the next three in detail, in its own session, after part 3, 6, 9 and so on. Each part is built in its own session, on its own branch, and meets the "done" bar in `docs/microplan.md`. Planning and building never share a session, to save tokens.
+4. **Microplan.** The first playable is built in about 24 parts. `/microplan` plans the next three in detail, in its own session, after part 3, 6, 9 and so on. Each part is built in its own session, on its own branch, and meets the "done" bar in `docs/microplan.md`. Planning and building never share a session, to save tokens.
 5. **Saving tokens.** The user hit their limits in part 1. Part sessions run on Sonnet 5.5 at medium effort, and Opus for the Microplan or a tricky part.
    - **Never use `--write-movie` or `tools/godot/capture.py`, not even briefly.** It encodes every frame at full size, takes ages and makes the PC roar. The user has stopped it twice. Test logic headless. To see motion, run the game normally with a temporary script (not committed) that saves a few `get_viewport().get_texture().get_image().save_png(...)` screenshots at set moments, and paste them into one contact sheet with Pillow. For the frame rate, print `Engine.get_frames_per_second()` from a plain run.
    - Don't spend long on screenshots: three good ones are enough, and a handful of timed ones in one Pillow contact sheet is enough for motion.

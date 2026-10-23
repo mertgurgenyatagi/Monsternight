@@ -13,26 +13,26 @@ const KINDS := {
 	"p": "pong", "x": "haxball", "r": "racing", "f": "fps",
 }
 
-## The stretches in order. `kinds` is the type sequence, written out by hand so the board is the
-## same every match (board.md has the mix). A dot is an empty space, where nothing happens:
-## two of every three spaces are empty. A dot is an empty space, where nothing happens: two
-## of every three spaces are empty. The spaces lie evenly along the lane's curve between
-## `from` and `to`, which are inset from the location's ends.
+## The stretches in order. `kinds` is the type sequence, rolled once by `tools/board/roll_board.py`
+## (seed 1031), never written by hand, so the board is the same every match. board.md has the
+## bags it is rolled from. A dot is an empty space, where nothing happens: one of every two
+## spaces is empty. The spaces lie evenly along the lane's curve between `from` and `to`, which
+## are inset from the location's ends.
 const STRETCHES := [
 	{"id": "village", "prefix": "v", "location": "village", "lane": BoardLayout.Lane.MAIN,
-			"kinds": ".c..p..h.", "from": BoardLayout.LEAD_IN, "to": 0.0},
+			"kinds": ".hf..x..ssct", "from": BoardLayout.LEAD_IN, "to": 0.0},
 	{"id": "church", "prefix": "c", "location": "graveyard", "lane": BoardLayout.Lane.UPPER,
-			"kinds": "..h..x.c..", "from": 100.0, "to": 100.0},
+			"kinds": ".hc.chr.h...", "from": 100.0, "to": 100.0},
 	{"id": "graveyard", "prefix": "g", "location": "graveyard", "lane": BoardLayout.Lane.LOWER,
-			"kinds": ".s..t.", "from": 250.0, "to": 250.0},
+			"kinds": ".s..stt.", "from": 250.0, "to": 250.0},
 	{"id": "forest", "prefix": "f", "location": "forest", "lane": BoardLayout.Lane.MAIN,
-			"kinds": "..s..r.c.", "from": 0.0, "to": 0.0},
+			"kinds": ".t.st......h", "from": 0.0, "to": 0.0},
 	{"id": "boardwalk", "prefix": "b", "location": "swamp", "lane": BoardLayout.Lane.UPPER,
-			"kinds": ".p..c..", "from": 220.0, "to": 220.0},
+			"kinds": "...x..ptct", "from": 220.0, "to": 220.0},
 	{"id": "bog", "prefix": "m", "location": "swamp", "lane": BoardLayout.Lane.LOWER,
-			"kinds": "..f..s.", "from": 220.0, "to": 220.0},
+			"kinds": ".h...f.hhr", "from": 220.0, "to": 220.0},
 	{"id": "castle", "prefix": "k", "location": "castle", "lane": BoardLayout.Lane.MAIN,
-			"kinds": ".h..f..s.t.", "from": 0.0, "to": BoardLayout.LEAD_OUT},
+			"kinds": "t.cshr...c..h.p", "from": 0.0, "to": BoardLayout.LEAD_OUT},
 ]
 
 ## Where the start token lies, in the village's lead-in.

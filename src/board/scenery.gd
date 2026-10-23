@@ -72,11 +72,11 @@ func _ready() -> void:
 
 
 func _village(location: Dictionary) -> void:
-	_mid_prop(location, "village_house_1", 0.1, 0.8, false)
-	_mid_prop(location, "village_house_2", 0.31, 0.8, true)
-	_mid_prop(location, "village_house_1", 0.56, 0.78, true)
-	_mid_prop(location, "village_house_2", 0.8, 0.82, false)
-	for at in [0.2, 0.44, 0.68, 0.93]:
+	var houses := _spots(location, 0.1, 0.8, 580.0)
+	for i in houses.size():
+		_mid_prop(location, "village_house_%d" % (1 + i % 2), houses[i], _rng.randf_range(0.78, 0.82),
+				(i / 2) % 2 == 1)
+	for at in _spots(location, 0.2, 0.93, 600.0):
 		# The post is left of the picture's middle, so the lamp stands on its foot there.
 		var lamp := _prop(_lanes, "village_lamp", _x(location, at), BoardLayout.GROUND_Y + 40, 0.7, false, 50.0)
 		var glow := Glow.new(LAMP_LIGHT, 110.0)
@@ -92,17 +92,18 @@ func _graveyard(location: Dictionary) -> void:
 	_tall(location, "graveyard_tree", 0.74, 0.88, false, 1.0)
 	# The church path runs over the hill, with the church on top behind it.
 	var hill_x: float = location.from
-	var church_x := hill_x + BoardLayout.HILL_WIDTH * 0.56
+	var church_x := hill_x + BoardLayout.hill_width() * 0.56
 	_prop(_lanes, "church_building", church_x, BoardLayout.HILL_TOP_Y + 30, 0.42)
 	var hill := Sprite2D.new()
 	hill.texture = load(ART % "church_hill")
 	hill.centered = false
 	hill.position = Vector2(hill_x, BoardLayout.HILL_TOP_Y - 140)
+	hill.scale.x = BoardLayout.hill_width() / BoardLayout.HILL_IMAGE_WIDTH # stretched to the church path
 	_lanes.add_child(hill)
 	PaperShadow.add(hill)
 	# Tombstones lean this way and that in front of the hill, below the church path.
 	var stones := ["graveyard_stone_1", "graveyard_stone_2"]
-	var spots := [0.07, 0.19, 0.31, 0.45, 0.6, 0.73, 0.86, 0.95]
+	var spots := _spots(location, 0.07, 0.95, 300.0)
 	for i in spots.size():
 		var stone := _prop(_lanes, stones[i % 2], _x(location, spots[i]), BoardLayout.GROUND_Y + 45,
 				_rng.randf_range(0.5, 0.62), _rng.randf() < 0.5)
@@ -111,10 +112,10 @@ func _graveyard(location: Dictionary) -> void:
 
 func _forest(location: Dictionary) -> void:
 	_tall(location, "forest_tree_1", 0.0, 0.78, false, 0.8) # on the seam with the graveyard
-	_tall(location, "forest_tree_2", 0.24, 0.74, true, 0.8)
-	_tall(location, "forest_tree_1", 0.5, 0.7, true, 0.8)
-	_tall(location, "forest_tree_2", 0.76, 0.78, false, 0.8)
-	for at in [0.1, 0.35, 0.62, 0.9]:
+	var trees := _spots(location, 0.24, 0.76, 515.0)
+	for i in trees.size():
+		_tall(location, "forest_tree_%d" % (2 - i % 2), trees[i], _rng.randf_range(0.7, 0.78), i % 3 != 2, 0.8)
+	for at in _spots(location, 0.1, 0.9, 530.0):
 		var mushrooms := _prop(_lanes, "forest_mushrooms", _x(location, at), BoardLayout.GROUND_Y + 35,
 				_rng.randf_range(0.55, 0.75), _rng.randf() < 0.5)
 		var glow := Glow.new(MUSHROOM_LIGHT, 120.0)
@@ -137,7 +138,7 @@ func _swamp(location: Dictionary) -> void:
 	var bob := water.create_tween().set_loops().set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 	bob.tween_property(water, "position:y", water.position.y + 7.0, 2.2)
 	bob.tween_property(water, "position:y", water.position.y - 3.0, 2.2)
-	for at in [0.05, 0.2, 0.37, 0.55, 0.71, 0.88]:
+	for at in _spots(location, 0.05, 0.88, 330.0):
 		var reeds := _prop(_lanes, "swamp_reeds", _x(location, at), _ground_y(location) + 45,
 				_rng.randf_range(0.5, 0.65), _rng.randf() < 0.5)
 		_sway(reeds, 2.2)
@@ -146,7 +147,7 @@ func _swamp(location: Dictionary) -> void:
 func _castle(location: Dictionary) -> void:
 	_tall(location, "graveyard_tree", 0.0, 0.82, true, 1.0) # on the seam with the swamp
 	_mid_prop(location, "castle", 0.4, 0.52, false)
-	for at in [0.12, 0.3, 0.55, 0.72]:
+	for at in _spots(location, 0.12, 0.78, 665.0):
 		_torch(_x(location, at), BoardLayout.GROUND_Y + 50, 0.8)
 	# The castle gate is the finish, at the very end of the road, with a torch on either side.
 	var gate_x := BoardLayout.gate_x()
@@ -156,6 +157,16 @@ func _castle(location: Dictionary) -> void:
 
 
 # ---- the pieces ----
+
+
+# Shares of the way across a location from `first` to `last`, about `gap` px apart, so a longer
+# location gets more props and keeps the density it was drawn for.
+func _spots(location: Dictionary, first: float, last: float, gap: float) -> Array[float]:
+	var count := maxi(2, roundi((last - first) * (location.to - location.from) / gap) + 1)
+	var result: Array[float] = []
+	for i in count:
+		result.append(lerpf(first, last, float(i) / (count - 1)))
+	return result
 
 
 # A tall prop in the mid layer, swaying gently from its base if `sway` is more than 0.

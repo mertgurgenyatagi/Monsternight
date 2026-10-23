@@ -30,7 +30,7 @@ The players' name cards shuffle and settle into the turn order.
 ### Always on screen
 
 - A strip of paper portraits along the top, one per player, in turn order. Each shows the player's blood drops and coin count. The active player's portrait is raised, and a player who has finished gets a flag.
-- A turn counter in a corner, such as "Turn 5 of 12".
+- A turn counter in a corner, such as "Turn 5 of 17".
 - Trophy counts and duel wins are **not** shown. They stay secret until the ceremony.
 
 ### Mouse controls

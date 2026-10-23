@@ -6,7 +6,7 @@ extends Node
 const MIN_PLAYERS := 2
 const MAX_PLAYERS := 8
 const NAME_LENGTH := 12
-const TURNS := 12
+const TURNS := 17
 const MAX_BLOOD := 3
 
 ## One dictionary per player. Right after `start` this is the seating order; `roll_turn_order`

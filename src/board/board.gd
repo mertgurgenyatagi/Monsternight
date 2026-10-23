@@ -17,7 +17,7 @@ const TINTS := {
 }
 const BAT_LOCATIONS := ["graveyard", "castle"]
 const INTRO_HOLD := 2.0 # on the castle gate, counted from when the board starts to show
-const INTRO_GLIDE := 6.0
+const INTRO_GLIDE := 7.5
 const SKIP_GLIDE := 0.9
 const DROP_GAP := 0.45 # between one piece dropping onto the start and the next
 const HOP_BEAT := 0.12 # between two hops, so a roll of 6 can be counted by ear
