@@ -16,6 +16,7 @@ func _ready() -> void:
 		PaperShadow.add(piece)
 	$Quit.pressed.connect(_quit)
 	$Settings.pressed.connect(Settings.open)
+	$Play.pressed.connect(Scenes.change_to.bind("res://src/setup/setup.tscn"))
 	_lightning_loop()
 
 	_move_curtain(CURTAIN_OPEN, 2.4, 0.9)

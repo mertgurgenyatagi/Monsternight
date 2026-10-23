@@ -19,6 +19,7 @@ run/max_fps=25
 [autoload]
 
 Settings="*res://src/autoload/settings.gd"
+Match="*res://src/autoload/match.gd"
 Sound="*res://src/autoload/sound.gd"
 Scenes="*res://src/autoload/scenes.gd"
 MCPRuntimeBridge="*res://addons/godot_mcp/services/mcp_runtime_bridge.gd"

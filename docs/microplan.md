@@ -163,6 +163,15 @@ Each part session adds a few lines when it finishes: what got built, what change
 - New `PaperMotion.set_down` and `lift_away` (card drop and lift).
 - Checked by contact sheet and screenshots. Not tested: a real relaunch round trip of fullscreen and the mouse-click paths (Esc, click outside, drag); the code for them is straightforward but only the sliders' saved file was seen.
 
+### Part 3
+
+- Built as planned. `Match` autoload (`src/autoload/match.gd`) holds `players` (one dictionary each, just `name` for now), `Match.start(raw_names)` and the name rules (`clean_name`, `duplicates`; duplicates are compared without regard to case, and a blank's "Player N" counts). Setup is `src/setup/` (`setup.gd`, `name_card.gd`): cards in one row up to 4, two rows after, each row centered.
+- Duplicates: the later card turns red and shakes with `ui_denied`, and Begin dims and refuses. Add and Remove dim at the limits and shake with `ui_denied`. Remove takes the last card and crumples it (`PaperMotion.crumple`, a scrunch and drop, not the `crumpled.png` ball). A long name shrinks its font to fit the card.
+- New in `PaperMotion`: `slide_in`, `move_to`, `shake`, `crumple`.
+- Begin stores the players in `Match`, prints them to the log and dims itself. It leads nowhere until part 4. Coming back to setup rebuilds the cards from `Match.names()`.
+- Checked headless-free: scripted add, remove, Turkish names, blanks, duplicates and the 8 limit, with `Match` printed. Screenshots come from the viewport in a plain run. Don't use `--write-movie` for this: it encodes every frame at full size and cooked the user's computer.
+- Not tested: real keyboard typing and mouse clicks (the code sets text and calls the handlers directly).
+
 ## Log
 
 - **2026-10-23, Microplan 1:** planned parts 1 to 3: the foundation and title, settings, and setup. Sketched the roadmap to part 24.
