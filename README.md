@@ -17,9 +17,10 @@ What they mean in practice is in [Art and audio](docs/art_and_audio.md#principle
 - **Design** is done, after 15 questionnaires.
 - **Images:** all 84 are done. The 83 Gemini raws are in `images_raw/` as `.jfif` (JPEG), and `tools/images/process_images.py` has processed them into `assets/art/`. `paper_texture.png` was made separately.
 - **Sounds:** all 60 effects, voices and ambience loops are done. The raws are in `audio_raw/` as WAV, and `tools/sounds/process_sounds.py` has processed them into the OGGs in `assets/audio/`, which the user reviewed and approved.
-- **Missing:** the 11 music tracks, which the user makes separately, and the 2 fonts.
+- **Fonts:** done. `display.ttf` is Grenze Gotisch Bold and `body.ttf` is Spectral Medium, both with their OFL licenses, and both cover Turkish letters.
+- **Missing:** the 11 music tracks, which the user makes separately.
 - **No code yet.**
-- **Next:** build the [first playable](docs/roadmap.md#1-first-playable), on a new branch from `development`. Set Godot's import settings for the assets there, like looping the ambience.
+- **Next:** [part 1](docs/microplan.md#part-1-foundation-and-title-screen) of the first playable, in its own session.
 
 **Keep the raws.** They're the sources, and the processed files can always be rebuilt from them.
 
@@ -33,6 +34,7 @@ What they mean in practice is in [Art and audio](docs/art_and_audio.md#principle
 - [Art and audio](docs/art_and_audio.md): principles, visual style, movement, camera, sound
 - [Tech](docs/tech.md): engine, project layout, multiplayer, language, assets
 - [Roadmap](docs/roadmap.md): what gets built, and in what order
+- [Microplan](docs/microplan.md): the first playable in parts, the next three planned in detail
 - [Assets](docs/assets.md): every file the game needs
 - [Asset prompts](docs/asset_prompts.md): the Gemini prompt for every image, and how each one is processed
 - [Sound prompts](docs/sound_prompts.md): the ElevenLabs prompt for every sound except the music, and how each one is processed
@@ -40,6 +42,8 @@ What they mean in practice is in [Art and audio](docs/art_and_audio.md#principle
 
 ## Layout
 
+- `Godot_v4.7.2-stable_win64.exe` and `_console.exe`: the engine, in the root and gitignored. Use the console one from the shell. `--headless --import` imports the assets. `--write-movie <dir>/f.png --fixed-fps 30 --quit-after <frames>` runs the game and saves every frame as a PNG, plus the audio as a WAV, so Claude can check the motion frame by frame.
+- **Godot MCP:** `addons/godot_mcp/` is the editor plugin, and `.mcp.json` starts its server from `../godot-mcp/`. The plugin talks to the server only while the editor is open on this project, on port 6505. Through it, Claude edits scenes, runs the game, takes screenshots, simulates input, and reads the error log. Its tools load on demand through ToolSearch.
 - `assets/`: the game's finished assets, which Godot uses
 - `images_raw/`, `audio_raw/`: the raw images and sounds. Each has a `.gdignore`, so Godot skips them.
 - `tools/images/process_images.py` turns `images_raw/` into `assets/art/`, following the Processing notes in `docs/asset_prompts.md`. Run it from the repository root with `python tools/images/process_images.py . [<name> ...]`. It needs numpy, scipy and Pillow.
@@ -55,4 +59,5 @@ What they mean in practice is in [Art and audio](docs/art_and_audio.md#principle
 1. **Source of truth.** The design came from 15 questionnaires (https://claude.ai/artifact/4EQdWyaX3PzgggQHBMe2Xi). The answers are saved word for word in `docs/questionnaire_answers/`, and they win if a doc ever disagrees. A later answer beats an earlier one. Where the user left a choice to Claude, the docs say so. The questionnaires are finished, so ask the user directly about anything new.
 2. **Assets.** Claude lists what it needs in `docs/assets.md`, and the user provides the files. Images come from Gemini and sounds from ElevenLabs, using the prompt docs, and Claude's scripts process the raws into `assets/`. The music is made separately. Real assets from the start, no placeholders.
 3. **Branches.** `main` → `development` → a branch for each piece of work. Merge finished work into `development`.
-4. **This README** is the handover for a fresh session. Keep it brief and current.
+4. **Microplan.** The first playable is built in about 24 parts. `/microplan` plans the next three in detail, in its own session, after part 3, 6, 9 and so on. Each part is built in its own session, on its own branch, and meets the "done" bar in `docs/microplan.md`. Planning and building never share a session, to save tokens.
+5. **This README** is the handover for a fresh session. Keep it brief and current.

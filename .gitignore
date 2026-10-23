@@ -1,5 +1,6 @@
 # Godot
 .godot/
+*.exe
 
 # Local tool settings
 .claude/settings.local.json
