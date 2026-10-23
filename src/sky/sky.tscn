@@ -1,0 +1,49 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://src/sky/sky.gd" id="1_sky"]
+[ext_resource type="Shader" path="res://src/sky/sky.gdshader" id="2_shader"]
+[ext_resource type="Texture2D" path="res://assets/art/scenery/moon.png" id="3_moon"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_sky"]
+shader = ExtResource("2_shader")
+shader_parameter/top_color = Color(0.09, 0.06, 0.2, 1)
+shader_parameter/bottom_color = Color(0.42, 0.16, 0.36, 1)
+shader_parameter/bands = 7.0
+shader_parameter/shadow = 0.22
+
+[node name="Sky" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("1_sky")
+
+[node name="Gradient" type="ColorRect" parent="."]
+material = SubResource("ShaderMaterial_sky")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Stars" type="Node2D" parent="."]
+
+[node name="Flash" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.86, 0.88, 1, 0)
+
+[node name="Moon" type="Sprite2D" parent="."]
+position = Vector2(1500, 250)
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("3_moon")

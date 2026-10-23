@@ -19,8 +19,8 @@ What they mean in practice is in [Art and audio](docs/art_and_audio.md#principle
 - **Sounds:** all 60 effects, voices and ambience loops are done. The raws are in `audio_raw/` as WAV, and `tools/sounds/process_sounds.py` has processed them into the OGGs in `assets/audio/`, which the user reviewed and approved.
 - **Fonts:** done. `display.ttf` is Grenze Gotisch Bold and `body.ttf` is Spectral Medium, both with their OFL licenses, and both cover Turkish letters.
 - **Missing:** the 11 music tracks, which the user makes separately.
-- **No code yet.**
-- **Next:** [part 1](docs/microplan.md#part-1-foundation-and-title-screen) of the first playable, in its own session.
+- **Part 1 is built** (the foundation and title screen), awaiting the user's approval. The game runs at 25 FPS.
+- **Next:** [part 2](docs/microplan.md#part-2-settings) of the first playable, in its own session.
 
 **Keep the raws.** They're the sources, and the processed files can always be rebuilt from them.
 
@@ -52,7 +52,9 @@ What they mean in practice is in [Art and audio](docs/art_and_audio.md#principle
   - `gen_sound_prompts.py` rebuilds `docs/sound_prompts.md`. Change sound prompts here, never by hand in the doc.
   - `make_sounds.py` generates sounds through the ElevenLabs API. It needs the key in the `ELEVENLABS_API_KEY` environment variable (ask the user for it), and it skips files that already exist.
   - `build_review.py` and `review_template.html` build a phone page for the user to rate sounds: `python tools/sounds/build_review.py . tools/sounds/review_template.html <out.html> [--raw] [<name> ...]`. By default it plays the processed OGGs and decodes WAV copies into `review_wav/` beside the page, for phones without OGG support. Publish the page with `assets/audio/` and `review_wav/` as its files. `--raw` plays `audio_raw/` instead.
+- `tools/godot/capture.py` records the game with `--write-movie` and writes one contact sheet: `python tools/godot/capture.py <out_dir> <frames> [<every_n>] [<scene>]`. It needs Pillow.
 - `docs/`: the design
+- `screenshots/`: three screenshots at the end of every part, in `part_NN/` (see the "done" bar in `docs/microplan.md`). It has a `.gdignore`, so Godot skips it.
 
 ## Handover: how this project works
 
@@ -65,4 +67,10 @@ What they mean in practice is in [Art and audio](docs/art_and_audio.md#principle
 
    It still asks the user about anything else it needs to.
 4. **Microplan.** The first playable is built in about 24 parts. `/microplan` plans the next three in detail, in its own session, after part 3, 6, 9 and so on. Each part is built in its own session, on its own branch, and meets the "done" bar in `docs/microplan.md`. Planning and building never share a session, to save tokens.
-5. **This README** is the handover for a fresh session. Keep it brief and current.
+5. **Saving tokens.** The user hit their limits in part 1. Part sessions run on Sonnet 5.5 at medium effort, and Opus for the Microplan or a tricky part.
+   - Check motion with one contact sheet from `tools/godot/capture.py`, not many single frames. Don't spend long on screenshots: three good ones are enough.
+   - Never dump the MCP scene tree, and ask for specific values with `execute_game_script` (it takes one expression, with the current scene as `self`).
+   - The MCP's screenshots come back as a huge base64 file, so prefer `--write-movie` frames.
+   - The MCP's simulated mouse uses window coordinates (1280 × 720). Use it only to prove a click works.
+   - Don't reload the MCP plugin from the editor, because it can switch itself off. Restart the editor instead.
+6. **This README** is the handover for a fresh session. Keep it brief and current.
