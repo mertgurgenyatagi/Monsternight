@@ -1,4 +1,4 @@
 @echo off
 cd /d "%~dp0"
-python toolsutomationuto_next.py
+python tools/automation/auto_next.py
 pause
