@@ -53,6 +53,12 @@ static func sway(piece: CanvasItem, degrees := 1.5, period := 4.0) -> Tween:
 	return tween
 
 
+## Stops a sway and eases the piece back upright.
+static func sway_stop(piece: CanvasItem) -> void:
+	var tween := _fresh(piece, "sway")
+	tween.tween_property(piece, "rotation_degrees", 0.0, 0.3)
+
+
 ## Grows from nothing with an overshoot and a small twist.
 static func pop_in(piece: CanvasItem, delay := 0.0, duration := 0.45) -> Tween:
 	var rest := _rest_scale(piece)
@@ -134,7 +140,7 @@ static func move_to(piece: Node2D, target: Vector2, duration := 0.45) -> Tween:
 
 ## Turns around on its edge: squeezes to nothing, calls `at_middle` to swap the face, and opens
 ## again. The face swap happens while the piece is edge-on, so it never shows.
-static func flip(piece: Node2D, at_middle := Callable(), duration := 0.32) -> Tween:
+static func flip(piece: CanvasItem, at_middle := Callable(), duration := 0.32) -> Tween:
 	var rest := _rest_scale(piece)
 	_kill(piece, "lift")
 	var tween := _fresh(piece, "scale")

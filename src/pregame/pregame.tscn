@@ -16,3 +16,7 @@ script = ExtResource("1_pregame")
 layout_mode = 1
 
 [node name="Cards" type="Node2D" parent="."]
+
+[node name="Monsters" type="Node2D" parent="."]
+
+[node name="Fly" type="Node2D" parent="."]
