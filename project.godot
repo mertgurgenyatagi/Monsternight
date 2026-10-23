@@ -13,8 +13,8 @@ config_version=5
 config/name="Monsternight"
 run/main_scene="res://src/title/title.tscn"
 config/features=PackedStringArray("4.7", "GL Compatibility")
-config/icon="res://assets/art/scenery/moon.png"
 run/max_fps=25
+config/icon="res://assets/art/scenery/moon.png"
 
 [autoload]
 

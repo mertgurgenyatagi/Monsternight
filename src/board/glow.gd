@@ -13,6 +13,8 @@ var jitter := 0.0
 
 var _strength := 1.0
 var _wobble := 1.0
+var _pulse: Tween
+var _radius_scale: Vector2
 
 
 func _init(color := Color.WHITE, radius := 128.0) -> void:
@@ -21,6 +23,7 @@ func _init(color := Color.WHITE, radius := 128.0) -> void:
 	self_modulate = color
 	_strength = color.a
 	scale = Vector2.ONE * radius / (SIZE / 2.0)
+	_radius_scale = scale
 
 
 func _process(_delta: float) -> void:
@@ -43,10 +46,26 @@ func flicker(every := Vector2(3.0, 8.0)) -> void:
 
 ## Swells and fades slowly, forever, starting at a random point so no two keep step.
 func pulse(low: float, high: float, period: float) -> void:
-	var tween := create_tween().set_loops().set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
-	tween.tween_property(self, "_strength", high, period / 2)
-	tween.tween_property(self, "_strength", low, period / 2)
-	tween.custom_step(randf_range(0.0, period))
+	_pulse = create_tween().set_loops().set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	_pulse.tween_property(self, "_strength", high, period / 2)
+	_pulse.tween_property(self, "_strength", low, period / 2)
+	_pulse.custom_step(randf_range(0.0, period))
+
+
+## A sudden flare: the glow swells and brightens to full, then settles back to its pulse.
+func flare(grow := 1.5, up := 0.15, down := 0.9) -> Tween:
+	if _pulse and _pulse.is_valid():
+		_pulse.pause()
+	var before := _strength
+	var tween := create_tween().set_parallel()
+	tween.tween_property(self, "_strength", 1.0, up).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	tween.tween_property(self, "scale", _radius_scale * grow, up).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	tween.chain().tween_property(self, "_strength", before, down).set_trans(Tween.TRANS_SINE)
+	tween.parallel().tween_property(self, "scale", _radius_scale, down).set_trans(Tween.TRANS_SINE)
+	tween.chain().tween_callback(func() -> void:
+			if _pulse and _pulse.is_valid():
+				_pulse.play())
+	return tween
 
 
 static func _shared_texture() -> GradientTexture2D:

@@ -126,8 +126,28 @@ func move_to(player: Dictionary, id: String) -> bool:
 	return true
 
 
+## The rules for the space the player stands on: a coin gives 1 coin, spikes take 1 blood, a thief
+## takes 1 coin and a church gives 1 blood. Every other space does nothing. Returns the space's
+## `kind` and the real `coins` and `blood` changes, so a thief on 0 coins or a church on full blood
+## changes nothing.
+func land(player: Dictionary) -> Dictionary:
+	var kind: String = BoardPath.node(player.space).kind
+	var result := {"kind": kind, "coins": 0, "blood": 0}
+	match kind:
+		"coin":
+			result.coins = change_coins(player, 1)
+		"spikes":
+			result.blood = change_blood(player, -1)
+		"thief":
+			result.coins = change_coins(player, -1)
+		"church":
+			result.blood = change_blood(player, 1)
+	print("Landed: ", player.name, " on ", player.space, " (", kind, ") ", result)
+	return result
+
+
 ## Adds `delta` to the player's blood, kept between 0 and `MAX_BLOOD`. Returns the change that
-## really happened. Dying at 0 is part 12's.
+## really happened. Reaching 0 is a death, which the board shows (part 13).
 func change_blood(player: Dictionary, delta: int) -> int:
 	var before: int = player.blood
 	player.blood = clampi(before + delta, 0, MAX_BLOOD)

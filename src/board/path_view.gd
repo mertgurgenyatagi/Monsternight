@@ -14,6 +14,7 @@ const ROAD_WIDTH := 78.0
 const ROAD_COLOR := Color(0.1, 0.06, 0.16, 0.5)
 
 var _rng := RandomNumberGenerator.new()
+var _spaces := {} # path id -> its Space
 
 
 func _ready() -> void:
@@ -42,7 +43,13 @@ func _ready() -> void:
 		space.name = id
 		space.position = node.pos
 		spaces.add_child(space)
+		_spaces[id] = space
 	_flag()
+
+
+## The space with this path id.
+func space_at(id: String) -> Space:
+	return _spaces[id]
 
 
 # A dark, worn strip of road under the spaces, along the lane's curve, so the tokens stand out from

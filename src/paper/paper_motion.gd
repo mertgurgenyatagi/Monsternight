@@ -249,6 +249,16 @@ static func tilt(piece: Node2D, degrees := 7.0) -> Tween:
 	return tween
 
 
+## Stretches (or, below 1, squeezes) the piece along its height, keeping its feet where they are, to
+## `factor` times its resting height. A factor of 1 brings it back. It overshoots a little.
+static func stretch(piece: Node2D, factor: float, duration := 0.2, overshoot := true) -> Tween:
+	var rest := _rest_scale(piece)
+	_kill(piece, "lift")
+	var tween := _fresh(piece, "scale")
+	tween.tween_property(piece, "scale", Vector2(rest.x, rest.y * factor), duration) 			.set_trans(Tween.TRANS_BACK if overshoot else Tween.TRANS_QUAD) 			.set_ease(Tween.EASE_OUT if overshoot else Tween.EASE_IN_OUT)
+	return tween
+
+
 ## Jerks from side to side, for "no".
 static func shake(piece: CanvasItem) -> Tween:
 	var rest := _rest_position(piece)
