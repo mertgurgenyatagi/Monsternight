@@ -59,4 +59,4 @@ Twelve rolls of one die average 42 spaces. Deaths and swaps set players back, so
 
 ## Camera
 
-A high camera, like League of Legends, looking down at the board at a steep angle, but not straight down. The camera follows whoever is rolling. The spaces and pieces must stand out clearly from the scenery. See [art_and_audio.md](art_and_audio.md#camera) and [Contrast](art_and_audio.md#contrast).
+A side view, not top-down. The camera follows whoever is rolling. See [art_and_audio.md](art_and_audio.md#camera).
