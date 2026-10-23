@@ -13,6 +13,7 @@ A part is done when:
 3. Claude has checked it by running the game, not just by reading the code.
 4. Three screenshots of the finished part, taken from the running game, are saved in `screenshots/part_NN/` (like `part_01/`) as `1.png`, `2.png` and `3.png`. Pick the three moments that show the part best.
 5. Its Part notes are written. The branch is committed, pushed and merged into `development`, and `development` is pushed. Then check out `development`, so the next session starts there. The part session never waits for the user: it does the whole cycle, and the user reviews afterwards and asks for changes in a later session. This needs no git approval (see README, Handover 3).
+6. The session disconnects from the Godot MCP, so the next one gets its port (see README, Handover 5).
 
 If a part turns out too big, split it (7a, 7b) instead of rushing it.
 
