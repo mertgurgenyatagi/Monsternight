@@ -28,7 +28,8 @@ What they mean in practice is in [Art and audio](docs/art_and_audio.md#principle
 - **Reverted (2026-10-23):** the user tried the high-camera board in a part 7 build, found the scenery looked fake and unlike a real environment, and chose to revert the design adjustment with git, as if it never happened. The side view of part 6 stands. A high camera or a contrast rule is not part of the design now. Ask the user before reviving either.
 - **Microplan 3 is done:** parts 7 to 9 are planned in `docs/microplan.md`.
 - **Part 7 is built** (the board path), built and merged. The user's feedback during the build changed the plan: two of every three spaces are empty plain tokens, and everything on the road has an outline and sits on a dark road strip, with dimmer scenery and thinner fog, for contrast. See the part notes in `docs/microplan.md`.
-- **Next:** part 8 (monster pieces), in its own session.
+- **Part 8 is built** (monster pieces), built and merged.
+- **Next:** part 9 (the HUD), in its own session.
 
 **Keep the raws.** They're the sources, and the processed files can always be rebuilt from them.
 

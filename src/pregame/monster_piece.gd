@@ -1,5 +1,5 @@
 class_name MonsterPiece
-extends Node2D
+extends MonsterFigure
 ## One monster on its paper stand in the select row. Its origin is the middle of the stand, on
 ## the ground. It lifts and shows its name on hover, and greys out once it's taken.
 
@@ -7,36 +7,28 @@ signal clicked(piece: MonsterPiece)
 
 const BODY_SCALE := 0.58
 const STAND_SCALE := 0.85
-const FEET := Vector2(0, -10)
 const HIT := Rect2(-95, -310, 190, 340)
 const CREAM := Color("efe4cc")
 const GREY_TIME := 0.3
 
-var id: String
 var taken := false
 ## Only a free monster answers the mouse, and only while a player is picking.
 var enabled := false : set = set_enabled
 
-var _body: Sprite2D
-var _stand: Sprite2D
 var _name: Label
 var _hit: Control
 var _grey: Array[ShaderMaterial] = []
 
 
 func _init(monster_id := "") -> void:
-	id = monster_id
+	super(monster_id)
+	body_scale = BODY_SCALE
+	stand_scale = STAND_SCALE
+	feet = Vector2(0, -10)
 
 
 func _ready() -> void:
-	_stand = _sprite(preload("res://assets/art/monsters/stand.png"), true)
-	_stand.scale = Vector2.ONE * STAND_SCALE
-	_body = _sprite(Monsters.body(id), false)
-	_body.offset = Vector2(-_body.texture.get_width() / 2.0, -_body.texture.get_height())
-	_body.position = FEET
-	_body.scale = Vector2.ONE * BODY_SCALE
-	PaperShadow.add(_stand)
-	PaperShadow.add(_body)
+	super()
 
 	_name = Label.new()
 	_name.size = Vector2(240, 60)
@@ -92,7 +84,7 @@ func take(picker_name: String) -> void:
 
 ## The point the monster's portrait flies up from.
 func head_position() -> Vector2:
-	return global_position + Vector2(0, -_body.texture.get_height() * BODY_SCALE * 0.8)
+	return global_position + Vector2(0, -body_height() * 0.8)
 
 
 ## A click on a taken monster: refused with a sound and a shake.
@@ -101,15 +93,12 @@ func deny() -> void:
 	PaperMotion.shake(self)
 
 
-func _sprite(texture: Texture2D, centered: bool) -> Sprite2D:
-	var sprite := Sprite2D.new()
-	sprite.texture = texture
-	sprite.centered = centered
+func _make_sprite(texture: Texture2D, centered: bool) -> Sprite2D:
+	var sprite := super(texture, centered)
 	var mat := ShaderMaterial.new()
 	mat.shader = preload("res://src/pregame/grey.gdshader")
 	sprite.material = mat
 	_grey.append(mat)
-	add_child(sprite)
 	return sprite
 
 

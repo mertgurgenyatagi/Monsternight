@@ -39,7 +39,7 @@ func start(raw_names: Array[String]) -> bool:
 		return false
 	players.clear()
 	for i in raw_names.size():
-		players.append({"name": clean_name(raw_names[i], i), "monster": ""})
+		players.append({"name": clean_name(raw_names[i], i), "monster": "", "space": BoardPath.START})
 	print("Match started: ", players)
 	return true
 
@@ -69,6 +69,16 @@ func pick_monster(player: Dictionary, id: String) -> bool:
 		return false
 	player.monster = id
 	print("Monster picked: ", player.name, " is ", id)
+	return true
+
+
+## Puts the player on this space of the path, the one rules call that changes where they stand.
+## Returns false, changing nothing, if there's no such space.
+func move_to(player: Dictionary, id: String) -> bool:
+	if BoardPath.node(id).is_empty():
+		return false
+	player.space = id
+	print("Moved: ", player.name, " to ", id)
 	return true
 
 
