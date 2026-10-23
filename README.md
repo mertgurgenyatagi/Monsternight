@@ -30,6 +30,12 @@ What they mean in practice is in [Art and audio](docs/art_and_audio.md#principle
 - **Part 7 is built** (the board path), built and merged. The user's feedback during the build changed the plan: two of every three spaces are empty plain tokens, and everything on the road has an outline and sits on a dark road strip, with dimmer scenery and thinner fog, for contrast. See the part notes in `docs/microplan.md`.
 - **Part 8 is built** (monster pieces), built and merged.
 - **Next:** part 9 (the HUD), in its own session.
+- **For the next Microplan to plan, not to fix now (the user's words, 2026-10-23):** the board is too short, and its spaces are too predictable.
+  - **Length:** the way to the end should be about 100 spaces. It is 42 on the shortest way and 46 on the longest now. Part 22 was to tune the length; this moves it up front.
+  - **Randomness:** the board's layout should be absolutely random, not a predictable pattern like the hand-written `kinds` strings in `BoardPath`. It is still the same every match: randomize it once, then fix the result in `BoardPath` (the user's correction). So nothing is rolled at runtime and online play needs no syncing. Decide in the plan how far the randomizing goes (the kinds of the spaces, and perhaps where the forks are), and how it's done, for example a script that rolls the layout once and writes it out.
+  - **Ruled out:** a repeating pattern, such as 3 empty spaces, then 2 filled, again and again. The ratio below holds over the whole board, but the order must show no pattern.
+  - **Ratio:** 1.5 empty spaces to every filled one (60% empty, 40% filled), instead of the current 2 to 1.
+  - The docs (board.md, game_rules.md) and the part 7 notes need updating to match once it's planned.
 
 **Keep the raws.** They're the sources, and the processed files can always be rebuilt from them.
 
