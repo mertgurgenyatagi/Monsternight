@@ -39,7 +39,7 @@ func start(raw_names: Array[String]) -> bool:
 		return false
 	players.clear()
 	for i in raw_names.size():
-		players.append({"name": clean_name(raw_names[i], i)})
+		players.append({"name": clean_name(raw_names[i], i), "monster": ""})
 	print("Match started: ", players)
 	return true
 
@@ -51,6 +51,25 @@ func roll_turn_order() -> Array[Dictionary]:
 	players.shuffle()
 	print("Turn order: ", names())
 	return seating
+
+
+## The monsters nobody has picked yet, in the order of characters.md.
+func free_monsters() -> Array[String]:
+	var result: Array[String] = []
+	for id in Monsters.IDS:
+		if not players.any(func(p: Dictionary) -> bool: return p.monster == id):
+			result.append(id)
+	return result
+
+
+## Gives the player this monster. Returns false, changing nothing, if it's taken, if there's no
+## such monster, or if the player already has one.
+func pick_monster(player: Dictionary, id: String) -> bool:
+	if id not in free_monsters() or player.monster != "":
+		return false
+	player.monster = id
+	print("Monster picked: ", player.name, " is ", id)
+	return true
 
 
 ## The names the setup screen shows again after a match, or an empty list at first.

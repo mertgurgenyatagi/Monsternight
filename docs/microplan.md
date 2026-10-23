@@ -191,6 +191,14 @@ Rough past part 6. Parts 1 to 3 are done (see the Log).
 
 Each part session adds a few lines when it finishes: what got built, what changed from the plan, surprises, and anything left over or buggy. The next Microplan reads these instead of the code.
 
+### Part 5 notes
+
+- **Built:** `Monsters` (`src/data/monsters.gd`: ids, colors, `name_key`, `body`, `portrait`, `voice`), `Match.pick_monster` and `free_monsters` (each player has `monster`, "" until picked), `MonsterPiece` (`src/pregame/monster_piece.gd`, with `grey.gdshader`), `PlayerCard.set_monster` (framed portrait in the monster's color, via `portrait_frame.png`), `PaperMotion.sway_stop`, and the pick loop in `pregame.gd` (`_select_monsters`, `_pick_for`, `_pick`). `PaperMotion.flip` now takes any CanvasItem. The scene ends by printing `Match` with the monsters.
+- **Changed from the plan:** Dorian's art is burgundy, which sits next to Dracula's red, so his color is the pink the design asks for (`#d6457f`). A taken monster's picker name is cream, not dark ink, because the sky is dark. `hop` already existed from part 4.
+- **Surprise:** a Control's `scale` can't be exactly zero (Godot clamps it to 1e-5), so never test `scale == Vector2.ZERO`; use a flag.
+- **Checked:** with 2 and 8 players, including the automatic last pick; a timed-out candle picked a free monster; a click on a taken monster; `Match` matched the cards. A temporary driver (deleted) pushed real mouse events into the viewport. Screenshots are in `screenshots/part_05/`.
+- **Not done:** the Godot editor wasn't open, so the MCP's clicks weren't used. `select.ogg` is missing, so `title.ogg` just fades out. No volume table was needed for the voices, but I didn't listen to them. The candle sits over the moon on the right.
+
 ### Part 4 notes
 
 - **Built:** `src/pregame/` (`pregame.tscn`, `pregame.gd`, `player_card.gd`), `Match.roll_turn_order()`, `src/ui/candle.gd` and `flame.gd`, and `src/ui/candle_test.tscn` (a 5 s burn and relight, printing to the log). Setup's Begin goes to the pregame.

@@ -23,7 +23,8 @@ What they mean in practice is in [Art and audio](docs/art_and_audio.md#principle
 - **Part 2 is built** (settings overlay), built and merged.
 - **Part 3 is built** (setup screen and `Match`), built and merged.
 - **Part 4 is built** (turn order roll and the timer candle), built and merged.
-- **Next:** part 5 (monster select), in its own session. Microplan 2 planned parts 4 to 6.
+- **Part 5 is built** (monster select), built and merged.
+- **Next:** part 6 (the board's scenery), in its own session. Microplan 2 planned parts 4 to 6.
 
 **Keep the raws.** They're the sources, and the processed files can always be rebuilt from them.
 
