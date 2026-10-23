@@ -269,15 +269,67 @@ static func shake(piece: CanvasItem) -> Tween:
 	return tween
 
 
-## Scrunches up like a sheet of paper and drops away. The piece frees itself when the move ends.
-static func crumple(piece: Node2D, duration := 0.5) -> Tween:
+## Scrunches up like a sheet of paper and drops away. By default the piece frees itself when the
+## move ends. With `free` off it stays, shrunk to `ball` times its size and where it stands, for
+## the caller to swap for a paper ball; `unfold` brings it back.
+static func crumple(piece: Node2D, duration := 0.5, free := true, ball := 0.4) -> Tween:
 	var rest := _rest_position(piece)
 	var tween := _fresh(piece, "move").set_parallel()
+	if not free:
+		tween.tween_property(piece, "scale", _rest_scale(piece) * ball, duration) 				.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_IN)
+		return tween
 	tween.tween_property(piece, "scale", Vector2(0.35, 0.3), duration * 0.6) 			.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_IN)
 	tween.tween_property(piece, "rotation_degrees", 35.0, duration * 0.6) 			.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
 	tween.tween_property(piece, "position", rest + Vector2(0, 60), duration) 			.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
 	tween.tween_property(piece, "modulate:a", 0.0, duration * 0.4).set_delay(duration * 0.6)
 	tween.chain().tween_callback(piece.queue_free)
+	return tween
+
+
+## The reverse of a `crumple` that kept its piece: it springs open from its ball size, stretching
+## past its height before it settles, back to its rest scale.
+static func unfold(piece: Node2D, duration := 0.55) -> Tween:
+	var rest := _rest_scale(piece)
+	_kill(piece, "lift")
+	var tween := _fresh(piece, "scale")
+	tween.tween_property(piece, "scale", rest * Vector2(0.9, 1.18), duration * 0.45) 			.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	tween.tween_property(piece, "scale", rest, duration * 0.55) 			.set_trans(Tween.TRANS_ELASTIC).set_ease(Tween.EASE_OUT)
+	var turning := _fresh(piece, "move")
+	turning.tween_property(piece, "rotation_degrees", 0.0, duration * 0.4)
+	return tween
+
+
+## A bounce for a piece that is not at its rest scale (a paper ball, say): it squashes, springs up
+## and lands with another squash, all relative to the scale it has now.
+static func bounce(piece: Node2D, height := 34.0) -> Tween:
+	var rest := _rest_position(piece)
+	var base := piece.scale
+	_kill(piece, "lift")
+	var tween := _fresh(piece, "move")
+	tween.tween_property(piece, "scale", base * Vector2(1.2, 0.75), 0.07)
+	tween.tween_property(piece, "scale", base, 0.18).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	tween.parallel().tween_property(piece, "position:y", rest.y - height, 0.18) 			.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	tween.tween_property(piece, "position:y", rest.y, 0.16) 			.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+	tween.tween_property(piece, "scale", base * Vector2(1.15, 0.8), 0.06)
+	tween.tween_property(piece, "scale", base, 0.1).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	return tween
+
+
+## Flies in a high arc to `target`, which becomes the piece's rest position, spinning `spins` turns
+## on the way (`spinner` turns, the piece itself by default). It speeds up and slows down along a
+## sine, the same as `BoardCamera.glide_to`, so a camera sent over the same time keeps it in view.
+static func toss(piece: Node2D, target: Vector2, duration := 1.5, arc := 400.0, spins := 2,
+		spinner: Node2D = null) -> Tween:
+	var from := piece.position
+	var turning: Node2D = spinner if spinner else piece
+	piece.set_meta("rest_position", target)
+	_kill(piece, "lift")
+	var tween := _fresh(piece, "move")
+	tween.tween_method(func(t: float) -> void:
+			piece.position = from.lerp(target, t) - Vector2(0, arc * 4.0 * t * (1.0 - t))
+			turning.rotation = t * TAU * spins,
+			0.0, 1.0, duration).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	tween.tween_callback(func() -> void: turning.rotation = 0.0)
 	return tween
 
 
