@@ -18,6 +18,31 @@ static func drop_in(piece: CanvasItem, height := 900.0, duration := 0.9, delay :
 	return tween
 
 
+## Sets a card down from above: it swings in slightly tilted and lands flat with a small
+## bounce. `landed` is called about when it touches the page.
+static func set_down(piece: CanvasItem, landed := Callable(), height := 800.0, duration := 0.6) -> Tween:
+	var rest := _rest_position(piece)
+	_center_pivot(piece)
+	piece.position = rest - Vector2(0, height)
+	piece.rotation_degrees = -6.0
+	var tween := _fresh(piece, "move").set_parallel()
+	tween.tween_property(piece, "position", rest, duration) 			.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	tween.tween_property(piece, "rotation_degrees", 0.0, duration) 			.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	if landed.is_valid():
+		tween.tween_callback(landed).set_delay(duration * 0.45)
+	return tween
+
+
+## Lifts a card off the page and away upward, the way set_down brought it.
+static func lift_away(piece: CanvasItem, height := 800.0, duration := 0.4) -> Tween:
+	var rest := _rest_position(piece)
+	_center_pivot(piece)
+	var tween := _fresh(piece, "move").set_parallel()
+	tween.tween_property(piece, "position", rest - Vector2(0, height), duration) 			.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_IN)
+	tween.tween_property(piece, "rotation_degrees", 5.0, duration) 			.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
+	return tween
+
+
 ## Rocks gently from side to side, forever, like something hanging or floating.
 static func sway(piece: CanvasItem, degrees := 1.5, period := 4.0) -> Tween:
 	var tween := _fresh(piece, "sway").set_loops()

@@ -15,6 +15,7 @@ func _ready() -> void:
 	for piece: CanvasItem in [$Hanger/Logo, $Curtain/Left, $Curtain/Right, _curtain_top]:
 		PaperShadow.add(piece)
 	$Quit.pressed.connect(_quit)
+	$Settings.pressed.connect(Settings.open)
 	_lightning_loop()
 
 	_move_curtain(CURTAIN_OPEN, 2.4, 0.9)
