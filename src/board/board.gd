@@ -2,10 +2,13 @@ extends Node2D
 ## The board. It opens on the castle gate, so everyone sees where the race ends, then glides
 ## back to the village start. Wherever the camera's centre is, the sky takes that location's
 ## tint and its ambience plays. It lays the road across the scenery, sets every player's monster down
-## on the start, and walks the pieces along the road. The turns come in later parts.
+## on the start, walks the pieces along the road, and runs the turns: the camera glides to the
+## active player, the die is offered, and the roll walks the piece.
 
 ## Every piece has landed on the start.
 signal pieces_landed
+## A turn's die was clicked (true), or the candle went out (false).
+signal _decided(by_click: bool)
 
 ## Each location's sky, top and bottom: colorful, never bleak.
 const TINTS := {
@@ -26,6 +29,12 @@ const CROWD_STEP := 52.0 # across a space, from one piece to the next
 const CROWD_ROW := 4 # pieces in a row, then the next row stands behind
 const CROWD_FRONT := Vector2(0, 16) # the front row's feet, from the token's middle
 const CROWD_BACK := 34.0 # how far each row further back stands higher
+const TURN_SECONDS := 5.0 # the candle for a roll
+const DIE_RISE := 300.0 # from the piece's feet to the die's middle, over its head
+const CANDLE_SCALE := 0.5
+const CANDLE_SIDE := Vector2(126, 70) # from the die's middle to the candle's base
+const SHOW_BEAT := 0.5 # the rolled number stays on show this long
+const TURN_BEAT := 0.4 # after a piece lands, before the camera glides on
 
 @onready var _camera: BoardCamera = $Camera
 @onready var _sky: Control = $SkyLayer/Sky
@@ -38,6 +47,8 @@ var _pieces: Node2D
 var _by_monster := {} # monster id -> its BoardPiece
 var _hud: Hud
 var _crowds := {} # path id -> the pieces standing there, in the order they arrived
+var _die: Die
+var _candle: Candle
 
 
 func _ready() -> void:
@@ -57,6 +68,14 @@ func _ready() -> void:
 	_hud = Hud.new()
 	add_child(_hud)
 	pieces_landed.connect(_hud.come_in)
+	pieces_landed.connect(_play_turns)
+	_die = Die.new()
+	_candle = Candle.new()
+	_candle.scale = Vector2.ONE * CANDLE_SCALE
+	_candle.set_meta("rest_scale", _candle.scale)
+	for node in [_die, _candle]:
+		node.visible = false
+		lanes.add_child(node) # over the pieces, so a crowd never hides them
 	_camera.jump_to(BoardLayout.width())
 	_track()
 	_lightning_loop()
@@ -88,6 +107,12 @@ func _intro_done() -> void:
 	_land_pieces()
 
 
+## Hook for part 12: what happens to a player who has just stopped on space `id` (coin, spikes,
+## thief, church). PLACEHOLDER: it does nothing yet, and the signal fires on the next frame.
+func land(_player: Dictionary, _id: String) -> Signal:
+	return get_tree().process_frame
+
+
 ## The HUD over the board.
 func hud() -> Hud:
 	return _hud
@@ -116,6 +141,66 @@ func choose_branch(player: Dictionary, fork: String) -> Signal:
 	get_tree().create_timer(BRANCH_BEAT, false).timeout.connect(
 			func() -> void: piece.branch_chosen.emit(chosen))
 	return piece.branch_chosen
+
+
+# The turn loop: glide to the active player, offer the die with the candle, roll, walk, land, and
+# pass the turn on, until `Match` says the last turn is over.
+func _play_turns() -> void:
+	await get_tree().create_timer(Match.players.size() * Hud.DROP_GAP + 1.2, false).timeout
+	while true:
+		var player := Match.active()
+		var piece := piece_for(player)
+		await _camera.glide_to(piece.global_position.x).finished
+		_hud.set_active(player)
+		Sound.play("turn_start")
+		var by_click := await _offer_die(piece)
+		var value := Match.roll()
+		if not by_click:
+			await _die.nudge().finished
+		_lift_candle()
+		await _die.tumble(value)
+		await get_tree().create_timer(SHOW_BEAT, false).timeout
+		_die.leave()
+		await walk(player, value)
+		await land(player, player.space)
+		await get_tree().create_timer(TURN_BEAT, false).timeout
+		var turn := Match.turn
+		if not Match.next_player():
+			print("Match over")
+			return
+		if Match.turn != turn:
+			_hud.set_turn(Match.turn)
+			await get_tree().create_timer(0.5, false).timeout
+
+
+# Sets the die and the candle over the piece, and waits for a click on the die (true) or for the
+# candle to go out (false).
+func _offer_die(piece: BoardPiece) -> bool:
+	var rows := ceili(_crowds.get(piece.player.space, []).size() / float(CROWD_ROW))
+	var at: Vector2 = piece.position - Vector2(0, DIE_RISE + CROWD_BACK * maxi(rows - 1, 0))
+	_die.place(at)
+	_candle.rotation = 0.0
+	_candle.position = at + CANDLE_SIDE
+	_candle.set_meta("rest_position", _candle.position)
+	await _die.offer()
+	_candle.visible = true
+	PaperMotion.pop_in(_candle)
+	_candle.start(TURN_SECONDS)
+	var on_click := _decided.emit.bind(true)
+	var on_out := _decided.emit.bind(false)
+	_die.clicked.connect(on_click)
+	_candle.timed_out.connect(on_out)
+	var by_click: bool = await _decided
+	_die.clicked.disconnect(on_click)
+	_candle.timed_out.disconnect(on_out)
+	return by_click
+
+
+# The candle is snuffed (if it still burns) and lifts away.
+func _lift_candle() -> void:
+	_candle.stop()
+	await PaperMotion.lift_away(_candle, 500.0, 0.4).finished
+	_candle.visible = false
 
 
 func _add_piece(player: Dictionary) -> void:

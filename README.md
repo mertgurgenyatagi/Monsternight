@@ -32,7 +32,8 @@ What they mean in practice is in [Art and audio](docs/art_and_audio.md#principle
 - **Part 9 is built** (the HUD), built and merged.
 - **Microplan 4 is done:** parts 10 to 12 are planned in `docs/microplan.md`. The user decided the board on 2026-10-23: 57 spaces on the graveyard way (61 past the church), one empty space for every filled one, still one die, and 17 turns. Part 10 builds it, and rolls the layout once with a script.
 - **Part 10 is built** (the longer, random board), built and merged.
-- **Next:** part 11 (the die and the turn loop).
+- **Part 11 is built** (the die and the turn loop), built and merged.
+- **Next:** part 12 (quick spaces).
 
 **Keep the raws.** They're the sources, and the processed files can always be rebuilt from them.
 
@@ -86,7 +87,7 @@ What they mean in practice is in [Art and audio](docs/art_and_audio.md#principle
    - Don't spend long on screenshots: three good ones are enough, and a handful of timed ones in one Pillow contact sheet is enough for motion.
    - Never dump the MCP scene tree, and ask for specific values with `execute_game_script` (it takes one expression, with the current scene as `self`).
    - The MCP's screenshots come back as a huge base64 file, so save screenshots from a plain run with a temporary script instead.
-   - The MCP's simulated mouse uses window coordinates (1280 × 720). Use it only to prove a click works.
+   - The MCP's simulated mouse uses window coordinates (1920 × 1080 when the game runs from the editor). Use it only to prove a click works.
    - Don't reload the MCP plugin from the editor, because it can switch itself off. Restart the editor instead.
    - **The MCP is required.** Never fall back to scripted input because it isn't connected. Fix it.
    - **Disconnect when the part is done.** After the part is merged, stop the running scene (`stop_scene`), then end the session's own Godot MCP server, so the next session gets port 6505 and doesn't have to kill anything. The server is the `node` process running `godot-mcp` whose parent is your own `claude.exe` (find yours by walking up from your shell's process). Kill only that one, never another session's.
