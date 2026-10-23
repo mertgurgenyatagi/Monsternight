@@ -42,6 +42,12 @@ const COIN_SIZE := 78.0 # a flying coin at the token, in px; the HUD's counter i
 const COIN_HUD := 30.0
 const BLOOD_SIZE := 60.0
 const BLOOD_HUD := 28.0
+const BALL_SCALE := 0.4 # a crumpled piece, against its full size
+const BALL_RISE := 150.0 # the ball lifts this far before it flies
+const FLIGHT_FAST := 1.2 # the flight's time over no distance, and over the whole board
+const FLIGHT_SLOW := 2.0
+const SPILL_COINS := 5 # at most, falling out of the ball
+const REVIVE_BEAT := 0.6 # the camera holds on the start after the unfolding
 
 @onready var _camera: BoardCamera = $Camera
 @onready var _sky: Control = $SkyLayer/Sky
@@ -59,6 +65,7 @@ var _candle: Candle
 var _path_view: BoardPathView
 var _front: Node2D # over the pieces: an icon that springs up stands here, so no piece hides it
 var _settling: Tween # the camera's glide onto a piece that has just stopped
+var _track_name := "" # the board music now chosen, by where the leader is
 
 
 func _ready() -> void:
@@ -82,6 +89,7 @@ func _ready() -> void:
 	_hud = Hud.new()
 	add_child(_hud)
 	pieces_landed.connect(_hud.come_in)
+	pieces_landed.connect(_follow_leader)
 	pieces_landed.connect(_play_turns)
 	_die = Die.new()
 	_candle = Candle.new()
@@ -148,13 +156,53 @@ func land(player: Dictionary, id: String) -> void:
 			await _land_church(player, space, piece, result.blood != 0)
 	space.rest()
 	if kind == "spikes" and result.blood != 0 and player.blood == 0:
-		died(player)
+		await die(player)
 
 
-## Hook for part 13: the player has lost their last blood. PLACEHOLDER: it only logs for now, and
-## the player plays on at 0 blood.
-func died(player: Dictionary) -> void:
-	print("Died: ", player.name, " (part 13 makes the death)")
+## The player dies for real, and the board shows it: the monster crumples into a paper ball, any
+## coins spill out, the ball flies in an arc back to the start and unfolds there with full blood.
+## `Match.die` settles the rules first. Awaiting it waits until the monster stands on the start.
+## Part 17 calls it for a death in a duel too.
+func die(player: Dictionary) -> void:
+	var piece := piece_for(player)
+	var from: String = player.space
+	var lost := Match.die(player)
+	if lost.is_empty():
+		return # a finished player can't die
+	if _settling and _settling.is_running():
+		await _settling.finished
+	piece.stop_sway()
+	_leave(from, piece)
+	Sound.play("crumple")
+	await PaperMotion.crumple(piece, 0.5, false, BALL_SCALE).finished
+	piece.fold(true, BALL_SCALE)
+	if lost.coins > 0:
+		_spill_coins(piece.position + Vector2(0, -BALL_SCALE * 100.0), mini(lost.coins, SPILL_COINS))
+		_hud.show_coins(player, true)
+	await PaperMotion.move_to(piece, piece.position - Vector2(0, BALL_RISE), 0.35).finished
+	# It joins the start's crowd as it flies there, so the others make room at once.
+	_crowds[BoardPath.START] = _crowds.get(BoardPath.START, []) + [piece]
+	var target := _slot_of(piece, BoardPath.START)
+	_settle(BoardPath.START, piece)
+	var distance := absf(target.x - piece.position.x)
+	var far := clampf(distance / BoardLayout.width(), 0.0, 1.0)
+	var flight := lerpf(FLIGHT_FAST, FLIGHT_SLOW, far)
+	Sound.play("fly")
+	_camera.glide_to(target.x, flight)
+	await PaperMotion.toss(piece, target, flight, clampf(distance * 0.1, 260.0, 620.0),
+			2, piece.ball).finished
+	Sound.play("hop")
+	await PaperMotion.bounce(piece, 34.0).finished
+	await get_tree().create_timer(0.15, false).timeout
+	piece.fold(false)
+	Sound.play("respawn")
+	PaperMotion.unfold(piece)
+	_flare_start()
+	_hud.show_blood(player, 0.2)
+	_follow_leader()
+	await get_tree().create_timer(REVIVE_BEAT + 0.6, false).timeout
+	piece.start_sway()
+	_settling = _camera.glide_to(piece.global_position.x, 0.6)
 
 
 ## The HUD over the board.
@@ -215,6 +263,49 @@ func _play_turns() -> void:
 		if Match.turn != turn:
 			_hud.set_turn(Match.turn)
 			await get_tree().create_timer(0.5, false).timeout
+
+
+# Small coins fall out of a ball at `at`, in front of the pieces, and fade as they fall.
+func _spill_coins(at: Vector2, count: int) -> void:
+	for i in count:
+		var coin := Sprite2D.new()
+		coin.texture = COIN_ICON
+		coin.scale = Vector2.ONE * 34.0 / COIN_ICON.get_width()
+		coin.position = at
+		_front.add_child(coin)
+		var side := randf_range(-90.0, 90.0)
+		var tween := coin.create_tween().set_parallel()
+		tween.tween_property(coin, "position:x", at.x + side, 0.8)
+		tween.tween_property(coin, "position:y", at.y - randf_range(60.0, 120.0), 0.28) 				.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+		tween.chain().tween_property(coin, "position:y", at.y + 70.0, 0.5) 				.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+		tween.parallel().tween_property(coin, "modulate:a", 0.0, 0.4).set_delay(0.4)
+		tween.parallel().tween_property(coin, "rotation", randf_range(-6.0, 6.0), 0.8)
+		tween.chain().tween_callback(coin.queue_free)
+
+
+# A small flare on the start's token, where a piece has just come back to life.
+func _flare_start() -> void:
+	var glow := Glow.new(Color(1.0, 0.85, 0.5, 0.5), 110.0)
+	glow.scale.y *= 0.6
+	glow.position = BoardPath.start().pos + Vector2(0, -20)
+	_front.add_child(glow)
+	await glow.flare().finished
+	glow.queue_free()
+
+
+# The board's music follows whoever leads the race, by the location they stand in: it changes when
+# the lead does, never when the camera does. A missing track plays as silence.
+func _follow_leader() -> void:
+	var leader := Match.leader()
+	if leader.is_empty():
+		return
+	var location := BoardLayout.location_at(BoardPath.node(leader.space).pos.x)
+	var track: String = "board_" + location.id
+	if track == _track_name:
+		return
+	_track_name = track
+	print("Music: ", track, " (", leader.name, " leads)")
+	Sound.play_music(track)
 
 
 # A coin springs up from the token, spins like a flipped coin and glints, then flies to the
@@ -421,6 +512,7 @@ func _walk(player: Dictionary, piece: BoardPiece, steps: int) -> void:
 		if not last:
 			await get_tree().create_timer(HOP_BEAT, false).timeout
 	Match.move_to(player, here)
+	_follow_leader()
 	piece.start_sway()
 	_settling = _camera.glide_to(piece.global_position.x, 0.6)
 	piece.walked.emit()

@@ -127,8 +127,8 @@ func set_active(on: bool) -> void:
 
 
 ## Shows the player's blood as `Match` has it now: a lost drop falls off and leaves its outline,
-## a gained one pops back in.
-func show_blood() -> void:
+## a gained one pops back in, `gap` seconds after the one before.
+func show_blood(gap := 0.0) -> void:
 	var target: int = player.blood
 	while _shown_blood > target:
 		_shown_blood -= 1
@@ -141,8 +141,15 @@ func show_blood() -> void:
 		PaperMotion.pop_in(drop)
 
 
-## Ticks the coin count one coin at a time to what `Match` has now.
-func show_coins() -> void:
+## Ticks the coin count one coin at a time to what `Match` has now, or, with `at_once`, jumps there
+## with a single tick, for a count that is wiped out.
+func show_coins(at_once := false) -> void:
+	if at_once and not _ticking and _shown_coins != player.coins:
+		_shown_coins = player.coins
+		_count.text = str(_shown_coins)
+		Sound.play("coin_gain" if _shown_coins > 0 else "coin_lose")
+		PaperMotion.squash(_coin)
+		return
 	if _ticking:
 		return # the running loop reads the new target
 	_ticking = true

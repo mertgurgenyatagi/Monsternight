@@ -109,7 +109,7 @@ All three stay in part 6's **side view**. The high camera was tried and reverted
 
 ## Roadmap
 
-Rough past part 15. Parts 1 to 12 are done (see the Log).
+Rough past part 15. Parts 1 to 13 are done (see the Log and the part notes).
 
 13. Death and respawn (crumple, fly to the start, unfold, coins lost), filling part 12's `died` hook, and the board music following the leader.
 14. Splits: the signpost's arrows with a 10 s candle, replacing part 8's random placeholder.
@@ -128,16 +128,22 @@ Rough past part 15. Parts 1 to 12 are done (see the Log).
 
 Each part session adds a few lines when it finishes: what got built, what changed from the plan, surprises, and anything left over or buggy. The next Microplan reads these instead of the code.
 
-### Built so far (parts 1 to 12, absorbed by Microplans 3 to 5)
+### Built so far (parts 1 to 13, absorbed by Microplans 3 to 5)
 
 - **Board (parts 10, 11, 12):**
   - The road is 57 spaces through the graveyard and 61 past the church (12, 8 or 12, 12, 10, 15), 15,460 px wide, rolled by `tools/board/roll_board.py` with seed 1031. `Match.TURNS` is 17, the intro glide 7.5 s. `BoardLayout.hill_width()` (2,840) stretches the church hill, and `scenery.gd`'s `_spots(location, first, last, gap)` keeps the props' density.
   - `Match` has `current`, `active()`, `roll()`, `next_player()`, a `finished` flag on every player, and `land(player)`, which returns `{kind, coins, blood}` with the real changes.
   - `Die` (`src/board/die.gd`: `place`, `offer`, `nudge`, `tumble`, `leave`, `clicked`) and the turn loop in `Board._play_turns`. The die sits `DIE_RISE` (300 px) over the piece, 34 px higher per extra crowd row; the half-size candle is to its right. A timed-out roll shakes the die for 0.25 s first.
-  - `Board.land(player, id)` is a coroutine: it wakes the space (`Space.wake` / `rest`) and plays the effect (coin, spikes, thief, church) with flyers on the HUD's layer, after waiting for the camera to settle. The spikes and the thief's hand are a stand-in copy in a `Front` node over the pieces. `Board.died(player)` only logs; minigame spaces log "Duel here, part 15".
+  - `Board.land(player, id)` is a coroutine: it wakes the space (`Space.wake` / `rest`) and plays the effect (coin, spikes, thief, church) with flyers on the HUD's layer, after waiting for the camera to settle. The spikes and the thief's hand are a stand-in copy in a `Front` node over the pieces. minigame spaces log "Duel here, part 15".
+- **Death and the music (part 13):**
+  - `Match.die(player)` zeroes coins, refills blood, moves the player to the start, counts `deaths` and returns `{coins, blood}` (nothing for a finished player). Every move stamps `arrived`, and `Match.leader()` is the furthest along by the node's x (a finished player is furthest, a tie goes to the earliest `arrived`).
+  - `Board.die(player)` is the coroutine, and `land` awaits it after spikes. Part 17 calls it for a duel death. It runs `Match.die`, then `PaperMotion.crumple(piece, 0.5, false)`, `BoardPiece.fold(true)` (the ball, `crumpled.png`, 96 px), the coins spilling (up to 5) with the HUD count jumping to 0 in one tick, a 150 px rise, the toss to the start's crowd slot, a bounce, `fold(false)` and `unfold`, a `Glow` flare on the start, the blood refilling 0.2 s apart, and a 1.2 s hold. About 4.7 s from a far death.
+  - The flight takes 1.2 s (no distance) to 2.0 s (the whole board). **The camera does not `follow` the ball:** the cap of 2,600 px/s would lose a ball flying 7,500 px/s, so `glide_to` takes the same time with the same sine easing as `PaperMotion.toss`, which keeps the ball in the middle of the screen. At the peak the scenery scrolls about 11,000 px/s.
+  - `Board._follow_leader()` picks `board_<location of the leader>` (graveyard covers the church, swamp covers the boardwalk and the bog) after every walk and death and when the pieces have landed, and logs "Music: ...". The tracks don't exist yet, so it plays silence.
+  - There is no `unfold` sound in `assets/`, so the unfolding plays `respawn` alone.
 - **Code** is in `src/`:
   - Autoloads: `Sound` (`play`, `play_music`, `play_ambience`, and `quit()`, which every way out of the game goes through so no OGG leaks; `play("hop")` never repeats a hop twice in a row), `Scenes` (`change_to`, the paper transition, the texture and the cursor), `Settings` (`Settings.open()` from anywhere), and `Match` (players in turn order, each with `name`, `monster`, `space`, `blood`, `coins` and `finished`; `turn`, `TURNS`, `MAX_BLOOD`; `roll_turn_order`, `pick_monster`, `free_monsters`, `move_to`, and `change_blood` / `change_coins`, which return the real change).
-  - `PaperMotion` holds `drop_in`, `set_down`, `lift_away`, `sway`, `sway_stop`, `pop_in`, `pop_out`, `lift` (it only raises), `squash`, `slide_in`, `move_to`, `flip`, `hop`, `hop_to`, `fly_to`, `tuck`, `breathe`, `tilt`, `shake`, `stretch` and `crumple` (which frees the piece at the end). New motion goes here.
+  - `PaperMotion` holds `drop_in`, `set_down`, `lift_away`, `sway`, `sway_stop`, `pop_in`, `pop_out`, `lift` (it only raises), `squash`, `slide_in`, `move_to`, `flip`, `hop`, `hop_to`, `fly_to`, `tuck`, `breathe`, `tilt`, `shake`, `stretch`, `crumple` (it frees the piece at the end unless `free` is off), `unfold`, `toss` and `bounce`. New motion goes here.
   - Shadows: `PaperShadow.add(piece)`, which copies a sprite's region.
   - `Sky` has `tint()` and `flash()`. `bat.gd` flies across whatever is in view and has an `active` switch.
   - `src/ui/` has `PaperButton`, `PaperSlider`, `PaperToggle`, the `Candle` (`start`, `stop`, `timed_out`, `time_left`; 120 × 400) and `Flame` (`sputter`, `snuff`, `light`).

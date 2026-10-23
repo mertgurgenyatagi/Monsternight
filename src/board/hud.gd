@@ -72,12 +72,14 @@ func set_turn(n: int) -> void:
 	PaperMotion.flip(_tag, _show_turn)
 
 
-func show_blood(player: Dictionary) -> void:
-	_portraits[player.monster].show_blood()
+## With a `gap`, drops that come back appear one by one, that many seconds apart.
+func show_blood(player: Dictionary, gap := 0.0) -> void:
+	_portraits[player.monster].show_blood(gap)
 
 
-func show_coins(player: Dictionary) -> void:
-	_portraits[player.monster].show_coins()
+## With `at_once`, the count jumps to the new number with one tick instead of counting down.
+func show_coins(player: Dictionary, at_once := false) -> void:
+	_portraits[player.monster].show_coins(at_once)
 
 
 ## The screen position of the player's "blood" or "coins" counter, for icons flying to it.

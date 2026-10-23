@@ -19,6 +19,9 @@ var turn := 1
 ## The index in `players` of the player whose turn it is.
 var current := 0
 
+# Counts every arrival on a space, so a tie in `leader` goes to whoever got there first.
+var _arrivals := 0
+
 
 ## A typed name as it will be kept: trimmed, capped, and "Player N" when blank.
 static func clean_name(raw: String, index: int) -> String:
@@ -48,7 +51,8 @@ func start(raw_names: Array[String]) -> bool:
 	players.clear()
 	for i in raw_names.size():
 		players.append({"name": clean_name(raw_names[i], i), "monster": "", "space": BoardPath.START,
-				"blood": MAX_BLOOD, "coins": 0, "finished": false})
+				"blood": MAX_BLOOD, "coins": 0, "finished": false, "deaths": 0, "arrived": 0})
+	_arrivals = 0
 	turn = 1
 	current = 0
 	print("Match started: ", players)
@@ -122,8 +126,35 @@ func move_to(player: Dictionary, id: String) -> bool:
 	if BoardPath.node(id).is_empty():
 		return false
 	player.space = id
+	_arrivals += 1
+	player.arrived = _arrivals
 	print("Moved: ", player.name, " to ", id)
 	return true
+
+
+## The player furthest along the road. A finished player counts as furthest, and on a tie the one
+## who got there first leads. Empty before there are players.
+func leader() -> Dictionary:
+	var best := {}
+	for player in players:
+		if best.is_empty() or _progress(player) > _progress(best) 				or (_progress(player) == _progress(best) and player.arrived < best.arrived):
+			best = player
+	return best
+
+
+## The player dies for real: coins go to 0, blood is full again and they stand on the start,
+## and their death count goes up. Returns the `coins` lost and the `blood` refilled, or nothing
+## at all for a finished player, who can't die. The board shows the death (`Board.die`).
+func die(player: Dictionary) -> Dictionary:
+	if player.finished:
+		return {}
+	var result := {"coins": player.coins, "blood": MAX_BLOOD - player.blood}
+	player.coins = 0
+	player.blood = MAX_BLOOD
+	player.deaths += 1
+	move_to(player, BoardPath.START)
+	print("Died: ", player.name, " (death ", player.deaths, ") ", result)
+	return result
 
 
 ## The rules for the space the player stands on: a coin gives 1 coin, spikes take 1 blood, a thief
@@ -147,7 +178,7 @@ func land(player: Dictionary) -> Dictionary:
 
 
 ## Adds `delta` to the player's blood, kept between 0 and `MAX_BLOOD`. Returns the change that
-## really happened. Reaching 0 is a death, which the board shows (part 13).
+## really happened. Reaching 0 is a death, which `die` settles and the board shows.
 func change_blood(player: Dictionary, delta: int) -> int:
 	var before: int = player.blood
 	player.blood = clampi(before + delta, 0, MAX_BLOOD)
@@ -169,3 +200,8 @@ func names() -> Array[String]:
 	for player in players:
 		result.append(player.name)
 	return result
+
+
+# How far along the road a player is: a finished player is past everyone.
+func _progress(player: Dictionary) -> float:
+	return INF if player.finished else BoardPath.node(player.space).pos.x
