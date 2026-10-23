@@ -65,7 +65,7 @@ func _on_begin() -> void:
 		_deny(_begin)
 		return
 	if Match.start(_typed()):
-		_begin.disabled = true # the turn order roll arrives in part 4
+		_leave("res://src/pregame/pregame.tscn")
 
 
 func _on_back() -> void:

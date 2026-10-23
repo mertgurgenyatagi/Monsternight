@@ -7,7 +7,8 @@ const MIN_PLAYERS := 2
 const MAX_PLAYERS := 8
 const NAME_LENGTH := 12
 
-## One dictionary per player, in seating order (the turn order is rolled later).
+## One dictionary per player. Right after `start` this is the seating order; `roll_turn_order`
+## reshuffles it, and from then on the array order is the turn order.
 var players: Array[Dictionary] = []
 
 
@@ -41,6 +42,15 @@ func start(raw_names: Array[String]) -> bool:
 		players.append({"name": clean_name(raw_names[i], i)})
 	print("Match started: ", players)
 	return true
+
+
+## Rolls the turn order: shuffles `players` so the array order is the turn order from here on,
+## and returns the seating order it started from. The animation only shows the result.
+func roll_turn_order() -> Array[Dictionary]:
+	var seating := players.duplicate()
+	players.shuffle()
+	print("Turn order: ", names())
+	return seating
 
 
 ## The names the setup screen shows again after a match, or an empty list at first.
