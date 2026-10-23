@@ -1,6 +1,6 @@
-# Bakes the board's space token and icons at the size the board draws them, each with an outline,
-# so they stand out from the scenery. Writes board/space_rim.png and icons/<name>_rim.png into
-# assets/art/. Run it from the repository root: python tools/images/make_outlines.py .
+# Bakes the board's space token, icons and monster pieces at the size the board draws them, each
+# with an outline, so they stand out from the scenery. Writes board/space_rim.png,
+# icons/<name>_rim.png and monsters/<id>_rim.png (with stand_rim.png) into assets/art/. Run it from the repository root: python tools/images/make_outlines.py .
 # The sizes here are the board's: change them together with the constants in src/board/space.gd.
 import sys
 from pathlib import Path
@@ -18,6 +18,9 @@ TOKEN_LIFT = 1.3  # the paper is grey, so tints would come out dull; brighten it
 ICON_SIZE = 108  # the longest side of an icon's drawn part
 ICON_FIT = {"coin": 0.82, "fps": 0.88}
 ICON_RIM = ((0xff, 0xf4, 0xdc), 4)
+BODY_HEIGHT = 182  # a monster's drawn part, feet to crown
+STAND_SIZE = (66, 20)  # stand.png, as drawn under a piece on the board
+MONSTERS = ["dracula", "medusa", "frankenstein", "death", "hyde", "cthulhu", "wolfman", "dorian"]
 ICONS = ["coin", "spikes", "thief", "church", "pong", "haxball", "racing", "fps"]
 
 
@@ -52,4 +55,12 @@ for name in ICONS:
     scale = ICON_SIZE * ICON_FIT.get(name, 1.0) / max(box[2] - box[0], box[3] - box[1])
     icon = icon.crop(box).resize((round((box[2] - box[0]) * scale), round((box[3] - box[1]) * scale)), Image.LANCZOS)
     outlined(icon, ICON_RIM).save(ART / "icons" / f"{name}_rim.png")
+for name in MONSTERS:
+    body = Image.open(ART / "monsters" / f"{name}.png").convert("RGBA")
+    box = body.getchannel("A").point(lambda a: 255 if a > 8 else 0).getbbox()
+    scale = BODY_HEIGHT / (box[3] - box[1])
+    body = body.crop(box).resize((round((box[2] - box[0]) * scale), BODY_HEIGHT), Image.LANCZOS)
+    outlined(body, ICON_RIM).save(ART / "monsters" / f"{name}_rim.png")
+stand = Image.open(ART / "monsters" / "stand.png").convert("RGBA").resize(STAND_SIZE, Image.LANCZOS)
+outlined(stand, TOKEN_RIM).save(ART / "monsters" / "stand_rim.png")
 print("done")

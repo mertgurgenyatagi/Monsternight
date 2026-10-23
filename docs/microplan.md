@@ -192,6 +192,16 @@ Each part session adds a few lines when it finishes: what got built, what change
 - **Unchanged:** the finish token is plain like an empty space; the flag beside the gate marks it. Reeds in the swamp sit behind the bog's tokens, never in front.
 - **Checked:** 25 FPS during the intro glide; screenshots in `screenshots/part_07/`.
 
+### Part 8 notes (monster pieces)
+
+- **Built:** `MonsterFigure` (`src/data/monster_figure.gd`: the body on its stand with shadows, shared by `MonsterPiece` and the new `BoardPiece`), `BoardPiece` (`src/board/board_piece.gd`: sway, `walked` and `branch_chosen` signals), `PaperMotion.hop_to`, `BoardCamera.follow`, and in `Board`: `piece_for`, `walk`, the placeholder `choose_branch`, crowds and the arrival drop (`pieces_landed` signal). `Match` players now have `space` (starting at `BoardPath.START`) and `Match.move_to`. `Sound.play("hop")` never repeats a hop twice in a row.
+- **Outlines:** as part 7's notes asked, the monsters and the stand are baked with a cream outline (stand: dark) by `tools/images/make_outlines.py` into `monsters/<id>_rim.png` and `stand_rim.png`: bodies 182 px tall, stand 66 px wide.
+- **Crowds:** 4 to a row, 52 px apart, the front row 16 px below the token's middle; each row behind stands 34 px higher, and even-sized back rows shift half a step so heads show between the front ones. Eight pieces overlap a lot but stay on their token.
+- **Walking:** each hop is a 0.07 s crouch, a 0.27 s arc, a squash, then a 0.12 s beat. A piece steps out to the token's front before its first hop. Only the last hop of a walk joins the crowd, and a walk stops at the finish. `Match.move_to` is called at the end of the walk. After it the camera glides onto the piece.
+- **Camera:** `follow(node)` lags softly, eases in over 0.7 s and is capped at 2600 px/s; `stop()` and `glide_to` end it.
+- **Checked:** 8 players all walked to the finish with random rolls (13 rounds): `Match` agreed with every piece, both forks were taken both ways, no piece strayed from its space. 2- and 8-player landings and a 6-space hill climb are in `screenshots/part_08/`. The frame rate stays at 25 between screenshots; it only dipped while the test script saved PNGs.
+- **Not checked:** the Godot MCP was connected only late in the session, and nothing in this part needs its clicks, so it was used just to run the game and read errors. The hop sounds and the feel of the squashes have not been listened to or judged by the user.
+
 ### Built so far (parts 1 to 6, absorbed by Microplan 3)
 
 - **Code** is in `src/`:

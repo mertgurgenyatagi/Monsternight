@@ -7,6 +7,7 @@ const VOICES := 8
 
 var _voices: Array[AudioStreamPlayer] = []
 var _next_voice := 0
+var _last_hop := 0
 var _streams := {}
 var _music: Array[AudioStreamPlayer] = []
 var _ambience: Array[AudioStreamPlayer] = []
@@ -41,10 +42,12 @@ func quit() -> void:
 
 ## Plays an effect from assets/audio/sfx, or from another folder if the name has one
 ## ("voices/dracula_pick"). Each play is pitched slightly differently, and "hop" picks one of
-## the three hops.
+## the three hops, never the one before.
 func play(sound: String, volume_db := 0.0) -> void:
 	if sound == "hop":
-		sound = "hop_%d" % randi_range(1, 3)
+		# Never the same hop twice in a row.
+		_last_hop = (_last_hop + randi_range(0, 1)) % 3 + 1
+		sound = "hop_%d" % _last_hop
 	var player := _voices[_next_voice]
 	_next_voice = (_next_voice + 1) % VOICES
 	player.stream = _stream(sound if "/" in sound else "sfx/" + sound)
