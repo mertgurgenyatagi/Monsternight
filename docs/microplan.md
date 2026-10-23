@@ -191,6 +191,20 @@ Rough past part 6. Parts 1 to 3 are done (see the Log).
 
 Each part session adds a few lines when it finishes: what got built, what changed from the plan, surprises, and anything left over or buggy. The next Microplan reads these instead of the code.
 
+### Part 6 notes
+
+- **Built:** `src/board/`:
+  - `board.tscn` and `board.gd`: the intro glide from the castle gate (a click skips it), and location tracking (`Sky.tint`, `Sound.play_ambience`, bats, and lightning over the castle). The pregame now ends with `Scenes.change_to` the board.
+  - `board_layout.gd` (`BoardLayout`): `locations()`, `location_at(x)`, `width()`, `gate_x()`, `lane_y(Lane.MAIN / UPPER / LOWER, x)`, and `layer_x(x, scroll)`. The world runs from 0 to 11,720 px: the village is 0 to 2,480 (with a 500 px lead-in), the graveyard is the hill's 2,400, the forest 1,980, the swamp 1,540, and the castle 3,320 (with 900 px for the gate). The lanes: the road at y 900, upper 640, lower 990. A split's paths ease away from the road over its `ramp` (600 px up the hill, 220 in the swamp).
+  - `board_camera.gd` (`BoardCamera`): `glide_to(x, duration)` (by default it takes longer the further it goes), `jump_to(x)`, and `center_x()`.
+  - `scenery.gd` places every strip and prop from the layout. `strip.gdshader` tiles a strip, fades its ends, and drifts fog and water. `glow.gd` (`Glow`) is the additive radial glow, with `flicker`, `pulse` and `jitter`.
+- **Layers:** Far (scroll 0.5), Mid (0.9: houses, trees, the castle), Lanes (1.0: the ground strips, hill, church, stones, lamps, mushrooms, water, boardwalk, reeds, torches and the gate) and Fog (1.2). A piece in a scrolled layer goes at `BoardLayout.layer_x(world_x, scroll)`. Part 7 should add the path to Lanes, after the ground strips, so it's under the foreground fog.
+- **Changed from the plan:** the small props (lamps, stones, mushrooms, reeds, torches), the church and the hill are in the lane layer, so they don't slide against the road. The mid layer would hide behind the hill. The swamp's ground lies 110 px lower than the others, so the water shows between the boardwalk and the bog. The torches stand along the road and on either side of the gate. Fog: foreground wisps over the village, graveyard and swamp, plus a bank behind the village and swamp props; none in the forest or castle.
+- **Fixed on the way:** `Sky.tint` had never worked: it bound its arguments in the wrong order. `PaperShadow` now copies a sprite's region. `bat.gd` flies across whatever is in view, under a camera too, and has an `active` switch.
+- **Surprise:** an OGG still playing when the game ends is reported as 4 leaked objects. `Sound` now catches the window's close request and quits through `Sound.quit()`, which stops every player and waits two frames. Title's Quit uses it too. `--quit-after` can't be caught, so `capture.py` runs still print that leak at exit. It's harmless.
+- **Checked:** a contact sheet of the intro glide; the log shows every boundary (castle, swamp, forest, graveyard, village); a steady 25 FPS during the glide; a click mid-glide skipped home in 0.9 s; one screenshot of each location. A 2-player pregame ran through to the board. Screenshots are in `screenshots/part_06/`.
+- **Not done:** the Godot MCP failed to connect, so the click was pushed with `Input.parse_input_event`. I didn't listen to the ambience crossfades. The lane heights are a first guess: the lower lane at 990 runs over the ground's soil, low on the screen.
+
 ### Part 5 notes
 
 - **Built:** `Monsters` (`src/data/monsters.gd`: ids, colors, `name_key`, `body`, `portrait`, `voice`), `Match.pick_monster` and `free_monsters` (each player has `monster`, "" until picked), `MonsterPiece` (`src/pregame/monster_piece.gd`, with `grey.gdshader`), `PlayerCard.set_monster` (framed portrait in the monster's color, via `portrait_frame.png`), `PaperMotion.sway_stop`, and the pick loop in `pregame.gd` (`_select_monsters`, `_pick_for`, `_pick`). `PaperMotion.flip` now takes any CanvasItem. The scene ends by printing `Match` with the monsters.
