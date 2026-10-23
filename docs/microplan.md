@@ -155,6 +155,14 @@ Each part session adds a few lines when it finishes: what got built, what change
 - The Godot MCP's simulated clicks were broken (the editor had no input bridge, and the press became a release). Fixed in this project and in `../godot-mcp`. Its coordinates are the window's (1280 × 720), not the 1920 × 1080 viewport's.
 - Left over: no thunder sound, and `title.ogg` is still missing. The release build must drop the MCP autoloads.
 
+### Part 2
+
+- Built as planned. `Settings` autoload (`src/autoload/settings.gd`) loads and applies `user://settings.cfg` at startup, saves when a change finishes, and `Settings.open()` opens the overlay (`src/settings/`, a CanvasLayer at layer 50) from anywhere. Part 22 just calls it on Esc.
+- Open question answered by Claude: the slider handle is the `coin` and the toggle is an ink box with the `flag` planted in it (`PaperSlider`, `PaperToggle` in `src/ui/`). No new art. Easy to swap if the user wants something else.
+- Effects slider plays `coin_land` on release. Music volume changes live. Fullscreen is borderless `WINDOW_MODE_FULLSCREEN`.
+- New `PaperMotion.set_down` and `lift_away` (card drop and lift).
+- Checked by contact sheet and screenshots. Not tested: a real relaunch round trip of fullscreen and the mouse-click paths (Esc, click outside, drag); the code for them is straightforward but only the sliders' saved file was seen.
+
 ## Log
 
 - **2026-10-23, Microplan 1:** planned parts 1 to 3: the foundation and title, settings, and setup. Sketched the roadmap to part 24.

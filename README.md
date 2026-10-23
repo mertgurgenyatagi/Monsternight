@@ -20,7 +20,8 @@ What they mean in practice is in [Art and audio](docs/art_and_audio.md#principle
 - **Fonts:** done. `display.ttf` is Grenze Gotisch Bold and `body.ttf` is Spectral Medium, both with their OFL licenses, and both cover Turkish letters.
 - **Missing:** the 11 music tracks, which the user makes separately.
 - **Part 1 is built** (the foundation and title screen), built and merged; the user reviews it afterwards. The game runs at 25 FPS.
-- **Next:** [part 2](docs/microplan.md#part-2-settings) of the first playable, in its own session.
+- **Part 2 is built** (settings overlay), built and merged.
+- **Next:** [part 3](docs/microplan.md#part-3-setup-screen-and-match-state) of the first playable, in its own session.
 
 **Keep the raws.** They're the sources, and the processed files can always be rebuilt from them.
 
