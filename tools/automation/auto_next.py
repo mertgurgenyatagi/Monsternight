@@ -22,7 +22,9 @@ ROOT = Path(__file__).resolve().parents[2]
 CROP = ROOT / "crop.png"
 BOX = (1325, 780, 1410, 870)  # left, top, right, bottom on the screen
 CHAT_BOX = (1580, 892)  # where to click so the chat box has the keyboard
+START_WAIT = 5  # seconds before the first look, to get out of the way
 CHECK_EVERY = 60  # seconds
+COOLDOWN = 300  # seconds after a start before it may fire again
 AFTER_CLEAR = 10
 AFTER_PROMPT = 5
 PROMPT = (
@@ -57,12 +59,14 @@ def start_next_session() -> None:
 
 def main() -> None:
     wanted = np.asarray(Image.open(CROP).convert("RGB"))
-    print(f"Watching {BOX} every {CHECK_EVERY} s for {CROP.name}. Ctrl+C stops it.", flush=True)
+    print(f"Watching {BOX} every {CHECK_EVERY} s for {CROP.name}, after {START_WAIT} s. Ctrl+C stops it.", flush=True)
+    time.sleep(START_WAIT)
+    last_fired = -COOLDOWN
     while True:
-        if marker_is_showing(wanted):
+        if time.monotonic() - last_fired >= COOLDOWN and marker_is_showing(wanted):
             print(time.strftime("%H:%M:%S"), "marker found: starting the next session", flush=True)
             start_next_session()
-            time.sleep(CHECK_EVERY)  # the old marker is gone after /clear; don't re-fire on a stale frame
+            last_fired = time.monotonic()
         time.sleep(CHECK_EVERY)
 
 
