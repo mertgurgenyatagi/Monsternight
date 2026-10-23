@@ -14,6 +14,8 @@ const STAR := preload("res://assets/art/scenery/star.png")
 @onready var _stars: Node2D = $Stars
 @onready var _flash: ColorRect = $Flash
 
+var _tint: Tween
+
 
 func _ready() -> void:
 	PaperShadow.add(_moon)
@@ -24,11 +26,12 @@ func _ready() -> void:
 ## Fades the gradient to new colors.
 func tint(top: Color, bottom: Color, duration := 1.5) -> void:
 	var material := _gradient.material as ShaderMaterial
-	var tween := create_tween().set_parallel()
-	tween.tween_method(material.set_shader_parameter.bind("top_color"),
-			material.get_shader_parameter("top_color"), top, duration)
-	tween.tween_method(material.set_shader_parameter.bind("bottom_color"),
-			material.get_shader_parameter("bottom_color"), bottom, duration)
+	if _tint and _tint.is_valid():
+		_tint.kill()
+	_tint = create_tween().set_parallel()
+	for pair in [["top_color", top], ["bottom_color", bottom]]:
+		_tint.tween_method(func(color: Color) -> void: material.set_shader_parameter(pair[0], color),
+				material.get_shader_parameter(pair[0]), pair[1], duration)
 
 
 ## Lightning: the sky flashes pale twice, like a paper lamp switched on and off.

@@ -16,10 +16,27 @@ var _ambience_name := ""
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
+	get_tree().auto_accept_quit = false
 	for i in VOICES:
 		_voices.append(_player("SFX"))
 	_music = [_player("Music"), _player("Music")]
 	_ambience = [_player("SFX"), _player("SFX")]
+
+
+# Closing the window stops every player first and quits a moment later: a stream still
+# playing when the game ends is reported as leaked.
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_WM_CLOSE_REQUEST:
+		quit()
+
+
+## Stops every sound, then quits the game.
+func quit() -> void:
+	for player in _voices + _music + _ambience:
+		player.stop()
+	await get_tree().process_frame
+	await get_tree().process_frame
+	get_tree().quit()
 
 
 ## Plays an effect from assets/audio/sfx, or from another folder if the name has one

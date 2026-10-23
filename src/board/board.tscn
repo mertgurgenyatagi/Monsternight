@@ -1,0 +1,50 @@
+[gd_scene load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://src/board/board.gd" id="1_board"]
+[ext_resource type="PackedScene" path="res://src/sky/sky.tscn" id="2_sky"]
+[ext_resource type="Script" path="res://src/board/scenery.gd" id="3_scenery"]
+[ext_resource type="Script" path="res://src/scenery/bat.gd" id="4_bat"]
+[ext_resource type="Texture2D" path="res://assets/art/scenery/bat.png" id="5_bat"]
+[ext_resource type="Script" path="res://src/board/board_camera.gd" id="6_camera"]
+
+[node name="Board" type="Node2D"]
+script = ExtResource("1_board")
+
+[node name="SkyLayer" type="CanvasLayer" parent="."]
+layer = -1
+
+[node name="Sky" parent="SkyLayer" instance=ExtResource("2_sky")]
+
+[node name="Scenery" type="Node2D" parent="."]
+script = ExtResource("3_scenery")
+
+[node name="Far" type="Parallax2D" parent="Scenery"]
+scroll_scale = Vector2(0.5, 1)
+
+[node name="Mid" type="Parallax2D" parent="Scenery"]
+scroll_scale = Vector2(0.9, 1)
+
+[node name="Lanes" type="Parallax2D" parent="Scenery"]
+
+[node name="Fog" type="Parallax2D" parent="Scenery"]
+scroll_scale = Vector2(1.2, 1)
+
+[node name="Bats" type="Node2D" parent="."]
+
+[node name="Bat1" type="Sprite2D" parent="Bats"]
+scale = Vector2(0.9, 0.9)
+texture = ExtResource("5_bat")
+script = ExtResource("4_bat")
+heights = Vector2(150, 330)
+first_wait = Vector2(1.5, 4.0)
+
+[node name="Bat2" type="Sprite2D" parent="Bats"]
+scale = Vector2(0.7, 0.7)
+texture = ExtResource("5_bat")
+script = ExtResource("4_bat")
+heights = Vector2(120, 260)
+first_wait = Vector2(5.0, 9.0)
+wait = Vector2(9.0, 16.0)
+
+[node name="Camera" type="Camera2D" parent="."]
+script = ExtResource("6_camera")

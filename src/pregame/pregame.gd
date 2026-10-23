@@ -60,6 +60,7 @@ func _ready() -> void:
 	await _rise_to_strip()
 	await _select_monsters()
 	print("Match: ", Match.players)
+	Scenes.change_to("res://src/board/board.tscn")
 
 
 # Run on its own (for a check), the scene starts a match of however many players come after

@@ -1,10 +1,14 @@
 extends Sprite2D
-## A bat that flaps across the screen now and then on a wavy path, from off one side to off
-## the other.
+## A bat that flaps across the view now and then on a wavy path, from off one side to off
+## the other. Under a camera it flies through the world, across whatever is in view when it
+## sets off. `heights` are in its parent's coordinates.
 
 @export var heights := Vector2(280, 460)
 @export var first_wait := Vector2(2.5, 5.0)
 @export var wait := Vector2(7.0, 14.0)
+
+## While false, the bat waits to set off: the board lets bats out only over some locations.
+var active := true
 
 var _flap: Tween
 
@@ -17,15 +21,17 @@ func _ready() -> void:
 
 func _rest_after(seconds: float) -> void:
 	await get_tree().create_timer(seconds, false).timeout
+	while not active:
+		await get_tree().create_timer(1.0, false).timeout
 	_fly()
 
 
 func _fly() -> void:
-	var width := get_viewport_rect().size.x
+	var view := get_canvas_transform().affine_inverse() * get_viewport_rect()
 	var rightward := randf() < 0.5
 	var margin := texture.get_width() * scale.x
-	var from := -margin if rightward else width + margin
-	var to := width + margin if rightward else -margin
+	var from := view.position.x - margin if rightward else view.end.x + margin
+	var to := view.end.x + margin if rightward else view.position.x - margin
 	var y := randf_range(heights.x, heights.y)
 	var duration := randf_range(5.0, 7.0)
 	flip_h = not rightward

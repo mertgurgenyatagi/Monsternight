@@ -32,7 +32,7 @@ func _quit() -> void:
 		_buttons[-1 - i].leave(i * 0.12)
 	await _move_curtain(1.0, 1.4, 0.4).finished
 	await get_tree().create_timer(0.35).timeout
-	get_tree().quit()
+	Sound.quit()
 
 
 # The halves gather toward the sides (or spread back), easing to a stop past the mark and

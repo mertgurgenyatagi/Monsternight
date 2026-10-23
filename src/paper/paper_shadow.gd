@@ -19,6 +19,9 @@ static func add(piece: CanvasItem) -> CanvasItem:
 		sprite.offset = piece.offset
 		sprite.flip_h = piece.flip_h
 		sprite.flip_v = piece.flip_v
+		sprite.region_enabled = piece.region_enabled
+		sprite.region_rect = piece.region_rect
+		sprite.texture_repeat = piece.texture_repeat
 		shadow = sprite
 	elif piece is NinePatchRect:
 		shadow = _nine_patch(piece.texture, piece.patch_margin_left, piece.patch_margin_top,
