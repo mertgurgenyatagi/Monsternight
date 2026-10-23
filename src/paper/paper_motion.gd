@@ -112,6 +112,48 @@ static func squash(piece: CanvasItem) -> Tween:
 	return tween
 
 
+## Slides in from `from_x` (an x position off to one side) and settles with a wobble.
+static func slide_in(piece: Node2D, from_x: float, delay := 0.0, duration := 0.7) -> Tween:
+	var rest := _rest_position(piece)
+	piece.position = Vector2(from_x, rest.y)
+	piece.rotation_degrees = 10.0 * signf(from_x - rest.x)
+	var tween := _fresh(piece, "move").set_parallel()
+	tween.tween_property(piece, "position", rest, duration).set_delay(delay) 			.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	tween.tween_property(piece, "rotation_degrees", 0.0, duration * 1.4).set_delay(delay) 			.set_trans(Tween.TRANS_ELASTIC).set_ease(Tween.EASE_OUT)
+	return tween
+
+
+## Glides to a new resting place, which becomes the piece's rest position.
+static func move_to(piece: Node2D, target: Vector2, duration := 0.45) -> Tween:
+	piece.set_meta("rest_position", target)
+	var tween := _fresh(piece, "move").set_parallel()
+	tween.tween_property(piece, "position", target, duration) 			.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	tween.tween_property(piece, "rotation_degrees", 0.0, duration)
+	return tween
+
+
+## Jerks from side to side, for "no".
+static func shake(piece: CanvasItem) -> Tween:
+	var rest := _rest_position(piece)
+	var tween := _fresh(piece, "move")
+	for dx in [-16.0, 14.0, -10.0, 6.0, 0.0]:
+		tween.tween_property(piece, "position:x", rest.x + dx, 0.05)
+	tween.parallel().tween_property(piece, "rotation_degrees", 0.0, 0.25)
+	return tween
+
+
+## Scrunches up like a sheet of paper and drops away. The piece frees itself when the move ends.
+static func crumple(piece: Node2D, duration := 0.5) -> Tween:
+	var rest := _rest_position(piece)
+	var tween := _fresh(piece, "move").set_parallel()
+	tween.tween_property(piece, "scale", Vector2(0.35, 0.3), duration * 0.6) 			.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_IN)
+	tween.tween_property(piece, "rotation_degrees", 35.0, duration * 0.6) 			.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
+	tween.tween_property(piece, "position", rest + Vector2(0, 60), duration) 			.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+	tween.tween_property(piece, "modulate:a", 0.0, duration * 0.4).set_delay(duration * 0.6)
+	tween.chain().tween_callback(piece.queue_free)
+	return tween
+
+
 # One running tween per kind of move on a piece: a new move replaces the old one.
 static func _fresh(piece: CanvasItem, kind: String) -> Tween:
 	_kill(piece, kind)

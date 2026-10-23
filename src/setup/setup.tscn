@@ -1,0 +1,70 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://src/setup/setup.gd" id="1_setup"]
+[ext_resource type="PackedScene" path="res://src/sky/sky.tscn" id="2_sky"]
+[ext_resource type="Script" path="res://src/ui/paper_button.gd" id="3_button"]
+[ext_resource type="FontFile" path="res://assets/fonts/display.ttf" id="4_display"]
+
+[node name="Setup" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_setup")
+
+[node name="Sky" parent="." instance=ExtResource("2_sky")]
+layout_mode = 1
+
+[node name="Heading" type="Label" parent="."]
+layout_mode = 0
+offset_left = 360.0
+offset_top = 30.0
+offset_right = 1560.0
+offset_bottom = 150.0
+theme_override_colors/font_color = Color(0.96, 0.9, 0.78, 1)
+theme_override_fonts/font = ExtResource("4_display")
+theme_override_font_sizes/font_size = 104
+text = "SETUP_TITLE"
+horizontal_alignment = 1
+
+[node name="Cards" type="Node2D" parent="."]
+
+[node name="Back" type="Button" parent="."]
+layout_mode = 0
+offset_left = 140.0
+offset_top = 930.0
+offset_right = 520.0
+offset_bottom = 1034.0
+text = "SETUP_BACK"
+script = ExtResource("3_button")
+
+[node name="Add" type="Button" parent="."]
+layout_mode = 0
+offset_left = 560.0
+offset_top = 930.0
+offset_right = 940.0
+offset_bottom = 1034.0
+theme_override_font_sizes/font_size = 48
+text = "SETUP_ADD"
+script = ExtResource("3_button")
+
+[node name="Remove" type="Button" parent="."]
+layout_mode = 0
+offset_left = 980.0
+offset_top = 930.0
+offset_right = 1360.0
+offset_bottom = 1034.0
+theme_override_font_sizes/font_size = 48
+text = "SETUP_REMOVE"
+script = ExtResource("3_button")
+
+[node name="Begin" type="Button" parent="."]
+layout_mode = 0
+offset_left = 1400.0
+offset_top = 930.0
+offset_right = 1780.0
+offset_bottom = 1034.0
+text = "SETUP_BEGIN"
+script = ExtResource("3_button")

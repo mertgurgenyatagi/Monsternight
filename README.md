@@ -21,7 +21,8 @@ What they mean in practice is in [Art and audio](docs/art_and_audio.md#principle
 - **Missing:** the 11 music tracks, which the user makes separately.
 - **Part 1 is built** (the foundation and title screen), built and merged; the user reviews it afterwards. The game runs at 25 FPS.
 - **Part 2 is built** (settings overlay), built and merged.
-- **Next:** [part 3](docs/microplan.md#part-3-setup-screen-and-match-state) of the first playable, in its own session.
+- **Part 3 is built** (setup screen and `Match`), built and merged.
+- **Next:** the next Microplan (parts 4 to 6), in its own session.
 
 **Keep the raws.** They're the sources, and the processed files can always be rebuilt from them.
 
@@ -70,6 +71,7 @@ What they mean in practice is in [Art and audio](docs/art_and_audio.md#principle
    It still asks the user about anything else it needs to.
 4. **Microplan.** The first playable is built in about 24 parts. `/microplan` plans the next three in detail, in its own session, after part 3, 6, 9 and so on. Each part is built in its own session, on its own branch, and meets the "done" bar in `docs/microplan.md`. Planning and building never share a session, to save tokens.
 5. **Saving tokens.** The user hit their limits in part 1. Part sessions run on Sonnet 5.5 at medium effort, and Opus for the Microplan or a tricky part.
+   - Never run `--write-movie` for long: it encodes full-size PNGs at about 7% of real time and makes the PC roar. Test logic headless, and save screenshots with `get_viewport().get_texture().get_image().save_png(...)` from a plain run. A short `capture.py` run is fine for motion.
    - Check motion with one contact sheet from `tools/godot/capture.py`, not many single frames. Don't spend long on screenshots: three good ones are enough.
    - Never dump the MCP scene tree, and ask for specific values with `execute_game_script` (it takes one expression, with the current scene as `self`).
    - The MCP's screenshots come back as a huge base64 file, so prefer `--write-movie` frames.
