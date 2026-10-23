@@ -25,6 +25,7 @@ What they mean in practice is in [Art and audio](docs/art_and_audio.md#principle
 - **Part 4 is built** (turn order roll and the timer candle), built and merged.
 - **Part 5 is built** (monster select), built and merged.
 - **Part 6 is built** (the board's scenery), built and merged.
+- **Reverted (2026-10-23):** the user tried the high-camera board in a part 7 build, found the scenery looked fake and unlike a real environment, and chose to revert the design adjustment with git, as if it never happened. The side view of part 6 stands. A high camera or a contrast rule is not part of the design now. Ask the user before reviving either.
 - **Next:** Microplan 3, in its own session, to plan parts 7 to 9.
 
 **Keep the raws.** They're the sources, and the processed files can always be rebuilt from them.
@@ -47,7 +48,7 @@ What they mean in practice is in [Art and audio](docs/art_and_audio.md#principle
 
 ## Layout
 
-- `Godot_v4.7.2-stable_win64.exe` and `_console.exe`: the engine, in the root and gitignored. Use the console one from the shell. `--headless --import` imports the assets. `--write-movie <dir>/f.png --fixed-fps 30 --quit-after <frames>` runs the game and saves every frame as a PNG, plus the audio as a WAV, so Claude can check the motion frame by frame.
+- `Godot_v4.7.2-stable_win64.exe` and `_console.exe`: the engine, in the root and gitignored. Use the console one from the shell. `--headless --import` imports the assets.
 - **Godot MCP:** `addons/godot_mcp/` is the editor plugin, and `.mcp.json` starts its server from `../godot-mcp/`. The plugin talks to the server only while the editor is open on this project, on port 6505. Through it, Claude edits scenes, runs the game, takes screenshots, simulates input, and reads the error log. Its tools load on demand through ToolSearch.
 - `assets/`: the game's finished assets, which Godot uses
 - `images_raw/`, `audio_raw/`: the raw images and sounds. Each has a `.gdignore`, so Godot skips them.
@@ -57,7 +58,6 @@ What they mean in practice is in [Art and audio](docs/art_and_audio.md#principle
   - `gen_sound_prompts.py` rebuilds `docs/sound_prompts.md`. Change sound prompts here, never by hand in the doc.
   - `make_sounds.py` generates sounds through the ElevenLabs API. It needs the key in the `ELEVENLABS_API_KEY` environment variable (ask the user for it), and it skips files that already exist.
   - `build_review.py` and `review_template.html` build a phone page for the user to rate sounds: `python tools/sounds/build_review.py . tools/sounds/review_template.html <out.html> [--raw] [<name> ...]`. By default it plays the processed OGGs and decodes WAV copies into `review_wav/` beside the page, for phones without OGG support. Publish the page with `assets/audio/` and `review_wav/` as its files. `--raw` plays `audio_raw/` instead.
-- `tools/godot/capture.py` records the game with `--write-movie` and writes one contact sheet: `python tools/godot/capture.py <out_dir> <frames> [<every_n>] [<scene>]`. It needs Pillow.
 - `docs/`: the design
 - `screenshots/`: three screenshots at the end of every part, in `part_NN/` (see the "done" bar in `docs/microplan.md`). It has a `.gdignore`, so Godot skips it.
 
@@ -74,10 +74,10 @@ What they mean in practice is in [Art and audio](docs/art_and_audio.md#principle
    It still asks the user about anything else it needs to.
 4. **Microplan.** The first playable is built in about 23 parts. `/microplan` plans the next three in detail, in its own session, after part 3, 6, 9 and so on. Each part is built in its own session, on its own branch, and meets the "done" bar in `docs/microplan.md`. Planning and building never share a session, to save tokens.
 5. **Saving tokens.** The user hit their limits in part 1. Part sessions run on Sonnet 5.5 at medium effort, and Opus for the Microplan or a tricky part.
-   - Never run `--write-movie` for long: it encodes full-size PNGs at about 7% of real time and makes the PC roar. Test logic headless, and save screenshots with `get_viewport().get_texture().get_image().save_png(...)` from a plain run. A short `capture.py` run is fine for motion.
-   - Check motion with one contact sheet from `tools/godot/capture.py`, not many single frames. Don't spend long on screenshots: three good ones are enough.
+   - **Never use `--write-movie` or `tools/godot/capture.py`, not even briefly.** It encodes every frame at full size, takes ages and makes the PC roar. The user has stopped it twice. Test logic headless. To see motion, run the game normally with a temporary script (not committed) that saves a few `get_viewport().get_texture().get_image().save_png(...)` screenshots at set moments, and paste them into one contact sheet with Pillow. For the frame rate, print `Engine.get_frames_per_second()` from a plain run.
+   - Don't spend long on screenshots: three good ones are enough, and a handful of timed ones in one Pillow contact sheet is enough for motion.
    - Never dump the MCP scene tree, and ask for specific values with `execute_game_script` (it takes one expression, with the current scene as `self`).
-   - The MCP's screenshots come back as a huge base64 file, so prefer `--write-movie` frames.
+   - The MCP's screenshots come back as a huge base64 file, so save screenshots from a plain run with a temporary script instead.
    - The MCP's simulated mouse uses window coordinates (1280 × 720). Use it only to prove a click works.
    - Don't reload the MCP plugin from the editor, because it can switch itself off. Restart the editor instead.
 6. **This README** is the handover for a fresh session. Keep it brief and current.
