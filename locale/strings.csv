@@ -23,3 +23,7 @@ MONSTER_WOLFMAN,The Wolf Man
 MONSTER_DORIAN,Dorian Gray
 PICK_PROMPT,"%s, pick your monster"
 TURN_COUNTER,Turn %d of %d
+STRETCH_CHURCH,Church
+STRETCH_GRAVEYARD,Graveyard
+STRETCH_BOARDWALK,Boardwalk
+STRETCH_BOG,Bog

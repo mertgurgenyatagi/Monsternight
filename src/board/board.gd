@@ -25,7 +25,7 @@ const INTRO_GLIDE := 7.5
 const SKIP_GLIDE := 0.9
 const DROP_GAP := 0.45 # between one piece dropping onto the start and the next
 const HOP_BEAT := 0.12 # between two hops, so a roll of 6 can be counted by ear
-const BRANCH_BEAT := 0.5 # how long the placeholder takes to pick a path
+const FORK_VIEW := 330.0 # the camera looks this far past a fork while the choice is open
 const CROWD_STEP := 52.0 # across a space, from one piece to the next
 const CROWD_ROW := 4 # pieces in a row, then the next row stands behind
 const CROWD_FRONT := Vector2(0, 16) # the front row's feet, from the token's middle
@@ -63,6 +63,7 @@ var _crowds := {} # path id -> the pieces standing there, in the order they arri
 var _die: Die
 var _candle: Candle
 var _path_view: BoardPathView
+var _branch: BranchChoice
 var _front: Node2D # over the pieces: an icon that springs up stands here, so no piece hides it
 var _settling: Tween # the camera's glide onto a piece that has just stopped
 var _track_name := "" # the board music now chosen, by where the leader is
@@ -86,6 +87,8 @@ func _ready() -> void:
 	_front = Node2D.new()
 	_front.name = "Front"
 	lanes.add_child(_front)
+	_branch = BranchChoice.new()
+	lanes.add_child(_branch)
 	_hud = Hud.new()
 	add_child(_hud)
 	pieces_landed.connect(_hud.come_in)
@@ -225,13 +228,12 @@ func walk(player: Dictionary, steps: int) -> Signal:
 	return piece.walked
 
 
-## PLACEHOLDER (part 13 replaces it with the signpost and its arrows): a piece that reaches a
-## fork takes a random path after a short beat. Awaiting the signal gives the chosen id.
+## A piece that reaches a fork asks its player: the signpost's two arrows spring up with a candle,
+## and the camera eases out so both paths are in view. A click on an arrow, or the candle going out
+## (a random path), decides. Awaiting the signal gives the chosen id.
 func choose_branch(player: Dictionary, fork: String) -> Signal:
 	var piece := piece_for(player)
-	var chosen: String = BoardPath.next(fork).pick_random()
-	get_tree().create_timer(BRANCH_BEAT, false).timeout.connect(
-			func() -> void: piece.branch_chosen.emit(chosen))
+	_choose(piece, fork)
 	return piece.branch_chosen
 
 
@@ -263,6 +265,14 @@ func _play_turns() -> void:
 		if Match.turn != turn:
 			_hud.set_turn(Match.turn)
 			await get_tree().create_timer(0.5, false).timeout
+
+
+func _choose(piece: BoardPiece, fork: String) -> void:
+	await get_tree().process_frame # so a caller can await the signal choose_branch returns
+	_camera.glide_to(BoardPath.node(fork).pos.x + FORK_VIEW, 0.6)
+	var chosen := await _branch.ask(fork, _path_view)
+	_camera.follow(piece)
+	piece.branch_chosen.emit(chosen)
 
 
 # Small coins fall out of a ball at `at`, in front of the pieces, and fade as they fall.
@@ -509,6 +519,8 @@ func _walk(player: Dictionary, piece: BoardPiece, steps: int) -> void:
 			_settle(to, piece)
 		await PaperMotion.hop_to(piece, target, func() -> void: Sound.play("hop"), last).finished
 		here = to
+		if BoardPath.is_fork(here):
+			_path_view.nudge_signpost(here)
 		if not last:
 			await get_tree().create_timer(HOP_BEAT, false).timeout
 	Match.move_to(player, here)

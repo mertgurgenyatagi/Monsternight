@@ -109,7 +109,7 @@ All three stay in part 6's **side view**. The high camera was tried and reverted
 
 ## Roadmap
 
-Rough past part 15. Parts 1 to 13 are done (see the Log and the part notes).
+Rough past part 15. Parts 1 to 14 are done (see the Log and the part notes).
 
 13. Death and respawn (crumple, fly to the start, unfold, coins lost), filling part 12's `died` hook, and the board music following the leader.
 14. Splits: the signpost's arrows with a 10 s candle, replacing part 8's random placeholder.
@@ -128,7 +128,7 @@ Rough past part 15. Parts 1 to 13 are done (see the Log and the part notes).
 
 Each part session adds a few lines when it finishes: what got built, what changed from the plan, surprises, and anything left over or buggy. The next Microplan reads these instead of the code.
 
-### Built so far (parts 1 to 13, absorbed by Microplans 3 to 5)
+### Built so far (parts 1 to 14, absorbed by Microplans 3 to 5)
 
 - **Board (parts 10, 11, 12):**
   - The road is 57 spaces through the graveyard and 61 past the church (12, 8 or 12, 12, 10, 15), 15,460 px wide, rolled by `tools/board/roll_board.py` with seed 1031. `Match.TURNS` is 17, the intro glide 7.5 s. `BoardLayout.hill_width()` (2,840) stretches the church hill, and `scenery.gd`'s `_spots(location, first, last, gap)` keeps the props' density.
@@ -141,6 +141,11 @@ Each part session adds a few lines when it finishes: what got built, what change
   - The flight takes 1.2 s (no distance) to 2.0 s (the whole board). **The camera does not `follow` the ball:** the cap of 2,600 px/s would lose a ball flying 7,500 px/s, so `glide_to` takes the same time with the same sine easing as `PaperMotion.toss`, which keeps the ball in the middle of the screen. At the peak the scenery scrolls about 11,000 px/s.
   - `Board._follow_leader()` picks `board_<location of the leader>` (graveyard covers the church, swamp covers the boardwalk and the bog) after every walk and death and when the pieces have landed, and logs "Music: ...". The tracks don't exist yet, so it plays silence.
   - There is no `unfold` sound in `assets/`, so the unfolding plays `respawn` alone.
+- **Splits (part 14):**
+  - `BranchChoice` (`src/board/branch_choice.gd`, in Lanes after `Front`): `ask(fork, path_view)` gives the chosen id. Two `arrow.png` options float in the sky at (+260, -470) and (+260, -340) from the fork's token, not on the road, because the church's first space and icon filled every spot near the signpost. Each has the stretch's name (`STRETCH_*` keys in `strings.csv`) and up to 4 icons of that path, most common first, read from `BoardPath`. The 10 s half-size candle floats over the pieces at (-60, -230).
+  - `BoardPathView.light_path(lit, dimmed)` and `clear_light()` fade the lit path's spaces, dots and strip up and the other's down. `nudge_signpost(fork)` swings the post when a piece lands on it. `Board.choose_branch` keeps its signature; `_choose` glides the camera 330 px past the fork, then `follow`s the piece again.
+  - A timeout shakes both arrows, lights a random one for 0.55 s, then drops the other. Checked: 8 players, 11 forks sped up, both paths taken at both forks, routes still 57, 57, 61, 61; an MCP click beside the arrows did nothing and one on the lower arrow chose it. The 25 FPS bar read 19 in a plain run with the editor open.
+
 - **Code** is in `src/`:
   - Autoloads: `Sound` (`play`, `play_music`, `play_ambience`, and `quit()`, which every way out of the game goes through so no OGG leaks; `play("hop")` never repeats a hop twice in a row), `Scenes` (`change_to`, the paper transition, the texture and the cursor), `Settings` (`Settings.open()` from anywhere), and `Match` (players in turn order, each with `name`, `monster`, `space`, `blood`, `coins` and `finished`; `turn`, `TURNS`, `MAX_BLOOD`; `roll_turn_order`, `pick_monster`, `free_monsters`, `move_to`, and `change_blood` / `change_coins`, which return the real change).
   - `PaperMotion` holds `drop_in`, `set_down`, `lift_away`, `sway`, `sway_stop`, `pop_in`, `pop_out`, `lift` (it only raises), `squash`, `slide_in`, `move_to`, `flip`, `hop`, `hop_to`, `fly_to`, `tuck`, `breathe`, `tilt`, `shake`, `stretch`, `crumple` (it frees the piece at the end unless `free` is off), `unfold`, `toss` and `bounce`. New motion goes here.

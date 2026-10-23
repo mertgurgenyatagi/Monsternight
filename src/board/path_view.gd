@@ -14,7 +14,14 @@ const ROAD_WIDTH := 78.0
 const ROAD_COLOR := Color(0.1, 0.06, 0.16, 0.5)
 
 var _rng := RandomNumberGenerator.new()
+const LIT := Color(1.25, 1.22, 1.1)
+const DIMMED := Color(0.55, 0.5, 0.62, 0.55)
+const LIGHT_TIME := 0.25
+
 var _spaces := {} # path id -> its Space
+var _edges: Array[Dictionary] = [] # {to, items}: the road strip and dots from one space to the next
+var _posts := {} # fork id -> its signpost
+var _lights := {} # item -> its fading tween
 
 
 func _ready() -> void:
@@ -38,13 +45,41 @@ func _ready() -> void:
 			_ribbon(road, node, BoardPath.node(to))
 			_dots(dots, node, BoardPath.node(to))
 		if BoardPath.is_fork(id):
-			_signpost(signposts, node)
+			_posts[id] = _signpost(signposts, node)
 		var space := Space.new(node.kind)
 		space.name = id
 		space.position = node.pos
 		spaces.add_child(space)
 		_spaces[id] = space
 	_flag()
+
+
+## Lights the path of the stretch `lit` (its spaces, dots and strip) a little and dims the stretches
+## in `dimmed`, so a choice between them reads. `clear_light` puts everything back.
+func light_path(lit: String, dimmed: Array[String]) -> void:
+	for id in BoardPath.ids():
+		var stretch: String = BoardPath.node(id).stretch
+		if stretch == lit or stretch in dimmed:
+			_fade(_spaces[id], LIT if stretch == lit else DIMMED)
+	for edge in _edges:
+		var stretch: String = BoardPath.node(edge.to).stretch
+		if stretch == lit or stretch in dimmed:
+			for item in edge.items:
+				_fade(item, LIT if stretch == lit else DIMMED)
+
+
+## Everything back to its own color.
+func clear_light() -> void:
+	for item in _lights.keys():
+		_fade(item, Color.WHITE)
+
+
+## The fork's signpost swings as if a piece had nudged it.
+func nudge_signpost(fork: String) -> void:
+	var post: Sprite2D = _posts[fork]
+	var tween := post.create_tween()
+	tween.tween_property(post, "skew", 0.16, 0.12).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+	tween.tween_property(post, "skew", 0.0, 1.1).set_trans(Tween.TRANS_ELASTIC).set_ease(Tween.EASE_OUT)
 
 
 ## The space with this path id.
@@ -54,7 +89,7 @@ func space_at(id: String) -> Space:
 
 # A dark, worn strip of road under the spaces, along the lane's curve, so the tokens stand out from
 # whatever the ground is.
-func _ribbon(parent: Node2D, from: Dictionary, to: Dictionary) -> void:
+func _ribbon(parent: Node2D, from: Dictionary, to: Dictionary) -> Line2D:
 	var lane: BoardLayout.Lane = from.lane if from.lane != BoardLayout.Lane.MAIN else to.lane
 	var line := Line2D.new()
 	line.width = ROAD_WIDTH
@@ -67,11 +102,13 @@ func _ribbon(parent: Node2D, from: Dictionary, to: Dictionary) -> void:
 		var x := lerpf(from.pos.x, to.pos.x, float(i) / steps)
 		line.add_point(Vector2(x, BoardLayout.lane_y(lane, x)))
 	parent.add_child(line)
+	return line
 
 
 # Scraps of paper between two neighbouring spaces, along the lane's curve. They lie in the gap
 # between the two tokens, each a little different in size and turn.
-func _dots(parent: Node2D, from: Dictionary, to: Dictionary) -> void:
+func _dots(parent: Node2D, from: Dictionary, to: Dictionary) -> Array[Sprite2D]:
+	var made: Array[Sprite2D] = []
 	var lane: BoardLayout.Lane = from.lane if from.lane != BoardLayout.Lane.MAIN else to.lane
 	var reach := Space.TOKEN.get_width() / 2.0 + 3.0
 	var start: float = from.pos.x + reach
@@ -85,10 +122,12 @@ func _dots(parent: Node2D, from: Dictionary, to: Dictionary) -> void:
 		dot.scale = Vector2.ONE * _rng.randf_range(DOT_SIZE.x, DOT_SIZE.y)
 		parent.add_child(dot)
 		PaperShadow.add(dot)
+		made.append(dot)
+	return made
 
 
 # A signpost just behind the road, beside the fork's space, where the two paths part.
-func _signpost(parent: Node2D, fork: Dictionary) -> void:
+func _signpost(parent: Node2D, fork: Dictionary) -> Sprite2D:
 	var post := Sprite2D.new()
 	post.texture = SIGNPOST
 	post.centered = false
@@ -99,6 +138,16 @@ func _signpost(parent: Node2D, fork: Dictionary) -> void:
 	PaperShadow.add(post)
 	var period := _rng.randf_range(4.0, 6.0)
 	PaperMotion.sway(post, _rng.randf_range(0.5, 0.8), period).custom_step(_rng.randf_range(0.0, period))
+	return post
+
+
+# Fades an item's color to `color`, replacing any fade it is in.
+func _fade(item: CanvasItem, color: Color) -> void:
+	if _lights.has(item) and _lights[item].is_valid():
+		_lights[item].kill()
+	var tween := item.create_tween()
+	tween.tween_property(item, "modulate", color, LIGHT_TIME)
+	_lights[item] = tween
 
 
 # The flag planted beside the gate.
