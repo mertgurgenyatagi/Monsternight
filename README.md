@@ -19,7 +19,7 @@ What they mean in practice is in [Art and audio](docs/art_and_audio.md#principle
 - **Sounds:** all 60 effects, voices and ambience loops are done. The raws are in `audio_raw/` as WAV, and `tools/sounds/process_sounds.py` has processed them into the OGGs in `assets/audio/`, which the user reviewed and approved.
 - **Fonts:** done. `display.ttf` is Grenze Gotisch Bold and `body.ttf` is Spectral Medium, both with their OFL licenses, and both cover Turkish letters.
 - **Missing:** the 11 music tracks, which the user makes separately.
-- **Part 1 is built** (the foundation and title screen), awaiting the user's approval. The game runs at 25 FPS.
+- **Part 1 is built** (the foundation and title screen), built and merged; the user reviews it afterwards. The game runs at 25 FPS.
 - **Next:** [part 2](docs/microplan.md#part-2-settings) of the first playable, in its own session.
 
 **Keep the raws.** They're the sources, and the processed files can always be rebuilt from them.
@@ -64,6 +64,7 @@ What they mean in practice is in [Art and audio](docs/art_and_audio.md#principle
    - It creates the part's branch, like `part-1-title`.
    - It implements everything, then commits and pushes the branch.
    - It merges the branch into `development` and pushes `development`.
+   - It leaves `development` checked out, ready for the next session.
 
    It still asks the user about anything else it needs to.
 4. **Microplan.** The first playable is built in about 24 parts. `/microplan` plans the next three in detail, in its own session, after part 3, 6, 9 and so on. Each part is built in its own session, on its own branch, and meets the "done" bar in `docs/microplan.md`. Planning and building never share a session, to save tokens.

@@ -11,9 +11,8 @@ A part is done when:
 1. It runs in Godot with no errors or warnings.
 2. Everything in its Polish list is in: animated, with its sounds, nothing glossed over.
 3. Claude has checked it by running the game, not just by reading the code.
-4. The user has seen it and approved it.
-5. Three screenshots of the finished part, taken from the running game, are saved in `screenshots/part_NN/` (like `part_01/`) as `1.png`, `2.png` and `3.png`. Pick the three moments that show the part best.
-6. Its Part notes are written. The branch is committed, pushed and merged into `development`, and `development` is pushed. This needs no git approval (see README, Handover 3).
+4. Three screenshots of the finished part, taken from the running game, are saved in `screenshots/part_NN/` (like `part_01/`) as `1.png`, `2.png` and `3.png`. Pick the three moments that show the part best.
+5. Its Part notes are written. The branch is committed, pushed and merged into `development`, and `development` is pushed. Then check out `development`, so the next session starts there. The part session never waits for the user: it does the whole cycle, and the user reviews afterwards and asks for changes in a later session. This needs no git approval (see README, Handover 3).
 
 If a part turns out too big, split it (5a, 5b) instead of rushing it.
 
