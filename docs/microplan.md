@@ -12,7 +12,7 @@ A part is done when:
 2. Everything in its Polish list is in: animated, with its sounds, nothing glossed over.
 3. Claude has checked it by running the game, not just by reading the code.
 4. The user has seen it and approved it.
-5. Its Part notes are written, and the branch is merged into `development`.
+5. Its Part notes are written. The branch is committed, pushed and merged into `development`, and `development` is pushed. This needs no git approval (see README, Handover 3).
 
 If a part turns out too big, split it (5a, 5b) instead of rushing it.
 

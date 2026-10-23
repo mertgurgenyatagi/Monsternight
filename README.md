@@ -58,6 +58,11 @@ What they mean in practice is in [Art and audio](docs/art_and_audio.md#principle
 
 1. **Source of truth.** The design came from 15 questionnaires (https://claude.ai/artifact/4EQdWyaX3PzgggQHBMe2Xi). The answers are saved word for word in `docs/questionnaire_answers/`, and they win if a doc ever disagrees. A later answer beats an earlier one. Where the user left a choice to Claude, the docs say so. The questionnaires are finished, so ask the user directly about anything new.
 2. **Assets.** Claude lists what it needs in `docs/assets.md`, and the user provides the files. Images come from Gemini and sounds from ElevenLabs, using the prompt docs, and Claude's scripts process the raws into `assets/`. The music is made separately. Real assets from the start, no placeholders.
-3. **Branches.** `main` → `development` → a branch for each piece of work. Merge finished work into `development`.
+3. **Branches.** `main` → `development` → a branch for each piece of work. Merge finished work into `development`. A part session starts on `development` and does all of its own git without asking for approval:
+   - It creates the part's branch, like `part-1-title`.
+   - It implements everything, then commits and pushes the branch.
+   - It merges the branch into `development` and pushes `development`.
+
+   It still asks the user about anything else it needs to.
 4. **Microplan.** The first playable is built in about 24 parts. `/microplan` plans the next three in detail, in its own session, after part 3, 6, 9 and so on. Each part is built in its own session, on its own branch, and meets the "done" bar in `docs/microplan.md`. Planning and building never share a session, to save tokens.
 5. **This README** is the handover for a fresh session. Keep it brief and current.
