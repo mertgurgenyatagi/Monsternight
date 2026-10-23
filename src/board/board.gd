@@ -36,6 +36,7 @@ var _intro := false
 var _skipped := false
 var _pieces: Node2D
 var _by_monster := {} # monster id -> its BoardPiece
+var _hud: Hud
 var _crowds := {} # path id -> the pieces standing there, in the order they arrived
 
 
@@ -53,6 +54,9 @@ func _ready() -> void:
 	lanes.add_child(_pieces)
 	for player in Match.players:
 		_add_piece(player)
+	_hud = Hud.new()
+	add_child(_hud)
+	pieces_landed.connect(_hud.come_in)
 	_camera.jump_to(BoardLayout.width())
 	_track()
 	_lightning_loop()
@@ -82,6 +86,11 @@ func _intro_done() -> void:
 	_intro = false
 	print("Board ready")
 	_land_pieces()
+
+
+## The HUD over the board.
+func hud() -> Hud:
+	return _hud
 
 
 ## The piece that is this player's monster.

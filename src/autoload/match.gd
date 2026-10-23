@@ -6,10 +6,15 @@ extends Node
 const MIN_PLAYERS := 2
 const MAX_PLAYERS := 8
 const NAME_LENGTH := 12
+const TURNS := 12
+const MAX_BLOOD := 3
 
 ## One dictionary per player. Right after `start` this is the seating order; `roll_turn_order`
 ## reshuffles it, and from then on the array order is the turn order.
 var players: Array[Dictionary] = []
+
+## The turn the match is on, from 1 to `TURNS`.
+var turn := 1
 
 
 ## A typed name as it will be kept: trimmed, capped, and "Player N" when blank.
@@ -39,7 +44,9 @@ func start(raw_names: Array[String]) -> bool:
 		return false
 	players.clear()
 	for i in raw_names.size():
-		players.append({"name": clean_name(raw_names[i], i), "monster": "", "space": BoardPath.START})
+		players.append({"name": clean_name(raw_names[i], i), "monster": "", "space": BoardPath.START,
+				"blood": MAX_BLOOD, "coins": 0})
+	turn = 1
 	print("Match started: ", players)
 	return true
 
@@ -80,6 +87,23 @@ func move_to(player: Dictionary, id: String) -> bool:
 	player.space = id
 	print("Moved: ", player.name, " to ", id)
 	return true
+
+
+## Adds `delta` to the player's blood, kept between 0 and `MAX_BLOOD`. Returns the change that
+## really happened. Dying at 0 is part 12's.
+func change_blood(player: Dictionary, delta: int) -> int:
+	var before: int = player.blood
+	player.blood = clampi(before + delta, 0, MAX_BLOOD)
+	print("Blood: ", player.name, " ", before, " -> ", player.blood)
+	return player.blood - before
+
+
+## Adds `delta` to the player's coins, never below 0. Returns the change that really happened.
+func change_coins(player: Dictionary, delta: int) -> int:
+	var before: int = player.coins
+	player.coins = maxi(before + delta, 0)
+	print("Coins: ", player.name, " ", before, " -> ", player.coins)
+	return player.coins - before
 
 
 ## The names the setup screen shows again after a match, or an empty list at first.

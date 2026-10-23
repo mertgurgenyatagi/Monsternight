@@ -203,6 +203,14 @@ Each part session adds a few lines when it finishes: what got built, what change
 - **Checked:** 8 players all walked to the finish with random rolls (13 rounds): `Match` agreed with every piece, both forks were taken both ways, no piece strayed from its space. 2- and 8-player landings and a 6-space hill climb are in `screenshots/part_08/`. The frame rate stays at 25 between screenshots; it only dipped while the test script saved PNGs.
 - **Not checked:** the Godot MCP was connected only late in the session, and nothing in this part needs its clicks, so it was used just to run the game and read errors. The hop sounds and the feel of the squashes have not been listened to or judged by the user.
 
+### Part 9 notes (the HUD)
+
+- **Built:** `Match` has `blood` (3, `MAX_BLOOD`) and `coins` per player, `turn` and `TURNS`, and `change_blood` / `change_coins`, which return the real change. `Hud` (`src/board/hud.gd`, a `CanvasLayer` at layer 20, made by `Board`, reached with `Board.hud()`) and `HudPortrait` (`hud_portrait.gd`). The HUD comes in when `pieces_landed` fires. `TURN_COUNTER` is in `strings.csv`.
+- **Layout:** portraits 184 px apart, centred, hanging from y 14; the frame is 118 px, and the name, drops and coins sit below, ending at about y 215. The active portrait drops 16 px, grows a little and brightens. The turn tag is top-left, 172 x 52 px.
+- **Changed from the plan:** the finished portrait is greyed by the shader on the face and a grey blend on the frame, because `grey.gdshader` drops the frame's tint. The active drop uses its own tween, not `PaperMotion.lift`, which only raises.
+- **Checked:** 2 and 8 players; rules and HUD agree through blood (0 to 3 limits), coins (+7, -3, not below 0), active, finished and turn 12; 25 FPS; screenshots in `screenshots/part_09/`. "Ayşegül" fits.
+- **Not checked:** the Godot MCP's clicks (labels ignore the mouse and nothing else on the HUD takes it, but no click was sent), and the sounds and feel of the animations have not been judged by the user. On the right of an 8-player strip, the moon sits behind a couple of coin counts; the outlines keep them readable.
+
 ### Built so far (parts 1 to 6, absorbed by Microplan 3)
 
 - **Code** is in `src/`:
