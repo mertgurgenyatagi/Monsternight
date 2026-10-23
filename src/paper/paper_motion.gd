@@ -132,6 +132,70 @@ static func move_to(piece: Node2D, target: Vector2, duration := 0.45) -> Tween:
 	return tween
 
 
+## Turns around on its edge: squeezes to nothing, calls `at_middle` to swap the face, and opens
+## again. The face swap happens while the piece is edge-on, so it never shows.
+static func flip(piece: Node2D, at_middle := Callable(), duration := 0.32) -> Tween:
+	var rest := _rest_scale(piece)
+	_kill(piece, "lift")
+	var tween := _fresh(piece, "scale")
+	tween.tween_property(piece, "scale:x", 0.0, duration / 2) 			.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
+	if at_middle.is_valid():
+		tween.tween_callback(at_middle)
+	tween.tween_property(piece, "scale:x", rest.x, duration / 2) 			.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	return tween
+
+
+## A small jump in place: it squats, springs up, and lands with a squash.
+static func hop(piece: Node2D, height := 40.0) -> Tween:
+	var rest := _rest_position(piece)
+	_center_pivot(piece)
+	_kill(piece, "lift")
+	var tween := _fresh(piece, "move")
+	tween.tween_property(piece, "position:y", rest.y - height, 0.18) 			.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	tween.tween_property(piece, "position:y", rest.y, 0.16) 			.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+	tween.tween_callback(func() -> void: squash(piece))
+	return tween
+
+
+## Flies in an arc to a new resting place and size, which become the piece's rest position and
+## scale. `arc` is how high the path bows above the straight line.
+static func fly_to(piece: Node2D, target: Vector2, target_scale: Vector2, duration := 0.5,
+		delay := 0.0, arc := 60.0) -> Tween:
+	var from := piece.position
+	piece.set_meta("rest_position", target)
+	piece.set_meta("rest_scale", target_scale)
+	_kill(piece, "lift")
+	var tween := _fresh(piece, "move").set_parallel()
+	tween.tween_method(func(t: float) -> void:
+			piece.position = from.lerp(target, t) - Vector2(0, arc * 4.0 * t * (1.0 - t)),
+			0.0, 1.0, duration).set_delay(delay) 			.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN_OUT)
+	tween.tween_property(piece, "rotation_degrees", 0.0, duration).set_delay(delay)
+	var scaling := _fresh(piece, "scale")
+	scaling.tween_property(piece, "scale", target_scale, duration).set_delay(delay) 			.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN_OUT)
+	return tween
+
+
+## Lifts out of a stack in a small arc to one side, calls `at_apex` (to move the piece to
+## another height in the stack, and set its new "rest_position"), and tucks back in at its
+## rest position.
+static func tuck(piece: Node2D, side: Vector2, at_apex := Callable(), duration := 0.4) -> Tween:
+	var home := _rest_position(piece)
+	_kill(piece, "lift")
+	var tween := _fresh(piece, "move")
+	var out := func(t: float) -> void:
+		piece.position = home.lerp(home + side, t) - Vector2(0, 26.0 * sin(t * PI * 0.5))
+		piece.rotation_degrees = side.x * 0.06 * t
+	tween.tween_method(out, 0.0, 1.0, duration / 2) 			.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	if at_apex.is_valid():
+		tween.tween_callback(at_apex)
+	var back := func(t: float) -> void:
+		var target: Vector2 = piece.get_meta("rest_position")
+		piece.position = (home + side).lerp(target, t) - Vector2(0, 26.0 * cos(t * PI * 0.5))
+		piece.rotation_degrees = side.x * 0.06 * (1.0 - t)
+	tween.tween_method(back, 0.0, 1.0, duration / 2) 			.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+	return tween
+
+
 ## Jerks from side to side, for "no".
 static func shake(piece: CanvasItem) -> Tween:
 	var rest := _rest_position(piece)

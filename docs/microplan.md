@@ -1,6 +1,6 @@
 # Microplan
 
-The [first playable](roadmap.md#1-first-playable), built in about 24 parts. `/microplan` plans three parts at a time in detail, and a rough roadmap to the end (see `.claude/skills/microplan/SKILL.md`). It runs in its own session, after part 3, 6, 9 and so on.
+The [first playable](roadmap.md#1-first-playable), built in about 23 parts. `/microplan` plans three parts at a time in detail, and a rough roadmap to the end (see `.claude/skills/microplan/SKILL.md`). It runs in its own session, after part 3, 6, 9 and so on.
 
 ## Building a part
 
@@ -18,160 +18,207 @@ If a part turns out too big, split it (5a, 5b) instead of rushing it.
 
 ## Parts
 
-### Part 1: Foundation and title screen
+### Part 4: Turn order roll and the timer candle
 
-**Goal:** The game opens on the title screen. The curtain opens on the logo under a night sky, and Play, Settings and Quit wait to be clicked. Quit closes the curtain and exits. Play and Settings respond to the mouse but lead nowhere yet: parts 3 and 2 wire them up.
-
-**Builds:**
-- **First, Godot MCP.** Create `project.godot` and enable the plugin in `addons/godot_mcp/`. Register its three autoloads (`MCPRuntimeBridge`, `MCPInputBridge`, `MCPScreenshotBridge` from `addons/godot_mcp/services/`), as `../Tavernaball/project.godot` does. Open the editor in the background, and confirm the MCP tools answer before building anything else.
-- `project.godot`: 1920 × 1080, stretch mode `canvas_items` with aspect `keep`, and the title as the main scene.
-- **Import settings.** Run one headless import, then set the 5 ambience files to loop. Turn on mipmaps for art, because nearly everything is drawn smaller than its file and would shimmer without them.
-- **25 FPS:** `application/run/max_fps=25` for the whole game, for a stop-motion feel.
-- **Audio buses:** Music and SFX. Ambience and voices go through SFX, as Settings says.
-- **`Sound` autoload.** It plays a sound effect by name, with a slight random pitch so repeats don't sound identical. It picks one of `hop_1` to `hop_3`. It crossfades music and ambience. If a music file is missing, it plays nothing and says nothing, because the music arrives later.
-- **`Scenes` autoload.** Changes scenes with one paper transition used everywhere. Music keeps playing through a change unless the new scene asks for another track.
-- **Translations:** `locale/strings.csv` with English, and every player-facing string goes through `tr()` from the start.
-- **Theme:** both fonts, a `button.png` stretched sideways for buttons, and `panel.png` for panels.
-- **The paper look:**
-  - `paper_texture.png` laid faintly over everything, on a top canvas layer.
-  - The skeleton-hand cursor.
-  - One shared soft shadow for every piece: a darkened, offset copy of the piece behind it.
-- **Paper motion library:** one shared script of reusable tweens, so every screen moves the same way. Part 1 needs the drop-in, the gentle sway, pop-in, and the hover lift with press squash. Later parts add hop, flip and crumple here, not as one-off tweens.
-- **Sky:** a reusable night sky with a gradient, the paper moon, and twinkling stars. The board reuses it in part 6 with a tint for each location.
-- **Title screen.** The curtain starts closed. It parts slowly with a soft overshoot (about 2.4 s), the logo drops in at about 2 s and keeps swaying, and the three buttons pop in one after another from about 4 s. Now and then a bat flaps across behind the logo, and lightning flashes the sky (two flickers, every 8 to 16 s). `title.ogg` plays once it exists.
-
-**Polish:**
-- The curtain halves ease open, slowing at the end, with a little settle.
-- The logo hangs and sways, never perfectly still.
-- Stars twinkle out of step with each other.
-- Lightning flashes the sky pale in two flickers, at uneven intervals. It has no thunder sound yet: there is no thunder file, so ask the user for one if wanted.
-- Buttons lift on hover with `ui_hover`, and squash on click with `ui_click`.
-- Nothing pops into view: everything enters and leaves with motion.
-- Quit closes the curtain before the window closes.
-
-**Assets:** `ui/curtain.png`, `curtain_top.png`, `logo.png`, `button.png`, `panel.png` and `cursor.png`; `scenery/moon.png`, `star.png`, `bat.png` and `paper_texture.png`; `sfx/ui_hover` and `ui_click`; `fonts/display.ttf` and `body.ttf`; `music/title.ogg` (missing, and fine to be missing).
-
-**Check:**
-- The console run and the MCP error log show no errors or warnings.
-- Use the MCP's game screenshots and simulated mouse for the hover and the clicks.
-- Use `python tools/godot/capture.py` for the motion: one contact sheet instead of single frames. Skip the MCP's simulated mouse unless a click needs proving (see README, Saving tokens).
-- The game looks right in a 1280 × 720 window as well as at 1920 × 1080.
-
-**Risks:** The MCP's three runtime autoloads mustn't ship in a release build. Note it for the final part.
-
-### Part 2: Settings
-
-**Goal:** Settings opens from the title as a paper panel, with music volume, sound effects volume, and fullscreen. Changes take effect at once and are remembered next launch.
+**Goal:** Begin on the setup screen leads to the turn order roll. The players' name cards flip face down, shuffle like a deck, deal out in a row, and flip face up one by one to reveal the turn order. The reusable timer candle is built and proven on its own, ready for every decision from part 5 on.
 
 **Builds:**
-- **`Settings` autoload.** It loads and saves `user://settings.cfg` and applies it at startup, before the title appears.
-- **The settings panel as a reusable overlay.** The title opens it now. Esc will open it over the board later, so it must not pause anything or depend on the title.
-- **Paper controls:** two sliders and a fullscreen toggle.
-- **Ways to close it:** a back button, Esc, or a click outside the panel.
+- **One pregame scene, `src/pregame/`,** for the turn order roll now and monster select in part 5 (Claude's choice: the cards that settle into the turn order stay on screen and become the pickers' cards, with no scene change between). Setup's Begin now goes here through `Scenes.change_to`.
+- **`Match.roll_turn_order()`.** It shuffles `players` into turn order, so the array order *is* the turn order from here on. The rules code decides the order first, and the animation only shows it.
+- **`PlayerCard`** (`src/pregame/player_card.gd`): a read-only paper card from `card.png` with the player's name, a big turn number in the display font, and a blank back for face down. It's built so part 5 can add the monster's portrait and color. It reuses the look of setup's `name_card.gd`, which is editable and stays separate.
+- **`PaperMotion.flip(piece, at_middle: Callable)`:** squeezes `scale.x` to 0, calls `at_middle` to swap the face, and opens again. Monsters turning around in part 8 use it too.
+- **The candle, `src/ui/candle.gd`,** one reusable timer for every decision:
+  - `start(seconds)`, `stop()`, signal `timed_out`, and `time_left`.
+  - `candle.png` burns down from the top as time runs out: shrink it from its base, don't squash the whole picture.
+  - `flame.png` sits on the wick and rides down with it.
+  - It doesn't pause while Settings is open, because the match keeps running.
+- **Leaving the turn order:** after the reveal, a short beat, then the cards shrink and rise into a strip along the top in turn order. Part 5's monster row drops in below them. Until then the scene stops there and prints `Match` to the log.
 
 **Polish:**
-- The panel drops in like a card being set down, with `card_slam` played quietly, and lifts away when it closes.
-- Moving the music slider changes the volume live. Letting go of the effects slider plays a sample effect at the new volume.
-- Switching to fullscreen keeps everything placed correctly.
-- While the panel is open, the title behind it dims a little but keeps moving.
+- The cards drop in face up in seating order, as setup left them. They flip face down one after another (`flip`, a quick ripple from left to right), then gather into a stack in the middle.
+- **The shuffle:** a few quick passes where cards lift out of the stack in small arcs and tuck back in at another height, each with a soft `flip` at low volume. About 2 s in all, never a blur.
+- **The deal:** the cards fly out of the stack one at a time to their places in the row, each landing with a quiet `card_slam` and a tiny settle.
+- **The reveal:** the cards flip face up from first to last, with a gap between them. Each shows its name and turn number, which pops in a moment after the flip.
+- The first player's card gives a small hop when it lands face up, so the player who moves first is clear.
+- The rising into the top strip is one smooth, staggered move, not all at once.
+- **The candle's flame** flickers all the time with small, uneven scale and tilt changes, stepping at 25 FPS like everything else.
+- In the last 3 seconds the flame sputters harder and `timer_low` plays once.
+- At zero the flame shrinks to nothing and `timer_out` plays.
+- **Relighting:** the candle springs back to full height with a little overshoot, and the flame pops back on.
+- `title.ogg` carries on through the turn order roll.
 
-**Assets:** `ui/panel.png` and `button.png`, and `sfx/card_slam`, `ui_click` and `ui_hover`.
+**Assets:** `ui/card.png`, `candle.png` and `flame.png`; `sfx/flip`, `card_slam`, `timer_low` and `timer_out`. Nothing missing.
 
 **Check:**
-- Change every setting, quit, relaunch, and see that each one was kept.
-- Every way of closing the panel works.
-- No errors.
+- Run the roll with 2, 5 and 8 players, and confirm in the log that `Match.players` is in the order the cards show.
+- Make one contact sheet with `capture.py` (a short run) for the flip, shuffle and deal.
+- Run the candle in a small test scene for 5 s: it burns down, sputters at 3 s, goes out, fires `timed_out`, and relights.
+- **Carried over from part 3:** prove one real path with the MCP's simulated input. Type a name with the keyboard on the setup screen, click Begin, and see the roll start.
 
-**Open question for the user:** there's no art for slider handles or the toggle. The options are to reuse a piece we have (`path_dot`, `coin`, `flag`), or for the user to make one small image.
+**Risks:** Eight cards in one row at the top must still leave the names readable. Use two rows of four if they don't fit, as setup does.
 
-### Part 3: Setup screen and match state
+### Part 5: Monster select
 
-**Goal:** Play leads to the setup screen. Choose 2 to 8 players and type a name for each. Begin is ready once the setup is valid, and Back returns to the title.
+**Goal:** After the turn order, the 8 monsters stand in a row on their paper stands. Players pick in reverse turn order, each against a 30 s candle. Taken monsters grey out, every pick plays the monster's voice, and each player's card takes on their monster's portrait and color.
 
 **Builds:**
-- **`Match`, the one place match state lives** (see tech.md). Part 3 holds the players and their names. It's built so the later parts can add monster, blood, coins, position, trophies and stats, and so the rules code is the only thing that changes it. Later, online play has the host run it.
-- **The setup screen.** Each player is a paper name card with a typed name. Add and remove buttons change the count, with a minimum of 2 and a maximum of 8.
-- **Name rules** (Claude's choice):
-  - Names are trimmed and capped at 12 characters.
-  - A blank name falls back to "Player N".
-  - Duplicate names are refused, so players can tell each other apart before they have colors.
-- **Turkish characters:** the players are in Turkey, so ç, ğ, ı, İ, ö, ş and ü must type and display correctly in both fonts.
-- **Begin** stores the players in `Match`. It leads to the turn order roll once part 4 builds it.
+- **`Monsters` data** (`src/data/monsters.gd`): the 8 monsters in the order of characters.md, each with an id, a translated name key (`MONSTER_DRACULA` and so on), its color, and the paths to its body, portrait and three voices. Sample the colors from the art, so the tint agrees with the drawing. From here on, everything that needs a monster's look reads it from this one file.
+- **`Match`:** each player gets a `monster` id, set through one rules call (`Match.pick_monster(player, id)`) that refuses a monster that's already taken. Also add `Match.free_monsters()`.
+- **The monster row** in the pregame scene, below the cards. Each monster is a `Sprite2D` on `stand.png`, with `PaperShadow`. The row fits all 8 across 1920 px, at about 300 px tall.
+- **The pick loop:**
+  1. Picks go from the last player in the turn order to the first.
+  2. The picker's card lifts out of the strip.
+  3. A prompt in the body font appears under the strip, like "Ayşe, pick your monster", with the candle beside it on 30 s.
+  4. The player clicks a free monster. If time runs out, a random free monster is picked instead.
+- **The last monster** (Claude's choice): with 8 players, the last picker has only one monster left. It's picked for them automatically after a short beat, with no candle.
+- **`PaperMotion.hop(piece)`:** a lift-and-set-down with squash. Part 8's moving pieces reuse it.
+- **After the last pick:** a beat, then the board. Until part 6 builds it, the scene stops there and prints `Match` with the monsters.
 
 **Polish:**
-- A new card slides in from the side and settles with a wobble. A removed card crumples away with `crumple`.
-- The add button refuses past 8 with `ui_denied` and a shake, and the remove button does the same below 2.
-- The text cursor and the selected name look like ink on paper.
-- A duplicate name shakes its card.
-- `title.ogg` carries on from the title without restarting.
-- Play and Back use the same paper transition.
+- The monsters drop in one after another, from left to right, once the cards have settled in the strip. Then each sways gently, out of step with the others.
+- **Hovering a free monster:**
+  - It lifts with `ui_hover`.
+  - Its name fades in under it, in the display font and in its color.
+  - Moving away lowers it again and fades the name.
+- **Picking:**
+  - The monster hops, and its `<name>_pick` voice plays.
+  - Its portrait flies up from the row to the picker's card and lands there with `card_slam`.
+  - The card's border tints in the monster's color, and the card settles back into the strip.
+- **A taken monster:**
+  - It greys out and darkens over about 0.3 s, and stops swaying.
+  - The picker's name stays under it in plain ink.
+  - Hovering it does nothing. Clicking it plays `ui_denied` and shakes it.
+- **The candle** relights for each new picker. When time runs out, the flame goes out with `timer_out`, then the random pick plays exactly like a click, voice included.
+- **The prompt** swaps between pickers with a small flip, never a hard cut.
+- The music switches to `select.ogg` as the monsters drop in. It's missing, so `title.ogg` fades out.
 
-**Assets:** `ui/card.png`, `button.png` and `panel.png`, and `sfx/crumple`, `ui_denied`, `ui_click` and `ui_hover`.
+**Assets:** all 16 monster images in `monsters/`, `monsters/stand.png`, `ui/card.png`, `candle.png` and `flame.png`; all 24 voices, though only the 8 `_pick` voices play here; `sfx/ui_hover`, `ui_denied`, `card_slam`, `timer_low` and `timer_out`; `music/select.ogg` (missing, and fine to be missing).
 
 **Check:**
-- Fill in 2 players and 8 players.
-- Type Turkish names.
-- Try the edge cases: blank names, duplicates, adding past 8, removing below 2.
-- Leave and come back to see the cards are rebuilt cleanly.
-- Confirm the contents of `Match` in the log.
+- Do a full select with 2 players and with 8, including the automatic last pick.
+- Let one candle run out, and see that the random pick takes only a free monster.
+- Click a taken monster.
+- Confirm the monsters in `Match` match the cards.
+- Use one contact sheet for a pick, and real MCP clicks for one pick and one denied click.
+
+**Risks:** The pick voices differ in loudness. If one stands out, fix it in `process_sounds.py` and don't add a volume table in code.
+
+### Part 6: The board's scenery
+
+**Goal:** After monster select, the board appears: five paper locations side by side, with layers sliding past at different speeds. The camera glides once from the castle gate back to the village start. As it crosses each location, the sky tint and the ambience change with it, and everything is gently alive.
+
+**Builds:**
+- **`src/board/board.tscn`.** Monster select now leads here.
+- **The board's layout data** (`src/board/board_layout.gd`): each location's x range, worked out from board.md's space counts at about 220 px a space. The first split spans about the width of `church_hill.png` (about 2400 px). It also sets the heights of the lanes: the main road, the upper lanes (church hill and boardwalk), and the lower lanes (graveyard and bog). Everything must fit in one 1080-tall view. Part 7 puts the spaces on these lanes, so nothing in the scenery is placed by hand where the path will go.
+- **The sky:** the existing `Sky` stays fixed to the screen, on a canvas layer behind everything.
+- **The layers,** as `Parallax2D` layers from back to front:
+  1. The far strips, scrolling slowly.
+  2. The mid props: houses, trees, the church and the castle.
+  3. The ground strips and the lane level, at full speed.
+  4. A thin layer of foreground fog, a little faster than the camera.
+- **Locations meeting:** neighbouring far and ground strips overlap and fade into each other. A tall prop stands on each seam.
+- **`Camera2D`** with limits at the board's ends, and a `glide_to(x)` that parts 8 and 10 will reuse to follow the active player.
+- **The intro glide** (Claude's choice): it holds on the castle gate for a moment, then glides about 6 s to the village start, easing in and out. A click skips it. This shows everyone where the race ends.
+- **Location tracking:** whenever the camera's centre moves into another location, the sky tints with `Sky.tint` and the ambience crossfades with `Sound.play_ambience`. This brings "ambience follows the camera" forward from the old part 14.
+- **The props per location:**
+  - **Village:** the two houses, repeated with a flipped copy for variety, and the lamps.
+  - **Graveyard:** stones, trees, the church hill, and the church on top.
+  - **Forest:** both trees and the mushrooms.
+  - **Swamp:** the water, the boardwalk on the upper lane, cypresses, and reeds.
+  - **Castle:** the castle on its cliff, the torches, and `castle_gate.png` at the very end.
+
+**Polish:**
+- Fog strips drift slowly sideways and loop seamlessly. They're thick in the village and swamp, and thin wisps in the graveyard.
+- Village lamps glow with a soft radial glow, made in the engine with a `GradientTexture2D` and additive blending. The glow flickers now and then.
+- Castle torches each carry a `flame.png` that flickers like the candle's flame. Reuse its flicker code, don't copy it.
+- The forest mushrooms pulse with a faint glow.
+- The swamp water bobs slowly up and down and drifts a little.
+- Trees and reeds sway very slightly from their base, out of step with each other.
+- Bats flap across now and then over the graveyard and the castle. Reuse `bat.gd`, adapted to fly through the world rather than the screen if it needs to be.
+- At the castle, lightning flashes the sky now and then, with `Sky.flash()`, as on the title.
+- **Sky tints** (Claude picks the exact colors, colorful and never bleak):
+  - **Village:** misty violet-blue.
+  - **Graveyard:** green-violet.
+  - **Forest:** deep teal.
+  - **Swamp:** sickly olive-green.
+  - **Castle:** blood red and purple.
+- Ambience fades in under the board as it appears, and the title music fades out.
+- Every prop gets `PaperShadow`.
+
+**Assets:**
+- Every image in `scenery/`, plus `ui/flame.png`.
+- `ambience/village`, `graveyard`, `forest`, `swamp` and `castle`.
+- The board music is missing and isn't needed until part 12.
+
+**Check:**
+- Run the intro glide and make one `capture.py` contact sheet.
+- Then move the camera to each location in a script, and save one screenshot of each from the viewport. Use three of them for `screenshots/part_06/`.
+- Check that the sky tint and the ambience switch at every boundary, in the log.
+- Watch for seams in the tiled strips, and for frame drops with all five locations loaded.
+
+**Risks:**
+- This is the biggest part so far. If it runs long, split it:
+  - **6a:** the layers, the camera, the layout data, the village and the graveyard.
+  - **6b:** the forest, the swamp, the castle, and the intro glide.
+- The lane heights are a first guess, and part 7 may move them. Keep every prop's position tied to `board_layout.gd`, so moving a lane doesn't mean moving props by hand.
 
 ## Roadmap
 
-Very rough, past part 3.
+Rough past part 6. Parts 1 to 3 are done (see the Log).
 
-4. The timer candle (shared by every decision), and the turn order roll: name cards shuffle and settle.
-5. Monster select: the row of 8, reverse-order picks, greyed-out monsters, pick voices, and the 30 s candle.
-6. The board's scenery: sky tints, parallax layers and props for all 5 locations, and the life in it (fog, bats, flickering lamps and torches).
-7. The board path: spaces built from data, icons, path dots, both splits, signposts, and the castle gate.
-8. Monster pieces: the stand, the shadow, hopping and flipping, and the camera following the active player.
+4. Turn order roll and the timer candle.
+5. Monster select.
+6. The board's scenery, with ambience following the camera.
+7. The board path: spaces built from `board_layout.gd`, icons, path dots, both splits, signposts, and the castle gate as the finish.
+8. Monster pieces: the stand, the shadow, `hop` and `flip`, and the camera following the active player.
 9. The HUD: the portrait strip with blood and coins, the raised active portrait, and the turn counter.
-10. The die and the turn loop: roll, move, `turn_start`, and the roll timer.
+10. The die and the turn loop: roll, move, `turn_start`, and the 5 s candle.
 11. Quick spaces: coin, spikes, thief and church, with icons flying to the HUD.
-12. Death and respawn: crumple, fly to the start, unfold.
-13. Splits: signpost arrows and the path timer.
-14. Board audio: ambience follows the camera, and the music follows the leader.
-15. Challenge: pick an opponent, then a stake card, with invalid stakes greyed out and the 20 s timer.
-16. The VS card, the countdown, and the coin flip.
-17. Duel results: the win pose and the crumple, voices, gold and blood flying across, deaths in duels, and the swap.
-18. The swap handicap (3 rounds), the no-opponent fallback, and finishing at the castle gate (the flag and `sting_finish`).
-19. Match end: 12 turns, `sting_final_turn`, the early end, and tracking the stats.
-20. The trophy ceremony: the curtain, drumrolls, trophies, and the leaderboard with its tiebreaker.
-21. Fun stats, then back to the setup screen.
-22. Esc settings during a match, and a translation and edge-case sweep.
-23. Full playtests and tuning: board length and the 12 turns.
-24. Bug bash and the final polish pass.
+12. Death and respawn (crumple, fly to the start, unfold), and the board music following the leader.
+13. Splits: signpost arrows and the 10 s candle.
+14. Challenge: pick an opponent, then a stake card, with invalid stakes greyed out and the 20 s candle.
+15. The VS card, the countdown, and the coin flip.
+16. Duel results: the win pose and the crumple, voices, gold and blood flying across, deaths in duels, and the swap.
+17. The swap handicap (3 rounds), the no-opponent fallback, and finishing at the castle gate (the flag and `sting_finish`).
+18. Match end: 12 turns, `sting_final_turn`, the early end, and tracking the stats.
+19. The trophy ceremony: the curtain, drumrolls, trophies, and the leaderboard with its tiebreaker.
+20. Fun stats, then back to the setup screen.
+21. Esc settings during a match, and a sweep of translations and edge cases. This includes what parts 2 and 3 left untested: a fullscreen relaunch, closing Settings with Esc, a click outside or the back button, and dragging the sliders.
+22. Full playtests and tuning: the board's length and the 12 turns.
+23. Bug bash and the final polish pass. Drop the Godot MCP's autoloads from the release build.
 
 ## Part notes
 
 Each part session adds a few lines when it finishes: what got built, what changed from the plan, surprises, and anything left over or buggy. The next Microplan reads these instead of the code.
 
-### Part 1
+### Part 4 notes
 
-- Built as planned, with the user's changes: the game runs at 25 FPS, the title is slower, and lightning flashes the sky (`Sky.flash()`).
-- Code is in `src/`: autoloads `Sound` and `Scenes` (the paper sheet transition, the paper texture and the cursor), `src/paper/` (`PaperMotion`, `PaperShadow` and its shader), `src/sky/`, `src/scenery/bat.gd`, `src/ui/` (theme and `PaperButton`) and `src/title/`.
-- Motion moves live in `PaperMotion`. Part 3 and later add hop, flip and crumple there.
-- Shadows: `PaperShadow.add(piece)`. The blur is in screen pixels, so it holds at any scale.
-- The cursor is set from `Scenes`, not the project settings, because the setting leaks its texture at exit.
-- The Godot MCP's simulated clicks were broken (the editor had no input bridge, and the press became a release). Fixed in this project and in `../godot-mcp`. Its coordinates are the window's (1280 × 720), not the 1920 × 1080 viewport's.
-- Left over: no thunder sound, and `title.ogg` is still missing. The release build must drop the MCP autoloads.
+- **Built:** `src/pregame/` (`pregame.tscn`, `pregame.gd`, `player_card.gd`), `Match.roll_turn_order()`, `src/ui/candle.gd` and `flame.gd`, and `src/ui/candle_test.tscn` (a 5 s burn and relight, printing to the log). Setup's Begin goes to the pregame.
+- **New in `PaperMotion`:** `flip`, `hop` (part 5 reuses it, don't add it again), `fly_to` (arc, and sets the rest position and scale) and `tuck`.
+- **`Flame`** is its own class (a flickering flame whose origin is its base, with `sputter`, `snuff()` and `light()`). Part 6's torches reuse it. The candle's body is a stretched plain slice of wax under a fixed cap (wick and drips), so it shrinks from its base.
+- **Pregame:** it runs a step at a time in `_ready`. Run on its own, it starts a test match of the count after `--` (default 4). After the strip rises it prints `Match`. Part 5 continues from the end of `_ready`. The cards are in `_cards` (seating order), found by `_card_for(player)`, and sit in the strip at scale 0.5, y 105.
+- **Checked:** 2, 5 and 8 players: the log order matched the cards. The candle burns 5 s, sputters at 3 s left, fires `timed_out`, and relights. A scripted run typed a name, clicked Begin, and reached the roll. Screenshots are in `screenshots/part_04/`.
+- **Not done:** the Godot editor wasn't open, so the MCP's simulated input wasn't used. The scripted run pushed real key and mouse events instead. The candle isn't in a screenshot (it isn't used on screen until part 5). `capture.py` now passes game args after the scene.
 
-### Part 2
+### Built so far (parts 1 to 3, absorbed by Microplan 2)
 
-- Built as planned. `Settings` autoload (`src/autoload/settings.gd`) loads and applies `user://settings.cfg` at startup, saves when a change finishes, and `Settings.open()` opens the overlay (`src/settings/`, a CanvasLayer at layer 50) from anywhere. Part 22 just calls it on Esc.
-- Open question answered by Claude: the slider handle is the `coin` and the toggle is an ink box with the `flag` planted in it (`PaperSlider`, `PaperToggle` in `src/ui/`). No new art. Easy to swap if the user wants something else.
-- Effects slider plays `coin_land` on release. Music volume changes live. Fullscreen is borderless `WINDOW_MODE_FULLSCREEN`.
-- New `PaperMotion.set_down` and `lift_away` (card drop and lift).
-- Checked by contact sheet and screenshots. Not tested: a real relaunch round trip of fullscreen and the mouse-click paths (Esc, click outside, drag); the code for them is straightforward but only the sliders' saved file was seen.
-
-### Part 3
-
-- Built as planned. `Match` autoload (`src/autoload/match.gd`) holds `players` (one dictionary each, just `name` for now), `Match.start(raw_names)` and the name rules (`clean_name`, `duplicates`; duplicates are compared without regard to case, and a blank's "Player N" counts). Setup is `src/setup/` (`setup.gd`, `name_card.gd`): cards in one row up to 4, two rows after, each row centered.
-- Duplicates: the later card turns red and shakes with `ui_denied`, and Begin dims and refuses. Add and Remove dim at the limits and shake with `ui_denied`. Remove takes the last card and crumples it (`PaperMotion.crumple`, a scrunch and drop, not the `crumpled.png` ball). A long name shrinks its font to fit the card.
-- New in `PaperMotion`: `slide_in`, `move_to`, `shake`, `crumple`.
-- Begin stores the players in `Match`, prints them to the log and dims itself. It leads nowhere until part 4. Coming back to setup rebuilds the cards from `Match.names()`.
-- Checked headless-free: scripted add, remove, Turkish names, blanks, duplicates and the 8 limit, with `Match` printed. Screenshots come from the viewport in a plain run. Don't use `--write-movie` for this: it encodes every frame at full size and cooked the user's computer.
-- Not tested: real keyboard typing and mouse clicks (the code sets text and calls the handlers directly).
+- **Code** is in `src/`:
+  - Autoloads: `Sound` (`play`, `play_music`, `play_ambience`), `Scenes` (`change_to`, the paper transition, the texture and the cursor), `Settings` (`Settings.open()` from anywhere), and `Match`.
+  - `PaperMotion` holds `drop_in`, `set_down`, `lift_away`, `sway`, `pop_in`, `pop_out`, `lift`, `squash`, `slide_in`, `move_to`, `shake` and `crumple`. New motion goes here.
+  - Shadows: `PaperShadow.add(piece)`.
+  - `Sky` has `tint()` and `flash()`, and `bat.gd` flies across the screen.
+  - `src/ui/` has `PaperButton`, `PaperSlider` and `PaperToggle`.
+- **The MCP:** its simulated clicks use window coordinates (1280 × 720).
+- **Screenshots** come from the viewport in a plain run. Never run `--write-movie` for long.
+- **Still open:**
+  - There's no thunder sound, and no music at all yet.
+  - What parts 2 and 3 left untested is on the roadmap's part 21.
+  - The MCP's autoloads must be dropped from the release build, in part 23.
 
 ## Log
 
 - **2026-10-23, Microplan 1:** planned parts 1 to 3: the foundation and title, settings, and setup. Sketched the roadmap to part 24.
+- **2026-10-23, Microplan 2:** parts 1 to 3 are done (the foundation and title, settings, and setup). Planned parts 4 to 6: the turn order roll and the candle, monster select, and the board's scenery. Roadmap changes:
+  - The turn order roll and monster select now share one pregame scene.
+  - "Ambience follows the camera" moved from the old part 14 into part 6, where the camera and the locations are built. The rest of the old part 14, the music following the leader, is too small for a part of its own, so it joined part 12.
+  - The end moved from 24 to 23.
