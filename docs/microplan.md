@@ -51,7 +51,7 @@ If a part turns out too big, split it (5a, 5b) instead of rushing it.
 
 **Check:**
 - Run the roll with 2, 5 and 8 players, and confirm in the log that `Match.players` is in the order the cards show.
-- Make one contact sheet with `capture.py` (a short run) for the flip, shuffle and deal.
+- Make one contact sheet from a few timed viewport screenshots of a plain run, for the flip, shuffle and deal.
 - Run the candle in a small test scene for 5 s: it burns down, sputters at 3 s, goes out, fires `timed_out`, and relights.
 - **Carried over from part 3:** prove one real path with the MCP's simulated input. Type a name with the keyboard on the setup screen, click Begin, and see the roll start.
 
@@ -151,7 +151,7 @@ If a part turns out too big, split it (5a, 5b) instead of rushing it.
 - The board music is missing and isn't needed until part 12.
 
 **Check:**
-- Run the intro glide and make one `capture.py` contact sheet.
+- Run the intro glide and make one contact sheet from a few timed viewport screenshots of a plain run.
 - Then move the camera to each location in a script, and save one screenshot of each from the viewport. Use three of them for `screenshots/part_06/`.
 - Check that the sky tint and the ambience switch at every boundary, in the log.
 - Watch for seams in the tiled strips, and for frame drops with all five locations loaded.
@@ -201,7 +201,7 @@ Each part session adds a few lines when it finishes: what got built, what change
 - **Layers:** Far (scroll 0.5), Mid (0.9: houses, trees, the castle), Lanes (1.0: the ground strips, hill, church, stones, lamps, mushrooms, water, boardwalk, reeds, torches and the gate) and Fog (1.2). A piece in a scrolled layer goes at `BoardLayout.layer_x(world_x, scroll)`. Part 7 should add the path to Lanes, after the ground strips, so it's under the foreground fog.
 - **Changed from the plan:** the small props (lamps, stones, mushrooms, reeds, torches), the church and the hill are in the lane layer, so they don't slide against the road. The mid layer would hide behind the hill. The swamp's ground lies 110 px lower than the others, so the water shows between the boardwalk and the bog. The torches stand along the road and on either side of the gate. Fog: foreground wisps over the village, graveyard and swamp, plus a bank behind the village and swamp props; none in the forest or castle.
 - **Fixed on the way:** `Sky.tint` had never worked: it bound its arguments in the wrong order. `PaperShadow` now copies a sprite's region. `bat.gd` flies across whatever is in view, under a camera too, and has an `active` switch.
-- **Surprise:** an OGG still playing when the game ends is reported as 4 leaked objects. `Sound` now catches the window's close request and quits through `Sound.quit()`, which stops every player and waits two frames. Title's Quit uses it too. `--quit-after` can't be caught, so `capture.py` runs still print that leak at exit. It's harmless.
+- **Surprise:** an OGG still playing when the game ends is reported as 4 leaked objects. `Sound` now catches the window's close request and quits through `Sound.quit()`, which stops every player and waits two frames. Title's Quit uses it too. `--quit-after` can't be caught, so `timed viewport screenshots` runs still print that leak at exit. It's harmless.
 - **Checked:** a contact sheet of the intro glide; the log shows every boundary (castle, swamp, forest, graveyard, village); a steady 25 FPS during the glide; a click mid-glide skipped home in 0.9 s; one screenshot of each location. A 2-player pregame ran through to the board. Screenshots are in `screenshots/part_06/`.
 - **Not done:** the Godot MCP failed to connect, so the click was pushed with `Input.parse_input_event`. I didn't listen to the ambience crossfades. The lane heights are a first guess: the lower lane at 990 runs over the ground's soil, low on the screen.
 
@@ -220,7 +220,7 @@ Each part session adds a few lines when it finishes: what got built, what change
 - **`Flame`** is its own class (a flickering flame whose origin is its base, with `sputter`, `snuff()` and `light()`). Part 6's torches reuse it. The candle's body is a stretched plain slice of wax under a fixed cap (wick and drips), so it shrinks from its base.
 - **Pregame:** it runs a step at a time in `_ready`. Run on its own, it starts a test match of the count after `--` (default 4). After the strip rises it prints `Match`. Part 5 continues from the end of `_ready`. The cards are in `_cards` (seating order), found by `_card_for(player)`, and sit in the strip at scale 0.5, y 105.
 - **Checked:** 2, 5 and 8 players: the log order matched the cards. The candle burns 5 s, sputters at 3 s left, fires `timed_out`, and relights. A scripted run typed a name, clicked Begin, and reached the roll. Screenshots are in `screenshots/part_04/`.
-- **Not done:** the Godot editor wasn't open, so the MCP's simulated input wasn't used. The scripted run pushed real key and mouse events instead. The candle isn't in a screenshot (it isn't used on screen until part 5). `capture.py` now passes game args after the scene.
+- **Not done:** the Godot editor wasn't open, so the MCP's simulated input wasn't used. The scripted run pushed real key and mouse events instead. The candle isn't in a screenshot (it isn't used on screen until part 5). `timed viewport screenshots` now passes game args after the scene.
 
 ### Built so far (parts 1 to 3, absorbed by Microplan 2)
 
@@ -231,7 +231,7 @@ Each part session adds a few lines when it finishes: what got built, what change
   - `Sky` has `tint()` and `flash()`, and `bat.gd` flies across the screen.
   - `src/ui/` has `PaperButton`, `PaperSlider` and `PaperToggle`.
 - **The MCP:** its simulated clicks use window coordinates (1280 × 720).
-- **Screenshots** come from the viewport in a plain run. Never run `--write-movie` for long.
+- **Screenshots** come from the viewport in a plain run. Never run `--write-movie` at all (see README).
 - **Still open:**
   - There's no thunder sound, and no music at all yet.
   - What parts 2 and 3 left untested is on the roadmap's part 21.

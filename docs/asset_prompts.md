@@ -6,26 +6,6 @@ A Gemini prompt for each of the 84 images in [assets.md](assets.md), except the 
 
 The prompts are in the order to make them, not the order of assets.md. Some prompts need an earlier image attached so that a set matches: the icons follow the coin, the monsters follow Dracula, each portrait follows its body, and the scenery strips follow the village's.
 
-## The high camera: images to remake
-
-After part 6, the user moved the board's camera from a side view to a high one, like League of Legends, and asked for the pieces and spaces to stand out from the scenery (see [art_and_audio.md](art_and_audio.md#camera)). The board is now a paper diorama seen from above: the ground is a flat sheet seen from above, and everything standing on it stays a standing cutout drawn from the front. So only the images that were drawn as side views of the ground, or that lie on it, are remade. Their prompts below replace the old ones. The old raws are in git history. **All 11 are made and processed** (the stand from the space's raw), and a copy of the prompts is in [remake_prompts.md](remake_prompts.md).
-
-Make them in this order. Each one is saved in `images_raw/` under its old name, replacing the old raw.
-
-1. `scenery/village_ground.png`: the first ground. The other grounds attach it.
-2. `scenery/graveyard_ground.png`
-3. `scenery/forest_ground.png`
-4. `scenery/swamp_ground.png`
-5. `scenery/castle_ground.png`
-6. `scenery/swamp_water.png`
-7. `scenery/swamp_boardwalk.png`
-8. `scenery/fog_1.png`
-9. `scenery/fog_2.png`
-10. `board/space.png`: `monsters/stand.png` is made from the same raw, so it has no prompt of its own.
-11. `scenery/castle.png`: the same castle without its cliff. It attaches the old castle raw, so make it before that raw is replaced.
-
-**Retired from the board:** the board has no sky now, so the five far strips (`village_far`, `graveyard_far`, `forest_far`, `swamp_far`, `castle_far`) and `church_hill` are no longer used there. They stay in `assets/art/` until the part that rebuilds the board removes them from the code. The moon, the stars and the sky stay on the menu screens.
-
 ## Making an image
 
 1. Start a new Gemini chat for each image, so earlier images don't leak into it.
@@ -48,7 +28,6 @@ Every prompt has the four parts of the tested coin prompt: the subject, then Sty
 - **Backgrounds** are pure white, or pure green (#00FF00) for subjects that are pale or have white in them. Each prompt says the subject can't contain its background color, so processing can remove every pixel of that color, including the gaps inside a shape, like the spaces between a tree's branches.
 - **Sizes** are described in words, because Gemini doesn't follow exact sizes. Processing sets the final size.
 - **Strips that tile** ask for matching ends with nothing eye-catching near the sides. Processing still fixes the seam.
-- **Grounds** are seen from directly above and fill the whole image, with no background to remove. They tile both ways, so processing fixes the seams on all four sides. They're dark, muted and low in contrast, with nothing round in them, so the round spaces and the pieces stand out.
 - **Pieces the game colors** (the space and the portrait frame), and two it can color (the stand and the crumpled ball), are neutral light grey, so any color tints them cleanly.
 
 The shared Style block:
@@ -256,16 +235,16 @@ Output: a square image.
 **Attach:** your image for `icons/coin.png`.
 
 ```text
-Match the paper style of the attached coin, but with no picture on it. Draw a thick, round cardboard token for a board-game space, lying flat on the ground and seen from above at a steep angle: its round top face looks like an oval about a third wider than it is tall, and the token's thick edge shows as a band along the bottom curve, under the face. Three greys with strong contrast between them: the edge band in dark charcoal grey, a thin ring of the same dark grey around the rim of the top face, and the rest of the top face in very pale grey. The top face is completely plain, with no symbol, pattern or decoration. Neutral greys with no color tint, because the game colors it.
+Match the paper style of the attached coin, but with no picture on it. Draw a plain round paper token for a board-game space, seen straight from the front: a light grey paper disc with a slightly smaller, paler grey disc layered on top, leaving an even rim all the way around. Completely plain, with no symbol, pattern or decoration. Neutral greys with no color tint, because the game colors it.
 
 Style: flat construction-paper cutout, like the South Park movie's paper animation. Built from a few layered pieces of colored paper with slightly uneven hand-cut edges and a faint paper-fiber texture. Few colors, each one flat. Playful and spooky, colorful rather than bleak, not realistic. No shine, glow, gradients, outlines or 3D effects.
 
-Composition: One token only, centered, filling most of the frame with a little empty space around it. Nothing else in the frame. Plain, flat, pure green background (#00FF00), and no green anywhere on the subject. No shadow, no border or outline around the shape, and no text, letters or numbers.
+Composition: One token only, centered, filling most of the frame with a little empty space around it. Perfectly round. Nothing else in the frame. Plain, flat, pure green background (#00FF00), and no green anywhere on the subject. No shadow, no border or outline around the shape, and no text, letters or numbers.
 
-Output: a wide image, wider than it is tall.
+Output: a square image.
 ```
 
-**Processing:** remove green, 256 × 192.
+**Processing:** remove green, 192 × 192.
 
 ### `board/die_1.png`
 
@@ -661,9 +640,17 @@ Output: a square image.
 
 ### `monsters/stand.png`
 
-**No prompt.** The stand is the same thick token as a space, seen from the same high camera, so it's made from the raw for `board/space.png`. One shape for both keeps the board to fewer pieces.
+```text
+A small paper stand for a board-game piece, seen from the side, like the base that holds up a cardboard figure: a low, wide, flattened half-oval with a straight bottom edge and a gently rounded top. A light grey paper base with a slightly smaller, paler grey layer on top, leaving an even rim. Neutral greys with no color tint, so the game can color it.
 
-**Processing:** from space, remove green, 200 × 150.
+Style: flat construction-paper cutout, like the South Park movie's paper animation. Built from a few layered pieces of colored paper with slightly uneven hand-cut edges and a faint paper-fiber texture. Few colors, each one flat. Playful and spooky, colorful rather than bleak, not realistic. No shine, glow, gradients, outlines or 3D effects.
+
+Composition: One stand only, centered, filling the width of the frame with a little empty space around it. Nothing else in the frame: no figure or ground. Plain, flat, pure green background (#00FF00), and no green anywhere on the subject. No shadow, no border or outline around the shape, and no text, letters or numbers.
+
+Output: a wide image, wider than it is tall.
+```
+
+**Processing:** remove green, 200 × 60.
 
 ### `monsters/crumpled.png`
 
@@ -878,32 +865,32 @@ Output: a square image.
 ### `scenery/fog_1.png`
 
 ```text
-A drifting patch of fog, seen from directly above: a soft, irregular cloud shape about twice as wide as it is tall, with overlapping rounded puffs all the way around its edge and no flat side. Cut from two layers of pale paper: a lavender-grey back layer and a slightly lighter, smaller front layer.
+A long, low strip of fog, seen from the side, about four times as wide as it is tall: a soft, cloud-like band with a lumpy top edge made of overlapping rounded puffs, a flatter bottom edge, and ends that taper away. Cut from two layers of pale paper: a lavender-grey back layer and a slightly lighter, smaller front layer.
 
 Style: flat construction-paper cutout, like the South Park movie's paper animation. Built from a few layered pieces of colored paper with slightly uneven hand-cut edges and a faint paper-fiber texture. Few colors, each one flat. Playful and spooky, colorful rather than bleak, not realistic. No shine, glow, gradients, outlines or 3D effects.
 
-Composition: One fog patch only, centered, filling most of the frame with a little empty space around it. Nothing else in the frame. Plain, flat, pure green background (#00FF00), and no green anywhere on the subject. No shadow, no border or outline around the shape, and no text, letters or numbers.
+Composition: One fog strip only, centered, filling the width of the frame with a little empty space at both ends. Nothing else in the frame. Plain, flat, pure green background (#00FF00), and no green anywhere on the subject. No shadow, no border or outline around the shape, and no text, letters or numbers.
 
 Output: a wide image, wider than it is tall.
 ```
 
-**Processing:** remove green, 1000 × 500.
+**Processing:** remove green, 1200 × 300.
 
 ### `scenery/fog_2.png`
 
 **Attach:** your image for `scenery/fog_1.png`.
 
 ```text
-Match the paper and colors of the attached fog patch, but give it a different outline. A drifting patch of fog, seen from directly above: longer and thinner, about three times as wide as it is tall, pinched in the middle like two clouds of puffs joined together, with a wispy tail trailing off to the right and no flat side.
+Match the paper, colors and size of the attached fog strip, but give it a different outline. A long, low strip of fog, seen from the side, about four times as wide as it is tall: two big humps of rounded puffs with a dip between them, a flatter bottom edge, and a longer, thinner tail trailing off to the right.
 
 Style: flat construction-paper cutout, like the South Park movie's paper animation. Built from a few layered pieces of colored paper with slightly uneven hand-cut edges and a faint paper-fiber texture. Few colors, each one flat. Playful and spooky, colorful rather than bleak, not realistic. No shine, glow, gradients, outlines or 3D effects.
 
-Composition: One fog patch only, centered, filling most of the frame with a little empty space around it. Nothing else in the frame. Plain, flat, pure green background (#00FF00), and no green anywhere on the subject. No shadow, no border or outline around the shape, and no text, letters or numbers.
+Composition: One fog strip only, centered, filling the width of the frame with a little empty space at both ends. Nothing else in the frame. Plain, flat, pure green background (#00FF00), and no green anywhere on the subject. No shadow, no border or outline around the shape, and no text, letters or numbers.
 
 Output: a wide image, wider than it is tall.
 ```
 
-**Processing:** remove green, 1200 × 400.
+**Processing:** remove green, 1200 × 300.
 
 ### `scenery/bat.png`
 
@@ -927,8 +914,6 @@ Output: a wide image, wider than it is tall.
 
 ### `scenery/village_far.png`
 
-**Retired from the board** by the high camera, which shows no sky or horizon. Don't remake it.
-
 ```text
 The distant skyline of a crooked old village, as a long horizontal strip seen from the side: a row of leaning houses with steep, crooked gables, tilted chimneys and a small pointed tower or two, at different heights, all joined into one paper shape. Two overlapping paper layers: a back row in dusty blue-violet and a front row in deeper indigo-purple. A few small lit windows in warm yellow are scattered across the front row. Below the rooftops, the paper runs down as a solid band to the bottom of the image.
 
@@ -944,16 +929,16 @@ Output: a wide image, wider than it is tall.
 ### `scenery/village_ground.png`
 
 ```text
-The ground of an old village street, seen from directly above: worn, flat paving slabs of uneven, angular shapes and sizes, fitted together like crazy paving, with thin gaps of dark earth between them and a few small tufts of dull grass growing in the gaps. Dusky slate-blue and grey-violet slabs, each a little lighter or darker than the next. This is the ground the game pieces stand on, so keep it dark, dim and muted, with low contrast: nothing bright, and nothing round or disc-shaped.
+The edge of a cobbled road, as a long horizontal strip seen from the side: along the top, a row of rounded cobblestones of slightly different sizes in slate grey and blue-grey, with a few darker stones. Their tops make a fairly level, gently bumpy top edge. Below them, dark brown earth with a few small pebbles fills the rest of the strip down to the bottom of the image.
 
 Style: flat construction-paper cutout, like the South Park movie's paper animation. Built from a few layered pieces of colored paper with slightly uneven hand-cut edges and a faint paper-fiber texture. Few colors, each one flat. Playful and spooky, colorful rather than bleak, not realistic. No shine, glow, gradients, outlines or 3D effects.
 
-Composition: The ground fills the whole image from edge to edge, with no background, border or empty space. Seen from directly above, like a flat map, with no horizon, sky or side view. The pattern is spread evenly, with nothing eye-catching anywhere and nothing different near the edges, so copies can be placed side by side and above and below each other. Nothing standing on it, no shadow, and no text, letters or numbers.
+Composition: One continuous strip across the full width of the image, running off the left and right edges and filling the lower third of the image down to the bottom edge, with plain background above it. Nothing else in the frame. The left and right ends look alike and sit at the same height, with nothing eye-catching near either side, so copies can be placed side by side. Plain, flat, pure white background (#FFFFFF), and no white anywhere on the subject. No shadow, no border or outline around the shape, and no text, letters or numbers.
 
-Output: a square image.
+Output: a wide image, wider than it is tall.
 ```
 
-**Processing:** no background to remove, 1024 × 1024, tiles both ways.
+**Processing:** remove white, 2048 × 300, tiles sideways.
 
 ### `scenery/village_house_1.png`
 
@@ -1003,8 +988,6 @@ Output: a tall image, taller than it is wide.
 
 ### `scenery/graveyard_far.png`
 
-**Retired from the board** by the high camera, which shows no sky or horizon. Don't remake it.
-
 **Attach:** your image for `scenery/village_far.png`.
 
 ```text
@@ -1021,19 +1004,19 @@ Output: a wide image, wider than it is tall.
 
 ### `scenery/graveyard_ground.png`
 
-**Attach:** your new image for `scenery/village_ground.png`.
+**Attach:** your image for `scenery/village_ground.png`.
 
 ```text
-Match the paper style, darkness and top-down view of the attached ground, but show different ground. Graveyard grass, seen from directly above: a carpet of dark, mossy green grass cut as overlapping tufts of jagged paper, with a few irregular patches of bare dark-brown earth and a few scattered fallen leaves in dull ochre. This is the ground the game pieces stand on, so keep it dark, dim and muted, with low contrast: nothing bright, and nothing round or disc-shaped.
+Match the paper style of the attached strip, but show different ground. Grassy graveyard earth, as a long horizontal strip seen from the side: a fringe of tufty, mossy green grass along the top edge, with dark brown soil below it filling the rest of the strip down to the bottom of the image. A few tan roots curl through the soil, with a small stone here and there.
 
 Style: flat construction-paper cutout, like the South Park movie's paper animation. Built from a few layered pieces of colored paper with slightly uneven hand-cut edges and a faint paper-fiber texture. Few colors, each one flat. Playful and spooky, colorful rather than bleak, not realistic. No shine, glow, gradients, outlines or 3D effects.
 
-Composition: The ground fills the whole image from edge to edge, with no background, border or empty space. Seen from directly above, like a flat map, with no horizon, sky or side view. The pattern is spread evenly, with nothing eye-catching anywhere and nothing different near the edges, so copies can be placed side by side and above and below each other. Nothing standing on it, no shadow, and no text, letters or numbers.
+Composition: One continuous strip across the full width of the image, running off the left and right edges and filling the lower third of the image down to the bottom edge, with plain background above it. Nothing else in the frame. The left and right ends look alike and sit at the same height, with nothing eye-catching near either side, so copies can be placed side by side. Plain, flat, pure white background (#FFFFFF), and no white anywhere on the subject. No shadow, no border or outline around the shape, and no text, letters or numbers.
 
-Output: a square image.
+Output: a wide image, wider than it is tall.
 ```
 
-**Processing:** no background to remove, 1024 × 1024, tiles both ways.
+**Processing:** remove white, 2048 × 300, tiles sideways.
 
 ### `scenery/graveyard_stone_1.png`
 
@@ -1081,8 +1064,6 @@ Output: a tall image, taller than it is wide.
 
 ### `scenery/church_hill.png`
 
-**Retired from the board** by the high camera, which shows no sky or horizon. Don't remake it.
-
 **Attach:** your image for `scenery/graveyard_ground.png`.
 
 ```text
@@ -1115,8 +1096,6 @@ Output: a tall image, taller than it is wide.
 
 ### `scenery/forest_far.png`
 
-**Retired from the board** by the high camera, which shows no sky or horizon. Don't remake it.
-
 **Attach:** your image for `scenery/village_far.png`.
 
 ```text
@@ -1133,19 +1112,19 @@ Output: a wide image, wider than it is tall.
 
 ### `scenery/forest_ground.png`
 
-**Attach:** your new image for `scenery/village_ground.png`.
+**Attach:** your image for `scenery/village_ground.png`.
 
 ```text
-Match the paper style, darkness and top-down view of the attached ground, but show different ground. Dark forest floor, seen from directly above: dark brown earth, mostly covered with patches of deep moss green and fallen leaves in muted rust, dull ochre and plum, with a few crooked twigs and thin roots crossing it. This is the ground the game pieces stand on, so keep it dark, dim and muted, with low contrast: nothing bright, and nothing round or disc-shaped.
+Match the paper style of the attached strip, but show different ground. Dark forest floor, as a long horizontal strip seen from the side: a fringe of dark green moss and fallen leaves in orange, red and ochre along the top edge, with dark brown earth below it filling the rest of the strip down to the bottom of the image, crossed by a few gnarled roots in lighter brown.
 
 Style: flat construction-paper cutout, like the South Park movie's paper animation. Built from a few layered pieces of colored paper with slightly uneven hand-cut edges and a faint paper-fiber texture. Few colors, each one flat. Playful and spooky, colorful rather than bleak, not realistic. No shine, glow, gradients, outlines or 3D effects.
 
-Composition: The ground fills the whole image from edge to edge, with no background, border or empty space. Seen from directly above, like a flat map, with no horizon, sky or side view. The pattern is spread evenly, with nothing eye-catching anywhere and nothing different near the edges, so copies can be placed side by side and above and below each other. Nothing standing on it, no shadow, and no text, letters or numbers.
+Composition: One continuous strip across the full width of the image, running off the left and right edges and filling the lower third of the image down to the bottom edge, with plain background above it. Nothing else in the frame. The left and right ends look alike and sit at the same height, with nothing eye-catching near either side, so copies can be placed side by side. Plain, flat, pure white background (#FFFFFF), and no white anywhere on the subject. No shadow, no border or outline around the shape, and no text, letters or numbers.
 
-Output: a square image.
+Output: a wide image, wider than it is tall.
 ```
 
-**Processing:** no background to remove, 1024 × 1024, tiles both ways.
+**Processing:** remove white, 2048 × 300, tiles sideways.
 
 ### `scenery/forest_tree_1.png`
 
@@ -1195,8 +1174,6 @@ Output: a square image.
 
 ### `scenery/swamp_far.png`
 
-**Retired from the board** by the high camera, which shows no sky or horizon. Don't remake it.
-
 **Attach:** your image for `scenery/village_far.png`.
 
 ```text
@@ -1213,49 +1190,47 @@ Output: a wide image, wider than it is tall.
 
 ### `scenery/swamp_ground.png`
 
-**Attach:** your new image for `scenery/village_ground.png`.
+**Attach:** your image for `scenery/village_ground.png`.
 
 ```text
-Match the paper style, darkness and top-down view of the attached ground, but show different ground. Swamp mud, seen from directly above: dark olive-brown mud with soft, sloppy blotches of darker mud, a few broken twigs and small, ragged patches of dull green moss. This is the ground the game pieces stand on, so keep it dark, dim and muted, with low contrast: nothing bright, and nothing round or disc-shaped.
+Match the paper style of the attached strip, but show different ground. A muddy swamp bank, as a long horizontal strip seen from the side: dark olive-brown mud with a soft, sloppy, wavy top edge, with a few pebbles, broken twigs and patches of darker mud, filling the strip down to the bottom of the image.
 
 Style: flat construction-paper cutout, like the South Park movie's paper animation. Built from a few layered pieces of colored paper with slightly uneven hand-cut edges and a faint paper-fiber texture. Few colors, each one flat. Playful and spooky, colorful rather than bleak, not realistic. No shine, glow, gradients, outlines or 3D effects.
 
-Composition: The ground fills the whole image from edge to edge, with no background, border or empty space. Seen from directly above, like a flat map, with no horizon, sky or side view. The pattern is spread evenly, with nothing eye-catching anywhere and nothing different near the edges, so copies can be placed side by side and above and below each other. Nothing standing on it, no shadow, and no text, letters or numbers.
-
-Output: a square image.
-```
-
-**Processing:** no background to remove, 1024 × 1024, tiles both ways.
-
-### `scenery/swamp_water.png`
-
-**Attach:** your new image for `scenery/swamp_ground.png`.
-
-```text
-Match the paper style, darkness and top-down view of the attached ground, but show water instead. Murky swamp water, seen from directly above: deep, dark green-teal water, with a few thin, wavy ripple lines cut from slightly lighter teal paper and a scattering of tiny duckweed specks in dull yellow-green. No lily pads, bubbles or other round shapes. It sits beside the ground the game pieces stand on, so keep it dark, dim and muted, with low contrast: nothing bright.
-
-Style: flat construction-paper cutout, like the South Park movie's paper animation. Built from a few layered pieces of colored paper with slightly uneven hand-cut edges and a faint paper-fiber texture. Few colors, each one flat. Playful and spooky, colorful rather than bleak, not realistic. No shine, glow, gradients, outlines or 3D effects.
-
-Composition: The water fills the whole image from edge to edge, with no background, border, bank or empty space. Seen from directly above, like a flat map, with no horizon, sky or side view. The pattern is spread evenly, with nothing eye-catching anywhere and nothing different near the edges, so copies can be placed side by side and above and below each other. Nothing floating on it but the specks, no shadow, and no text, letters or numbers.
-
-Output: a square image.
-```
-
-**Processing:** no background to remove, 1024 × 1024, tiles both ways.
-
-### `scenery/swamp_boardwalk.png`
-
-```text
-A rickety wooden boardwalk, seen from directly above, as a long horizontal strip: short planks laid across the walkway side by side, slightly crooked, of slightly uneven lengths and with small gaps between them, resting on two long beams that run along its top and bottom edges. A few dark nail dots. Weathered grey-brown wood in two muted tones. The game pieces stand on it, so keep it dim and low in contrast: nothing bright.
-
-Style: flat construction-paper cutout, like the South Park movie's paper animation. Built from a few layered pieces of colored paper with slightly uneven hand-cut edges and a faint paper-fiber texture. Few colors, each one flat. Playful and spooky, colorful rather than bleak, not realistic. No shine, glow, gradients, outlines or 3D effects.
-
-Composition: One continuous strip across the full width of the image, running off the left and right edges, in the middle of the frame and taking up about a quarter of its height, with plain background above and below it. Seen from directly above, like a flat map, with no posts, side view or horizon. Nothing else in the frame: no water, railings or plants. The left and right ends look alike, with the planks evenly spaced, so copies can be placed side by side. Plain, flat, pure white background (#FFFFFF), and no white anywhere on the subject. No shadow, no border or outline around the shape, and no text, letters or numbers.
+Composition: One continuous strip across the full width of the image, running off the left and right edges and filling the lower third of the image down to the bottom edge, with plain background above it. Nothing else in the frame. The left and right ends look alike and sit at the same height, with nothing eye-catching near either side, so copies can be placed side by side. Plain, flat, pure white background (#FFFFFF), and no white anywhere on the subject. No shadow, no border or outline around the shape, and no text, letters or numbers.
 
 Output: a wide image, wider than it is tall.
 ```
 
-**Processing:** remove white, 1024 × 256, tiles sideways.
+**Processing:** remove white, 2048 × 300, tiles sideways.
+
+### `scenery/swamp_water.png`
+
+```text
+Murky swamp water, as a long horizontal strip seen from the side: a band of deep, murky green water whose top edge is cut into small, even, rounded waves, with a slightly lighter green wave layer just below the top. A few small bubbles and floating duckweed dots in yellow-green. The water fills the strip down to the bottom of the image.
+
+Style: flat construction-paper cutout, like the South Park movie's paper animation. Built from a few layered pieces of colored paper with slightly uneven hand-cut edges and a faint paper-fiber texture. Few colors, each one flat. Playful and spooky, colorful rather than bleak, not realistic. No shine, glow, gradients, outlines or 3D effects.
+
+Composition: One continuous strip across the full width of the image, running off the left and right edges and filling the lower third of the image down to the bottom edge, with plain background above it. Nothing else in the frame. The left and right ends look alike and sit at the same height, with nothing eye-catching near either side, so copies can be placed side by side. Plain, flat, pure white background (#FFFFFF), and no white anywhere on the subject. No shadow, no border or outline around the shape, and no text, letters or numbers.
+
+Output: a wide image, wider than it is tall.
+```
+
+**Processing:** remove white, 2048 × 200, tiles sideways.
+
+### `scenery/swamp_boardwalk.png`
+
+```text
+A rickety wooden boardwalk, as a long horizontal strip seen from the side: a walkway of uneven planks seen edge-on along the top, slightly crooked and gapped, held up by thin wooden posts that go straight down at even spacing, with a few crossed braces between them. The posts end in a straight line at the bottom. Weathered brown wood in two tones, with a few dark nail dots.
+
+Style: flat construction-paper cutout, like the South Park movie's paper animation. Built from a few layered pieces of colored paper with slightly uneven hand-cut edges and a faint paper-fiber texture. Few colors, each one flat. Playful and spooky, colorful rather than bleak, not realistic. No shine, glow, gradients, outlines or 3D effects.
+
+Composition: One continuous strip across the full width of the image, running off the left and right edges, in the middle of the frame and taking up about a fifth of its height, with plain background above and below it. Nothing else in the frame: no water, railings or plants. The left and right ends look alike, with the walkway at the same height on both sides and the posts evenly spaced, so copies can be placed side by side. Plain, flat, pure white background (#FFFFFF), and no white anywhere on the subject. No shadow, no border or outline around the shape, and no text, letters or numbers.
+
+Output: a wide image, wider than it is tall.
+```
+
+**Processing:** remove white, 1024 × 150, tiles sideways.
 
 ### `scenery/swamp_tree.png`
 
@@ -1289,8 +1264,6 @@ Output: a tall image, taller than it is wide.
 
 ### `scenery/castle_far.png`
 
-**Retired from the board** by the high camera, which shows no sky or horizon. Don't remake it.
-
 **Attach:** your image for `scenery/village_far.png`.
 
 ```text
@@ -1307,35 +1280,33 @@ Output: a wide image, wider than it is tall.
 
 ### `scenery/castle_ground.png`
 
-**Attach:** your new image for `scenery/village_ground.png`.
+**Attach:** your image for `scenery/village_ground.png`.
 
 ```text
-Match the paper style, darkness and top-down view of the attached ground, but show different ground. An old castle courtyard, seen from directly above: large, worn, rectangular flagstones of uneven sizes laid in rough rows, with cracks, chipped corners and dark gaps between them. Dark grey-violet stone, each slab a little lighter or darker than the next. This is the ground the game pieces stand on, so keep it dark, dim and muted, with low contrast: nothing bright, and nothing round or disc-shaped.
+Match the paper style of the attached strip, but show different ground. An old stone road, as a long horizontal strip seen from the side: along the top, a row of large, worn, uneven stone blocks in dark grey-violet, with cracks and chipped corners. Below them, darker purple-grey rubble and earth fill the rest of the strip down to the bottom of the image.
 
 Style: flat construction-paper cutout, like the South Park movie's paper animation. Built from a few layered pieces of colored paper with slightly uneven hand-cut edges and a faint paper-fiber texture. Few colors, each one flat. Playful and spooky, colorful rather than bleak, not realistic. No shine, glow, gradients, outlines or 3D effects.
 
-Composition: The ground fills the whole image from edge to edge, with no background, border or empty space. Seen from directly above, like a flat map, with no horizon, sky or side view. The pattern is spread evenly, with nothing eye-catching anywhere and nothing different near the edges, so copies can be placed side by side and above and below each other. Nothing standing on it, no shadow, and no text, letters or numbers.
+Composition: One continuous strip across the full width of the image, running off the left and right edges and filling the lower third of the image down to the bottom edge, with plain background above it. Nothing else in the frame. The left and right ends look alike and sit at the same height, with nothing eye-catching near either side, so copies can be placed side by side. Plain, flat, pure white background (#FFFFFF), and no white anywhere on the subject. No shadow, no border or outline around the shape, and no text, letters or numbers.
 
-Output: a square image.
+Output: a wide image, wider than it is tall.
 ```
 
-**Processing:** no background to remove, 1024 × 1024, tiles both ways.
+**Processing:** remove white, 2048 × 300, tiles sideways.
 
 ### `scenery/castle.png`
 
-**Attach:** your old image for `scenery/castle.png`, the one on the cliff.
-
 ```text
-Redraw the castle in the attached image, with the same towers, roofs, windows, pennants, colors and paper style, but with no cliff under it. Dracula's castle, seen from the front: a cluster of tall, thin towers of different heights with pointed, needle-sharp roofs, packed together behind a thick outer wall with square battlements along its top. The wall runs straight across the whole bottom of the castle, and its middle is plain stone, because the game puts the gate in front of it. Many small lit windows in warm yellow, and a few small red pennants on the tallest spires. Dark slate-purple stone paper with darker stone blocks, and deep red roofs.
+Dracula's castle on a cliff, seen from the side: a cluster of tall, thin towers of different heights with pointed, needle-sharp roofs, packed together on top of a jagged rocky cliff that narrows toward the bottom. Many small lit windows in warm yellow, and a few small red pennants on the tallest spires. Dark slate-purple stone paper, deep red roofs and a grey-brown cliff.
 
 Style: flat construction-paper cutout, like the South Park movie's paper animation. Built from a few layered pieces of colored paper with slightly uneven hand-cut edges and a faint paper-fiber texture. Few colors, each one flat. Playful and spooky, colorful rather than bleak, not realistic. No shine, glow, gradients, outlines or 3D effects.
 
-Composition: One castle only, standing upright, centered, filling most of the frame. Nothing else in the frame. The wall ends in a straight line at the bottom, with no cliff, rocks, hill, road or ground under it, and no moon, bats, sky or mountains around it. Plain, flat, pure white background (#FFFFFF), and no white anywhere on the subject. No shadow, no border or outline around the shape, and no text, letters or numbers.
+Composition: One castle only, standing upright, centered, filling most of the frame's height. Nothing else in the frame. The cliff ends in a straight line at the bottom, with no moon, bats, sky or other mountains around it. Plain, flat, pure white background (#FFFFFF), and no white anywhere on the subject. No shadow, no border or outline around the shape, and no text, letters or numbers.
 
-Output: a square image.
+Output: a tall image, taller than it is wide.
 ```
 
-**Processing:** remove white, 1400 tall.
+**Processing:** remove white, 1600 tall.
 
 ### `scenery/castle_gate.png`
 
