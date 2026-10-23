@@ -11,17 +11,19 @@ enum Lane { MAIN, UPPER, LOWER }
 const SPACE := 220.0 # the room each space takes along the road
 const LEAD_IN := 500.0 # before the first space, so the start isn't against the edge
 const LEAD_OUT := 900.0 # after the last space: the castle gate, then the board's end
-const HILL_WIDTH := 2400.0 # church_hill.png: the first split spans it
+const HILL_IMAGE_WIDTH := 2400.0 # church_hill.png as drawn
+const CHURCH_INSET := 100.0 # the church path's first and last space, from the hill's edges
 
 ## The locations in order, with board.md's space counts. A split's width is set by its longer
-## path; the first split is the hill's width instead. A split can also have `pad`, in spaces of
-## extra width, so its ramps lie outside its paths' spaces.
+## path; the first split is the church path's spaces plus its insets, which is the hill's width
+## too. A split can also have `pad`, in spaces of extra width, so its ramps lie outside its
+## paths' spaces.
 const LOCATIONS := [
-	{"id": "village", "spaces": 9},
-	{"id": "graveyard", "spaces": 10, "split": true, "ramp": 600.0},
-	{"id": "forest", "spaces": 9},
-	{"id": "swamp", "spaces": 7, "split": true, "ramp": 220.0, "pad": 2.0},
-	{"id": "castle", "spaces": 11},
+	{"id": "village", "spaces": 12},
+	{"id": "graveyard", "spaces": 12, "split": true, "ramp": 600.0},
+	{"id": "forest", "spaces": 12},
+	{"id": "swamp", "spaces": 10, "split": true, "ramp": 220.0, "pad": 2.0},
+	{"id": "castle", "spaces": 15},
 ]
 
 const MAIN_Y := 880.0 # the road
@@ -43,7 +45,7 @@ static func locations() -> Array[Dictionary]:
 			var location: Dictionary = LOCATIONS[i].duplicate()
 			var span: float = (location.spaces + location.get("pad", 0.0)) * SPACE
 			if location.id == "graveyard":
-				span = HILL_WIDTH
+				span = hill_width()
 			if i == 0:
 				span += LEAD_IN
 			if i == LOCATIONS.size() - 1:
@@ -53,6 +55,16 @@ static func locations() -> Array[Dictionary]:
 			x += span
 			_locations.append(location)
 	return _locations
+
+
+## The width of the church hill: the church path's spaces and the room at either end. The hill's
+## picture is stretched sideways to this.
+static func hill_width() -> float:
+	var spaces := 0
+	for each in LOCATIONS:
+		if each.id == "graveyard":
+			spaces = each.spaces
+	return spaces * SPACE + CHURCH_INSET * 2.0
 
 
 static func location(id: String) -> Dictionary:

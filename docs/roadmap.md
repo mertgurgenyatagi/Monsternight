@@ -7,7 +7,7 @@ A local version for testing the board rules. **One person controls every player*
 - Title screen and settings.
 - A setup screen in place of the lobby: the number of players and their names.
 - Turn order roll and monster select.
-- Full board rules: blood, coins, the four quick spaces, both path splits, 12 turns, the early end, and the decision timers.
+- Full board rules: blood, coins, the four quick spaces, both path splits, 17 turns, the early end, and the decision timers.
 - Duels with an opponent and a stake chosen as normal, and the VS card. A **coin flip** decides the winner instead of a minigame.
 - Trophy ceremony with fun stats, then back to the setup screen.
 - **Real assets** from the start, no placeholders. See the [asset list](assets.md).

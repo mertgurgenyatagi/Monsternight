@@ -1,6 +1,6 @@
 # Microplan
 
-The [first playable](roadmap.md#1-first-playable), built in about 23 parts. `/microplan` plans three parts at a time in detail, and a rough roadmap to the end (see `.claude/skills/microplan/SKILL.md`). It runs in its own session, after part 3, 6, 9 and so on.
+The [first playable](roadmap.md#1-first-playable), built in about 24 parts. `/microplan` plans three parts at a time in detail, and a rough roadmap to the end (see `.claude/skills/microplan/SKILL.md`). It runs in its own session, after part 3, 6, 9 and so on.
 
 ## Building a part
 
@@ -21,220 +21,193 @@ If a part turns out too big, split it (7a, 7b) instead of rushing it.
 
 All three stay in part 6's **side view**. The high camera was tried and reverted (see README), so don't bring it back.
 
-### Part 7: The board path
+### Part 10: The longer, random board
 
-**Goal:** The road is laid out across the board, from a start token in the village to the castle gate. There are 42 spaces on the shortest way, both splits with their signposts, paper scraps between the spaces, and a flag at the gate. Every space shows what it does at a glance. Nothing moves along it yet.
+**Goal:** The road is 57 spaces through the graveyard and 61 past the church, half of them empty, and the filled ones fall in an order with no pattern. The layout was rolled once by a script and is written into `BoardPath`, so it's the same every match. A match is 17 turns. The scenery stretches to fit, and nothing looks thinned out.
+
+**The user's decisions (2026-10-23):** 57 spaces on the shortest way, the graveyard way. One empty space for every filled one (1:1, replacing both the 2:1 of part 7 and the 1.5:1 noted in the README). Still one die. 17 turns, so that about 2 players reach the end (57 ÷ 3.5 ≈ 16.3 rolls, plus a little room for deaths and swaps). Matches run longer than the 30-minute target; that's accepted.
 
 **Builds:**
-- **`BoardPath`** (`src/board/board_path.gd`, static like `BoardLayout`): the path as rules data, which `Match` and the board both read.
-  - Each node has an id, a world position, a lane, a kind, and `next`: one id, or two at a fork, upper path first.
-  - The kinds: `start`, `coin`, `spikes`, `thief`, `church`, `pong`, `haxball`, `racing`, `fps`, and `finish`.
-  - The type sequence is written out by hand in one const, so the board is the same every match. The positions come from `BoardLayout`. Space the nodes evenly along each lane's curve, not just along x, so the ramps don't bunch them up.
-  - Calls: `node(id)`, `start()`, `finish()`, `next(id)`, `is_fork(id)`.
-- **The start** is a node before the first village space: a plain paper token with no icon and no tint. Players begin here and come back here when they die. It isn't counted among the spaces.
-- **The finish** is a node at `BoardLayout.gate_x()`, in front of the gate. Any roll that reaches it counts (part 17). It isn't counted among the spaces either.
-- **The space mix** (board.md and game_rules.md: about 3 quick spaces for every 2 minigame spaces):
+- **The stretch lengths** (in `BoardLayout.LOCATIONS` and `BoardPath.STRETCHES`). The church still costs about one extra roll:
 
-  | Stretch | Spaces | Quick | Minigame |
+  | Stretch | Spaces |
+  |---|---|
+  | Village | 12 |
+  | Graveyard (lower) or church (upper) | 8 or 12 |
+  | Forest | 12 |
+  | Boardwalk (upper) or bog (lower) | 10 |
+  | Castle | 15 |
+  | **Total** | **57 through the graveyard, 61 past the church** |
+
+- **What is rolled, and what isn't.** Only the kinds of the spaces are rolled. The stretch lengths, the forks and their places stay as above: the forks belong to the graveyard and the swamp art, so they can't move. Claude's choice.
+- **The bags.** Each part of the road gets a bag with exact counts, and the roll shuffles it, uniformly, with no other rules on the order (no "never two alike in a row", no spacing). So the ratio is exact and the order is pure chance.
+
+  | Bag | Spaces | Empty | Filled |
   |---|---|---|---|
-  | Village | 9 | 5, one of each kind plus one more | 4: Pong, Haxball, racing, FPS |
-  | Graveyard (lower) | 6 | 4: 2 spikes, 2 thieves | 2 |
-  | Church (upper) | 10 | 6: 3 churches, 3 coins | 4 |
-  | Forest | 9 | 5 | 4: one of each |
-  | Boardwalk (upper) | 7 | 4: one of each | 3: Pong and Haxball only |
-  | Bog (lower) | 7 | 4: one of each | 3: racing and the FPS only |
-  | Castle | 11 | 7 | 4: one of each |
+  | Main road: the village, forest and castle as one bag | 39 | 20 | 19: one of each minigame, and 15 quick spaces, 4 of each kind but one, which gets 3 (rolled) |
+  | Church | 12 | 6 | 6: one minigame (rolled), and 5 churches and coins (3 and 2, which way rolled) |
+  | Graveyard | 8 | 4 | 4: 2 spikes, 2 thieves. No minigame, as now |
+  | Boardwalk | 10 | 5 | 5: Pong, Haxball, and 3 quick spaces of any kind (rolled) |
+  | Bog | 10 | 5 | 5: racing, the FPS, and 3 quick spaces of any kind (rolled) |
 
-  Claude's choices for the order: the first village space is a quick space, never two identical spaces in a row, and the minigames outside the second split come out even across the four games. No sword fight spaces yet.
-- **The forks:** the last village space forks to the church (upper) and the graveyard (lower). The last forest space forks to the boardwalk (upper) and the bog (lower). Each pair joins again at the next stretch's first space.
-- **The space view** (`src/board/space.gd`). The user chose this look on 2026-10-23:
-  - `space.png` lies **flat on the ground**: squashed into an oval, as seen from a low angle. Try a y-scale of about 0.45 and judge it in a screenshot.
-  - Its **icon stands up on it** like a small cutout, with its base on the middle of the oval.
-  - The token is tinted by its kind. Each quick space takes its icon's color: gold for coin, steel for spikes, grim green for thief, and warm candle-cream for church. All four minigame spaces share one tint, a deep violet, so a duel space reads as one thing, and the icon tells which game. Claude picks the exact colors, and they must stand out from every location's ground.
-  - Monsters stand on the token in part 8 and may cover the icon. That's fine.
-- **Path dots:** three `path_dot.png` scraps between each pair of neighbouring spaces, following the lane's curve. Each has a slightly different rotation and size, from a fixed seed, so they look hand-laid but are the same every match.
-- **Signposts:** `signpost.png` stands just behind the road between the fork's space and the two paths, in the lane layer, behind the tokens. The arrows are part 13's.
-- **The flag:** `flag.png` planted at the finish, beside the gate.
-- **The node order:** the path goes in `Lanes`, after the ground strips and before the props in front, so it's under the foreground fog (part 6 notes). Add a y-sorted `Pieces` node above the path and empty for now. Part 8 puts the monsters in it, so a piece on the lower lane draws in front of one on the upper lane.
-- **Lane heights, carried over from part 6:** the lower lane at y 990 runs over the soil and roots, low on the screen. Retune `BoardLayout`'s `MAIN_Y`, `UPPER_Y` and `LOWER_Y` so that every space sits on a visible walking surface: the grass, the stone road, the boardwalk, or the bog's mud, never the soil or the water. Leave room for a 200 px tall monster above each space, and keep everything clear of the top 220 px, where part 9's portrait strip goes. The props follow the layout, so they move with it.
-- **Props off the path:** no prop in the lane layer may stand in front of a token. Move any lamp, stone, reed or torch that does, through `scenery.gd`'s layout code, never by hand.
+  The graveyard way is 29 empty and 28 filled, and the church way 31 and 30: as near 1:1 as an odd count allows. The whole board is 40 empty and 39 filled. The main road is one bag, so one stretch may come out richer than another; that's the randomness the user asked for. The graveyard way has 6 minigame spaces in 57, about the same share as now (4 in 42), so duels don't make the longer match longer still.
+- **The roll script:** `tools/board/roll_board.py`, Python with only the standard library. It fills the bags, shuffles them with a seed, and writes the `kinds` strings into `board_path.gd`'s `STRETCHES`, changing nothing else in the file. It prints the seed and each stretch's kinds. The same seed always gives the same board, and `--seed N` rerolls. Run it once, commit the result, and note the seed in `BoardPath`'s comment and in the README's Layout list. The game never rolls the board at runtime, so online play needs no syncing.
+- **`BoardPath`:** fix the doubled sentence in `STRETCHES`' comment, and say that `kinds` is rolled by the script, not written by hand. Nothing else changes.
+- **The church hill:** 12 church spaces need about 2,840 px, and `church_hill.png` is 2,400 px wide. Stretch the hill sprite sideways to fit (about 1.18) and work its width out from the church count, not `HILL_WIDTH`'s fixed 2,400. `church_x` and the tombstones follow it. Keep its height, so the plateau stays at `HILL_TOP_Y`.
+- **The scenery:** `scenery.gd` places props at fixed fractions of each location (`for at in [0.2, 0.44, …]`), so wider locations would thin out. Add spots so each location keeps about the props per 1,000 px it has now, through the layout code, never by hand. No prop in front of a token, and the swamp's reeds still behind the bog's tokens.
+- **The board's length:** about 15,500 px, up from 11,720. The intro glide goes from 6 s to about 7.5 s, so its speed barely changes. Judge it by eye.
+- **`Match.TURNS`** becomes 17. The HUD's counter and its red last turn already read it.
+- **The docs:** update `board.md` (the length table, the space mix, the rolled layout), `game_rules.md` (17 turns, one empty space for every filled one), `screens.md` ("Turn 5 of 17") and `roadmap.md` (17 turns), so they match the code. They mention the user's decision and its date.
 
 **Polish:**
-- The icons breathe: each one rises and sinks a few pixels on its base, slowly and out of step with the others, stepping at 25 FPS.
-- The minigame icons tilt a little now and then, like something about to start.
-- The church icon's space has a faint, warm `Glow` pulse. The coin icon glints now and then with a quick squash. Spikes and thief stay still apart from the breathing, so the good spaces look inviting and the bad ones look still and wary.
-- Path dots get no motion. They're the quiet part.
-- The flag flutters: a small, uneven skew from its pole, like `Flame`'s flicker but slower.
-- The signposts creak very slightly: a slow sway of under a degree, from their base.
-- Every token, icon, signpost and the flag gets `PaperShadow`. A token's shadow is small and close, because it lies on the ground.
-- The intro glide (part 6) already passes over the whole path, so the path is simply there. It doesn't animate in.
+- Nothing new moves. Check that the spaces, the breathing icons, the dots and the signposts all still look as they did, now on a longer road.
+- The stretched hill must still look like paper, not like a smeared picture. If it does, compare 1.18 sideways with a uniform scale in one contact sheet before choosing.
 
-**Assets:** `board/space.png`, `path_dot.png` and `signpost.png`; `icons/coin`, `spikes`, `thief`, `church`, `pong`, `haxball`, `racing`, `fps` and `flag`. Nothing missing, and no new sounds.
+**Assets:** what parts 6 and 7 already use. Nothing missing, and no new sounds.
 
 **Check:**
-- In the log, print each stretch's space count and kinds. The way through the graveyard must be 42 spaces and the way past the church 46, plus the start and the finish.
-- Walk `BoardPath` from the start to the finish by every route in a script, and check that both ways at each fork join again.
-- Save one screenshot of each location from the viewport, with the camera moved there by a script. The graveyard and swamp shots must show both paths of their split. Check that no space sits on the soil or the water, and that no prop covers a token.
-- Check that it still runs at 25 FPS during the intro glide.
+- In the log, print `BoardPath.report()`, both route lengths (57 and 61), each route's empty and filled counts, and the seed.
+- Run the script twice with the seed and check `board_path.gd` doesn't change. Check in a script that every bag's counts came out exact.
+- Walk every route in a script from the start to the finish, as in part 7.
+- With a temporary script (not committed), walk 4 players with random rolls until all reach the finish, as in part 8, and check that `Match` agrees with every piece.
+- Save one screenshot of each location, including the whole church hill and both swamp paths. No space on the soil or water, no prop over a token, no bare stretch of scenery.
+- 25 FPS during the intro glide.
 
 **Risks:**
-- Flat ovals can look like holes or like stickers on the screen if the tint and shadow are wrong. Compare a few y-scales in one contact sheet before choosing.
-- Spaces on the steep part of the church hill may tilt or bunch up. If the ramp is too steep for even spacing, lengthen it in `BoardLayout`.
-- Moving the lanes may move props into the sky or into each other. Look at every location again after any change.
+- A shuffle can give a long run of empty spaces, or three spikes in a row. That's allowed: it's what "absolutely random" means. If the user wants a reroll after seeing it, rerun with a new seed.
+- The castle gets 15 spaces in 3,300 px, and the gate and its lead-out must still fit after the last one. Look at the castle's end.
 
-### Part 8: Monster pieces
+### Part 11: The die and the turn loop
 
-**Goal:** When the intro glide ends, every player's monster drops onto the start on its paper stand. Pieces hop space by space along the path, the camera follows the one that's moving, and pieces that share a space stand together in a small crowd. A script drives the moves for now. The die comes in part 10.
+**Goal:** The game plays itself through: on each turn, the camera glides to the player, their portrait drops, a paper die lands above their monster, and the candle burns. Click the die, or let the candle go out, and the die tumbles, lands, and the monster hops that many spaces. Then the next player goes, and after the last player the turn counter flips, up to turn 17.
 
 **Builds:**
-- **`Match`:** each player gets `space`, the `BoardPath` id they stand on, starting at `BoardPath.start()`. Add `Match.move_to(player, id)` as the one rules call that changes it. Blood and coins come in part 9.
-- **`BoardPiece`** (`src/board/board_piece.gd`): the monster's body (`Monsters.body`) on `stand.png`, with `PaperShadow`, about 200 px tall in all. Part 5's `MonsterPiece` already builds a body on a stand. Share that code (a common base, or a helper they both call) instead of copying it. The grey-out and hover stay only on monster select's piece.
-- **The pieces** go in part 7's `Pieces` node, one per player, found by `Board.piece_for(player)`.
-- **Crowds:** when several pieces share a space, they spread out on it. Up to 4 stand in a row across the token, and pieces 5 to 8 make a second row a little higher and behind. Y-sorting keeps the front row in front. When a piece arrives or leaves, the others shuffle to their new spots with `move_to`.
-- **Walking:** `Board.walk(player, steps) -> Signal` hops the piece from space to space. Each hop is a short arc to the next space and a squash on landing. Reuse `PaperMotion.fly_to` with a low arc, or add `PaperMotion.hop_to` if it needs its own feel. Never copy a tween.
-  - **At a fork,** the walk waits on a `choose_branch(player, fork) -> Signal` hook. In part 8 it picks a random path after a short beat. Part 13 replaces that with the signpost and its arrows. Mark it clearly as the placeholder.
-  - **At the finish,** the walk stops on it even if steps are left. Finishing itself is part 17.
-  - The rules decide each step through `BoardPath.next`, and the piece only shows it. At the end of the walk, `Match.move_to` records where it stopped.
-- **The camera follows:** `BoardCamera.follow(node)` keeps a piece near the middle of the screen with a soft lag, and `stop()` ends it. `glide_to` stays for jumps between players. The sky and the ambience already follow the camera.
-- **Facing:** every piece faces right, the way the race goes. `PaperMotion.flip` already exists for when a piece first turns around, but nothing in the first playable needs that yet, so don't add facing code.
+- **`Match`:**
+  - `current`, the index of the active player, and `active()`.
+  - `roll() -> int`, 1 to 6. The rules decide the number; the die only shows it.
+  - `next_player() -> bool` moves to the next player who hasn't finished, and to the next turn after the last one. It returns false when turn 17 is over. Give each player `finished` (false) now, so the skip is there; part 18 sets it.
+- **`Die`** (`src/board/die.gd`): the six `die_N.png` faces on one sprite, with `PaperShadow`, and a click area. `offer()` drops it in and makes it clickable, and it emits `clicked`. `tumble(value) -> Signal` plays the roll and ends on that face.
+- **Where the die goes:** in the world, above the active piece's head, in a node over `Pieces`, so it's always on screen with the player. On the upper lane it must stay below the HUD's 220 px. The `Candle` stands beside it, scaled down to about half, because its full 400 px is the pregame's size.
+- **The turn loop** in `Board`, after the HUD has come in:
+  1. The camera glides to the active piece. The HUD's `set_active` and the `turn_start` chime come as it settles.
+  2. The die is offered, and the candle starts at 5 s.
+  3. A click on the die, or `timed_out`, gives `Match.roll()`, and the die tumbles to it.
+  4. `walk(player, value)`.
+  5. `land(player, id) -> Signal`, a hook that part 12 fills. For now it does nothing and returns at once. Mark it clearly.
+  6. `Match.next_player()`. On a new turn, the HUD's `set_turn`. When it returns false, the loop stops and logs "Match over". The ending is part 19's.
+- **Clicks:** only the die takes clicks during a turn, and only while it's offered. A click elsewhere does nothing. The intro's skip click must not also roll.
 
 **Polish:**
-- **Arriving:** when the intro glide settles on the start, the pieces drop onto it one at a time in turn order (`set_down`). Each lands with a `hop_*` sound and a squash, then shuffles into the crowd.
-- Idle pieces sway gently, out of step with each other, as on monster select. A walking piece stops swaying and starts again when it lands.
-- **Each hop:** a quick crouch before it leaves, a low arc, and a squash on landing, with one of `hop_1` to `hop_3`. Never the same sound twice in a row. Leave a beat of about 0.12 s between hops, so a roll of 6 can be counted by ear.
-- **The last hop** of a walk lands a touch heavier: a bigger squash and a little settle.
-- Hops up or down a split's ramp follow the lane, so a piece climbing the church hill visibly climbs.
-- The camera eases in behind a piece that starts walking. It never snaps.
-- A piece leaving a crowd steps out of it before its first hop, and the crowd closes up behind it.
+- **The die arrives** with `drop_in` from above the screen, lands with a small squash, then idles: a slow bob and a slight wobble, out of step with the piece's sway, so it asks to be clicked.
+- **Hovering** lifts it a little and grows it, like a `PaperButton`, with the cursor changing the same way.
+- **The roll:** a quick crouch, then a toss up in a short arc, spinning. Its face changes every other frame to a random face, never the same twice in a row, with `die_roll`. It lands with `die_land`, gives two small bounces with squashes, and settles straight on the number. The face gives one small pop so the number reads.
+- It holds about 0.5 s so everyone sees the number, then pops out as the piece takes its first hop.
+- **The candle** lights as the die lands. A click snuffs it (`stop()`), and it lifts away. Its low warning and its going out are already in `Candle`. On a timeout, the die gives a small shake, then rolls by itself, so it's clear nobody clicked.
+- **Between players:** a beat of about 0.4 s after the piece lands, then the camera glides on. It never snaps.
+- **A new turn:** the counter flips (part 9), after the last player's piece has landed and before the first player's glide.
 
-**Assets:** `monsters/` (all 8 bodies and `stand.png`); `sfx/hop_1`, `hop_2` and `hop_3`. Nothing missing.
+**Assets:** `board/die_1.png` to `die_6.png`; `ui/candle.png` and `flame.png`; `sfx/die_roll`, `die_land` and `turn_start`, and the candle's `timer_low` and `timer_out`. Nothing missing.
 
 **Check:**
-- With 2 and with 8 players, see all pieces drop onto the start after the glide, and the 8-player crowd stays readable.
-- With a temporary script (not committed), walk players in turn by random steps of 1 to 6 until everyone reaches the finish. Check in the log that `Match` agrees with where each piece stands, that both forks get taken, and that walks stop at the finish.
-- Make one contact sheet from timed viewport screenshots of a 6-space walk up the church hill.
-- Check that it runs at 25 FPS with 8 pieces swaying and the camera following.
+- With the MCP's clicks, roll a few turns by clicking the die, with 2 players. Check that a click on the HUD and a click beside the die do nothing (part 9 left this unchecked).
+- With a temporary script (not committed) that speeds the game up (`Engine.time_scale`), let the candles run out through all 17 turns with 8 players. In the log, every roll, where each piece stops, and the turn number; check that `Match` agrees, that the loop stops after turn 17, and that a player forced to `finished` is skipped.
+- One contact sheet of the die's arrival, tumble and landing from timed screenshots.
+- 25 FPS with 8 pieces, the die and the candle.
 
 **Risks:**
-- Foreground fog over the village and swamp may hide the pieces. If it does, thin the fog over the lanes. Don't drop it.
-- An 8-piece crowd on one oval may spill onto the path dots or the next space. Pieces may overlap each other a little, like a real crowd of game pieces, but the crowd must stay on its own space.
+- On a crowded space, the die must sit above the back row's heads. Check with 8 players on the start.
+- At half size, the candle's flame may look too small. Judge it in a screenshot next to the die.
 
-### Part 9: The HUD
+### Part 12: Quick spaces
 
-**Goal:** Along the top of the board, a strip of paper portraits shows every player in turn order, with their name, blood drops and coins. The active player's portrait is raised, a finished player's portrait gets a flag, and "Turn 1 of 12" sits in a corner. Every change to blood or coins is animated, ready for the spaces and duels to use.
+**Goal:** Landing on a coin, spikes, thief or church space does what it says, and you see it happen: the space springs to life, and the coin or blood flies to or from the player's portrait. Empty spaces do nothing. Minigame spaces wait for part 15.
 
 **Builds:**
-- **`Match`:** each player gets `blood` (3) and `coins` (0). Add `Match.turn` (starting at 1), `const TURNS := 12`, and two rules calls: `change_blood(player, delta)`, kept between 0 and 3, and `change_coins(player, delta)`, never below 0. Each returns the change that really happened. Dying at 0 blood is part 12, not here.
-- **`Hud`** (`src/board/hud.gd`, its own scene on a `CanvasLayer` over the board and under Settings), with:
-  - `set_active(player)`, `set_finished(player)` and `set_turn(n)`.
-  - `show_blood(player)` and `show_coins(player)`, which animate the portrait to match `Match`. The rules change `Match` first, then the board tells the HUD.
-  - `anchor(player, "blood" | "coins") -> Vector2`, the screen position of that counter. Part 11's icons and part 16's flying coins and blood aim at it.
-- **`HudPortrait`:** `portrait_frame.png` tinted in the monster's color, with `Monsters.portrait` inside it. Under the frame is the name in the body font. Under the name is a row of three `blood.png` drops, and next to it `coin.png` with the count in the display font. A lost drop is an empty dark outline (the same drop, darkened and faded), so the player can always count to three.
-- **The layout:** centred along the top, in turn order. Eight portraits must fit across 1920 px, with the turn counter clear of them, at about 190 px each. The strip stays inside the top 220 px that part 7 keeps clear. It sits where the pregame's card strip ended (y about 105), so the board picks up where monster select left off.
-- **The turn counter:** a small `panel.png` tag in the top-left corner, with "Turn 1 of 12" in the display font. The text goes in `locale/strings.csv` (`TURN_COUNTER`), as every player-facing string does. The file only has English so far.
-- **When it appears:** after part 8's pieces have landed on the start, the HUD comes in.
+- **`Match.land(player) -> Dictionary`:** the rules for the space the player stands on, through `change_coins` and `change_blood`: coin +1 coin, spikes −1 blood, thief −1 coin, church +1 blood. It returns the kind and the real changes, so a thief on 0 coins or a church on 3 blood changes nothing.
+- **`Board.land`** (part 11's hook) calls it, plays the effect for the kind, then tells the HUD (`show_coins`, `show_blood`) as the flying piece arrives. It returns when the effect is done.
+- **Flying to the HUD:** the flying icon is a copy that lives on the HUD's layer. It starts at the space's screen position (from the camera) and aims at `Hud.anchor(player, …)`. The space's own icon stays where it is.
+- **Empty spaces:** nothing, at once. **Minigame spaces:** nothing yet; log "duel here, part 15".
+- **0 blood:** spikes can take the last drop. Call a `died(player)` hook, which only logs for now; part 13 makes the death. Until then the player plays on at 0.
 
 **Polish:**
-- **Coming in:** the portraits drop in one after another from left to right (`drop_in`), and the turn counter slides in from the left after them.
-- Each portrait hangs and sways very slightly, out of step with the others, like a card pinned at the top.
-- **The active portrait** drops lower than the others with `lift`, its frame's color brightens, and its sway stops. The one before it rises back into line at the same time. Silent: part 10's `turn_start` chime goes with it.
-- **Losing blood:** the drop falls off the portrait, shrinks, and fades as it falls, with `blood_lose`. Its empty outline stays behind. The portrait gives a small `shake`.
-- **Gaining blood:** the outline fills with a `pop_in` and `blood_gain`.
-- **Coins:** the count ticks one coin at a time, never jumping. Each tick plays `coin_gain` or `coin_lose` and squashes the coin icon. Big changes tick faster, so no count takes more than about 1 s.
-- **Finishing:** `flag.png` pops in on the portrait's corner and flutters like part 7's flag. The portrait greys a little, the same way a taken monster does in monster select (reuse `grey.gdshader`), so it reads as "out of the race".
-- **A new turn:** the counter's number flips (`PaperMotion.flip` with `flip`) to the next one. On the last turn the tag turns blood red, ready for part 18's `sting_final_turn`.
-- The HUD doesn't move with the camera, and the board's fog stays under it.
+- **Every filled space** reacts to the piece landing: its icon jumps a little, before its own effect.
+- **Coin:** a coin springs up from the token, spins like a flipped coin (its x-scale squeezing through 0) and glints, then flies in an arc to the coin counter with `fly`, shrinking to the counter's size. On arrival the count ticks up with `coin_gain` (part 9).
+- **Spikes:** the spikes shoot up out of the token, stretching up fast with an overshoot, with `spikes`. The piece jolts up and shakes. The HUD's drop falls off with `blood_lose` (part 9). The spikes sink back slowly.
+- **Thief:** the hand darts up with `thief`. If the player has a coin, a coin flies down from their counter into the hand (the count ticks down with `coin_lose`), and the hand closes on it with a squash and ducks back into the token. With no coins, the hand grabs at the air, wiggles, and sinks back empty, with no coin sound.
+- **Church:** `church` rings, and the token's warm `Glow` flares. A blood drop rises from the church icon and flies to the portrait, where the empty outline fills with `blood_gain`. On full blood the bell and the glow still come, and the drop rises above the piece and fades instead of flying.
+- The camera holds on the piece during the effect. The whole effect is about 1.2 s, then the next player.
 
-**Assets:** `ui/portrait_frame.png` and `panel.png`; all 8 `monsters/*_portrait.png`; `icons/blood`, `coin` and `flag`; `sfx/blood_lose`, `blood_gain`, `coin_gain`, `coin_lose` and `flip`. Nothing missing.
+**Assets:** `icons/coin`, `spikes`, `thief`, `church` and `blood` (with the `_rim` versions on the tokens); `sfx/coin_gain`, `coin_lose`, `spikes`, `thief`, `church`, `fly`, `blood_lose` and `blood_gain`. Nothing missing.
 
 **Check:**
-- With 2, 5 and 8 players, the strip fits, the names are readable, and the counter doesn't touch it.
-- With a temporary script (not committed), go through the active player, lose and gain blood (including trying to go above 3 and below 0), gain 7 coins and lose 3, finish a player, and move to turn 12. Check that `Match` and the HUD agree in the log after each step.
-- Make one contact sheet from timed viewport screenshots of the blood, coin and flag animations.
-- Use the MCP's clicks to check that the HUD doesn't swallow clicks meant for the board below it. Part 14 will make the portraits clickable.
+- With a temporary script (not committed), land a player on each kind, and on the edge cases: a thief on 0 coins, a church on 3 blood, spikes on 1 blood (the `died` hook logs). Check that `Match` and the HUD agree after each.
+- One contact sheet of each of the four effects from timed screenshots.
+- A sped-up 17-turn match with 5 players, as in part 11, with the effects in.
+- 25 FPS during the coin's flight.
 
-**Risks:** Turkish names with tall letters (Ğ, İ, Ş) under small portraits may clip. Test one, like "Ayşegül".
+**Risks:** The flight starts in the world and ends on the HUD, which don't move together. If the camera is still easing when the icon leaves, the start can jump. Take the start position once, when the icon leaves the token.
 
 ## Roadmap
 
-Rough past part 9. Parts 1 to 6 are done (see the Log).
+Rough past part 12. Parts 1 to 9 are done (see the Log).
 
-7. The board path: `BoardPath`, the start, the spaces lying flat with standing icons, path dots, signposts, the flag at the gate, and retuned lane heights.
-8. Monster pieces: the stand and shadow, crowds on a space, walking and hopping, a random placeholder at forks, and the camera following.
-9. The HUD: the portrait strip with blood and coins, the raised active portrait, the flag for finished players, and the turn counter.
-10. The die and the turn loop: roll, walk, `turn_start`, the 5 s candle, and moving on to the next player and turn.
-11. Quick spaces: coin, spikes, thief and church, with their sounds and icons flying to the HUD.
-12. Death and respawn (crumple, fly to the start, unfold), and the board music following the leader.
-13. Splits: signpost arrows and the 10 s candle, replacing part 8's random placeholder.
-14. Challenge: pick an opponent's portrait, then a stake card, with invalid stakes greyed out and the 20 s candle.
-15. The VS card, the countdown, and the coin flip.
-16. Duel results: the win pose and the crumple, voices, gold and blood flying across, deaths in duels, and the swap.
-17. The swap handicap (3 rounds), the no-opponent fallback, and finishing at the castle gate (the flag and `sting_finish`).
-18. Match end: 12 turns, `sting_final_turn`, the early end, and tracking the stats.
-19. The trophy ceremony: the curtain, drumrolls, trophies, and the leaderboard with its tiebreaker.
-20. Fun stats, then back to the setup screen.
-21. Esc settings during a match, and a sweep of translations and edge cases. This includes what parts 2 and 3 left untested: a fullscreen relaunch, closing Settings with Esc, a click outside or the back button, and dragging the sliders.
-22. Full playtests and tuning: the board's length and the 12 turns.
-23. Bug bash and the final polish pass. Drop the Godot MCP's autoloads from the release build.
+10. The longer, random board: 57 and 61 spaces, one empty for every filled one, rolled once by a script, the stretched hill, 17 turns.
+11. The die and the turn loop: the die above the piece, the 5 s candle, rolling, walking, and moving on to the next player and turn.
+12. Quick spaces: coin, spikes, thief and church, with their effects, sounds, and icons flying to and from the HUD.
+13. Death and respawn (crumple, fly to the start, unfold, coins lost), filling part 12's `died` hook, and the board music following the leader.
+14. Splits: signpost arrows and the 10 s candle, replacing part 8's random placeholder.
+15. Challenge: pick an opponent's portrait, then a stake card, with invalid stakes greyed out and the 20 s candle.
+16. The VS card, the countdown, and the coin flip.
+17. Duel results: the win pose and the crumple, voices, gold and blood flying across, deaths in duels, and the swap.
+18. The swap handicap (3 rounds), the no-opponent fallback, and finishing at the castle gate (the flag and `sting_finish`).
+19. Match end: 17 turns, `sting_final_turn`, the early end, and tracking the stats.
+20. The trophy ceremony: the curtain, drumrolls, trophies, and the leaderboard with its tiebreaker.
+21. Fun stats, then back to the setup screen.
+22. Esc settings during a match, and a sweep of translations and edge cases. This includes what parts 2 and 3 left untested: a fullscreen relaunch, closing Settings with Esc, a click outside or the back button, and dragging the sliders.
+23. Full playtests and tuning: the 17 turns and the 57 spaces, and a reroll of the board if the user wants one.
+24. Bug bash and the final polish pass. Drop the Godot MCP's autoloads from the release build.
 
 ## Part notes
 
 Each part session adds a few lines when it finishes: what got built, what changed from the plan, surprises, and anything left over or buggy. The next Microplan reads these instead of the code.
 
-### Part 7 notes (the board path)
+### Part 10 notes
 
-- **Built:** `BoardPath` (`src/board/board_path.gd`: `node`, `start`, `finish`, `next`, `is_fork`, `ids`, `stretch`, `routes`, `report`), `BoardPathView` (`path_view.gd`: the road strip, dots, signposts, spaces and the flag), `Space` (`space.gd`), `Flag` (`flag.gd`, reusable by the HUD) and `PaperMotion.breathe` and `tilt`. The board scene adds the path and an empty y-sorted `Pieces` node to the Lanes layer after the scenery. Routes: 42 spaces through the graveyard, 46 past the church, both forks rejoin (checked in a script).
-- **Changed by the user during the build:**
-  - **Two of every three spaces are empty:** a plain token, kind `empty`, where nothing happens. Per stretch, filled spaces are village 3, church 3, graveyard 2, forest 3, boardwalk 2, bog 2, castle 4. The microplan's mix table is replaced by the `kinds` strings in `BoardPath`. Outside the second split each minigame appears once; the graveyard has none. Parts 11 and 16 treat `empty` as "nothing happens".
-  - **Contrast:** the token and icons are baked with outlines (`tools/images/make_outlines.py`: dark rim on the token, cream rim on icons), the token is lifted brighter, a dark strip of road runs under the spaces, the far and mid layers and the ground are dimmed (`scenery.gd`'s `DIM`), and the foreground fog is halved. **Part 8 should give the monsters a cream outline the same way** (bake it, don't use a shader: a custom canvas shader came out darker and without an outline here).
-  - **Icon look:** icons are about 108 px, stand a little below the token's middle on a small dark pool, and are the same size whatever the kind (the coin and FPS icons are scaled down).
-- **Layout changes:** the lanes are now `MAIN_Y` 880, `UPPER_Y` 650 and `LOWER_Y` 930. The hill moved up (`HILL_TOP_Y` 565) so the church spaces stand on grass. The swamp got `pad: 2.0` spaces of width, so its ramps lie outside its spaces. The board is 440 px longer; the gate is at x 11612.
-- **Token size:** 165 × 73 px, with 220 px between spaces, so the gap holds three small dots. An 8-monster crowd (part 8) has to fit on that.
-- **Unchanged:** the finish token is plain like an empty space; the flag beside the gate marks it. Reeds in the swamp sit behind the bog's tokens, never in front.
-- **Checked:** 25 FPS during the intro glide; screenshots in `screenshots/part_07/`.
+- **Built:** the road is 57 spaces through the graveyard and 61 past the church (12, 8 or 12, 12, 10, 15). `tools/board/roll_board.py` rolled the kinds with seed 1031 and wrote them into `BoardPath`; running it twice leaves the file unchanged, and it asserts every bag's counts. The graveyard way is 29 empty and 28 filled, and the church way 31 and 30. `Match.TURNS` is 17, and the intro glide 7.5 s. The board is 15,460 px wide.
+- **Hill and scenery:** `BoardLayout.hill_width()` (2,840) replaces `HILL_WIDTH`, and the hill sprite is stretched sideways by `hill_width() / HILL_IMAGE_WIDTH` (1.18). It still looks like paper, so no uniform-scale comparison was needed. `scenery.gd`'s `_spots(location, first, last, gap)` places props about a fixed gap apart, so every location keeps its old density.
+- **Checked:** every route walked in a script (57, 57, 61, 61 spaces), and 4 players with random rolls all reached the finish in 20 rounds with `Match` and every piece agreeing. 25 FPS during the intro glide. One screenshot of each location was looked at.
+- **Left over:** the forest has six empty spaces in a row (its spaces 6 to 11), which the rules allow. If the user dislikes it, rerun with `--seed N`. The castle's own building stands at 0.4 of its length as before, and between it and the gate there are only torches.
 
-### Part 8 notes (monster pieces)
-
-- **Built:** `MonsterFigure` (`src/data/monster_figure.gd`: the body on its stand with shadows, shared by `MonsterPiece` and the new `BoardPiece`), `BoardPiece` (`src/board/board_piece.gd`: sway, `walked` and `branch_chosen` signals), `PaperMotion.hop_to`, `BoardCamera.follow`, and in `Board`: `piece_for`, `walk`, the placeholder `choose_branch`, crowds and the arrival drop (`pieces_landed` signal). `Match` players now have `space` (starting at `BoardPath.START`) and `Match.move_to`. `Sound.play("hop")` never repeats a hop twice in a row.
-- **Outlines:** as part 7's notes asked, the monsters and the stand are baked with a cream outline (stand: dark) by `tools/images/make_outlines.py` into `monsters/<id>_rim.png` and `stand_rim.png`: bodies 182 px tall, stand 66 px wide.
-- **Crowds:** 4 to a row, 52 px apart, the front row 16 px below the token's middle; each row behind stands 34 px higher, and even-sized back rows shift half a step so heads show between the front ones. Eight pieces overlap a lot but stay on their token.
-- **Walking:** each hop is a 0.07 s crouch, a 0.27 s arc, a squash, then a 0.12 s beat. A piece steps out to the token's front before its first hop. Only the last hop of a walk joins the crowd, and a walk stops at the finish. `Match.move_to` is called at the end of the walk. After it the camera glides onto the piece.
-- **Camera:** `follow(node)` lags softly, eases in over 0.7 s and is capped at 2600 px/s; `stop()` and `glide_to` end it.
-- **Checked:** 8 players all walked to the finish with random rolls (13 rounds): `Match` agreed with every piece, both forks were taken both ways, no piece strayed from its space. 2- and 8-player landings and a 6-space hill climb are in `screenshots/part_08/`. The frame rate stays at 25 between screenshots; it only dipped while the test script saved PNGs.
-- **Not checked:** the Godot MCP was connected only late in the session, and nothing in this part needs its clicks, so it was used just to run the game and read errors. The hop sounds and the feel of the squashes have not been listened to or judged by the user.
-
-### Part 9 notes (the HUD)
-
-- **Built:** `Match` has `blood` (3, `MAX_BLOOD`) and `coins` per player, `turn` and `TURNS`, and `change_blood` / `change_coins`, which return the real change. `Hud` (`src/board/hud.gd`, a `CanvasLayer` at layer 20, made by `Board`, reached with `Board.hud()`) and `HudPortrait` (`hud_portrait.gd`). The HUD comes in when `pieces_landed` fires. `TURN_COUNTER` is in `strings.csv`.
-- **Layout:** portraits 184 px apart, centred, hanging from y 14; the frame is 118 px, and the name, drops and coins sit below, ending at about y 215. The active portrait drops 16 px, grows a little and brightens. The turn tag is top-left, 172 x 52 px.
-- **Changed from the plan:** the finished portrait is greyed by the shader on the face and a grey blend on the frame, because `grey.gdshader` drops the frame's tint. The active drop uses its own tween, not `PaperMotion.lift`, which only raises.
-- **Checked:** 2 and 8 players; rules and HUD agree through blood (0 to 3 limits), coins (+7, -3, not below 0), active, finished and turn 12; 25 FPS; screenshots in `screenshots/part_09/`. "Ayşegül" fits.
-- **Not checked:** the Godot MCP's clicks (labels ignore the mouse and nothing else on the HUD takes it, but no click was sent), and the sounds and feel of the animations have not been judged by the user. On the right of an 8-player strip, the moon sits behind a couple of coin counts; the outlines keep them readable.
-
-### Built so far (parts 1 to 6, absorbed by Microplan 3)
+### Built so far (parts 1 to 9, absorbed by Microplans 3 and 4)
 
 - **Code** is in `src/`:
-  - Autoloads: `Sound` (`play`, `play_music`, `play_ambience`, and `quit()`, which every way out of the game goes through so no OGG leaks), `Scenes` (`change_to`, the paper transition, the texture and the cursor), `Settings` (`Settings.open()` from anywhere), and `Match` (players in turn order, with `name` and `monster`; `roll_turn_order`, `pick_monster` and `free_monsters`).
-  - `PaperMotion` holds `drop_in`, `set_down`, `lift_away`, `sway`, `sway_stop`, `pop_in`, `pop_out`, `lift`, `squash`, `slide_in`, `move_to`, `flip`, `hop`, `fly_to`, `tuck`, `shake` and `crumple`. New motion goes here.
+  - Autoloads: `Sound` (`play`, `play_music`, `play_ambience`, and `quit()`, which every way out of the game goes through so no OGG leaks; `play("hop")` never repeats a hop twice in a row), `Scenes` (`change_to`, the paper transition, the texture and the cursor), `Settings` (`Settings.open()` from anywhere), and `Match` (players in turn order, each with `name`, `monster`, `space`, `blood` and `coins`; `turn`, `TURNS`, `MAX_BLOOD`; `roll_turn_order`, `pick_monster`, `free_monsters`, `move_to`, and `change_blood` / `change_coins`, which return the real change).
+  - `PaperMotion` holds `drop_in`, `set_down`, `lift_away`, `sway`, `sway_stop`, `pop_in`, `pop_out`, `lift` (it only raises), `squash`, `slide_in`, `move_to`, `flip`, `hop`, `hop_to`, `fly_to`, `tuck`, `breathe`, `tilt`, `shake` and `crumple`. New motion goes here.
   - Shadows: `PaperShadow.add(piece)`, which copies a sprite's region.
   - `Sky` has `tint()` and `flash()`. `bat.gd` flies across whatever is in view and has an `active` switch.
-  - `src/ui/` has `PaperButton`, `PaperSlider`, `PaperToggle`, the `Candle` (`start`, `stop`, `timed_out`, `time_left`) and `Flame` (`sputter`, `snuff`, `light`).
-  - `Monsters` (`src/data/monsters.gd`) is the one place for a monster's look: `name_key`, `color`, `body`, `portrait` and `voice`.
-  - `src/pregame/`: the turn order roll and monster select in one scene, `PlayerCard`, and `MonsterPiece` with `grey.gdshader`. It ends with `Scenes.change_to` the board.
-  - `src/board/`: the board scene with the intro glide (a click skips it) and location tracking, `BoardLayout` (locations, `lane_y`, `gate_x`, `layer_x`), `BoardCamera` (`glide_to`, `jump_to`, `center_x`), `scenery.gd`, `strip.gdshader` and `Glow`.
-- **The board's layers:** Far (scroll 0.5), Mid (0.9), Lanes (1.0) and Fog (1.2). A piece in a scrolled layer goes at `BoardLayout.layer_x(world_x, scroll)`. The world runs from 0 to 11,720 px.
+  - `src/ui/` has `PaperButton`, `PaperSlider`, `PaperToggle`, the `Candle` (`start`, `stop`, `timed_out`, `time_left`; 120 × 400) and `Flame` (`sputter`, `snuff`, `light`).
+  - `src/data/`: `Monsters` is the one place for a monster's look (`name_key`, `color`, `body`, `portrait`, `voice`), and `MonsterFigure` is the body on its stand with shadows, shared by monster select's `MonsterPiece` and the board's `BoardPiece`.
+  - `src/pregame/`: the turn order roll and monster select in one scene, `PlayerCard`, and `MonsterPiece` with `grey.gdshader`.
+  - `src/board/`:
+    - The board scene with the intro glide (`INTRO_GLIDE`, a click skips it) and location tracking. `Board` has `hud()`, `piece_for`, `walk`, the placeholder `choose_branch`, crowds, and the arrival drop, which fires `pieces_landed`; the HUD comes in then.
+    - `BoardLayout` (locations, `lane_y`, `gate_x`, `layer_x`; lanes at `MAIN_Y` 880, `UPPER_Y` 650, `LOWER_Y` 930) and `BoardPath` (`node`, `start`, `finish`, `next`, `is_fork`, `ids`, `stretch`, `routes`, `report`; kinds from the `kinds` strings, `.` is `empty`).
+    - `BoardPathView` (`path_view.gd`: the dark road strip, the dots, signposts, spaces and the flag), `Space`, `Flag` (also on the HUD), `BoardCamera` (`glide_to`, `jump_to`, `follow`, `stop`, `center_x`), `BoardPiece` (sway, `walked` and `branch_chosen`), `scenery.gd` (`DIM`, `FOG`), `strip.gdshader` and `Glow`.
+    - `Hud` (a `CanvasLayer` at layer 20: `come_in`, `set_active`, `set_finished`, `set_turn`, `show_blood`, `show_coins`, `anchor`) and `HudPortrait`.
+- **The board's layers:** Far (scroll 0.5), Mid (0.9), Lanes (1.0) and Fog (1.2). A piece in a scrolled layer goes at `BoardLayout.layer_x(world_x, scroll)`. The path and the y-sorted `Pieces` node are in Lanes, after the scenery.
+- **Sizes:** a token is 165 × 73 px, with 220 px between spaces and three dots in each gap. Icons are about 108 px. Monsters are 182 px tall on a 66 px stand. Crowds stand 4 to a row, 52 px apart, each row behind 34 px higher. The HUD's portraits are 184 px apart and end at about y 215; the turn tag is top-left, 172 × 52 px.
+- **Walking:** each hop is a 0.07 s crouch, a 0.27 s arc, a squash and a 0.12 s beat. `Match.move_to` is called at the end of the walk, then the camera glides onto the piece. `follow` eases in over 0.7 s and is capped at 2,600 px/s.
+- **Outlines** are baked, never shaded: `tools/images/make_outlines.py` makes the token's and stand's dark rims and the icons' and monsters' cream rims (`*_rim.png`). A canvas shader came out darker and without an outline.
 - **Gotchas:**
   - A Control's `scale` can't be exactly zero (Godot clamps it to 1e-5), so use a flag, never `scale == Vector2.ZERO`.
   - `--quit-after` runs print a harmless leak of 4 objects at exit, because the window's close request can't be caught there.
   - Run on its own, the pregame starts a test match of the count after `--` (default 4).
-- **Testing:** the Godot MCP didn't connect in parts 4 to 6, so those parts were checked with scripted input instead. Microplan 3 found the cause: another Claude session's server was holding port 6505. **The MCP is required from part 7 on.** If it acts up, kill every other Claude session and reconnect, as the README says, rather than falling back.
-- **Screenshots** come from the viewport in a plain run. Never use `--write-movie` (see README).
+  - `grey.gdshader` drops a sprite's tint, so a finished portrait's frame is greyed by a blend instead.
+- **Testing:** the Godot MCP is required (see README). Screenshots come from the viewport in a plain run, never `--write-movie`.
 - **Still open:**
-  - There's no thunder sound and no music at all yet. `select.ogg` and the board tracks are missing, and the music just fades.
-  - Nobody has listened to the ambience crossfades or the pick voices.
-  - In monster select, the candle sits over the moon on the right.
-  - What parts 2 and 3 left untested is on the roadmap's part 21.
-  - The MCP's autoloads must be dropped from the release build, in part 23.
+  - No thunder sound and no music at all yet. `select.ogg` and the board tracks are missing, and the music just fades.
+  - Nobody has listened to the ambience crossfades, the pick voices, the hop sounds or the HUD's sounds, or judged the squashes and the HUD's animations.
+  - In monster select, the candle sits over the moon on the right. On the right of an 8-player HUD strip, the moon sits behind a couple of coin counts; the outlines keep them readable.
+  - What parts 2 and 3 left untested is on the roadmap's part 22. The MCP's autoloads must be dropped from the release build, in part 24.
 
 ## Log
 
@@ -248,3 +221,7 @@ Each part session adds a few lines when it finishes: what got built, what change
   - Part 8 now does the walking, with a random placeholder at forks that part 13 replaces. `flip` for turning pieces around is dropped from part 8, because nothing in the first playable turns a piece around yet.
   - Blood, coins and the turn number go into `Match` in part 9, with the HUD that shows them. The HUD also gets the finished flag now, which part 17 only calls.
   - The end stays at 23.
+- **2026-10-23, Microplan 4:** parts 7 to 9 are done (the board path, monster pieces, and the HUD). The user decided the board: 57 spaces on the graveyard way (61 past the church), one empty space for every filled one, still one die, and 17 turns instead of 12 so that about 2 players still finish. Planned parts 10 to 12: the longer, random board, the die and the turn loop, and the quick spaces. Roadmap changes:
+  - A new part 10 lengthens the board and rolls its kinds once with a script, with exact counts in each bag and no rule on the order. The stretch lengths and the forks stay fixed. Part 22's length tuning moved up into it; the playtests (now part 23) only check it.
+  - The die and the turn loop, the quick spaces, and everything after them move down one. Part 12 leaves a `died` hook, which part 13 fills with the death.
+  - The end moved from 23 to 24, for the new part 10.
