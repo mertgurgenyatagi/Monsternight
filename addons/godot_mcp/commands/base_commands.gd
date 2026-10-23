@@ -72,6 +72,12 @@ func _queue_input(events: Array) -> void:
 	var bridge = _get_input_bridge()
 	if bridge:
 		bridge.queue_events(events)
+		return
+	# The bridge is an autoload of the running game, so the editor has none. A temporary one
+	# writes the queue file that the game's bridge reads.
+	bridge = load("res://addons/godot_mcp/services/mcp_input_bridge.gd").new()
+	bridge.queue_events(events)
+	bridge.free()
 
 
 func _get_input_bridge() -> Node:

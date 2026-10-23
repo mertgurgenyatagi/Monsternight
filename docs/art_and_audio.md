@@ -17,6 +17,10 @@ The user's three rules for everything that gets built (Q15). The bold lines are 
 - The board should be full of lively Halloween animation: drifting fog, flapping bats, flickering candles and torches.
 - **Minigames keep the paper look**, like Pong played with cardboard paddles and a paper ball on a painted table (Q12).
 
+## Frame rate
+
+The whole game runs at **25 FPS**, so every movement steps like stop motion on paper. The user chose this on 2026-10-23.
+
 ## Monsters
 
 - Each monster is one cutout on a small paper stand, like a board game piece.

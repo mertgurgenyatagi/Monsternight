@@ -6,6 +6,7 @@
 - Development is AI-assisted ("vibe coding"). A single developer leads it.
 - The Godot project lives at the root of the repository, and assets go in `assets/`.
 - The game is made for a 1920 × 1080 screen and scaled to fit.
+- **The whole game runs at 25 FPS** (`application/run/max_fps`), for a stop-motion feel. Write motion for that rate, and record movies with `--fixed-fps 25`.
 
 ## Multiplayer
 

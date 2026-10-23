@@ -11,8 +11,8 @@ A part is done when:
 1. It runs in Godot with no errors or warnings.
 2. Everything in its Polish list is in: animated, with its sounds, nothing glossed over.
 3. Claude has checked it by running the game, not just by reading the code.
-4. The user has seen it and approved it.
-5. Its Part notes are written. The branch is committed, pushed and merged into `development`, and `development` is pushed. This needs no git approval (see README, Handover 3).
+4. Three screenshots of the finished part, taken from the running game, are saved in `screenshots/part_NN/` (like `part_01/`) as `1.png`, `2.png` and `3.png`. Pick the three moments that show the part best.
+5. Its Part notes are written. The branch is committed, pushed and merged into `development`, and `development` is pushed. Then check out `development`, so the next session starts there. The part session never waits for the user: it does the whole cycle, and the user reviews afterwards and asks for changes in a later session. This needs no git approval (see README, Handover 3).
 
 If a part turns out too big, split it (5a, 5b) instead of rushing it.
 
@@ -26,6 +26,7 @@ If a part turns out too big, split it (5a, 5b) instead of rushing it.
 - **First, Godot MCP.** Create `project.godot` and enable the plugin in `addons/godot_mcp/`. Register its three autoloads (`MCPRuntimeBridge`, `MCPInputBridge`, `MCPScreenshotBridge` from `addons/godot_mcp/services/`), as `../Tavernaball/project.godot` does. Open the editor in the background, and confirm the MCP tools answer before building anything else.
 - `project.godot`: 1920 × 1080, stretch mode `canvas_items` with aspect `keep`, and the title as the main scene.
 - **Import settings.** Run one headless import, then set the 5 ambience files to loop. Turn on mipmaps for art, because nearly everything is drawn smaller than its file and would shimmer without them.
+- **25 FPS:** `application/run/max_fps=25` for the whole game, for a stop-motion feel.
 - **Audio buses:** Music and SFX. Ambience and voices go through SFX, as Settings says.
 - **`Sound` autoload.** It plays a sound effect by name, with a slight random pitch so repeats don't sound identical. It picks one of `hop_1` to `hop_3`. It crossfades music and ambience. If a music file is missing, it plays nothing and says nothing, because the music arrives later.
 - **`Scenes` autoload.** Changes scenes with one paper transition used everywhere. Music keeps playing through a change unless the new scene asks for another track.
@@ -37,12 +38,13 @@ If a part turns out too big, split it (5a, 5b) instead of rushing it.
   - One shared soft shadow for every piece: a darkened, offset copy of the piece behind it.
 - **Paper motion library:** one shared script of reusable tweens, so every screen moves the same way. Part 1 needs the drop-in, the gentle sway, pop-in, and the hover lift with press squash. Later parts add hop, flip and crumple here, not as one-off tweens.
 - **Sky:** a reusable night sky with a gradient, the paper moon, and twinkling stars. The board reuses it in part 6 with a tint for each location.
-- **Title screen.** The curtain starts closed. It parts with a soft overshoot, the logo drops in and keeps swaying, and the three buttons pop in one after another. Now and then a bat flaps across behind the logo. `title.ogg` plays once it exists.
+- **Title screen.** The curtain starts closed. It parts slowly with a soft overshoot (about 2.4 s), the logo drops in at about 2 s and keeps swaying, and the three buttons pop in one after another from about 4 s. Now and then a bat flaps across behind the logo, and lightning flashes the sky (two flickers, every 8 to 16 s). `title.ogg` plays once it exists.
 
 **Polish:**
 - The curtain halves ease open, slowing at the end, with a little settle.
 - The logo hangs and sways, never perfectly still.
 - Stars twinkle out of step with each other.
+- Lightning flashes the sky pale in two flickers, at uneven intervals. It has no thunder sound yet: there is no thunder file, so ask the user for one if wanted.
 - Buttons lift on hover with `ui_hover`, and squash on click with `ui_click`.
 - Nothing pops into view: everything enters and leaves with motion.
 - Quit closes the curtain before the window closes.
@@ -52,7 +54,7 @@ If a part turns out too big, split it (5a, 5b) instead of rushing it.
 **Check:**
 - The console run and the MCP error log show no errors or warnings.
 - Use the MCP's game screenshots and simulated mouse for the hover and the clicks.
-- Use `--write-movie` frames for the motion: the curtain opening and the quit.
+- Use `python tools/godot/capture.py` for the motion: one contact sheet instead of single frames. Skip the MCP's simulated mouse unless a click needs proving (see README, Saving tokens).
 - The game looks right in a 1280 × 720 window as well as at 1920 × 1080.
 
 **Risks:** The MCP's three runtime autoloads mustn't ship in a release build. Note it for the final part.
@@ -142,6 +144,16 @@ Very rough, past part 3.
 ## Part notes
 
 Each part session adds a few lines when it finishes: what got built, what changed from the plan, surprises, and anything left over or buggy. The next Microplan reads these instead of the code.
+
+### Part 1
+
+- Built as planned, with the user's changes: the game runs at 25 FPS, the title is slower, and lightning flashes the sky (`Sky.flash()`).
+- Code is in `src/`: autoloads `Sound` and `Scenes` (the paper sheet transition, the paper texture and the cursor), `src/paper/` (`PaperMotion`, `PaperShadow` and its shader), `src/sky/`, `src/scenery/bat.gd`, `src/ui/` (theme and `PaperButton`) and `src/title/`.
+- Motion moves live in `PaperMotion`. Part 3 and later add hop, flip and crumple there.
+- Shadows: `PaperShadow.add(piece)`. The blur is in screen pixels, so it holds at any scale.
+- The cursor is set from `Scenes`, not the project settings, because the setting leaks its texture at exit.
+- The Godot MCP's simulated clicks were broken (the editor had no input bridge, and the press became a release). Fixed in this project and in `../godot-mcp`. Its coordinates are the window's (1280 × 720), not the 1920 × 1080 viewport's.
+- Left over: no thunder sound, and `title.ogg` is still missing. The release build must drop the MCP autoloads.
 
 ## Log
 

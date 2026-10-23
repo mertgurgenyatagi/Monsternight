@@ -43,8 +43,11 @@ func _apply(ev: Dictionary) -> void:
 			e.button_index = int(ev.get("button", MOUSE_BUTTON_LEFT))
 			e.pressed = true
 			Input.parse_input_event(e)
-			e.pressed = false
-			Input.parse_input_event(e)
+			# A separate release event: input is buffered, so changing `e` would turn the
+			# queued press into a release too.
+			var release: InputEventMouseButton = e.duplicate()
+			release.pressed = false
+			Input.parse_input_event(release)
 		"mouse_move":
 			var e := InputEventMouseMotion.new()
 			e.position = Vector2(ev.get("x", 0), ev.get("y", 0))
