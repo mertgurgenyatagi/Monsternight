@@ -48,6 +48,10 @@ var _cards := {} # stake -> its card (a Node2D)
 var _valid: Array[String] = []
 var _cards_open := false
 var _walk_button: PaperButton
+var _online := false # the host decides; the candle here is only for show
+var _mine := true # this copy's player is the challenger
+var _acted := false # this copy has already shown the click it made
+var _began := 0 # when the step began, in ticks, for the 20 s both steps share
 
 
 func _ready() -> void:
@@ -88,6 +92,10 @@ func ask(challenger: Dictionary) -> Dictionary:
 		return {}
 	_timed_out = false
 	_stake = ""
+	_online = Online.active
+	_mine = Online.is_mine(challenger) if _online else true
+	_acted = false
+	_began = Time.get_ticks_msec()
 	_banner_label.text = tr("CHALLENGE_OPPONENT")
 	_banner.visible = true
 	_banner.set_meta("rest_position", BANNER_AT)
@@ -100,17 +108,37 @@ func ask(challenger: Dictionary) -> Dictionary:
 	_candle.visible = true
 	PaperMotion.pop_in(_candle)
 	_candle.start(SECONDS)
-	_candle.timed_out.connect(_on_timed_out)
+	if not _online:
+		_candle.timed_out.connect(_on_timed_out)
 
 	# Step 1: the opponent.
-	_hud.set_pickable(options)
-	_hud.portrait_clicked.connect(_on_portrait)
-	var by_click: bool = await _decided
-	_hud.portrait_clicked.disconnect(_on_portrait)
+	var by_click: bool
+	if _online:
+		var names: Array = options.map(func(p: Dictionary) -> String: return p.name)
+		if _mine:
+			_hud.set_pickable(options)
+			_hud.portrait_clicked.connect(_on_portrait)
+		var answer := await Online.decide("opponent", challenger, SECONDS,
+				func() -> String: return names.pick_random(),
+				func(v: Variant) -> bool: return v is String and v in names)
+		if _mine:
+			_hud.portrait_clicked.disconnect(_on_portrait)
+		_opponent = options[names.find(answer.value)]
+		by_click = not answer.auto
+		_timed_out = answer.auto
+		if by_click and not _acted:
+			Sound.play("ui_click")
+			_hud.set_lit(_opponent, true)
+	else:
+		_hud.set_pickable(options)
+		_hud.portrait_clicked.connect(_on_portrait)
+		by_click = await _decided
+		_hud.portrait_clicked.disconnect(_on_portrait)
 	if not by_click:
 		_hud.shake(options)
 		await get_tree().create_timer(TIMEOUT_BEAT, false).timeout
-		_opponent = options.pick_random()
+		if not _online:
+			_opponent = options.pick_random()
 		_hud.set_lit(_opponent, true)
 		await get_tree().create_timer(PICK_BEAT, false).timeout
 	_hud.clear_pickable()
@@ -134,20 +162,41 @@ func ask(challenger: Dictionary) -> Dictionary:
 				PowerPop.show_over(self, _hud.portrait_at(player) + Vector2(0, 150), tr("POP_SAFE"))
 				PaperMotion.tilt(_hud.portrait_node(player), 6.0)
 		await get_tree().create_timer(0.7, false).timeout
-		if not _timed_out:
-			_cards_open = true
-			await _decided
+		if _online:
+			_acted = false
+			_cards_open = _mine and not _timed_out
+			var left := 0.0 if _timed_out else maxf(SECONDS - (Time.get_ticks_msec() - _began) / 1000.0, 0.0)
+			var valid := _valid.duplicate()
+			var answer := await Online.decide("stake", challenger, left,
+					func() -> String: return valid.pick_random(),
+					func(v: Variant) -> bool: return v is String and v in valid)
 			_cards_open = false
-		if _stake == "":
-			for stake in _valid:
-				PaperMotion.shake(_walk_button if stake == WALK else _cards[stake])
-			await get_tree().create_timer(TIMEOUT_BEAT, false).timeout
-			_stake = _valid.pick_random()
-			if _stake == WALK:
-				_walk_away()
-			else:
-				_slam(_stake)
-	_candle.timed_out.disconnect(_on_timed_out)
+			_stake = answer.value
+			if answer.auto:
+				for stake in _valid:
+					PaperMotion.shake(_walk_button if stake == WALK else _cards[stake])
+				await get_tree().create_timer(TIMEOUT_BEAT, false).timeout
+			if not _acted or answer.auto:
+				if _stake == WALK:
+					_walk_away()
+				else:
+					_slam(_stake)
+		else:
+			if not _timed_out:
+				_cards_open = true
+				await _decided
+				_cards_open = false
+			if _stake == "":
+				for stake in _valid:
+					PaperMotion.shake(_walk_button if stake == WALK else _cards[stake])
+				await get_tree().create_timer(TIMEOUT_BEAT, false).timeout
+				_stake = _valid.pick_random()
+				if _stake == WALK:
+					_walk_away()
+				else:
+					_slam(_stake)
+	if not _online:
+		_candle.timed_out.disconnect(_on_timed_out)
 	_candle.stop()
 	await PaperMotion.lift_away(_candle, 500.0, 0.4).finished
 	_candle.visible = false
@@ -220,7 +269,12 @@ func _make_cards(from: Vector2) -> void:
 func _on_portrait(player: Dictionary) -> void:
 	_opponent = player
 	_hud.set_lit(player, true)
-	_decided.emit(true)
+	if _online:
+		_acted = true
+		Sound.play("ui_click")
+		Online.submit(player.name)
+	else:
+		_decided.emit(true)
 
 
 func _on_timed_out() -> void:
@@ -234,7 +288,11 @@ func _on_walk() -> void:
 	_cards_open = false
 	_stake = WALK
 	_walk_away()
-	_decided.emit(true)
+	if _online:
+		_acted = true
+		Online.submit(WALK)
+	else:
+		_decided.emit(true)
 
 
 func _on_card_hover(stake: String, over: bool) -> void:
@@ -253,7 +311,11 @@ func _on_card_input(_viewport: Node, event: InputEvent, _shape: int, stake: Stri
 		_cards_open = false
 		_stake = stake
 		_slam(stake)
-		_decided.emit(true)
+		if _online:
+			_acted = true
+			Online.submit(stake)
+		else:
+			_decided.emit(true)
 	else:
 		Sound.play("ui_denied")
 		PaperMotion.shake(_cards[stake])

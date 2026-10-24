@@ -40,7 +40,8 @@ What they mean in practice is in [Art and audio](docs/art_and_audio.md#principle
 - **Microplan 13 is done:** parts 37 to 39 are planned in `docs/microplan.md` (Head Soccer, the online network layer and lobby, the board over the network). The roadmap still ends at part 43; the Cloudflare deploy moved to part 41.
 - **Part 37 is done:** Head Soccer (`SoccerGame`). Notes in `docs/microplan.md`; its keys are untested on a real keyboard.
 - **Part 38 is done:** Online I: `Net`, the relay changes and the lobby (host, join by code or link, ready, start). Notes in `docs/microplan.md`; local mode is the lobby's "Same screen".
-- **Next: part 39**, Online II (the board over the network). Microplan 14 follows it.
+- **Part 39 is done:** Online II: `Online` decides every choice on the host and all copies replay the same turn loop (die, path, challenge, monster, "Fate decides" for minigames). Notes in `docs/microplan.md`.
+- **Next: Microplan 14** (parts 40 to 42, after part 39).
 
 **Keep the raws.** They're the sources, and the processed files can always be rebuilt from them.
 

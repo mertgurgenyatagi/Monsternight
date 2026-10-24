@@ -116,3 +116,14 @@ LOBBY_NAME_TAKEN,That name is taken,Bu ad alınmış
 LOBBY_HOST_LEFT,The host left,Oda sahibi ayrıldı
 LOBBY_NEED_PLAYERS,"3 to 8 players, all ready","3 ile 8 oyuncu, hepsi hazır"
 LOBBY_WAITING,Waiting for the host,Oda sahibi bekleniyor
+POP_AUTO,Auto,Otomatik
+ONLINE_YOUR_TURN,Your turn,Senin sıran
+ONLINE_ROLLING,%s is rolling...,%s zar atıyor...
+ONLINE_PATH,%s is choosing a path...,%s yol seçiyor...
+ONLINE_CHALLENGE,%s is challenging...,%s meydan okuyor...
+ONLINE_PICKING,%s is picking a monster...,%s canavar seçiyor...
+ONLINE_ROLL_MINE,Roll the die!,Zarı at!
+ONLINE_PATH_MINE,Pick a path!,Bir yol seç!
+ONLINE_CHALLENGE_MINE,Pick an opponent!,Bir rakip seç!
+ONLINE_PICK_MINE,Pick a monster!,Bir canavar seç!
+ONLINE_FATE,Fate decides,Kader karar verir

@@ -83,6 +83,11 @@ func start(raw_names: Array[String], seed := -1) -> bool:
 	_arrivals = 0
 	_turns_done = false
 	turns = TURNS_BY_LOBBY[raw_names.size()]
+	var short := OS.get_cmdline_user_args().find("--turns") # a short match, to test with
+	if short >= 0 and short + 1 < OS.get_cmdline_user_args().size():
+		turns = maxi(1, OS.get_cmdline_user_args()[short + 1].to_int())
+	elif Net.page_param("turns").is_valid_int():
+		turns = maxi(1, Net.page_param("turns").to_int())
 	_seed_board(seed)
 	board_kinds = BoardRoller.roll(raw_names.size(), board_rng)
 	finish_order.clear()
@@ -157,9 +162,10 @@ func active() -> Dictionary:
 	return players[current]
 
 
-## The die's face, 1 to 6. The rules decide the number; the die only shows it.
-func roll() -> int:
-	var value := randi_range(1, 6)
+## The die's face, 1 to 6. The rules decide the number; the die only shows it. Online, the host
+## rolls and every copy passes that face as `forced`.
+func roll(forced := 0) -> int:
+	var value := forced if forced >= 1 and forced <= 6 else randi_range(1, 6)
 	print("Rolled: ", active().name, " ", value)
 	return value
 
