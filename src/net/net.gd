@@ -108,6 +108,16 @@ static func page_param(key: String) -> String:
 	return found if found is String else ""
 
 
+## A debug setting for tests: `-- --key value` on a desktop run, `?key=value` on the web. "1" for a flag
+## with no value, "" when absent.
+static func debug_value(key: String) -> String:
+	var args := OS.get_cmdline_user_args()
+	var at := args.find("--" + key)
+	if at >= 0:
+		return args[at + 1] if at + 1 < args.size() and not args[at + 1].begins_with("--") else "1"
+	return page_param(key)
+
+
 ## Puts text on the clipboard: the browser's on the web, the system's elsewhere.
 static func copy_text(text: String) -> void:
 	if OS.has_feature("web"):

@@ -61,6 +61,23 @@ func _physics_process(delta: float) -> void:
 		step(delta)
 
 
+func get_state() -> Dictionary:
+	return {"pos": Minigame.pack_all(pos), "vel": Minigame.pack_all(vel), "fallen": fallen.duplicate()}
+
+
+func set_state(d: Dictionary) -> void:
+	Minigame.unpack_into(pos, d.pos)
+	Minigame.unpack_into(vel, d.vel)
+	for i in 2:
+		fallen[i] = bool(d.fallen[i])
+		if not fallen[i]:
+			_fall_t[i] = 0.0
+
+
+func blend_pairs() -> Array:
+	return [["pos", "vel"]]
+
+
 ## One physics step, split so that no piece moves more than half its radius at once.
 func step(delta: float) -> void:
 	var fastest := MAX_SPEED

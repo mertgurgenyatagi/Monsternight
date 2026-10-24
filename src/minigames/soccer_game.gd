@@ -106,6 +106,35 @@ func _physics_process(delta: float) -> void:
 		step(delta)
 
 
+func stepping() -> bool:
+	return active or scored >= 0
+
+
+func get_state() -> Dictionary:
+	return {"head": Minigame.pack_all(head), "head_vel": Minigame.pack_all(head_vel),
+			"ball": Minigame.pack(ball), "ball_vel": Minigame.pack(ball_vel), "scored": scored,
+			"hold": _hold, "rest": _rest, "kick_t": _kick_t.duplicate(), "kick_cd": _kick_cd.duplicate(),
+			"kick_hit": _kick_hit.duplicate()}
+
+
+func set_state(d: Dictionary) -> void:
+	Minigame.unpack_into(head, d.head)
+	Minigame.unpack_into(head_vel, d.head_vel)
+	ball = Minigame.unpack(d.ball)
+	ball_vel = Minigame.unpack(d.ball_vel)
+	scored = int(d.scored)
+	_hold = float(d.hold)
+	_rest = float(d.rest)
+	for i in 2:
+		_kick_t[i] = float(d.kick_t[i])
+		_kick_cd[i] = float(d.kick_cd[i])
+		_kick_hit[i] = bool(d.kick_hit[i])
+
+
+func blend_pairs() -> Array:
+	return [["head", "head_vel"], ["ball", "ball_vel"]]
+
+
 ## One physics step. After a goal only the ball keeps moving.
 func step(delta: float) -> void:
 	if scored < 0:

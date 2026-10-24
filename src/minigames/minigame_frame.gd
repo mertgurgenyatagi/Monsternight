@@ -86,18 +86,35 @@ func play(challenger: Dictionary, opponent: Dictionary, stake: String, kind: Str
 	while settled(rounds, needed) < 0:
 		if game == null:
 			game = Minigames.for_kind(kind)
+		var link: MiniLink = null
+		var round_seed := 0
+		if Online.active:
+			# Online the host picks the round's number, which every copy seeds its game with.
+			var started := await Online.decide("minigame", challenger, 0.0,
+					func() -> Dictionary: return {"seed": randi()})
+			round_seed = int(started.value.seed)
+			game.rng.seed = round_seed
+			link = MiniLink.new()
 		game.setup(challenger, opponent, 0, edge)
 		_stage = Node2D.new()
 		_root.add_child(_stage)
 		_stage.add_child(game)
+		if link:
+			_stage.add_child(link)
+			link.setup(game, players, round_seed)
 		_faces_in(players)
 		if needed > 1:
 			PaperMotion.pop_in(_banner_round(rounds.size() + 1))
 		for n in [3, 2, 1]:
 			await _count(n, false)
 		Sound.play("whistle")
-		game.begin()
-		var side: int = await game.finished
+		var side: int
+		if link:
+			link.begin()
+			side = await link.wait_end()
+		else:
+			game.begin()
+			side = await game.finished
 		game.active = false
 		Sound.play("whistle")
 		if side == Minigame.DRAW:
@@ -187,7 +204,19 @@ func _vs_card(players: Array[Dictionary], stake: String, controls: Array, needed
 
 	# The keys, as paper keycaps under each strip.
 	var caps: Array[Node2D] = []
+	if Online.active and not (Online.is_mine(players[0]) or Online.is_mine(players[1])):
+		# A spectator sees who plays, not keys.
+		var names := _holder(Vector2(CENTER.x, 790))
+		var names_line := _label(tr("MINI_NAMES") % [players[0].name, players[1].name], 54, CREAM, 1200.0)
+		names_line.add_theme_color_override("font_outline_color", INK)
+		names_line.add_theme_constant_override("outline_size", 10)
+		names_line.position = Vector2(-600, -36)
+		names.add_child(names_line)
+		PaperMotion.pop_in(names, 0.5)
+		caps.append(names)
 	for i in 2:
+		if Online.active and not Online.is_mine(players[i]):
+			continue # online, only your own keys are shown
 		var side := -1.0 if i == 0 else 1.0
 		var at := Vector2(CENTER.x + side * STRIP_GAP, 780)
 		var row := 0

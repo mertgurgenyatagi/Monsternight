@@ -61,6 +61,23 @@ func _physics_process(delta: float) -> void:
 		step(delta)
 
 
+func get_state() -> Dictionary:
+	return {"marker": marker, "won": _won}
+
+
+func set_state(d: Dictionary) -> void:
+	marker = float(d.marker)
+	_won = int(d.won)
+
+
+func blend_keys() -> Array:
+	return ["marker"]
+
+
+func snap_distance() -> float:
+	return 0.25 # the marker runs from -1 to 1
+
+
 ## One physics step: the presses, the creep back, the crossing.
 func step(delta: float) -> void:
 	var pressed: Array[bool] = [MinigameInput.just_pressed(0, "action"), MinigameInput.just_pressed(1, "action")]

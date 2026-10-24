@@ -126,4 +126,6 @@ ONLINE_ROLL_MINE,Roll the die!,Zarı at!
 ONLINE_PATH_MINE,Pick a path!,Bir yol seç!
 ONLINE_CHALLENGE_MINE,Pick an opponent!,Bir rakip seç!
 ONLINE_PICK_MINE,Pick a monster!,Bir canavar seç!
-ONLINE_FATE,Fate decides,Kader karar verir
+MINI_WATCHING,Watching,İzliyorsun
+MINI_NAMES,%s vs %s,%s ve %s karşı karşıya
+MINI_WAITING,Waiting for %s...,%s bekleniyor...
