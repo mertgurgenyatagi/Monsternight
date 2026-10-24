@@ -47,6 +47,9 @@ const BALL_RISE := 150.0 # the ball lifts this far before it flies
 const FLIGHT_FAST := 1.2 # the flight's time over no distance, and over the whole board
 const FLIGHT_SLOW := 2.0
 const SPILL_COINS := 5 # at most, falling out of the ball
+const DUEL_BEAT := 0.3 # after the poses, before the stake is paid
+const WIN_GROW := 1.15 # the winner's size while they pose
+const SWAP_LIFT := 110.0 # the two pieces lift this far before they trade places
 const REVIVE_BEAT := 0.6 # the camera holds on the start after the unfolding
 
 @onready var _camera: BoardCamera = $Camera
@@ -149,9 +152,10 @@ func land(player: Dictionary, id: String) -> void:
 			await _settling.finished
 		var choice := await _challenge.ask(player)
 		if not choice.is_empty():
-			await _duel.play(player, choice.opponent, choice.stake)
+			var outcome: Dictionary = await _duel.play(player, choice.opponent, choice.stake)
 			_track_name = "" # the duel's music gives way to the leader's track
 			_follow_leader()
+			await duel_end(outcome.winner, outcome.loser, player, choice.stake)
 			return
 		# Nobody to duel: the space acts as a coin space.
 		kind = "coin"
@@ -221,6 +225,33 @@ func die(player: Dictionary) -> void:
 	await get_tree().create_timer(REVIVE_BEAT + 0.6, false).timeout
 	piece.start_sway()
 	_settling = _camera.glide_to(piece.global_position.x, 0.6)
+
+
+## The result of a duel really happens. `Match.duel_result` settles the rules; here the winner poses,
+## the loser crumples and unfolds (or dies, through `die`), and the coin, the blood or the places move.
+## The camera holds on the challenger, except for a death far away and a swap. Awaiting it waits for
+## the end of it all.
+func duel_end(winner: Dictionary, loser: Dictionary, challenger: Dictionary, stake: String) -> void:
+	var opponent: Dictionary = winner if is_same(loser, challenger) else loser
+	var from_challenger: String = challenger.space
+	var from_opponent: String = opponent.space
+	var result := Match.duel_result(winner, loser, challenger, stake)
+	if _settling and _settling.is_running():
+		await _settling.finished
+	_win_pose(winner)
+	await _lose_pose(loser, result.died)
+	await get_tree().create_timer(DUEL_BEAT, false).timeout
+	if result.coins != 0:
+		await _duel_coin(winner, loser)
+	if result.blood != 0:
+		_hud.show_blood(loser)
+		await get_tree().create_timer(0.9, false).timeout
+	if result.died:
+		if not is_same(loser, challenger):
+			await _camera.glide_to(piece_for(loser).global_position.x, 0.8).finished
+		await die(loser)
+	if result.swapped:
+		await _swap(challenger, opponent, from_challenger, from_opponent)
 
 
 ## The HUD over the board.
@@ -306,6 +337,103 @@ func _spill_coins(at: Vector2, count: int) -> void:
 		tween.parallel().tween_property(coin, "modulate:a", 0.0, 0.4).set_delay(0.4)
 		tween.parallel().tween_property(coin, "rotation", randf_range(-6.0, 6.0), 0.8)
 		tween.chain().tween_callback(coin.queue_free)
+
+
+# The winner squashes, grows and jumps, with a flare under them and their voice, then settles back.
+func _win_pose(player: Dictionary) -> void:
+	var piece := piece_for(player)
+	var base: Vector2 = piece.scale
+	piece.stop_sway()
+	Sound.play(Monsters.voice(player.monster, "win"))
+	_flare_under(piece, Monsters.color(player.monster).lightened(0.4))
+	piece.set_meta("rest_scale", base * WIN_GROW)
+	PaperMotion.squash(piece)
+	await get_tree().create_timer(0.12, false).timeout
+	PaperMotion.hop(piece, 64.0)
+	PaperMotion.tilt(piece, 5.0)
+	await get_tree().create_timer(1.1, false).timeout
+	piece.set_meta("rest_scale", base)
+	PaperMotion.squash(piece)
+	piece.start_sway()
+
+
+# The loser's voice, then the piece crumples into its ball and unfolds again. A loser who dies only
+# cries out, and `die` crumples them.
+func _lose_pose(player: Dictionary, dies: bool) -> void:
+	var piece := piece_for(player)
+	Sound.play(Monsters.voice(player.monster, "lose"))
+	if dies:
+		await get_tree().create_timer(1.3, false).timeout
+		return
+	piece.stop_sway()
+	Sound.play("crumple")
+	await PaperMotion.crumple(piece, 0.5, false, BALL_SCALE).finished
+	piece.fold(true, BALL_SCALE)
+	await get_tree().create_timer(0.35, false).timeout
+	piece.fold(false)
+	Sound.play("respawn")
+	await PaperMotion.unfold(piece).finished
+	piece.start_sway()
+
+
+# A coin flies from the loser's counter to the winner's, and both counts tick.
+func _duel_coin(winner: Dictionary, loser: Dictionary) -> void:
+	var coin := _flyer(COIN_ICON, _hud.anchor(loser, "coins"), COIN_HUD)
+	Sound.play("fly")
+	_hud.show_coins(loser) # the count ticks down as the coin leaves
+	await PaperMotion.fly_to(coin, _hud.anchor(winner, "coins"),
+			Vector2.ONE * COIN_HUD / COIN_ICON.get_width(), 0.8, 0.0, 130.0).finished
+	coin.queue_free()
+	_hud.show_coins(winner)
+	await get_tree().create_timer(0.5, false).timeout
+
+
+# The two pieces lift, swap places along crossing arcs and set down. The camera rides with the
+# challenger, so the other piece crosses the screen on the way. The crowds are re-run, and nobody
+# gets a space's effect from it. `Match.duel_result` has already swapped the spaces.
+func _swap(challenger: Dictionary, opponent: Dictionary, from_challenger: String,
+		from_opponent: String) -> void:
+	var mine := piece_for(challenger)
+	var theirs := piece_for(opponent)
+	mine.stop_sway()
+	theirs.stop_sway()
+	_leave(from_challenger, mine)
+	_leave(from_opponent, theirs)
+	Sound.play("swap")
+	for piece in [mine, theirs]:
+		PaperMotion.move_to(piece, piece.position - Vector2(0, SWAP_LIFT), 0.3)
+	await get_tree().create_timer(0.35, false).timeout
+	_crowds[from_opponent] = _crowds.get(from_opponent, []) + [mine]
+	_crowds[from_challenger] = _crowds.get(from_challenger, []) + [theirs]
+	var to_mine := _slot_of(mine, from_opponent)
+	var to_theirs := _slot_of(theirs, from_challenger)
+	_settle(from_opponent, mine)
+	_settle(from_challenger, theirs)
+	var distance := absf(to_mine.x - mine.position.x)
+	var flight := lerpf(FLIGHT_FAST, FLIGHT_SLOW, clampf(distance / BoardLayout.width(), 0.0, 1.0))
+	var arc := clampf(distance * 0.1, 260.0, 620.0)
+	_camera.glide_to(to_mine.x, flight)
+	PaperMotion.toss(theirs, to_theirs, flight, arc * 0.55, 0)
+	await PaperMotion.toss(mine, to_mine, flight, arc, 0).finished
+	Sound.play("hop")
+	PaperMotion.squash(mine)
+	PaperMotion.squash(theirs)
+	mine.start_sway()
+	theirs.start_sway()
+	_follow_leader()
+	await get_tree().create_timer(0.3, false).timeout
+	_settling = _camera.glide_to(mine.global_position.x, 0.6)
+	await _settling.finished
+
+
+# A flare on the ground under a piece.
+func _flare_under(piece: BoardPiece, color: Color) -> void:
+	var glow := Glow.new(Color(color, 0.55), 120.0)
+	glow.scale.y *= 0.5
+	glow.position = piece.position + Vector2(0, -6)
+	_front.add_child(glow)
+	await glow.flare().finished
+	glow.queue_free()
 
 
 # A small flare on the start's token, where a piece has just come back to life.
