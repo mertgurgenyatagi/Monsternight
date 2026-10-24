@@ -1,12 +1,12 @@
 extends Control
-## The title screen. The curtain opens on the logo under the night sky, and Play, Settings and
-## Quit pop in. Quit closes the curtain before the window closes.
+## The title screen. The curtain opens on the logo under the night sky, and Online, Same screen,
+## Settings and Quit pop in. Quit closes the curtain before the window closes.
 
 const CURTAIN_OPEN := 0.19 # how much of each half still shows when the curtain is open
 
 @onready var _curtain: Curtain = $Curtain
 @onready var _hanger: Node2D = $Hanger
-@onready var _buttons: Array[PaperButton] = [$Play, $Settings, $Quit]
+@onready var _buttons: Array[PaperButton] = [$Play, $SameScreen, $Settings, $Quit]
 
 
 func _ready() -> void:
@@ -16,14 +16,35 @@ func _ready() -> void:
 	$Quit.pressed.connect(_quit)
 	$Settings.pressed.connect(Settings.open)
 	$Play.pressed.connect(Scenes.change_to.bind("res://src/lobby/lobby.tscn"))
+	$SameScreen.pressed.connect(Scenes.change_to.bind("res://src/setup/setup.tscn"))
+	_add_version()
+	if OS.has_feature("web"): # a page cannot close itself
+		_buttons.erase($Quit)
+		$Quit.hide()
 	_lightning_loop()
 	_offer_rejoin()
+	if Net.room_from_link() != "": # a shared link lands in its room, past the buttons
+		get_tree().create_timer(1.0).timeout.connect(Scenes.change_to.bind("res://src/lobby/lobby.tscn"))
 
 	_curtain.move(CURTAIN_OPEN, 2.4, 0.9)
 	PaperMotion.drop_in(_hanger, 900.0, 1.8, 1.9).finished \
 			.connect(PaperMotion.sway.bind(_hanger, 1.2, 6.0))
 	for i in _buttons.size():
 		_buttons[i].enter(4.2 + i * 0.35)
+
+
+# The build's version, small in the bottom corner, so a bug report can say which one it came from.
+func _add_version() -> void:
+	var label := Label.new()
+	label.text = "v%s" % ProjectSettings.get_setting("application/config/version", "0")
+	label.add_theme_font_override("font", preload("res://assets/fonts/body.ttf"))
+	label.add_theme_font_size_override("font_size", 28)
+	label.add_theme_color_override("font_color", Color("efe4cc", 0.55))
+	label.position = Vector2(760, 1030)
+	label.size = Vector2(400, 40)
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(label)
 
 
 # A tab that was in an online match when it reloaded offers to go back: the room and the name are
@@ -37,10 +58,11 @@ func _offer_rejoin() -> void:
 	button.text = tr("TITLE_REJOIN")
 	button.add_theme_font_size_override("font_size", 48)
 	add_child(button)
-	var tops := [600.0, 710.0, 820.0, 930.0]
-	var all: Array[PaperButton] = [button, $Play, $Settings, $Quit]
+	var all: Array[PaperButton] = [button]
+	all.append_array(_buttons)
 	for i in all.size():
-		all[i].position = Vector2(760, tops[i])
+		all[i].size = Vector2(400, 90)
+		all[i].position = Vector2(760, 560.0 + i * 100.0)
 	_buttons.push_front(button)
 	button.pressed.connect(_rejoin.bind(seat.room, seat.name))
 	Online.rejoin_failed.connect(_on_rejoin_failed)

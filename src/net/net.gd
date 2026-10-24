@@ -13,7 +13,13 @@ signal peer_left(id: int)
 signal host_changed(id: int) ## the host left and the relay named a new one (possibly me: `is_host` is already set)
 signal received(from: int, kind: String, payload: Dictionary)
 
-const DEFAULT_RELAY := "ws://127.0.0.1:8787"
+const LOCAL_RELAY := "ws://127.0.0.1:8787"
+## The deployed relay, a `wss://monsternight-relay.<account>.workers.dev` address. Empty until the
+## relay is deployed (tools/relay/deploy.md), and then every build uses the local one.
+const PRODUCTION_RELAY := ""
+## The game's itch.io page, `https://<user>.itch.io/<game>`. The page runs inside an iframe whose own
+## address is not one to share, so Copy link builds on this instead. Empty: the page's own address.
+const PAGE_URL := ""
 ## No I, O, 0 or 1: they look alike.
 const CODE_LETTERS := "ABCDEFGHJKLMNPQRSTUVWXYZ"
 const CODE_LENGTH := 4
@@ -73,15 +79,17 @@ static func decode(text: String) -> Dictionary:
 	return parsed
 
 
-## The relay: `-- --relay URL` on the command line, `?relay=URL` in the page's address, or the
-## local one.
+## The relay: `-- --relay URL` on the command line, `?relay=URL` in the page's address, the deployed
+## one, or the local one.
 static func relay_url() -> String:
 	var args := OS.get_cmdline_user_args()
 	var at := args.find("--relay")
 	if at >= 0 and at + 1 < args.size():
 		return args[at + 1]
 	var found := page_param("relay")
-	return found if found != "" else DEFAULT_RELAY
+	if found != "":
+		return found
+	return PRODUCTION_RELAY if PRODUCTION_RELAY != "" else LOCAL_RELAY
 
 
 ## A room code from `?room=` in the page's address or `-- --room CODE`, or "".
@@ -96,7 +104,7 @@ static func room_from_link() -> String:
 ## The address someone can open to land in this room, or the room's code alone off the web.
 static func link_for(room: String) -> String:
 	if OS.has_feature("web"):
-		var base = JavaScriptBridge.eval("location.origin + location.pathname")
+		var base = PAGE_URL if PAGE_URL != "" else JavaScriptBridge.eval("location.origin + location.pathname")
 		return "%s?room=%s" % [base, room]
 	return room
 
@@ -110,8 +118,10 @@ static func page_param(key: String) -> String:
 
 
 ## A debug setting for tests: `-- --key value` on a desktop run, `?key=value` on the web. "1" for a flag
-## with no value, "" when absent.
+## with no value, "" when absent. A release build has none, so a shared link cannot change the rules.
 static func debug_value(key: String) -> String:
+	if OS.has_feature("release"):
+		return ""
 	var args := OS.get_cmdline_user_args()
 	var at := args.find("--" + key)
 	if at >= 0:

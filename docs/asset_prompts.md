@@ -1498,3 +1498,10 @@ Output: a square image.
 ```
 
 **Processing:** remove white, 128 × 128.
+
+## itch.io page images
+
+Made by hand for the itch.io page (not part of the game). Not yet made.
+
+- **Cover, 630 x 500:** the title logo, centered, over the purple paper night with the full moon and a few stars, the red curtains at both sides. Flat construction-paper cutout style, as the other images.
+- **Thumbnail, 315 x 250:** the same, with only the logo and the moon, readable when small.
