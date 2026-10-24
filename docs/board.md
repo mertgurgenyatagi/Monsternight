@@ -2,7 +2,7 @@
 
 ## Layout
 
-There is one board, and it's the same every match. It's a road through classic horror locations, played from left to right:
+The board is a road through classic horror locations, played from left to right:
 
 1. Foggy village (start)
 2. Graveyard, with a church on the hill above it (first split)
@@ -12,59 +12,49 @@ There is one board, and it's the same every match. It's a road through classic h
 
 Each location has its own look. See [art_and_audio.md](art_and_audio.md).
 
+The road's length comes from the lobby's size (the brief), and the kinds of its spaces are **shuffled fresh every match**, so friends who play often don't learn it by heart (Claude's call, Q18).
+
 ## Path splits
 
-The user accepted two splits (Q07) and left the details to Claude (Q12). At a split, one path runs higher on the screen and the other lower, and they join again afterwards.
+The user accepted two splits (Q07) and left the details to Claude (Q12). At a split, one path runs higher on the screen and the other lower, and they join again afterwards. **The splits are the same at every lobby size** (Claude's call, Q18).
 
 ### First split: graveyard or church
 
 | Path | Length | Quick spaces |
 |---|---|---|
 | Graveyard, the low road | 8 spaces | spikes and thieves only |
-| Church, over the hill | 12 spaces | churches and coins, and one minigame |
+| Church, over the hill | 12 spaces | churches and coins only |
 
 The graveyard is a gamble: it's shorter, but it hurts. The church path costs about one extra roll, but it heals and pays. This is the only place where the quick spaces aren't spread evenly.
 
 ### Second split: boardwalk or bog
 
-Both swamp paths are 10 spaces long. Only their minigames differ:
-
-| Path | Minigame spaces |
-|---|---|
-| Boardwalk, the upper path | Pong and Haxball |
-| Bog, the lower path | Racing and the FPS |
-
-The choice is about which games you'd rather duel in.
+Both swamp paths are 10 spaces long, with the same mix. Since the spaces are shuffled every match, the choice is about the spaces you can see on each.
 
 ## Space mix
 
-The user decided the board's length and mix on 2026-10-23: **one empty space for every filled one**, still one die. The layout was rolled once by `tools/board/roll_board.py` (seed 1031) and is written into `BoardPath`, so it's the same every match. Only the kinds are rolled; the stretch lengths and the forks stay fixed. Each part of the road has a bag with exact counts, shuffled with no other rule on the order, so the ratio is exact and the order is pure chance.
+In every part of the road (the brief):
 
-| Bag | Spaces | Empty | Filled |
-|---|---|---|---|
-| Main road: the village, forest and castle as one bag | 39 | 20 | 19: one of each minigame, and 15 quick spaces, 4 of each kind but one, which gets 3 |
-| Church | 12 | 6 | 6: one minigame, and 5 churches and coins (3 and 2) |
-| Graveyard | 8 | 4 | 4: 2 spikes, 2 thieves |
-| Boardwalk | 10 | 5 | 5: Pong, Haxball, and 3 quick spaces of any kind |
-| Bog | 10 | 5 | 5: racing, the FPS, and 3 quick spaces of any kind |
-
-The graveyard way is 29 empty and 28 filled, and the church way 31 and 30. The sword fight gets spaces once its rules are settled. To reroll, run the script with `--seed N`.
+- **Half the spaces are empty.**
+- **Half the filled spaces are minigames,** each one of the four games at random (Q18). The other half are quick spaces.
+- On the main road and the swamp paths, the quick spaces are the four kinds in equal numbers. The graveyard's are spikes and thieves, and the church path's are churches and coins, half and half (Claude's call, Q18).
+- Each part of the road is a bag with exact counts, shuffled with no other rule on the order. When a count doesn't split evenly, the odd space goes to a random side.
 
 ## Length
 
-17 turns of one die (3.5 spaces on average) is about 60 spaces, so on average about 2 players reach the end. Deaths and swaps set players back, so not everyone makes it. A match runs longer than the 30-minute target, and that's accepted. The lengths get checked in playtesting.
+The board length in the brief is the average of the shortest way (through the graveyard) and the longest (past the church). The two splits are fixed, so the village, the forest and the castle take the difference, shared out as today's 12, 12 and 15 (Claude's call, Q18):
 
-| Stretch | Spaces |
-|---|---|
-| Foggy village | 12 |
-| First split | 8 or 12 |
-| Dark forest | 12 |
-| Second split | 10 |
-| Dracula's castle | 15 |
-| **Total** | **57 through the graveyard, 61 past the church** |
+| Players | Turns | Village | Forest | Castle | Shortest way | Longest way | Average |
+|---|---|---|---|---|---|---|---|
+| 3 | 20 | 14 | 14 | 17 | 63 | 67 | 65 |
+| 4 | 17 | 12 | 12 | 16 | 58 | 62 | 60 |
+| 5 | 15 | 11 | 11 | 13 | 53 | 57 | 55 |
+| 6 | 14 | 10 | 10 | 11 | 49 | 53 | 51 |
+| 7 | 13 | 9 | 9 | 10 | 46 | 50 | 48 |
+| 8 | 12 | 8 | 8 | 10 | 44 | 48 | 46 |
 
-The board is about 15,500 px wide.
+The first playable's road is 57 or 61 spaces and about 15,500 px wide. The board's width now changes with the lobby, and the scenery has to fit every length.
 
 ## Camera
 
-A side view, not top-down. The camera follows whoever is rolling. See [art_and_audio.md](art_and_audio.md#camera).
+A side view, not top-down. The camera follows whoever is rolling, and in the final game it sits slightly further out and slightly higher (the brief, part 27). See [art_and_audio.md](art_and_audio.md#camera).

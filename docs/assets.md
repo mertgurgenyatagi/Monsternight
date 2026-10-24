@@ -175,7 +175,7 @@ The five board tracks share one tempo and key, so the game can crossfade between
 | `board_forest.ogg` | The leader is in the forest. Busier, with a bouncing bass line | 2 min |
 | `board_swamp.ogg` | The leader is in the swamp. Woozy, with a wobbling theremin | 2 min |
 | `board_castle.ogg` | The leader is at the castle. Full pipe organ, grand and urgent: the climax | 2 min |
-| `duel.ogg` | Duels: the coin flip for now, then every minigame until it has its own track. Fast and tense | 1 min |
+| `duel.ogg` | Duels: the VS card and the countdown (and the coin flip, until each minigame is built). Minigames themselves have no music. Fast and tense | 1 min |
 | `ceremony.ogg` | The trophy ceremony. Triumphant, but still spooky | 1.5 min |
 | `sting_final_turn.ogg` | Plays once as the last turn starts. Not a loop | 3 s |
 | `sting_finish.ogg` | Plays once when a player reaches the castle gate. Not a loop | 3 s |
