@@ -85,7 +85,7 @@ The last three parts. Parts 22 and 23 are sweeps and tuning, not new features; p
 
 ## Roadmap
 
-Parts 1 to 23 are done (see the Log and the part notes). The end stays at 24.
+Parts 1 to 24 are done (see the Log and the part notes). The first playable is finished.
 
 22. Esc settings in a match, Turkish, the untested leftovers from parts 2 and 3, and an edge-case sweep.
 23. Full playtests with bots, tuning from the numbers, pacing and frame rate.
@@ -95,7 +95,7 @@ Parts 1 to 23 are done (see the Log and the part notes). The end stays at 24.
 
 Each part session adds a few lines when it finishes: what got built, what changed from the plan, surprises, and anything left over or buggy. The next Microplan reads these instead of the code.
 
-### Built so far (parts 1 to 23, absorbed by Microplans 3 to 8)
+### Built so far (parts 1 to 24, absorbed by Microplans 3 to 8)
 
 - **Board (parts 10, 11, 12):**
   - The road is 57 spaces through the graveyard and 61 past the church (12, 8 or 12, 12, 10, 15), 15,460 px wide, rolled by `tools/board/roll_board.py` with seed 1031. `Match.TURNS` is 17, the intro glide 7.5 s. `BoardLayout.hill_width()` (2,840) stretches the church hill, and `scenery.gd`'s `_spots(location, first, last, gap)` keeps the props' density.
@@ -166,6 +166,9 @@ Each part session adds a few lines when it finishes: what got built, what change
   - **Frame rate:** a plain run on the 8-player HUD, the church hill, the swamp, the castle and the 8-player duel with the dim all held 24.5 to 25.0 (the cap). Nothing to fix.
   - **Audio balance:** `Sound.TRIM` nudges 22 sound effects and 18 voices by up to 3 dB (60% of the way to the median file's mean level, so a click is not boosted into a bang), mostly the three hops, `die_land`, `respawn` and `countdown` down, and `coin_flip`, `spikes`, `ui_hover` and `card_slam` up, and Cthulhu's voices down and Dracula's up. Files are untouched. Ambience means sit between -38 and -34 dB, 8 to 10 dB under the effects, and were left. **Untested by ear.**
   - Not done: a feel pass by eye on the walk, die, duel and ceremony (no new pop was seen in the screenshots, but motion was not watched), and no MCP click run.
+- **Bug bash and the release build (part 24):**
+  - A real playthrough with the MCP's clicks and `TURNS` at 2 (reverted): title Play, setup Begin (2 players), the pregame, a timed-out match, the ceremony's Continue button, the stat cards, and the ending's "Play again" button all worked, and `Match` was empty (turn 1) on the setup screen. Then 8 players through setup, the pregame and 8 monster picks (some by MCP click, some by timeout) to the board, where a click on the die rolled it and Medusa landed on a duel space ("Pick an opponent"). `get_editor_errors` had 0 errors and 0 warnings. The quiet card was not seen (a 2-player match had stats), and the Esc-in-a-duel and Esc-in-the-ceremony checks of part 22 were not repeated.
+  - Release: `tools/release/build_release.py` stages `assets/`, `src/`, `locale/`, the bus layout and the project files in a scratch folder, cuts the three MCP autoloads and the editor plugin out of that copy's `project.godot`, imports and exports the preset in the new `export_presets.cfg` (it excludes `addons/godot_mcp`, `screenshots`, the raws, `tools` and `docs`). The window title is the project name and the icon is `moon.png`. **The export itself was not run: the Godot 4.7.2 export templates are not installed** (`%APPDATA%\Godot\export_templates` is empty), and the plan said to ask the user. Checked instead with `--stage`: the stripped copy has no `mcp` text in `project.godot`, imports, and starts headless for 150 frames with no output. To finish: install the templates from the editor, then run the script and launch `build/Monsternight.exe`.
 - **Code** is in `src/`:
   - Autoloads: `Sound` (`play`, `play_music`, `play_ambience`, and `quit()`, which every way out of the game goes through so no OGG leaks; `play("hop")` never repeats a hop twice in a row), `Scenes` (`change_to`, the paper transition, the texture and the cursor), `Settings` (`Settings.open()` from anywhere), and `Match` (players in turn order, each with `name`, `monster`, `space`, `blood`, `coins` and `finished`; `turn`, `TURNS`, `MAX_BLOOD`; `roll_turn_order`, `pick_monster`, `free_monsters`, `move_to`, and `change_blood` / `change_coins`, which return the real change).
   - `PaperMotion` holds `drop_in`, `set_down`, `lift_away`, `sway`, `sway_stop`, `pop_in`, `pop_out`, `lift` (it only raises), `squash`, `slide_in`, `move_to`, `flip`, `hop`, `hop_to`, `fly_to`, `tuck`, `breathe`, `tilt`, `shake`, `stretch`, `crumple` (it frees the piece at the end unless `free` is off), `unfold`, `toss` and `bounce`. New motion goes here.

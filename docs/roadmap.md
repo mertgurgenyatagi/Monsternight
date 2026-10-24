@@ -2,6 +2,8 @@
 
 ## 1. First playable
 
+**Done** (parts 1 to 24, see [microplan.md](microplan.md)).
+
 A local version for testing the board rules. **One person controls every player** with the mouse on one computer.
 
 - Title screen and settings.
