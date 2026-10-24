@@ -6,6 +6,7 @@ const GAMES := {
 	"pong": preload("res://src/minigames/pong_game.gd"),
 	"tug_of_war": preload("res://src/minigames/tug_game.gd"),
 	"sumo": preload("res://src/minigames/sumo_game.gd"),
+	"head_soccer": preload("res://src/minigames/soccer_game.gd"),
 } # kind -> script, filled in by the parts that build the games
 
 

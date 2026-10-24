@@ -41,3 +41,20 @@ static func bounce_in_ring(pos: Vector2, vel: Vector2, radius: float, ring_radiu
 	if out > 0.0:
 		vel -= n * out * (1.0 + restitution)
 	return [vel, pos]
+
+
+## Bounces a circle off a box (a crossbar). Returns `[velocity, position, impact_speed]`, where
+## `impact_speed` is 0 when the circle did not touch the box or was moving away from it.
+static func bounce_off_box(pos: Vector2, vel: Vector2, radius: float, box: Rect2, restitution: float) -> Array:
+	var closest := pos.clamp(box.position, box.end)
+	var offset := pos - closest
+	var dist := offset.length()
+	if dist >= radius:
+		return [vel, pos, 0.0]
+	var n := offset / dist if dist > 0.0001 else Vector2.UP
+	pos = closest + n * radius
+	var into := -vel.dot(n)
+	if into <= 0.0:
+		return [vel, pos, 0.0]
+	vel += n * into * (1.0 + restitution)
+	return [vel, pos, into]
