@@ -2,7 +2,7 @@ class_name Ceremony
 extends Control
 ## The trophy ceremony. The curtain opens on a dark stage with every player's piece in a row, then
 ## the trophies are handed out one kind at a time, least meaningful first (most duels won, most gold,
-## second to finish, first to finish). Each round is a title card, a drumroll, and the winners
+## first to finish). Each round is a title card, a drumroll, and the winners
 ## stepping into the spotlight as the trophy flies into their count. Then the pieces rearrange by
 ## rank under a leaderboard. The counts are secret until a trophy lands on them.
 ##
@@ -62,7 +62,7 @@ func _run() -> void:
 	await _leaderboard()
 
 
-# The four kinds of trophy, in the order they are handed out, with the slots that won each and how
+# The three kinds of trophy, in the order they are handed out, with the slots that won each and how
 # many trophies of the kind each gets. A kind nobody won is left out.
 func _rounds() -> Array[Dictionary]:
 	var kinds: Array[Dictionary] = [
@@ -70,9 +70,7 @@ func _rounds() -> Array[Dictionary]:
 				"won": func(row: Dictionary) -> bool: return row.by.duels > 0},
 		{"key": "gold", "title": "TROPHY_GOLD", "each": 1,
 				"won": func(row: Dictionary) -> bool: return row.by.gold > 0},
-		{"key": "second", "title": "TROPHY_SECOND", "each": 1,
-				"won": func(row: Dictionary) -> bool: return row.finish == 2},
-		{"key": "first", "title": "TROPHY_FIRST", "each": 2,
+		{"key": "first", "title": "TROPHY_FIRST", "each": 1,
 				"won": func(row: Dictionary) -> bool: return row.finish == 1},
 	]
 	var rounds: Array[Dictionary] = []

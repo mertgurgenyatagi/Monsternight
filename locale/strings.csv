@@ -32,6 +32,8 @@ CHALLENGE_STAKE,Pick a stake,Bahis seç
 STAKE_GOLD,Take 1 coin,1 altın al
 STAKE_BLOOD,Take 1 blood,1 kan al
 STAKE_SWAP,Swap places,Yer değiştir
+CHALLENGE_WALK,Walk away,Vazgeç
+CHALLENGE_NOTHING,Nothing to win here,Burada kazanılacak bir şey yok
 DUEL_VS,VS,VS
 DUEL_CHALLENGER,Challenger,Meydan okuyan
 DUEL_WINS,%s wins!,%s kazandı!
