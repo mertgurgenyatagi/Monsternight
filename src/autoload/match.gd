@@ -69,8 +69,9 @@ static func duplicates(raw_names: Array[String]) -> Array[int]:
 
 
 ## Begins a match with these typed names. Returns false, changing nothing, if the setup isn't
-## valid.
-func start(raw_names: Array[String]) -> bool:
+## valid. Online, every copy passes the host's `seed`, so all of them roll the same board and the
+## same turn order; -1 seeds at random (or from `--seed N`).
+func start(raw_names: Array[String], seed := -1) -> bool:
 	if raw_names.size() < MIN_PLAYERS or raw_names.size() > MAX_PLAYERS or not duplicates(raw_names).is_empty():
 		return false
 	players.clear()
@@ -82,7 +83,7 @@ func start(raw_names: Array[String]) -> bool:
 	_arrivals = 0
 	_turns_done = false
 	turns = TURNS_BY_LOBBY[raw_names.size()]
-	_seed_board()
+	_seed_board(seed)
 	board_kinds = BoardRoller.roll(raw_names.size(), board_rng)
 	finish_order.clear()
 	cracked.clear()
@@ -92,12 +93,14 @@ func start(raw_names: Array[String]) -> bool:
 	return true
 
 
-# Seeds the board's dice: from `--seed N` in the user arguments, so a board can be reproduced, or
-# at random.
-func _seed_board() -> void:
+# Seeds the board's dice: from the host's seed, or from `--seed N` in the user arguments so a
+# board can be reproduced, or at random.
+func _seed_board(seed: int) -> void:
 	var args := OS.get_cmdline_user_args()
 	var at := args.find("--seed")
-	if at >= 0 and at + 1 < args.size() and args[at + 1].is_valid_int():
+	if seed >= 0:
+		board_rng.seed = seed
+	elif at >= 0 and at + 1 < args.size() and args[at + 1].is_valid_int():
 		board_rng.seed = args[at + 1].to_int()
 	else:
 		board_rng.randomize()
@@ -118,7 +121,11 @@ func reset() -> void:
 ## and returns the seating order it started from. The animation only shows the result.
 func roll_turn_order() -> Array[Dictionary]:
 	var seating := players.duplicate()
-	players.shuffle()
+	for i in range(players.size() - 1, 0, -1): # a shuffle that follows the match's seed
+		var j := board_rng.randi_range(0, i)
+		var swapped := players[i]
+		players[i] = players[j]
+		players[j] = swapped
 	print("Turn order: ", names())
 	return seating
 

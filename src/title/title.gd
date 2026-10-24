@@ -10,15 +10,12 @@ const CURTAIN_OPEN := 0.19 # how much of each half still shows when the curtain 
 
 
 func _ready() -> void:
-	if _wants_spike():
-		Scenes.change_to.call_deferred("res://src/spike/spike.tscn")
-		return
 	Sound.play_music("title")
 	for piece: CanvasItem in [$Hanger/Logo]:
 		PaperShadow.add(piece)
 	$Quit.pressed.connect(_quit)
 	$Settings.pressed.connect(Settings.open)
-	$Play.pressed.connect(Scenes.change_to.bind("res://src/setup/setup.tscn"))
+	$Play.pressed.connect(Scenes.change_to.bind("res://src/lobby/lobby.tscn"))
 	_lightning_loop()
 
 	_curtain.move(CURTAIN_OPEN, 2.4, 0.9)
@@ -44,13 +41,3 @@ func _lightning_loop() -> void:
 		$Sky.flash()
 		await get_tree().create_timer(randf_range(8.0, 16.0), false).timeout
 
-
-# THROWAWAY (part 32): `-- --spike` or `?spike` in the page's address opens the online spike.
-func _wants_spike() -> bool:
-	if OS.get_cmdline_user_args().has("--spike"):
-		return true
-	if not OS.has_feature("web"):
-		return false
-	var found = JavaScriptBridge.eval("location.search.includes('spike') ? 1 : 0")
-	print("[spike] eval gave ", found, " ", typeof(found))
-	return int(found) == 1

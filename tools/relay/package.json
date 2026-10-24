@@ -1,7 +1,7 @@
 {
   "name": "monsternight-relay",
   "private": true,
-  "description": "Throwaway relay for the part 32 online spike: one Durable Object per room, forwarding JSON between the sockets in it.",
+  "description": "The relay for online play (born as the part 32 spike): one Durable Object per room, forwarding JSON between the sockets in it.",
   "scripts": {
     "dev": "wrangler dev --port 8787"
   },
