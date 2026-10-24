@@ -51,7 +51,8 @@ func start(raw_names: Array[String]) -> bool:
 	players.clear()
 	for i in raw_names.size():
 		players.append({"name": clean_name(raw_names[i], i), "monster": "", "space": BoardPath.START,
-				"blood": MAX_BLOOD, "coins": 0, "finished": false, "deaths": 0, "arrived": 0})
+				"blood": MAX_BLOOD, "coins": 0, "finished": false, "deaths": 0, "arrived": 0,
+					"duels_started": 0, "challenged": 0, "duels_won": 0})
 	_arrivals = 0
 	turn = 1
 	current = 0
@@ -196,6 +197,35 @@ func stakes(challenger: Dictionary, opponent: Dictionary) -> Array[String]:
 		result.append("blood")
 	if challenger.space != opponent.space:
 		result.append("swap")
+	return result
+
+
+## Applies a finished duel. The loser pays the stake: gold is 1 coin from the loser to the winner, and
+## blood is 1 of the loser's blood. A swap happens only if the challenger won, and then the two trade
+## `space`; a challenger who lost a swap loses nothing. The challenger's `duels_started`, the
+## opponent's `challenged` and the winner's `duels_won` go up. Returns the real changes: `coins` that
+## moved, `blood` the loser lost, whether they `swapped`, and whether the loser `died` (blood at 0,
+## which the board shows through `Board.die`, which settles it).
+func duel_result(winner: Dictionary, loser: Dictionary, challenger: Dictionary, stake: String) -> Dictionary:
+	var opponent: Dictionary = winner if is_same(loser, challenger) else loser
+	challenger.duels_started += 1
+	opponent.challenged += 1
+	winner.duels_won += 1
+	var result := {"coins": 0, "blood": 0, "swapped": false, "died": false}
+	match stake:
+		"gold":
+			result.coins = -change_coins(loser, -1)
+			change_coins(winner, result.coins)
+		"blood":
+			result.blood = -change_blood(loser, -1)
+			result.died = loser.blood == 0 and result.blood != 0 and not loser.finished
+		"swap":
+			if is_same(winner, challenger) and challenger.space != opponent.space:
+				var there: String = opponent.space
+				move_to(opponent, challenger.space)
+				move_to(challenger, there)
+				result.swapped = true
+	print("Duel: ", winner.name, " beat ", loser.name, " for ", stake, " ", result)
 	return result
 
 
