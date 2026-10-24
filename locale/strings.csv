@@ -84,3 +84,7 @@ POP_EASY,Easy!,Kolay!
 POP_DRAIN,Drain!,Emiş!
 POP_STONE,Stone!,Taş!
 POP_CRACK,Crack!,Çatırt!
+KEYS_MOVE,Move,Hareket
+MINI_GET_READY,Get ready,Hazır ol
+MINI_DRAW,"Draw, again!","Berabere, tekrar!"
+MINI_ROUND,Round %d,%d. tur

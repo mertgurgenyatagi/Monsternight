@@ -83,7 +83,7 @@ var _candle: Candle
 var _path_view: BoardPathView
 var _branch: BranchChoice
 var _challenge: Challenge
-var _duel: Duel
+var _frame: MinigameFrame
 var _onlookers: Array[BoardPiece] = [] # the finished pieces, in finish order, standing by the gate
 var _front: Node2D # over the pieces: an icon that springs up stands here, so no piece hides it
 var _settling: Tween # the camera's glide onto a piece that has just stopped
@@ -124,8 +124,8 @@ func _ready() -> void:
 	_hud.track_pieces(_by_monster)
 	_challenge = Challenge.new()
 	_hud.add_child(_challenge)
-	_duel = Duel.new()
-	add_child(_duel)
+	_frame = MinigameFrame.new()
+	add_child(_frame)
 	pieces_landed.connect(_hud.come_in)
 	pieces_landed.connect(_follow_leader)
 	pieces_landed.connect(_play_turns)
@@ -187,7 +187,7 @@ func land(player: Dictionary, id: String) -> void:
 			await get_tree().create_timer(0.5, false).timeout
 			return
 		if not choice.is_empty():
-			var outcome: Dictionary = await _duel.play(player, choice.opponent, choice.stake)
+			var outcome: Dictionary = await _frame.play(player, choice.opponent, choice.stake, kind)
 			_track_name = "" # the duel's music gives way to the leader's track
 			_follow_leader()
 			await duel_end(outcome.winner, outcome.loser, player, choice.stake)
