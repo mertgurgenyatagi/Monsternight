@@ -43,3 +43,10 @@ The board is all mouse clicks, and minigames use the keyboard. See [screens.md](
 ## Building a release
 
 Players get the web build (above). The Windows release below stays for testing. The development project carries the Godot MCP (its plugin and the autoloads `MCPRuntimeBridge`, `MCPInputBridge` and `MCPScreenshotBridge`), which must not ship. `python tools/release/build_release.py [<out_dir>]`, run from the repository root, copies only `assets/`, `src/`, `locale/`, the bus layout and the project files into a scratch folder, cuts the MCP out of that copy's `project.godot`, imports it and exports the "Windows Desktop" preset of `export_presets.cfg` (`<out_dir>`, `build/` by default, gets one `Monsternight.exe` with the pack embedded). The preset also excludes `addons/godot_mcp`, `screenshots`, the raws, `tools` and `docs`. It needs the Godot 4.7.2 export templates installed (Editor > Manage Export Templates), and `--stage <empty_dir>` makes just the stripped copy to test. The window title is the project name and the icon is `moon.png`.
+
+## Online deploy (part 42)
+
+- **Relay:** `tools/relay/deploy.md` has the steps; not deployed yet (not logged in to Cloudflare). Local round trip through the relay: median 5.8 ms, p95 9.1 ms (200 samples); the real one is not measured.
+- **Free plan (estimate, unmeasured):** a night of 8 players for 2 hours sends about 15 messages a second from the host during minigames, about 110,000 messages. Incoming WebSocket messages count 20 to 1 as requests, so about 5,500 requests against the 100,000 a day. Rooms hibernate when quiet. Well inside the plan.
+- **Web build:** `python tools/release/build_release.py --web` (zip for itch.io), `--web --debug` for browser tests. `web/shell.html` is the loading page. Release builds ignore `?bot`, `?turns` and `?mini`.
+- **Links on itch:** the iframe's address is not shareable, so `Net.PAGE_URL` is the page address Copy link uses. Whether itch forwards `?room=` to the iframe is untested; if not, a joiner types the code.

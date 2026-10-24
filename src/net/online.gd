@@ -75,8 +75,7 @@ func _ready() -> void:
 	Net.connected.connect(_on_connected)
 	Net.refused.connect(_on_refused)
 	Net.disconnected.connect(_on_disconnected)
-	var args := OS.get_cmdline_user_args()
-	bot = "--bot" in args or Net.page_param("bot") not in ["", "0"]
+	bot = Net.debug_value("bot") not in ["", "0"]
 
 
 ## Begins online play for the match the lobby has just started.

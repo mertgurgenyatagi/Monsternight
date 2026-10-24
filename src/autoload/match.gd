@@ -83,11 +83,9 @@ func start(raw_names: Array[String], seed := -1) -> bool:
 	_arrivals = 0
 	_turns_done = false
 	turns = TURNS_BY_LOBBY[raw_names.size()]
-	var short := OS.get_cmdline_user_args().find("--turns") # a short match, to test with
-	if short >= 0 and short + 1 < OS.get_cmdline_user_args().size():
-		turns = maxi(1, OS.get_cmdline_user_args()[short + 1].to_int())
-	elif Net.page_param("turns").is_valid_int():
-		turns = maxi(1, Net.page_param("turns").to_int())
+	var short := Net.debug_value("turns") # a short match, to test with
+	if short.is_valid_int():
+		turns = maxi(1, short.to_int())
 	_seed_board(seed)
 	board_kinds = BoardRoller.roll(raw_names.size(), board_rng)
 	finish_order.clear()
