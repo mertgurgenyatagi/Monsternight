@@ -21,105 +21,91 @@ If a part turns out too big, split it (7a, 7b) instead of rushing it.
 
 ## Parts
 
-All three stay in part 6's **side view**. The high camera was tried and reverted (see README), so don't bring it back. Part 16 gives `Duel.play(challenger, opponent, stake) -> {winner, loser}`; parts 17 and 18 start from there.
+All three build the end of the match and stay in part 6's **side view** (the high camera was reverted, see README). Part 19 gives `Match.results()`, which parts 20 and 21 read. The ceremony is its own scene on the title's curtain.
 
-### Part 16: The VS card, the countdown and the coin flip
+### Part 19: Match end, the last turn and the stats
 
-**Goal:** After the challenge, a paper VS card slams down with both monsters and the stake, a 3, 2, 1 counts down, and a coin flip decides the winner, who is announced. Nothing changes on the board yet (part 17 applies the result).
-
-**Builds:**
-- **`Duel`** (`src/board/duel.gd`), a node on its own `CanvasLayer` above the HUD (layer 30), with an awaitable `play(challenger, opponent, stake) -> Dictionary` giving `{winner, loser}` (the player dictionaries). `Board.land`'s minigame branch awaits it right after the confirm beat and replaces the log line. It logs "Duel won by X (coin flip)".
-- **The flip is one function, `Duel._decide(challenger, opponent, stake)`,** returning the winner at random with `randf()`. Part 18 changes only this for the swap handicap. A minigame later replaces it as a whole.
-- **A dim and a hold.** The board keeps running under a dimmed backdrop (a black `ColorRect` fading to 0.55), the camera stays put. The HUD stays visible above the dim for the portraits, below the card layer.
-- **The music.** `Sound.play_music("duel")` while the duel plays, and `Board._follow_leader()` puts the board track back when it ends. The file `duel.ogg` is missing, so it's silence for now.
-
-**Polish:**
-- **The VS card:** two `card.png` cards, scale about 0.9, one for each monster, slam in from the sides and tilt a few degrees toward each other with `card_slam` (one slam each, 0.15 s apart). Each shows the monster's `portrait` over the card, its name from `Translations` in `display.ttf` and in the monster's `color`. A big paper "VS" (`display.ttf`, cream with a dark rim) drops between them with a third `card_slam` and a small screen shake (the `PaperMotion.shake` on the layer's root, 6 px).
-- **The stake** sits under the VS: the icon (`coin`, `blood` or `swap`) on a small paper strip with its line ("Take 1 coin"), popping in with `pop_in`. The challenger's card is marked with a small "challenger" tag (new string) and sits left.
-- **The idle:** both cards `breathe` gently, and the portraits blink as they do on the HUD, if `HudPortrait` already does something similar to copy (look, don't invent).
-- **The countdown:** the cards slide apart and the card pair shrinks a bit, then a huge 3, 2, 1 in `display.ttf` pops at the center, each with `countdown` and a squash that settles within 0.8 s, then the number tears away. "Go" is not shown as a word; `countdown_go` plays as the coin leaves.
-- **The coin flip:** the `coin.png` is flicked up from between the cards with `coin_flip`, spins (a fast `scale.x` squash cycle to fake the flip), slows, and lands with a bounce. One face shows the challenger's color rim and the other the opponent's (a tint, no new art). The coin comes to rest on the winner's side, and the pause before the result is 0.4 s so it feels like suspense.
-- **The announcement:** the winner's card lifts, grows and gets a `Glow.flare`; the loser's card greys with `grey.gdshader` and tips back. A short paper banner "X wins!" drops in, held 1.2 s. Then the cards lift away with `lift_away` and the dim fades.
-- **Skip nothing:** no key skips it; the whole thing is about 8 s.
-
-**Assets:** `ui/card.png`, `coin.png`, the icons, the monsters' portraits, `sfx/card_slam`, `countdown`, `countdown_go`, `coin_flip`, `flip`. **Missing:** `duel.ogg`, which the user makes (silence for now).
-
-**Check:**
-- With a temporary script (not committed): run `Duel.play` for 4 monster pairs with each stake, check the cards fit (the longest name, Frankenstein's, and the longest stake line) and that both of the winners get picked over 40 runs.
-- Run the full path with the MCP's clicks, 3 players: land on a minigame space, pick an opponent and a stake, and watch the VS card come after the confirm beat; the next player's turn starts after the banner.
-- One contact sheet of the slam, the countdown, the flip and the announcement. 25 FPS.
-
-**Risks:** the HUD and the card layer both draw portraits; make sure the cards cover nothing but the dim. The flip's fake spin must read as a coin at a glance.
-
-### Part 17: Duel results
-
-**Goal:** The result of a duel really happens: the winner poses, the loser crumples, and the coins, blood or places move across the board. A duel can kill, and the dead respawn.
+**Goal:** The match really ends: a sting and a banner on the last turn, a fast finish when only one player is left, a closing beat on the board, and every number the ceremony needs counted in `Match`.
 
 **Builds:**
-- **`Match.duel_result(winner, loser, challenger, stake) -> Dictionary`:** the rules. Gold: 1 coin from the loser to the winner if the challenger won; if the challenger lost, the challenger pays 1 coin to the opponent. Blood: the loser of the duel loses 1 blood. Swap: only when the challenger won, `space` of both swap; if the challenger lost, nothing. It returns `{coins, blood, swapped, died}` with real changes through `change_coins`/`change_blood`, and also counts `duels_won` for the winner (part 19's stats read it; keep `duels_started` and `challenged` counters too, bumped here).
-- **`Board.duel_end(winner, loser, ...)`**, a coroutine awaited after `Duel.play`, doing the visible half. A death goes through `Board.die` (part 13) so the death and respawn are the ones the user already saw. The challenger's turn then ends.
-- **Voices:** `voices/<monster>_win` and `_lose` from `Monsters` (`voice` key; look at how the pick voice is read).
-- **The swap:** the two pieces trade places with the new `swap` motion, a shared `PaperMotion` helper if none fits (arcs that cross over each other).
-- **Stat counters** in `Match`: `duels_won`, `duels_started`, `challenged` (the spikes' blood count for the "Pincushion" stat doesn't exist yet; part 19 adds it).
+- **`Match.over()`:** true when turn `TURNS` is done, or when no more than one player is unfinished (the early end: "right away once all players but one have reached the end"). `next_player` returns false by that same rule, so `_play_turns` needs no second check. A match that starts with 1 unfinished player left isn't possible (2 to 8 players).
+- **`Match.results() -> Array`:** one dictionary per player, ranked: `{player, trophies, finish, gold, duels, rank}`, plus `Match.stats() -> Array` of `{key, players, value}` for the four fun stats. The rules are in `docs/game_rules.md` (2 for the first finisher, 1 for the second, 1 for most gold, 1 for most `duels_won`, ties all get it, no trophy for a 0 count; tiebreak by finishing trophy, then gold trophy, then duel trophy; players still tied share the rank). The stats: `deaths`, `duels_started`, `challenged` and the new `spike_blood`. A stat only counts if someone scored at least 1.
+- **`spike_blood`:** every player carries it from `start`. `Match.land`'s spikes branch adds the real blood lost to it, and a duel or a church doesn't. Check the spikes branch in `Match.land` and the one `Board.land` death check.
+- **The last turn:** `Hud.set_turn` already marks the last turn (the counter's last state). When `Match.turn` becomes `TURNS`, `Board` plays `Sound.sting("sting_final_turn", 3.0)`, the turn tag does a `PaperMotion.squash` pop and goes red, and a paper banner "Last turn!" (new string) drops in at the top for 1.6 s, then `lift_away`. Only once.
+- **The end:** `_play_turns` returns on `Match.over()`; `Board` then calls `_end_match()`: the camera glides to the castle gate, the HUD portraits dim a little, a banner "The night is over" (new string) holds 2 s, the board music fades, and it logs the results. The scene change to the ceremony is a stub in this part: `Scenes.change_to("res://src/ceremony/ceremony.tscn")` is only called if the file exists, otherwise it prints the results and goes back to the title.
 
 **Polish:**
-- **The win pose:** the winner's piece squashes, grows 15%, and does a small jump with `hop`, `tilt`, and its `_win` voice; a `Glow.flare` under it. The loser's piece `crumple`s with its `_lose` voice and `crumple`, then unfolds back (the non-freeing crumple from part 13, then `unfold`) unless it dies.
-- **Gold:** the coin flies from the loser's HUD counter to the winner's on the HUD layer (the flyers the coin space already uses), with `coin_lose` on the loser's side and `coin_gain` on landing. Both counts tick.
-- **Blood:** a drop breaks off the loser's HUD portrait with `blood_lose`, the portrait shakes; a challenger-lose in a blood duel drops the challenger's drop the same way. A death is a `Board.die`, whose camera and flight run in full.
-- **Swap:** the camera glides to the middle of the two pieces, both lift, `swap` plays, they cross in arcs and set down; the camera follows the challenger to their new space. The crowd slots are re-run so crowded spaces line up. Nobody gets a space effect from a swap.
-- Winning a duel on the move gives no extra move. The challenger's space effect is the duel; afterwards the turn passes on.
-- **The camera:** during gold and blood it holds on the challenger's piece; the HUD does the work.
+- **The last-turn sting:** a quick flash of the sky (`Sky.flash()`), the candle flames sputter once if a candle is on screen, and the banner has a slight shake.
+- **The early end:** when a finish leaves one unfinished player, the finish's flag and tag play in full first, then a banner "Everyone else is home" (new string, shorter than the final one) leads into the same end beat, so it never cuts off the gate scene.
+- **The end beat:** the unfinished players' pieces sway slowly where they stand and the finished onlookers `breathe` (they already do); the dying fog is not touched. A single `Glow.flare` over the gate.
+- **Translations:** every new string goes in `strings.csv` with Turkish.
 
-**Assets:** `voices/*_win`, `*_lose`, `sfx/crumple`, `respawn`, `fly`, `swap`, `coin_lose`, `coin_gain`, `blood_lose`, `blood_gain`. Nothing missing.
+**Assets:** `sfx/sting_final_turn` (**missing:** music the user makes, so silent and the ducking is untested by ear), `banner` and `paper` art already used by the other banners. Nothing else missing.
 
 **Check:**
-- A temporary script that forces every combination (stake × challenger wins or loses) and checks the `Match` numbers and the HUD agree. A death match (blood on 1 blood, 0 coins) kills the loser, and the challenger with 1 blood who loses dies too.
-- A swap on crowded spaces, on a fork's two paths, and with the start; a swap across the church (graveyard way vs past it) is allowed since the token ids are all that move.
-- A sped-up 8-player match that forces duels on every minigame landing for 17 turns must end with consistent totals and no errors.
-- One contact sheet of the win pose, a coin flying, a blood drop and a swap. 25 FPS.
+- A temporary script feeds `Match` fixed finish orders, golds and duels and checks `results()` for: a simple win, all the ties (gold, duels), the tiebreaker chain, nobody finishing, and the early end after 7 of 8 finish.
+- A sped-up run (`Engine.time_scale`, short test, per the no-long-runs rule) with 3 players and `TURNS` temporarily 2: the last-turn banner comes once, the end beat plays, and the results print. Revert `TURNS` after.
+- One contact sheet of the last-turn banner and the end beat. 25 FPS.
 
-**Risks:** a swap between pieces thousands of pixels apart shouldn't whip the camera: fly the pieces, not the camera (the camera glides to the middle and then to the challenger, like the death's flight). A duel death while the winner sits in the same spot as the respawn must still line up.
+**Risks:** the earlier headless sped-up matches in parts 17 and 18 were never reached to turn 17, so this is the first full end; keep it short with `TURNS` lowered. Don't change `TURNS` for good.
 
-### Part 18: The swap handicap and finishing at the gate
+### Part 20: The trophy ceremony
 
-**Goal:** A swap duel is the rigged 3-to-1 it should be, and players really can finish: reaching the castle gate gives the flag, the sting, and a seat on the sidelines.
+**Goal:** After the board, the curtain closes, then opens on a stage where trophies are handed out one at a time with drumrolls, and the leaderboard rises.
 
 **Builds:**
-- **The swap handicap.** `Duel._decide` runs rounds. For a swap the challenger needs 3 round wins before the opponent wins 1; gold and blood stay at one round. It returns `{winner, loser}` as before, plus the rounds. The coin flip is fair, so the challenger wins a swap 1 time in 8. That's what the rule says; the playtest in part 23 can judge it.
-- **The rounds on screen.** For a swap the card pair keeps a small tally under the VS: three empty pips for the challenger, one for the opponent. Each flip is a quicker repeat (no VS slam, a shortened countdown at 1 s a number), and each pip fills with a tick. The flip stops at the first decisive result.
-- **Finishing.** The walk (`Board._walk`) stops at the gate when the steps reach it. `Match.finish(player) -> int` sets `finished`, remembers the order in a `finish_order` (the first gets the trophy in part 19), and returns the place. `Board.finish(player)` is the coroutine: the piece hops onto the gate, then the gate and flag moments in Polish play.
-- **The sit-out.** A finished player's piece stays at the gate in a row of onlookers (their own slots by finish order, standing a little to the right of the gate), `set_finished` on the HUD (flag) and `next_player` skips them. A finished player isn't a duel target (part 15 already enforces it) and can't die (part 13).
-- **The edge cases.** A roll that overshoots the gate counts (any roll that reaches the end). Overshooting steps are lost. If the finishing roll was on a fork's path, that's fine since the route ends at the gate anyway. If this is the last unfinished player but one, part 19 ends the match; for now the match just carries on with the one left until turn 17.
+- **`Ceremony`** (`src/ceremony/ceremony.tscn` and `ceremony.gd`), the scene the board changes to. It reads `Match.results()`. The title's curtain code (`src/title/title.gd`, look at how it swings) is copied or shared: lift it into a small `Curtain` node used by both if that's cleaner, and keep the title working.
+- **The order:** the trophies go from the least to the most meaningful, one kind at a time: *most duels won*, *most gold*, *second to finish*, *first to finish*. A kind nobody won is skipped. Each is a "round": the title card (the trophy's name), the drumroll (3 s, `drumroll`), then the winner or the tied winners step into the light, `trophy` plays, and the trophy flies into their stand.
+- **The stage:** the board's dark backdrop (the church hill's night sky, no scenery), a spotlight (a soft warm `Glow` polygon), each player's piece in a row on a paper stand, in finish-then-rank order from the left. Every piece carries a trophy counter underneath, hidden until the trophies are awarded (the counts are secret until the ceremony).
+- **The leaderboard:** after the last trophy, the pieces rearrange by rank with `toss` arcs and a panel lists "1st Name  ★3" and so on, with ties shown as the same rank. The best player(s) get a `Glow.flare` and a crown-sized trophy and their monster's `_win` voice.
 
 **Polish:**
-- **The gate:** when the first (or any) piece arrives, the gate doors `castle_gate.png` swing open slightly (a squash/stretch on a lit slot) with a warm `Glow.flare`, `sting_finish` plays once, and `Sound.play_music` ducks for its 3 s then comes back.
-- **The flag:** the piece plants a flag (`flag.png`, the one already used by the HUD): it pops in over the piece with a sway, and the HUD portrait greys with the flag as part 9 built it. The camera holds on the gate for 2 s, then the next player.
-- **A place tag:** a small paper tag "1st", "2nd" ... pops over the piece for 2 s (from `Translations`; new strings), so finishing order reads. The first finisher's tag is gold (the 2-trophy finish, from part 19), the others plain.
-- **The onlookers:** each finished piece `breathe`s and sways slowly, and they face the board. `PaperMotion.sway` has the motion for it.
-- **The pips of the handicap:** fill with `ui_click` (high pitch if the challenger took it, dull for the opponent); three pips for the challenger drop into the tally with `pop_in`.
+- **The curtain:** `curtain.png` halves (the right mirrored) and `curtain_top.png`. They close over the board with a sway and `curtain`-style sound (`paper_swish` if it exists; look in `assets/audio/sfx/` and use the nearest, don't invent one), hold 0.6 s, the scene changes under them, then they open wide on the stage with the `ceremony` music. `ceremony.ogg` is **missing** (the user makes it), so it is silent for now.
+- **The drumroll:** the spotlight narrows and a small tremble builds in the pieces' stands (`PaperMotion.shake` rising from 1 to 5 px), the title card breathes. On the last beat the trem stops, silence for 0.3 s, then `trophy`.
+- **The trophy:** `trophy.png` pops in at the center with `pop_in`, a `Glow.flare`, spins once with a squash and flies to the winner's stand with `fly_to`, where it settles with a `bounce`. Tied winners each get their own copy, thrown one after another 0.2 s apart. The winner's piece does the win pose (`hop` and the `_win` voice), the others clap by swaying.
+- **Zero trophies:** a player who ends with none just stands there, a little dim, with a small shrug (`tilt`).
+- **Pacing:** the whole ceremony is about 35 to 45 s with 4 rounds. No skip. A click on the leaderboard (the "Continue" button, `PaperButton`) moves on to part 21's stats, which for now goes back to the setup screen.
 
-**Assets:** `scenery/castle_gate.png`, `icons/flag.png`, `sfx/ui_click`, `countdown`, `coin_flip`, `card_slam`, `sting_finish`. **Missing:** `sting_finish.ogg` (music the user makes), so the code plays it by name and it is silent for now; the ducking is then untested by ear.
+**Assets:** `ui/curtain.png`, `ui/curtain_top.png`, `ui/trophy.png`, `sfx/drumroll`, `trophy`, the monsters' bodies and `_win` voices, `Monsters.color`. **Missing:** `ceremony.ogg`.
 
 **Check:**
-- Force a roll to the gate from 1, 3 and 6 spaces away (overshoot too), from the church path and from the main lane. `Match.finish` order is right; `next_player` skips the finished; the sped-up 8-player match keeps running to turn 17 with some finished.
-- Run 200 handicap rounds in a script: the challenger should win a swap about 12.5% of the time, and gold/blood about 50%.
-- One contact sheet of the tally, the gate opening and the flag, three onlookers standing. 25 FPS.
+- A temporary scene that opens `Ceremony` with a fixed `Match` (4 and 8 players, with ties and without) and prints the order of the rounds; compare against `Match.results()`.
+- A real board to ceremony hand-off with `TURNS` lowered to 2 (revert after).
+- One contact sheet of the curtain, a drumroll, a trophy flying, and the leaderboard. 25 FPS.
 
-**Risks:** pieces at the gate share the end of the road with the castle's scenery and the signpost; check the onlookers' row doesn't hide the doors. A finished player who held the lead is also the leader for the music (part 13 already counts them furthest).
+**Risks:** 8 pieces and their trophy counters on one stage need the narrowest layout to be checked (the longest name, Frankenstein's). Don't leave a camera or Board node running during the ceremony.
+
+### Part 21: Fun stats and back to the setup screen
+
+**Goal:** After the leaderboard, the fun stats come up one by one with their titles, and then everyone returns to the setup screen, ready for another match.
+
+**Builds:**
+- **The stats scene** (inside `Ceremony`, after the leaderboard): for each of the four stats in order, *Frequent Corpse* (`deaths`), *The Bully* (`duels_started`), *The Punching Bag* (`challenged`), *The Pincushion* (`spike_blood`), a paper card with the title (`display.ttf`), the winner's portrait or the tied winners', and the number. A stat nobody scored at least 1 in is skipped. Titles and unit lines ("3 deaths", "4 duels started") come from `strings.csv` with Turkish, with plurals handled by the format.
+- **The ending:** a "Play again" `PaperButton` and "Quit" back on the title; Play again changes to the setup screen. `Match.reset()` clears everything (players, turn, `finish_order`, `arrived` counter) so the next lobby starts fresh. `Sound` fades the ceremony music out and the title/setup ambience in.
+- **Setup:** the setup screen must open clean after a match: check it doesn't keep the last players' names or `Match` state that would carry (names are typed again, that's by design).
+
+**Polish:**
+- **Each stat card** slides in from below with a tilt, the `stat` plink plays, the portraits `hop` once and the number counts up from 0 in 0.5 s with a tick each time (`ui_click`, pitch rising). The card is held 2.2 s, then `lift_away`.
+- **A joke on empty:** if no stat shows at all (a very quiet match), a single paper card says "A very quiet night" (new string).
+- **The leaving:** the curtain closes again with the same motion as part 20, so the loop reads as a closed circuit. The whole stats section is about 12 to 15 s.
+- **Cleanup:** make sure every `Tween` and the music handle stop at scene change.
+
+**Assets:** `sfx/stat`, `ui_click`, the same curtain and portraits. Nothing missing.
+
+**Check:**
+- A temporary script runs the stats for tie, empty and single-winner cases and prints what shows.
+- A full pass: setup with 3 players, play the board with `TURNS` lowered to 2, the ceremony, the stats, and the setup screen again; the second match starts from a clean `Match` (turn 1, nobody finished, zero stats). Revert `TURNS`.
+- One contact sheet of two stat cards and the setup screen after. 25 FPS.
+
+**Risks:** state leaking between matches is the real danger here (`finish_order`, `_arrivals`, the autoload `Match` itself is never recreated). A bug may only show in the second match.
 
 ## Roadmap
 
-Rough past part 18. Parts 1 to 15 are done (see the Log and the part notes).
+Rough past part 21. Parts 1 to 18 are done (see the Log and the part notes).
 
-13. Death and respawn, and the board music following the leader.
-14. Splits: the signpost's arrows with a 10 s candle.
-15. Challenge: the opponent's portrait, then the stake card, with the 20 s candle and the coin fallback.
-16. The VS card, the countdown, and the coin flip.
-17. Duel results: the win pose and the crumple, voices, gold and blood flying across, deaths in duels (using part 13's `Board.die`), and the swap.
-18. The swap handicap (3 rounds) and finishing at the castle gate (the flag, `sting_finish`, the onlookers). The no-opponent fallback was already done in part 15.
-19. Match end: 17 turns, `sting_final_turn`, the early end, and tracking the stats (the spikes' blood count is new; the duel counters come from part 17).
+19. Match end: the last-turn sting and banner, the early end, `Match.results()` and the stats (the spikes' blood count is new).
 20. The trophy ceremony: the curtain, drumrolls, trophies, and the leaderboard with its tiebreaker.
-21. Fun stats, then back to the setup screen.
+21. Fun stats, then back to the setup screen with `Match` reset.
 22. Esc settings during a match, and a sweep of translations and edge cases. This includes what parts 2 and 3 left untested: a fullscreen relaunch, closing Settings with Esc, a click outside or the back button, and dragging the sliders.
 23. Full playtests and tuning: the 17 turns and the 57 spaces, and a reroll of the board if the user wants one.
 24. Bug bash and the final polish pass. Drop the Godot MCP's autoloads from the release build.
@@ -219,3 +205,5 @@ Each part session adds a few lines when it finishes: what got built, what change
 - **2026-10-24, Microplan 6:** parts 13 to 15 are done (death and the music, splits, challenge). Planned parts 16 to 18: the VS card with the countdown and coin flip, the duel results, and the swap handicap with finishing at the gate. Roadmap changes:
   - The no-opponent fallback left part 18, because part 15 already built it.
   - The duel counters (`duels_won`, `duels_started`, `challenged`) are kept from part 17, so part 19's stats don't have to hunt for them. The end stays at 24.
+- **2026-10-24, Microplan 7:** parts 16 to 18 are done (the VS card, duel results, the swap handicap and the gate). Planned parts 19 to 21: match end and the stats, the trophy ceremony, and the fun stats with the return to setup. Roadmap changes:
+  - None in the order or the end (still 24). `Match.results()` and `stats()` are built in part 19 so that 20 and 21 only draw. Part 21 adds `Match.reset()`, since the autoload outlives a match.

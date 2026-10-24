@@ -42,7 +42,8 @@ What they mean in practice is in [Art and audio](docs/art_and_audio.md#principle
 - **Part 16 is built** (the VS card, the countdown and the coin flip), built and merged.
 - **Part 17 is built** (duel results), built and merged.
 - **Part 18 is built** (the swap handicap and finishing at the gate), built and merged.
-- **Next:** Microplan 7 (parts 19 to 21).
+- **Microplan 7 is done:** parts 19 to 21 are planned in `docs/microplan.md`.
+- **Next:** part 19 (match end, the last turn and the stats).
 
 **Keep the raws.** They're the sources, and the processed files can always be rebuilt from them.
 
