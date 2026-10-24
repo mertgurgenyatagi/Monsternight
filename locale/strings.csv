@@ -32,3 +32,6 @@ CHALLENGE_STAKE,Pick a stake
 STAKE_GOLD,Take 1 coin
 STAKE_BLOOD,Take 1 blood
 STAKE_SWAP,Swap places
+DUEL_VS,VS
+DUEL_CHALLENGER,Challenger
+DUEL_WINS,%s wins!

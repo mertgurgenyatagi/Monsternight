@@ -20,7 +20,7 @@ If a part turns out too big, split it (7a, 7b) instead of rushing it.
 
 ## Parts
 
-All three stay in part 6's **side view**. The high camera was tried and reverted (see README), so don't bring it back. Part 15 logs "Duel here, part 16: A vs B, stake gold" and has `{opponent, stake}` ready; these parts start from there.
+All three stay in part 6's **side view**. The high camera was tried and reverted (see README), so don't bring it back. Part 16 gives `Duel.play(challenger, opponent, stake) -> {winner, loser}`; parts 17 and 18 start from there.
 
 ### Part 16: The VS card, the countdown and the coin flip
 
@@ -127,7 +127,7 @@ Rough past part 18. Parts 1 to 15 are done (see the Log and the part notes).
 
 Each part session adds a few lines when it finishes: what got built, what changed from the plan, surprises, and anything left over or buggy. The next Microplan reads these instead of the code.
 
-### Built so far (parts 1 to 15, absorbed by Microplans 3 to 6)
+### Built so far (parts 1 to 16, absorbed by Microplans 3 to 6)
 
 - **Board (parts 10, 11, 12):**
   - The road is 57 spaces through the graveyard and 61 past the church (12, 8 or 12, 12, 10, 15), 15,460 px wide, rolled by `tools/board/roll_board.py` with seed 1031. `Match.TURNS` is 17, the intro glide 7.5 s. `BoardLayout.hill_width()` (2,840) stretches the church hill, and `scenery.gd`'s `_spots(location, first, last, gap)` keeps the props' density.
@@ -150,6 +150,10 @@ Each part session adds a few lines when it finishes: what got built, what change
   - `Hud` has `set_pickable(players)`, `clear_pickable()`, `set_lit(player, on)`, `shake(players)`, `portrait_at(player)` and the `portrait_clicked` signal. `HudPortrait` carries an `Area2D` over its frame, with `picked` and `denied` signals.
   - The banner sits at y 272, the 20 s candle (scale 0.4) right of it, and the cards (scale 0.47) at y 600 under the chosen portrait, clamped 330 px from the screen's sides. Checked: MCP clicks on a greyed portrait and card did nothing, then a valid one chose; 24 sped-up timeout runs with 5 players were all valid (gold, blood and swap all seen); the coin fallback worked. FPS read 15 in a plain run with the editor open.
   - The confirm beat is 0.6 s after the candle lifts away. There is no VS card yet, so the result is only logged.
+- **The VS card (part 16):**
+  - `Duel` (`src/board/duel.gd`, `CanvasLayer` 30, a child of `Board`) has `play(challenger, opponent, stake)` giving `{winner, loser}`, and `_decide(challenger, opponent, stake)`, the fair `randf()` coin flip that part 18 changes. `Board.land` awaits it after the confirm beat, then resets `_track_name` and calls `_follow_leader()`. It logs "Duel won by X (coin flip)". The dim is a `ColorRect` on its own layer 15, under the HUD (20), so the portraits stay bright. The music is `Sound.play_music("duel")` (the file is missing, so silence).
+  - It runs about 9.5 s: the cards slam (scale 0.9, 310 px each side of x 960, y 470), the VS drops with a 6 px jolt, the stake strip pops in at y 810 and holds 0.9 s, then the cards part to 520 px and shrink to 0.7, 3, 2, 1 pop at the center (0.74 s each), the coin is flicked and spins by squashing its width (12 half turns end on the challenger's color, 11 on the opponent's) and lands 170 px to the winner's side, then the winner's card lifts with a `Glow.flare`, the loser's greys with `grey.gdshader` and tips, and the banner "X wins!" holds 1.6 s. `HudPortrait` has no blink, so the cards only `breathe`.
+  - New strings `DUEL_VS`, `DUEL_CHALLENGER` and `DUEL_WINS`. A Label's `size` springs back to its text's width, so `_label` clips its text (`clip_text`) and sets the size last. Checked: a forced duel on the board with MCP clicks on the opponent's portrait and a stake card (Bob chosen, the VS came after the confirm beat, the turn code carried on), 40 flips gave 18 challenger wins, and the screenshots show the longest name ("Frankenstein's Monster") fits.
 - **Code** is in `src/`:
   - Autoloads: `Sound` (`play`, `play_music`, `play_ambience`, and `quit()`, which every way out of the game goes through so no OGG leaks; `play("hop")` never repeats a hop twice in a row), `Scenes` (`change_to`, the paper transition, the texture and the cursor), `Settings` (`Settings.open()` from anywhere), and `Match` (players in turn order, each with `name`, `monster`, `space`, `blood`, `coins` and `finished`; `turn`, `TURNS`, `MAX_BLOOD`; `roll_turn_order`, `pick_monster`, `free_monsters`, `move_to`, and `change_blood` / `change_coins`, which return the real change).
   - `PaperMotion` holds `drop_in`, `set_down`, `lift_away`, `sway`, `sway_stop`, `pop_in`, `pop_out`, `lift` (it only raises), `squash`, `slide_in`, `move_to`, `flip`, `hop`, `hop_to`, `fly_to`, `tuck`, `breathe`, `tilt`, `shake`, `stretch`, `crumple` (it frees the piece at the end unless `free` is off), `unfold`, `toss` and `bounce`. New motion goes here.

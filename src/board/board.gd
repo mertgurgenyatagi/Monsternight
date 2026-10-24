@@ -65,6 +65,7 @@ var _candle: Candle
 var _path_view: BoardPathView
 var _branch: BranchChoice
 var _challenge: Challenge
+var _duel: Duel
 var _front: Node2D # over the pieces: an icon that springs up stands here, so no piece hides it
 var _settling: Tween # the camera's glide onto a piece that has just stopped
 var _track_name := "" # the board music now chosen, by where the leader is
@@ -94,6 +95,8 @@ func _ready() -> void:
 	add_child(_hud)
 	_challenge = Challenge.new()
 	_hud.add_child(_challenge)
+	_duel = Duel.new()
+	add_child(_duel)
 	pieces_landed.connect(_hud.come_in)
 	pieces_landed.connect(_follow_leader)
 	pieces_landed.connect(_play_turns)
@@ -146,7 +149,9 @@ func land(player: Dictionary, id: String) -> void:
 			await _settling.finished
 		var choice := await _challenge.ask(player)
 		if not choice.is_empty():
-			print("Duel here, part 16: ", player.name, " vs ", choice.opponent.name, ", stake ", choice.stake)
+			await _duel.play(player, choice.opponent, choice.stake)
+			_track_name = "" # the duel's music gives way to the leader's track
+			_follow_leader()
 			return
 		# Nobody to duel: the space acts as a coin space.
 		kind = "coin"
