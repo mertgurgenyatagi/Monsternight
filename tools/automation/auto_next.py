@@ -30,7 +30,6 @@ CHAT_BOX = (1580, 863)  # where to click so the chat box has the keyboard
 START_WAIT = 5  # seconds before the first look, to get out of the way
 CHECK_EVERY = 10  # seconds
 NUDGE_AFTER = 900  # seconds without a detection before the reminder is sent
-COOLDOWN = 300  # seconds after a start before it may fire again
 AFTER_CLEAR = 10
 AFTER_PROMPT = 5
 PROMPT = (
@@ -96,13 +95,12 @@ def main() -> None:
     engine = OcrEngine.try_create_from_user_profile_languages()
     print(f"Watching {BOX} every {CHECK_EVERY} s for the text {MARKER}, after {START_WAIT} s. Ctrl+C stops it.", flush=True)
     time.sleep(START_WAIT)
-    last_fired = -COOLDOWN
     last_activity = time.monotonic()  # the last start or nudge, or the launch
     while True:
-        if time.monotonic() - last_fired >= COOLDOWN and marker_is_showing(engine):
+        if marker_is_showing(engine):
             print(time.strftime("%H:%M:%S"), "marker found: starting the next session", flush=True)
             start_next_session()
-            last_fired = last_activity = time.monotonic()
+            last_activity = time.monotonic()
         elif time.monotonic() - last_activity >= NUDGE_AFTER:
             print(time.strftime("%H:%M:%S"), "nothing detected for 15 minutes: sending the reminder", flush=True)
             send_nudge()
