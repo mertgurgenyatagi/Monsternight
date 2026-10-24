@@ -92,7 +92,7 @@ func step(delta: float) -> void:
 		var now := Engine.get_physics_frames()
 		if now - _voice_at[side] > 4:
 			_voice_at[side] = now
-			Sound.play("rope_pull", -4.0, randf_range(0.9, 1.1))
+			Sound.play("rope_tug", -3.0, randf_range(0.92, 1.08))
 	marker = move_toward(marker, 0.0, CREEP * delta)
 	_speed = (marker - before) / maxf(delta, 0.0001)
 	if absf(marker) >= 1.0:
@@ -140,10 +140,10 @@ func _draw() -> void:
 		var dir := -1.0 if side == 0 else 1.0
 		var tilt := sin(_flash[side] / 0.5 * PI * 3.0) * 0.35 * (_flash[side] / 0.5)
 		draw_set_transform(mid + Vector2(dir * LINE_X, 0.0), tilt, Vector2.ONE)
-		draw_line(Vector2(0, 90), Vector2(0, -120), INK, 8.0)
+		draw_line(Vector2(0, 90), Vector2(0, -120), INK, 8.0, true)
 		var tip := -dir * 70.0
 		draw_colored_polygon(PackedVector2Array([Vector2(0, -120), Vector2(tip, -92), Vector2(0, -64)]), color_of(side))
-		draw_polyline(PackedVector2Array([Vector2(0, -120), Vector2(tip, -92), Vector2(0, -64), Vector2(0, -120)]), INK, 4.0)
+		draw_polyline(PackedVector2Array([Vector2(0, -120), Vector2(tip, -92), Vector2(0, -64), Vector2(0, -120)]), INK, 4.0, true)
 	# the rope, pulled taut by the latest press
 	var taut := 1.0 + 0.03 * maxf(_pulse[0], _pulse[1])
 	var x_marker := marker * LINE_X

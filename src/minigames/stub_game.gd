@@ -46,7 +46,7 @@ func _draw() -> void:
 	draw_rect(rect, INK)
 	draw_rect(rect.grow(-10.0), TABLE)
 	# the flag: a pole and a cream triangle
-	draw_line(_flag + Vector2(0, 40), _flag + Vector2(0, -50), INK, 8.0)
+	draw_line(_flag + Vector2(0, 40), _flag + Vector2(0, -50), INK, 8.0, true)
 	draw_colored_polygon(PackedVector2Array([_flag + Vector2(0, -50), _flag + Vector2(54, -30), _flag + Vector2(0, -10)]),
 			Color("fbe9d0"))
 	for side in 2:

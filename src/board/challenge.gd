@@ -12,9 +12,9 @@ extends Node2D
 signal _decided(by_click: bool)
 
 const SECONDS := 20.0
-const BANNER_AT := Vector2(960, 272)
+const BANNER_AT := Vector2(960, 345)
 const BANNER_SIZE := Vector2(560, 66)
-const CANDLE_AT := Vector2(1330, 432) # the candle's base, by the banner's right corner
+const CANDLE_AT := Vector2(1330, 505) # the candle's base, by the banner's right corner
 const CANDLE_SCALE := 0.4
 const CARD_Y := 600.0
 const CARD_STEP := 206.0

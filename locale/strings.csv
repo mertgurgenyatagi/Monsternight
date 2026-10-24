@@ -21,6 +21,7 @@ MONSTER_HYDE,Mr. Hyde,Bay Hyde
 MONSTER_CTHULHU,Cthulhu,Cthulhu
 MONSTER_WOLFMAN,The Wolf Man,Kurt Adam
 MONSTER_DORIAN,Dorian Gray,Dorian Gray
+PICK_CONFIRM,Confirm,Onayla
 PICK_PROMPT,"%s, pick your monster","%s, canavarını seç"
 TURN_COUNTER,Turn %d of %d,Tur %d / %d
 STRETCH_CHURCH,Church,Kilise
@@ -83,6 +84,7 @@ POP_FREE,Free!,Bedava!
 POP_EASY,Easy!,Kolay!
 POP_DRAIN,Drain!,Emiş!
 POP_STONE,Stone!,Taş!
+POP_TURN,turn,tur
 POP_CRACK,Crack!,Çatırt!
 KEYS_MOVE,Move,Hareket
 KEYS_UPDOWN,Move up and down,Yukarı aşağı

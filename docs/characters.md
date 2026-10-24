@@ -85,6 +85,7 @@ Each minigame's part tunes the numbers, starting at about 10%.
 
 ## Learning the powers
 
-- In monster select, each monster's card shows its power in one short line (the table's wording).
-- When a power fires on the board, a small word pops over the piece with a sound: "+1" by the Wolf Man's die, "Stone!" over Medusa's victims, and so on. The blood Dracula steals flies to him like any blood.
+- In monster select, every monster's name always shows under its stand. Clicking a monster selects it (it lifts) and writes its power on the screen in one short line (the table's wording); a Confirm button, greyed out until something is selected, picks it. When the candle runs out the selected monster is picked, or a random one if none is.
+- When a power fires on the board, a small word pops over the piece with a sound: "+1" by the Wolf Man's die, "Stone!" over Medusa's victims, and so on. Dracula's drain and Medusa's gaze also shoot a paper wedge in the monster's color from them to each victim.
+- Every gain or loss of blood or coins, from a space, a duel or a power, shows as a tag over the piece, like "-1" with a blood drop, red for a loss and green for a gain. Medusa's victims get "-1 turn".
 - There is no list of the powers anywhere else.

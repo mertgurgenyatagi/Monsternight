@@ -45,6 +45,7 @@ const COIN_HUD := 30.0
 const BLOOD_SIZE := 60.0
 const BLOOD_HUD := 28.0
 const POP_SCALE := 1.0 / BoardCamera.ZOOM # a pop in the world keeps the size it has on screen
+const BEAM_HEIGHT := 110.0 # from a piece's feet to the middle of its body, where a beam starts
 const POP_ABOVE := 190.0 # from a piece's feet to a pop over it
 const DIE_POP := Vector2(170, -60) # from the die's middle to the "+1" beside it
 const BONUS_BEAT := 0.6 # the "+1" stays on show this long before the die leaves
@@ -222,13 +223,13 @@ func land(player: Dictionary, id: String) -> void:
 	await space.wake().finished
 	match kind:
 		"coin":
-			await _land_coin(player, space)
+			await _land_coin(player, space, result.coins)
 		"spikes":
-			await _land_spikes(player, space, piece, result.blood == 0 and Match.blood_is_safe(player))
+			await _land_spikes(player, space, piece, result.blood == 0 and Match.blood_is_safe(player), result.blood)
 		"thief":
-			await _land_thief(player, space, result.coins != 0)
+			await _land_thief(player, space, result.coins)
 		"church":
-			await _land_church(player, space, piece, result.blood != 0)
+			await _land_church(player, space, piece, result.blood)
 	space.rest()
 	if kind == "spikes" and result.blood != 0 and player.blood == 0:
 		await die(player)
@@ -339,9 +340,12 @@ func duel_end(winner: Dictionary, loser: Dictionary, challenger: Dictionary, sta
 		PowerPop.show_over(_front, piece_for(loser).position - Vector2(0, POP_ABOVE), tr("POP_FREE"), POP_SCALE)
 		await get_tree().create_timer(0.9, false).timeout
 	if result.coins != 0:
+		_delta(loser, -result.coins, "coins")
 		await _duel_coin(winner, loser)
+		_delta(winner, result.coins, "coins")
 	if result.blood != 0:
 		_hud.show_blood(loser)
+		_delta(loser, -result.blood, "blood")
 		await get_tree().create_timer(0.9, false).timeout
 	if result.died:
 		if not is_same(loser, challenger):
@@ -475,6 +479,7 @@ func _say_clear() -> void:
 # and flies to his, one after another, while the victims recoil. His own count fills when the last
 # drop is in. `Match.drain` has already moved the blood.
 func _power_drain(player: Dictionary) -> void:
+	var before: int = player.blood
 	var victims := Match.drain(player)
 	if victims.is_empty():
 		return
@@ -487,6 +492,8 @@ func _power_drain(player: Dictionary) -> void:
 	var last: Signal
 	for victim in victims:
 		PaperMotion.tilt(piece_for(victim), 9.0)
+		_beam(piece, piece_for(victim), Monsters.color("dracula"))
+		_delta(victim, -1, "blood")
 		var drop := _flyer(BLOOD_ICON, _hud.anchor(victim, "blood"), BLOOD_HUD)
 		Sound.play("fly")
 		_hud.show_blood(victim) # the drop leaves the victim's portrait
@@ -497,7 +504,21 @@ func _power_drain(player: Dictionary) -> void:
 		await get_tree().create_timer(0.3, false).timeout
 	await last
 	_hud.show_blood(player)
+	_delta(player, player.blood - before, "blood")
 	await get_tree().create_timer(0.4, false).timeout
+
+
+# What a player just gained or lost, as a tag over their piece.
+func _delta(player: Dictionary, amount: int, kind: String) -> void:
+	if amount == 0:
+		return
+	DeltaPop.show_over(_front, piece_for(player).position - Vector2(0, POP_ABOVE + 80.0), amount, kind, POP_SCALE)
+
+
+# A wedge of the monster's color from one piece to another.
+func _beam(from: BoardPiece, to: BoardPiece, color: Color) -> void:
+	var lift := Vector2(0, -BEAM_HEIGHT)
+	PowerBeam.fire(_front, from.position + lift, to.position + lift, color)
 
 
 # Medusa landed: her gaze tilts her piece, then each victim nearby goes grey with a squash, one after
@@ -508,11 +529,15 @@ func _power_stone(player: Dictionary) -> void:
 		return
 	if _settling and _settling.is_running():
 		await _settling.finished
-	PaperMotion.tilt(piece_for(player), 6.0)
+	var gazer := piece_for(player)
+	PaperMotion.tilt(gazer, 6.0)
 	await get_tree().create_timer(0.3, false).timeout
 	for victim in turned:
 		var piece := piece_for(victim)
+		_beam(gazer, piece, Monsters.color("medusa"))
+		await get_tree().create_timer(0.25, false).timeout
 		Sound.play("stone")
+		_delta(victim, -1, "turn")
 		PowerPop.show_over(_front, piece.position - Vector2(0, POP_ABOVE), tr("POP_STONE"), POP_SCALE)
 		piece.set_stone(true)
 		_hud.set_stone(victim, true)
@@ -789,7 +814,7 @@ func _follow_leader() -> void:
 
 # A coin springs up from the token, spins like a flipped coin and glints, then flies to the
 # player's coin counter, which ticks up as it arrives.
-func _land_coin(player: Dictionary, space: Space) -> void:
+func _land_coin(player: Dictionary, space: Space, amount := 1) -> void:
 	var coin := _flyer(COIN_ICON, space.icon_top(), COIN_SIZE)
 	var base := coin.scale
 	var rise := coin.create_tween().set_parallel()
@@ -804,11 +829,12 @@ func _land_coin(player: Dictionary, space: Space) -> void:
 			Vector2.ONE * COIN_HUD / COIN_ICON.get_width(), 0.5, 0.0, 70.0).finished
 	coin.queue_free()
 	_hud.show_coins(player)
+	_delta(player, amount, "coins")
 
 
 # The spikes shoot up out of the token and sink back slowly, the piece jolts, and a drop falls
 # off the portrait.
-func _land_spikes(player: Dictionary, space: Space, piece: BoardPiece, safe := false) -> void:
+func _land_spikes(player: Dictionary, space: Space, piece: BoardPiece, safe := false, amount := 0) -> void:
 	Sound.play("spikes")
 	var spikes := _stand_in(space)
 	PaperMotion.stretch(spikes, 1.6, 0.1)
@@ -822,6 +848,7 @@ func _land_spikes(player: Dictionary, space: Space, piece: BoardPiece, safe := f
 	var jolt := PaperMotion.hop(piece, 38.0)
 	await get_tree().create_timer(0.15, false).timeout
 	_hud.show_blood(player)
+	_delta(player, amount, "blood")
 	await jolt.finished
 	await PaperMotion.shake(piece).finished
 	await PaperMotion.stretch(spikes, 1.0, 0.45, false).finished
@@ -830,7 +857,8 @@ func _land_spikes(player: Dictionary, space: Space, piece: BoardPiece, safe := f
 
 # The hand darts up. With a coin to take, one flies down from the counter into it, and the hand
 # closes on it and ducks back into the token; without, it grabs at the air and sinks back empty.
-func _land_thief(player: Dictionary, space: Space, steals: bool) -> void:
+func _land_thief(player: Dictionary, space: Space, amount: int) -> void:
+	var steals := amount != 0
 	Sound.play("thief")
 	var hand := _stand_in(space)
 	await PaperMotion.stretch(hand, 1.5, 0.12).finished
@@ -838,6 +866,7 @@ func _land_thief(player: Dictionary, space: Space, steals: bool) -> void:
 		var coin := _flyer(COIN_ICON, _hud.anchor(player, "coins"), COIN_HUD)
 		Sound.play("fly")
 		_hud.show_coins(player) # the count ticks down as the coin leaves
+		_delta(player, amount, "coins")
 		await PaperMotion.fly_to(coin, space.icon_top(),
 				Vector2.ONE * COIN_SIZE * 0.7 / COIN_ICON.get_width(), 0.4, 0.0, -40.0).finished
 		coin.queue_free()
@@ -853,7 +882,8 @@ func _land_thief(player: Dictionary, space: Space, steals: bool) -> void:
 
 # The bell rings and the glow flares. A drop rises from the church and flies to the portrait, or,
 # with full blood, rises above the piece and fades.
-func _land_church(player: Dictionary, space: Space, piece: BoardPiece, gains: bool) -> void:
+func _land_church(player: Dictionary, space: Space, piece: BoardPiece, amount: int) -> void:
+	var gains := amount != 0
 	Sound.play("church")
 	space.glow.flare()
 	await get_tree().create_timer(0.25, false).timeout
@@ -867,6 +897,7 @@ func _land_church(player: Dictionary, space: Space, piece: BoardPiece, gains: bo
 				Vector2.ONE * BLOOD_HUD / BLOOD_ICON.get_width(), 0.5, 0.0, 70.0).finished
 		drop.queue_free()
 		_hud.show_blood(player)
+		_delta(player, amount, "blood")
 	else:
 		rise.tween_property(drop, "modulate:a", 0.0, 0.7).set_delay(0.2)
 		await rise.finished

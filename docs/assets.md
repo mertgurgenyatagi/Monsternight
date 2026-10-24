@@ -268,7 +268,8 @@ Quiet, seamless loops of 30 to 60 seconds that play under the music.
 | `sumo_bump.ogg` | Sumo: two heavy pieces slamming together |
 | `kick.ogg` | Head Soccer: a boot kicking the ball |
 | `jump.ogg` | Head Soccer: a springy little jump. The landing is a hop |
-| `rope_pull.ogg` | Tug of War: the rope yanked tight, on every press |
+| `rope_pull.ogg` | Unused since the sweeping changes of 2026-10-24: its creak was grating on every press |
+| `rope_tug.ogg` | Tug of War: a soft rustle and thump on every press, made by `tools/sounds/make_rope_tug.py` |
 | `power.ogg` | An eerie theremin swoop under every power's word pop |
 | `stone.ogg` | Medusa's victims turning to stone |
 | `stone_crack.ogg` | The stone cracking off on their turn |

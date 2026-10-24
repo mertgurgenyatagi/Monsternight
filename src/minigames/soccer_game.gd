@@ -14,8 +14,9 @@ const SKY := Color("2a2147")
 const GROUND_COLOR := Color("5b3a52")
 const PAPER := Color("fbe9d0")
 
-const HALF_W := 740.0
-const GROUND := 250.0 # where the boots and the ball stand
+const ARENA := Vector2(1700.0, 680.0) # a bit bigger than the other games' table
+const HALF_W := ARENA.x / 2.0
+const GROUND := 268.0 # where the boots and the ball stand
 const HEAD_R := 62.0
 const BOOT_SIZE := Vector2(46.0, 29.0)
 const HEAD_FLOOR := GROUND - BOOT_SIZE.y * 0.7 - HEAD_R # the head's centre when standing
@@ -24,7 +25,7 @@ const GOAL_SIZE := Vector2(187.0, 280.0)
 const GOAL_LINE := HALF_W - GOAL_SIZE.x - 17.0 # the post's middle, from the middle
 const CROSS_TOP := GROUND - GOAL_SIZE.y
 const CROSS_BOTTOM := CROSS_TOP + 28.0
-const CEILING := -320.0
+const CEILING := -ARENA.y / 2.0
 
 const GRAVITY_BALL := 1500.0
 const GRAVITY_HEAD := 2600.0
@@ -43,8 +44,7 @@ const KICK_COOLDOWN := 0.4
 const KICK_SPEED := 1050.0
 const KICK_REACH := 50.0
 const HOLD_TIME := 0.4
-const STALL_TIME := 5.0
-const START_X := 300.0
+const START_X := 340.0
 const BITS := 28
 const BIT_LIFE := 0.55
 const STARS := [Vector2(-600, -250), Vector2(-420, -160), Vector2(-200, -280), Vector2(120, -190),
@@ -58,10 +58,7 @@ var ball_vel := Vector2.ZERO
 var scored := -1
 
 var _hold := HOLD_TIME
-var _rest := 0.0
 var _spin := 0.0
-var _ball_squash := 0.0
-var _ball_squash_dir := Vector2.RIGHT
 var _squash: Array[float] = [0.0, 0.0]
 var _kick_t: Array[float] = [0.0, 0.0]
 var _kick_cd: Array[float] = [0.0, 0.0]
@@ -113,7 +110,7 @@ func stepping() -> bool:
 func get_state() -> Dictionary:
 	return {"head": Minigame.pack_all(head), "head_vel": Minigame.pack_all(head_vel),
 			"ball": Minigame.pack(ball), "ball_vel": Minigame.pack(ball_vel), "scored": scored,
-			"hold": _hold, "rest": _rest, "kick_t": _kick_t.duplicate(), "kick_cd": _kick_cd.duplicate(),
+			"hold": _hold, "kick_t": _kick_t.duplicate(), "kick_cd": _kick_cd.duplicate(),
 			"kick_hit": _kick_hit.duplicate()}
 
 
@@ -124,7 +121,6 @@ func set_state(d: Dictionary) -> void:
 	ball_vel = Minigame.unpack(d.ball_vel)
 	scored = int(d.scored)
 	_hold = float(d.hold)
-	_rest = float(d.rest)
 	for i in 2:
 		_kick_t[i] = float(d.kick_t[i])
 		_kick_cd[i] = float(d.kick_cd[i])
@@ -157,11 +153,6 @@ func step(delta: float) -> void:
 		if scored < 0:
 			_contacts()
 			_check_goal()
-	if scored < 0:
-		var resting := ball.y >= GROUND - BALL_R - 1.0 and ball_vel.length() < 40.0
-		_rest = _rest + delta if resting else 0.0
-		if _rest >= STALL_TIME:
-			_reserve()
 
 
 func _step_heads(h: float) -> void:
@@ -210,7 +201,7 @@ func _try_kick(side: int) -> void:
 	var aim := Vector2(face_of(side) * 0.9, -0.55).normalized()
 	var dir := (aim * 0.6 + away * 0.4).normalized()
 	ball_vel = (dir * KICK_SPEED + head_vel[side] * 0.5).limit_length(MAX_BALL)
-	_touch(ball - dir * BALL_R, dir, 1.0)
+	_touch(ball - dir * BALL_R)
 	_play("kick", 0.0, randf_range(0.95, 1.05))
 
 
@@ -219,14 +210,13 @@ func _step_ball(h: float) -> void:
 	ball_vel *= exp(-AIR_DRAG * h)
 	ball_vel = ball_vel.limit_length(MAX_BALL)
 	ball += ball_vel * h
-	_spin += ball_vel.x / BALL_R * h
+	if ball.y >= GROUND - BALL_R - 1.0:
+		_spin += ball_vel.x / BALL_R * h
 	if ball.y > GROUND - BALL_R:
 		ball.y = GROUND - BALL_R
 		if ball_vel.y > 140.0:
 			var s := clampf(ball_vel.y / 1200.0, 0.2, 1.0)
 			ball_vel.y *= -FLOOR_BOUNCE
-			_ball_squash = s
-			_ball_squash_dir = Vector2.DOWN
 			_play("bounce", linear_to_db(s) - 3.0, 0.8 + s * 0.5)
 		elif ball_vel.y >= 0.0:
 			ball_vel.y = 0.0
@@ -242,8 +232,6 @@ func _step_ball(h: float) -> void:
 		ball = hit[1]
 		if hit[2] > 200.0:
 			var s := clampf(hit[2] / 1000.0, 0.2, 1.0)
-			_ball_squash = s
-			_ball_squash_dir = Vector2.UP
 			_play("bounce", linear_to_db(s) - 3.0, 1.0 + s * 0.3)
 	if absf(ball.x) > HALF_W - BALL_R:
 		var out := signf(ball.x)
@@ -252,8 +240,6 @@ func _step_ball(h: float) -> void:
 			if ball.y > CROSS_BOTTOM:
 				_net[0 if out < 0.0 else 1] = clampf(absf(ball_vel.x) / 800.0, 0.3, 1.0)
 			ball_vel.x *= -WALL_BOUNCE
-			_ball_squash = 0.4
-			_ball_squash_dir = Vector2.RIGHT
 
 
 ## Head against ball, and head against head.
@@ -270,7 +256,7 @@ func _contacts() -> void:
 		if hit[4] > 120.0:
 			var s := clampf(hit[4] / 900.0, 0.2, 1.0)
 			_squash[side] = maxf(_squash[side], s * 0.6)
-			_touch(hit[5], (ball - head[side]).normalized(), s)
+			_touch(hit[5])
 			_play("bounce", linear_to_db(s) - 2.0, 1.0 + s * 0.3)
 		head[side].y = minf(head[side].y, HEAD_FLOOR)
 	var hh := CirclePhysics.collide(head[0], head_vel[0], HEAD_R, HEAD_MASS,
@@ -283,9 +269,7 @@ func _contacts() -> void:
 		head[side].y = minf(head[side].y, HEAD_FLOOR)
 
 
-func _touch(at: Vector2, dir: Vector2, strength: float) -> void:
-	_ball_squash = maxf(_ball_squash, strength)
-	_ball_squash_dir = dir
+func _touch(at: Vector2) -> void:
 	for k in 4:
 		_bit_at[_next_bit] = at
 		_bit_v[_next_bit] = Vector2.from_angle(randf_range(0.0, TAU)) * randf_range(90.0, 230.0)
@@ -315,14 +299,6 @@ func _goal(winner: int) -> void:
 	finish(winner)
 
 
-## A stalled ball is dropped again from the middle with a hop.
-func _reserve() -> void:
-	ball = Vector2(0.0, -40.0)
-	ball_vel = Vector2(0.0, -500.0)
-	_rest = 0.0
-	_ball_squash = 0.0
-
-
 func _play(sound: String, db: float, pitch: float) -> void:
 	var now := Engine.get_physics_frames()
 	if now - int(_sound_at.get(sound, -100)) <= 4:
@@ -333,7 +309,6 @@ func _play(sound: String, db: float, pitch: float) -> void:
 
 func _process(delta: float) -> void:
 	_clock += delta
-	_ball_squash = maxf(_ball_squash - delta * 5.0, 0.0)
 	for side in 2:
 		_squash[side] = move_toward(_squash[side], 0.0, delta * 4.0)
 		_hop[side] = maxf(_hop[side] - delta * 2.0, 0.0)
@@ -347,7 +322,7 @@ func _process(delta: float) -> void:
 
 
 func _draw() -> void:
-	var table := Rect2(TABLE_CENTER - TABLE_SIZE / 2.0, TABLE_SIZE)
+	var table := Rect2(TABLE_CENTER - ARENA / 2.0, ARENA)
 	draw_rect(Rect2(table.position + Vector2(8, 10), table.size), Color(0, 0, 0, 0.35))
 	draw_rect(table, INK)
 	draw_rect(table.grow(-10.0), SKY)
@@ -357,8 +332,8 @@ func _draw() -> void:
 		draw_circle(STARS[i], 3.0, Color(PAPER, twinkle))
 	draw_circle(Vector2(-250, -215), 46.0, PAPER)
 	draw_circle(Vector2(-232, -226), 40.0, SKY)
-	draw_rect(Rect2(-HALF_W + 10.0, GROUND, TABLE_SIZE.x - 20.0, -CEILING - GROUND - 10.0), GROUND_COLOR)
-	draw_rect(Rect2(-HALF_W + 10.0, GROUND - 3.0, TABLE_SIZE.x - 20.0, 6.0), PAPER)
+	draw_rect(Rect2(-HALF_W + 10.0, GROUND, ARENA.x - 20.0, -CEILING - GROUND - 10.0), GROUND_COLOR)
+	draw_rect(Rect2(-HALF_W + 10.0, GROUND - 3.0, ARENA.x - 20.0, 6.0), PAPER)
 	# the picture faces right, so the right-hand goal is mirrored, and each shakes from its post
 	for side in 2:
 		var jiggle := 1.0 + 0.09 * _net[side] * sin(_clock * 34.0)
@@ -411,16 +386,12 @@ func _draw_head(side: int) -> void:
 		draw_set_transform(base, angle, Vector2(face, 1.0))
 		draw_texture_rect(BOOT_TEX, Rect2(-BOOT_SIZE.x / 2.0, -BOOT_SIZE.y / 2.0, BOOT_SIZE.x, BOOT_SIZE.y),
 				false, color_of(side))
-	draw_set_transform(TABLE_CENTER + p + Vector2(0.0, lift + sink), tilt, squash)
+	draw_set_transform(TABLE_CENTER + p + Vector2(0.0, lift + sink), tilt, Vector2(squash.x * face, squash.y))
 	var d := HEAD_R * 2.2
 	draw_texture_rect(Monsters.portrait(players[side].monster), Rect2(-d / 2.0, -d / 2.0, d, d), false)
 
 
 func _draw_ball() -> void:
 	_draw_shadow(ball.x, GROUND - BALL_R - ball.y, BALL_R)
-	var a := _ball_squash_dir.angle()
-	var t := Transform2D(a, TABLE_CENTER + ball)
-	t = t.scaled_local(Vector2(1.0 - 0.3 * _ball_squash, 1.0 + 0.25 * _ball_squash))
-	t = t.rotated_local(_spin - a)
-	draw_set_transform_matrix(t)
+	draw_set_transform(TABLE_CENTER + ball, _spin, Vector2.ONE)
 	draw_texture_rect(BALL_TEX, Rect2(-BALL_R, -BALL_R, BALL_R * 2.0, BALL_R * 2.0), false)

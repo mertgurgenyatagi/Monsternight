@@ -18,6 +18,10 @@ const LIFTED_DROP := 36.0
 const ROW_Y := 890.0 # the middle of the monsters' stands
 const ROW_STEP := 220.0
 const PROMPT_Y := 330.0
+const POWER_Y := 420.0
+const CONFIRM_AT := Vector2(960, 505)
+const CONFIRM_SIZE := Vector2(340, 76)
+const POWER_SIZE := 44
 const CANDLE_BASE_Y := 450.0
 const CANDLE_SCALE := 0.5
 const PICK_SECONDS := 30.0
@@ -37,6 +41,9 @@ var _prompt_shown := false
 var _candle: Candle
 var _waiting := false # a player is picking right now
 var _note: TurnNote # online: whose pick it is
+var _power: Label # the selected monster's power, under the prompt
+var _confirm: PaperButton
+var _selected: MonsterPiece
 
 
 func _ready() -> void:
@@ -216,6 +223,27 @@ func _select_monsters() -> void:
 	_prompt.scale = Vector2.ZERO
 	_prompt.set_meta("rest_scale", Vector2.ONE)
 	add_child(_prompt)
+	_power = Label.new()
+	_power.size = Vector2(1300, 64)
+	_power.position = Vector2(960.0 - _power.size.x / 2, POWER_Y - _power.size.y / 2)
+	_power.pivot_offset = _power.size / 2
+	_power.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_power.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	_power.add_theme_font_override("font", preload("res://assets/fonts/display.ttf"))
+	_power.add_theme_font_size_override("font_size", POWER_SIZE)
+	_power.add_theme_color_override("font_outline_color", Color("1a1022"))
+	_power.add_theme_constant_override("outline_size", 8)
+	_power.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_power.modulate.a = 0.0
+	add_child(_power)
+	_confirm = PaperButton.new()
+	_confirm.text = "PICK_CONFIRM"
+	_confirm.size = CONFIRM_SIZE
+	_confirm.position = CONFIRM_AT - CONFIRM_SIZE / 2.0
+	_confirm.disabled = true
+	_confirm.visible = false
+	_confirm.pressed.connect(_on_confirm)
+	add_child(_confirm)
 	if Online.active:
 		_note = TurnNote.new()
 		add_child(_note)
@@ -223,6 +251,7 @@ func _select_monsters() -> void:
 	for turn in range(Match.players.size() - 1, -1, -1):
 		await _pick_for(Match.players[turn], turn)
 	PaperMotion.pop_out(_prompt)
+	_power.modulate.a = 0.0
 	if _note:
 		_note.clear()
 	if _candle.visible:
@@ -269,11 +298,12 @@ func _pick_for(player: Dictionary, turn: int) -> void:
 		for piece in _pieces:
 			piece.enabled = mine and not piece.taken
 		_candle.start(PICK_SECONDS)
+		_begin_choosing(mine)
 		if Online.active:
 			_note.say(tr("ONLINE_PICK_MINE") if mine else tr("ONLINE_PICKING") % player.name, mine)
 			var open := free.duplicate()
 			var answer := await Online.decide("monster", player, PICK_SECONDS,
-					func() -> String: return open.pick_random(),
+					func() -> String: return _selected.id if _selected else open.pick_random(),
 					func(v: Variant) -> bool: return v is String and v in open)
 			id = answer.value
 			if answer.auto:
@@ -284,6 +314,7 @@ func _pick_for(player: Dictionary, turn: int) -> void:
 		_candle.stop()
 		for piece in _pieces:
 			piece.enabled = false
+		_end_choosing()
 	await _pick(player, card, turn, id)
 
 
@@ -318,7 +349,11 @@ func _show_prompt(player_name: String, with_candle: bool) -> void:
 	var text := TranslationServer.translate("PICK_PROMPT") % player_name
 	var font := _prompt.get_theme_font("font")
 	var width := font.get_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, -1, 54).x
-	var spot := Vector2(960.0 + width / 2.0 + 90.0, CANDLE_BASE_Y)
+	# The candle stands clear of both the prompt and the longest power line that can show under it.
+	var font_power := _power.get_theme_font("font")
+	for id in Monsters.IDS:
+		width = maxf(width, font_power.get_string_size(tr(Monsters.power_key(id)), HORIZONTAL_ALIGNMENT_LEFT, -1, POWER_SIZE).x)
+	var spot := Vector2(960.0 + width / 2.0 + 70.0, CANDLE_BASE_Y)
 	if not _prompt_shown:
 		_prompt_shown = true
 		_prompt.text = text
@@ -339,18 +374,56 @@ func _show_prompt(player_name: String, with_candle: bool) -> void:
 	await get_tree().create_timer(0.5, false).timeout
 
 
+# A click only selects: the monster lifts and its power is written on the screen. Confirm picks it.
 func _on_monster_clicked(piece: MonsterPiece) -> void:
-	if _waiting and piece.enabled and not piece.taken:
-		if Online.active:
-			Online.submit(piece.id)
-		else:
-			_chosen.emit(piece.id)
+	if not (_waiting and piece.enabled and not piece.taken) or piece == _selected:
+		return
+	if _selected:
+		_selected.selected = false
+	_selected = piece
+	piece.selected = true
+	Sound.play("ui_click", -4.0)
+	_power.text = tr(Monsters.power_key(piece.id))
+	_power.add_theme_color_override("font_color", Monsters.color(piece.id).lightened(0.35))
+	PaperMotion.pop_in(_power)
+	_power.modulate.a = 1.0
+	_confirm.disabled = false
 
 
-# The candle ran out: a random free monster is picked, as if the player had clicked it.
+func _on_confirm() -> void:
+	if not (_waiting and _selected):
+		return
+	if Online.active:
+		Online.submit(_selected.id)
+	else:
+		_chosen.emit(_selected.id)
+
+
+# A pick opens: the picker gets a greyed-out Confirm button until a monster is selected.
+func _begin_choosing(mine: bool) -> void:
+	_selected = null
+	_power.text = ""
+	_power.modulate.a = 0.0
+	_confirm.disabled = true
+	if mine:
+		_confirm.visible = true
+		_confirm.enter()
+
+
+# A pick is over: the selection drops back (a taken monster greys out) and Confirm goes away.
+func _end_choosing() -> void:
+	if _selected and not _selected.taken:
+		_selected.selected = false
+	_selected = null
+	_power.modulate.a = 0.0
+	if _confirm.visible:
+		_confirm.leave()
+
+
+# The candle ran out: the selected monster is picked, or a random free one if none is selected.
 func _on_timed_out() -> void:
 	if _waiting:
-		_chosen.emit(Match.free_monsters().pick_random())
+		_chosen.emit(_selected.id if _selected else Match.free_monsters().pick_random())
 
 
 func _piece_for(id: String) -> MonsterPiece:
