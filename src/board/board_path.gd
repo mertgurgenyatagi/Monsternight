@@ -7,32 +7,31 @@ class_name BoardPath
 const START := "start"
 const FINISH := "finish"
 
-## What each letter of a stretch's kinds stands for.
+## What each letter of a stretch's kinds stands for. The four minigames are the duel spaces.
 const KINDS := {
 	".": "empty", "c": "coin", "s": "spikes", "t": "thief", "h": "church",
-	"p": "pong", "x": "haxball", "r": "racing", "f": "fps",
+	"p": "pong", "u": "sumo", "e": "head_soccer", "w": "tug_of_war",
 }
 
-## The stretches in order. `kinds` is the type sequence, rolled once by `tools/board/roll_board.py`
-## (seed 1031), never written by hand, so the board is the same every match. board.md has the
-## bags it is rolled from. A dot is an empty space, where nothing happens: one of every two
-## spaces is empty. The spaces lie evenly along the lane's curve between `from` and `to`, which
-## are inset from the location's ends.
+## The stretches in order. Their kinds are rolled fresh for every match by `BoardRoller` and handed
+## to `configure`; board.md has the bags. A dot is an empty space, where nothing happens: one of
+## every two spaces is empty. The spaces lie evenly along the lane's curve between `from` and `to`,
+## which are inset from the location's ends.
 const STRETCHES := [
 	{"id": "village", "prefix": "v", "location": "village", "lane": BoardLayout.Lane.MAIN,
-			"kinds": ".hf..x..ssct", "from": BoardLayout.LEAD_IN, "to": 0.0},
+			"from": BoardLayout.LEAD_IN, "to": 0.0},
 	{"id": "church", "prefix": "c", "location": "graveyard", "lane": BoardLayout.Lane.UPPER,
-			"kinds": ".hc.chr.h...", "from": 100.0, "to": 100.0},
+			"from": 100.0, "to": 100.0},
 	{"id": "graveyard", "prefix": "g", "location": "graveyard", "lane": BoardLayout.Lane.LOWER,
-			"kinds": ".s..stt.", "from": 250.0, "to": 250.0},
+			"from": 250.0, "to": 250.0},
 	{"id": "forest", "prefix": "f", "location": "forest", "lane": BoardLayout.Lane.MAIN,
-			"kinds": ".t.st......h", "from": 0.0, "to": 0.0},
+			"from": 0.0, "to": 0.0},
 	{"id": "boardwalk", "prefix": "b", "location": "swamp", "lane": BoardLayout.Lane.UPPER,
-			"kinds": "...x..ptct", "from": 220.0, "to": 220.0},
+			"from": 220.0, "to": 220.0},
 	{"id": "bog", "prefix": "m", "location": "swamp", "lane": BoardLayout.Lane.LOWER,
-			"kinds": ".h...f.hhr", "from": 220.0, "to": 220.0},
+			"from": 220.0, "to": 220.0},
 	{"id": "castle", "prefix": "k", "location": "castle", "lane": BoardLayout.Lane.MAIN,
-			"kinds": "t.cshr...c..h.p", "from": 0.0, "to": BoardLayout.LEAD_OUT},
+			"from": 0.0, "to": BoardLayout.LEAD_OUT},
 ]
 
 ## Where the start token lies, in the village's lead-in.
@@ -40,6 +39,16 @@ const START_X := BoardLayout.LEAD_IN * 0.56
 
 static var _nodes := {}
 static var _stretch_ids := {} # stretch id -> its space ids in order
+static var _kinds := {} # stretch id -> its kinds string, from `configure`
+
+
+## Sets up the road for a lobby of `size` players with these rolled `kinds` (`BoardRoller.roll`),
+## and drops the old one. Also configures `BoardLayout`, so the two always agree.
+static func configure(size: int, kinds: Dictionary) -> void:
+	BoardLayout.configure(size)
+	_kinds = kinds
+	_nodes.clear()
+	_stretch_ids.clear()
 
 
 static func node(id: String) -> Dictionary:
@@ -103,16 +112,18 @@ static func report() -> Array[String]:
 static func _build() -> void:
 	if not _nodes.is_empty():
 		return
+	if _kinds.is_empty():
+		configure(4, BoardRoller.roll(4, RandomNumberGenerator.new()))
 	_add(START, Vector2(START_X, BoardLayout.lane_y(BoardLayout.Lane.MAIN, START_X)),
 			BoardLayout.Lane.MAIN, "start", "village")
 	for each in STRETCHES:
 		var location := BoardLayout.location(each.location)
-		var xs := _spread(each.lane, location.from + each.from, location.to - each.to, each.kinds.length())
+		var xs := _spread(each.lane, location.from + each.from, location.to - each.to, _kinds[each.id].length())
 		var ids := []
 		for i in xs.size():
 			var id: String = "%s%d" % [each.prefix, i + 1]
 			_add(id, Vector2(xs[i], BoardLayout.lane_y(each.lane, xs[i])), each.lane,
-					KINDS[each.kinds[i]], each.id)
+					KINDS[_kinds[each.id][i]], each.id)
 			ids.append(id)
 		_stretch_ids[each.id] = ids
 	var x := BoardLayout.gate_x()

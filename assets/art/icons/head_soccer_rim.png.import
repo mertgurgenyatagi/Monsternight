@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://chx8q61lg6ax3"
-path="res://.godot/imported/haxball.png-8cfa6e17d36d3d2b836804d18402b3b5.ctex"
+uid="uid://0i5ym42gf8qq"
+path="res://.godot/imported/head_soccer_rim.png-39d0e24cc54c581b5f9d50eb830e12de.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/art/icons/haxball.png"
-dest_files=["res://.godot/imported/haxball.png-8cfa6e17d36d3d2b836804d18402b3b5.ctex"]
+source_file="res://assets/art/icons/head_soccer_rim.png"
+dest_files=["res://.godot/imported/head_soccer_rim.png-39d0e24cc54c581b5f9d50eb830e12de.ctex"]
 
 [params]
 
@@ -23,7 +23,7 @@ compress/rdo_quality_loss=0.0
 compress/hdr_compression=1
 compress/normal_map=0
 compress/channel_pack=0
-mipmaps/generate=true
+mipmaps/generate=false
 mipmaps/limit=-1
 roughness/mode=0
 roughness/src_normal=""

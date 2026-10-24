@@ -27,7 +27,8 @@ What they mean in practice is in [Art and audio](docs/art_and_audio.md#principle
 - **Part 27 is done:** the camera tweak, waiting for the user's verdict on the before-and-after sheet (`screenshots/part_27/1.png`).
 - **Microplan 10 is done:** parts 28 to 30 are planned in `docs/microplan.md` (the lobby-size rules, the board for each lobby size, the passive powers). The roadmap now ends at part 43.
 - **Part 28 is done:** the lobby-size rules (turns by lobby size, one finishing trophy, Walk away on swap-only duels). Notes in `docs/microplan.md`.
-- **Next: part 29,** the board for each lobby size.
+- **Part 29 is done:** the board for each lobby size (3 to 8 players), rolled fresh every match, with the four minigame spaces. Notes in `docs/microplan.md`.
+- **Next: part 30,** the passive powers.
 
 **Keep the raws.** They're the sources, and the processed files can always be rebuilt from them.
 
@@ -56,7 +57,7 @@ What they mean in practice is in [Art and audio](docs/art_and_audio.md#principle
 - `images_raw/`, `audio_raw/`: the raw images and sounds. Each has a `.gdignore`, so Godot skips them.
 - `tools/images/process_images.py` turns `images_raw/` into `assets/art/`, following the Processing notes in `docs/asset_prompts.md`. Run it from the repository root with `python tools/images/process_images.py . [<name> ...]`. It needs numpy, scipy and Pillow.
 - `tools/images/make_outlines.py` bakes the board's space token and icons, with their outlines, into `assets/art/board/space_rim.png` and `icons/*_rim.png`. Run it from the repository root: `python tools/images/make_outlines.py .`. It needs numpy, scipy and Pillow.
-- `tools/board/roll_board.py` rolls the kinds of the board's spaces and writes them into `BoardPath`. Run it from the repository root: `python tools/board/roll_board.py [--seed N]`. The board in the game was rolled with seed 1031 (the default). It needs only Python.
+- **The board is rolled at runtime:** `BoardRoller` (`src/board/board_roller.gd`) rolls every stretch's kinds when `Match.start` runs, and the board hands them to `BoardPath.configure`. To replay a board, run the game with `-- --seed N`.
 - `tools/sounds/`: sound scripts
   - `process_sounds.py` turns `audio_raw/` into `assets/audio/`. Run it from the repository root with `python tools/sounds/process_sounds.py . [<name> ...]`. It needs ffmpeg (installed with winget as `Gyan.FFmpeg`; open a new shell for it to be on the PATH, or set `FFMPEG` to its path), numpy and scipy.
   - `gen_sound_prompts.py` rebuilds `docs/sound_prompts.md`. Change sound prompts here, never by hand in the doc.

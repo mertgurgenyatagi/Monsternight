@@ -16,12 +16,12 @@ TOKEN_SIZE = (165, 73)  # space.png squashed into a flat oval
 TOKEN_RIM = ((0x1d, 0x12, 0x26), 4)  # dark, and how many px wide
 TOKEN_LIFT = 1.3  # the paper is grey, so tints would come out dull; brighten it
 ICON_SIZE = 108  # the longest side of an icon's drawn part
-ICON_FIT = {"coin": 0.82, "fps": 0.88}
+ICON_FIT = {"coin": 0.82}
 ICON_RIM = ((0xff, 0xf4, 0xdc), 4)
 BODY_HEIGHT = 182  # a monster's drawn part, feet to crown
 STAND_SIZE = (66, 20)  # stand.png, as drawn under a piece on the board
 MONSTERS = ["dracula", "medusa", "frankenstein", "death", "hyde", "cthulhu", "wolfman", "dorian"]
-ICONS = ["coin", "spikes", "thief", "church", "pong", "sumo", "tug_of_war", "haxball", "racing", "fps"]
+ICONS = ["coin", "spikes", "thief", "church", "pong", "sumo", "tug_of_war", "head_soccer"]
 
 
 def outlined(image, rim):

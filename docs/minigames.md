@@ -91,4 +91,4 @@ A rope with a marker in the middle. Each S press pulls it your way, and pulling 
 
 ### Out
 
-Haxball, the racing game, the first-person shooter, the sword fight, and Run n Dodge (Q17) are out. The Haxball, racing and FPS spaces stay on the first playable's board until the board part replaces them.
+Haxball, the racing game, the first-person shooter, the sword fight, and Run n Dodge (Q17) are out. The board's duel spaces are now the four games (part 29).

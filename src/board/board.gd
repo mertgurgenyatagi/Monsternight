@@ -21,7 +21,8 @@ const TINTS := {
 const QUICK := ["coin", "spikes", "thief", "church"]
 const BAT_LOCATIONS := ["graveyard", "castle"]
 const INTRO_HOLD := 2.0 # on the castle gate, counted from when the board starts to show
-const INTRO_GLIDE := 7.5
+const INTRO_GLIDE := 7.5 # the longest the intro glide takes
+const INTRO_SPEED := 2100.0 # px a second, so a shorter board's intro is quicker, with the same feel
 const SKIP_GLIDE := 0.9
 const DROP_GAP := 0.45 # between one piece dropping onto the start and the next
 const HOP_PACE := 0.42 # the time an in-between hop takes, against a hop's usual; it flows on into the next
@@ -86,6 +87,14 @@ var _last_turn_shown := false
 var _track_name := "" # the board music now chosen, by where the leader is
 
 
+# The road is built for this match's lobby before any child (the camera, the scenery) reads it.
+func _enter_tree() -> void:
+	var size := clampi(Match.players.size(), Match.MIN_PLAYERS, Match.MAX_PLAYERS)
+	if Match.board_kinds.is_empty():
+		Match.board_kinds = BoardRoller.roll(size, Match.board_rng)
+	BoardPath.configure(size, Match.board_kinds)
+
+
 func _ready() -> void:
 	Sound.play_music("")
 	print("Board: ", Match.players)
@@ -129,7 +138,7 @@ func _ready() -> void:
 	_intro = true
 	await get_tree().create_timer(INTRO_HOLD, false).timeout
 	if not _skipped:
-		_glide_home(INTRO_GLIDE)
+		_glide_home(minf(INTRO_GLIDE, BoardLayout.width() / INTRO_SPEED))
 
 
 func _process(_delta: float) -> void:

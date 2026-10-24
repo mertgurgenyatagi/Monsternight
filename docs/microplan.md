@@ -152,6 +152,15 @@ Each part session adds a few lines when it finishes: what got built, what change
 - **Checked:** headless table, results and refusal of 2; an 8-player board (HUD "Turn 1 of 12" fits) and a clicked Walk away; the 8-player ceremony. Not done: the sped-up 3-player 20-turn run and the timeout-picks-walk run were not played out (kept short); the camera leftovers were not touched.
 - **Test hint:** a headless `-s` script can't see autoloads in `_init`; use `_process`. Running the board as a child of a driver scene works for forcing a challenge.
 
+### Part 29: the board for each lobby size (done 2026-10-24)
+
+- **`BoardRoller`** rolls the kinds at runtime: per stretch, half empty, the filled half split 1 to 1 into minigames and quick spaces, kinds shared equally (odd ones to random kinds), then shuffled. The graveyard only has spikes and thieves, the church path only churches and coins, so both now have minigames too (the brief's half). `Match.start` seeds `Match.board_rng` (`-- --seed N` replays a board) and keeps `Match.board_kinds`; `Board._enter_tree` calls `BoardPath.configure(size, kinds)`, which calls `BoardLayout.configure(size)`, before the camera and scenery are built. `BoardLayout.COUNTS` holds the lobby table. `roll_board.py` is deleted.
+- **Kinds and icons:** `p` pong, `u` sumo, `e` head_soccer, `w` tug_of_war; `racing` and `fps` are gone, `haxball` icons renamed `head_soccer` (the `.import` files were regenerated). `make_outlines.py` follows. All four games share the purple token.
+- **Intro glide:** `min(7.5, width / 2100)` seconds (6.0 s at 8 players, 7.5 at 3).
+- **Scenery:** unchanged. `_spots` already scales the props with each location, and the far layers, sky and progress track fit widths from 12,600 to 16,780 px (checked by eye at both ends).
+- **Checked:** headless, 500 rolls for each size 3 to 8: lengths, empty and minigame halves, balance of kinds, allowed letters, shortest and longest route average to the brief's 46 to 65 (routes 4 each). A plain run at 3 and 8 players (village, church hill, forest, swamp fork, castle, gate), no errors, 25 FPS on the church hill and castle at 8 players.
+- **Not done:** the branch arrows have no icon list on them (the plan said "as before", but they never had one), and the ground-fix blemish from part 27 is untouched. Not played: "Play again" from the ceremony to a new size (it goes through `Match.start` and a new `Board`, and the headless test reconfigured 3 to 8 in one session).
+
 ## Log
 
 - **2026-10-23 to 24, Microplans 1 to 8:** the first playable, parts 1 to 24. See [microplan_first_playable.md](microplan_first_playable.md#log).

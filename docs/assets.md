@@ -112,9 +112,7 @@ Each location below has a far strip (the distant skyline), a ground strip (the e
 | `pong.png` | Two paddles and a ball | 128 × 128 |
 | `sumo.png` | Two round pieces pushing each other in a round ring, seen from above | 128 × 128 |
 | `tug_of_war.png` | A rope pulled tight, with a ribbon tied in its middle | 128 × 128 |
-| `haxball.png` | A ball between two goalposts. Becomes Head Soccer's icon (see below) | 128 × 128 |
-| `racing.png` | A coffin on wheels. Goes when the board stops using it | 128 × 128 |
-| `fps.png` | A crosshair. Goes when the board stops using it | 128 × 128 |
+| `head_soccer.png` | A ball between two goalposts. Head Soccer's icon (it was `haxball.png` until part 29) | 128 × 128 |
 | `flag.png` | A small pennant. Marks the finish and players who have finished | 128 × 128 |
 
 ### Minigames: `assets/art/minigames/`
@@ -127,7 +125,7 @@ Paper pieces on a painted table (see [minigames.md](minigames.md)). Pieces in gr
 | `paddle.png` | A grey cardboard paddle seen from above: a tall, thin rectangle with rounded ends. Tinted | 300 tall |
 | `sumo_ring.png` | A round clay sumo ring edged with a thick straw rope, seen from above | 1000 × 1000 |
 | `goal.png` | A goal seen from the side, facing right: bone posts and a string net. Mirrored for the right-hand goal | 500 tall |
-| `ball.png` | Head Soccer's ball: pumpkin orange with dark purple patches, like the one on `haxball.png` | 128 × 128 |
+| `ball.png` | Head Soccer's ball: pumpkin orange with dark purple patches, like the one on `head_soccer.png` | 128 × 128 |
 | `boot.png` | A little grey boot seen from the side, toe to the right. Two under each head. Tinted | 160 × 100 |
 | `rope.png` | A thick hemp rope lying straight sideways. Tiles sideways | 1024 wide |
 | `ribbon.png` | A red cloth ribbon tied in a knot, Tug of War's marker | 128 × 128 |
@@ -177,7 +175,7 @@ Principle 2: a new image only where nothing old can do the job.
 | Pong's ball | `monsters/crumpled.png`, a paper ball on a painted table |
 | Sumo's two pieces | `board/space.png`, tinted in the monster's color, with the portrait on top |
 | Head Soccer's big heads | The portraits, with two `boot.png` under each |
-| Head Soccer's icon | `icons/haxball.png`, renamed `head_soccer.png` when the board part swaps the spaces |
+| Head Soccer's icon | `icons/head_soccer.png`, the old Haxball icon renamed in part 29 |
 | Head Soccer's and Tug of War's backdrops | The board's scenery: the sky, the moon, the far and ground strips, and the swamp water. The minigame parts pick the places |
 | Tug of War's players and lines | The monsters' bodies, and a `flag.png` stuck in the ground at each line |
 | Medusa's stone | The piece tinted grey. When it cracks off, a few `path_dot.png` scraps, tinted grey, fly off as chips |
