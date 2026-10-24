@@ -10,13 +10,19 @@
 
 ## Multiplayer
 
-- Each player runs their own copy of the game. One player hosts and the others join. Anyone can host.
+The brief settled the host: **itch.io, in the browser**. The user left the rest to Claude (part 25), and these are Claude's calls:
+
+- **Browser only.** Players open the itch.io page and play there, with nothing to install. No Windows download is made for players. The one-computer mode lives inside the same game (see [screens.md](screens.md#lobby)).
+- **The web build:** the project already uses the Compatibility renderer, which is the one that runs in browsers. Export it without threads, so itch.io needs no special settings.
+- **The relay:** browsers can't connect to each other on their own, so every message goes through a small program on **Cloudflare Workers**, with one Durable Object per room, over WebSockets (Godot's `WebSocketMultiplayerPeer` works in the browser). The user makes a free Cloudflare account once, when it's built. The free plan allows 100,000 requests a day, and incoming WebSocket messages count 20 to 1, which is far more than a few matches a day. Use the WebSocket Hibernation API, so idle rooms cost nothing. The delay from Turkish cities should be about 30 to 60 ms (an estimate, to be measured). Peer to peer over WebRTC was turned down: faster, but more work, and some home networks need a paid relay anyway.
+- Each player runs their own copy of the game. **The host's game runs the rules** and sends the results to everyone; the others send only their clicks and keys, and draw what the host sends. Anyone can host.
 - The players live in different cities in Turkey.
-- Duels are real-time 1v1 games, and everyone else watches them live.
-- **Decisions have timers.** When one runs out, a random valid choice is made (see [game_rules.md](game_rules.md#decision-timers)). This also covers disconnected and AFK players.
-- **If the host drops, the match ends.** This is accepted.
-- **Online play is built last** (Q15). How players connect is still open. The options are port forwarding, a VPN tool like ZeroTier or Radmin VPN, or a browser build on itch.io (which needs a relay server).
-- The first playable doesn't depend on that choice. Keep the match state in one place and change it only through the rules code. Later, the host can run the rules and send the results to everyone.
+- Duels are real-time 1v1 games, and everyone else watches them live. Minigame input goes through one seam, so the local keyboard and the network feed it the same way.
+- **Decisions have timers.** When one runs out, a random valid choice is made (see [game_rules.md](game_rules.md#decision-timers)). This also covers disconnected and away players.
+- **Rejoining:** a player who drops or reloads keeps their seat, and gets it back by opening the room's link again. Until then, the timers play for them.
+- **If the host drops,** everyone waits up to a minute for them to come back. If they don't, the match ends.
+- **Testing:** two browser tabs on one computer are enough to build it. Two friends test once the board works online, and the whole group at the playtest part. Ask the user who and when, at that point.
+- Keep the match state in one place and change it only through the rules code, as the first playable does.
 
 ## Language
 
@@ -35,8 +41,4 @@ The board is all mouse clicks, and minigames use the keyboard. See [screens.md](
 
 ## Building a release
 
-The development project carries the Godot MCP (its plugin and the autoloads `MCPRuntimeBridge`, `MCPInputBridge` and `MCPScreenshotBridge`), which must not ship. `python tools/release/build_release.py [<out_dir>]`, run from the repository root, copies only `assets/`, `src/`, `locale/`, the bus layout and the project files into a scratch folder, cuts the MCP out of that copy's `project.godot`, imports it and exports the "Windows Desktop" preset of `export_presets.cfg` (`<out_dir>`, `build/` by default, gets one `Monsternight.exe` with the pack embedded). The preset also excludes `addons/godot_mcp`, `screenshots`, the raws, `tools` and `docs`. It needs the Godot 4.7.2 export templates installed (Editor > Manage Export Templates), and `--stage <empty_dir>` makes just the stripped copy to test. The window title is the project name and the icon is `moon.png`.
-
-## Open questions
-
-- How do players connect online? This gets decided when online play is built.
+Players get the web build (above). The Windows release below stays for testing. The development project carries the Godot MCP (its plugin and the autoloads `MCPRuntimeBridge`, `MCPInputBridge` and `MCPScreenshotBridge`), which must not ship. `python tools/release/build_release.py [<out_dir>]`, run from the repository root, copies only `assets/`, `src/`, `locale/`, the bus layout and the project files into a scratch folder, cuts the MCP out of that copy's `project.godot`, imports it and exports the "Windows Desktop" preset of `export_presets.cfg` (`<out_dir>`, `build/` by default, gets one `Monsternight.exe` with the pack embedded). The preset also excludes `addons/godot_mcp`, `screenshots`, the raws, `tools` and `docs`. It needs the Godot 4.7.2 export templates installed (Editor > Manage Export Templates), and `--stage <empty_dir>` makes just the stripped copy to test. The window title is the project name and the icon is `moon.png`.

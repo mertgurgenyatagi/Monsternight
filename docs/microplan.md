@@ -2,7 +2,7 @@
 
 The [final game](roadmap.md#2-final-game), built in parts after the first playable's 24. The numbers go on from there, so the first part of this plan is 25. `/microplan` plans three parts at a time in detail, and a rough roadmap to the end (see `.claude/skills/microplan/SKILL.md`). It runs in its own session, after part 27, 30, 33 and so on.
 
-- **The brief:** the user's direction for the final game is [final_game_brief.md](questionnaire_answers/final_game_brief.md), saved word for word. Until part 25 updates the docs, it wins over any doc that disagrees (17 turns, 2 players, two finishing trophies, Haxball and the racing game are all out of date).
+- **The brief:** the user's direction for the final game is [final_game_brief.md](questionnaire_answers/final_game_brief.md), saved word for word. Part 25 folded it and questionnaires 16 to 18 into the design docs.
 - **The code map:** the first playable's Part notes ("Built so far" in [microplan_first_playable.md](microplan_first_playable.md#part-notes)) describe the code as it stands. Read the section your part touches instead of rereading the code.
 
 ## Building a part
@@ -83,6 +83,8 @@ Three careful, low-commitment parts: settle the design, get the assets, and try 
 **Check:** every new file in `assets.md` exists under its name, and `--headless --import` imports them with no errors. The contact sheets are saved as `screenshots/part_26/1.png` to `3.png` (icons, minigame pieces, the rest). The user has approved the sound review page.
 
 **Risks:** the user makes the images by hand, which can take more than one sitting: split into 26a (the list, the prompts and the sounds) and 26b (the images) if it does. A minigame whose rules part 25 couldn't settle gets no art yet.
+- From part 25: **Run n Dodge is out** (Q17), so there are four minigames and three new icons (sumo, head soccer, tug of war), with no jump, duck or crash sounds. Kafa topu is **Head Soccer** in file names (`head_soccer.png`).
+- From part 25: **minigames have no music** (Q17), so no minigame tracks are named. The lobby is online (a room code card and a Copy link button, see `screens.md`), and Medusa's stone needs a crack sound. The powers' word pops are text in the display font, so they need no images.
 
 ### Part 27: The camera tweak
 
@@ -140,6 +142,16 @@ Very rough. The Microplan after part 27 rewrites it with part 25's answers in ha
 ## Part notes
 
 Each part session adds a few lines when it finishes: what got built, what changed from the plan, surprises, and anything left over or buggy. The next Microplan reads these instead of the code.
+
+### Part 25: Questionnaires for the final game (2026-10-24)
+
+- **Questionnaires 16 to 18** (the powers, the minigames, the board) are answered and saved. Questionnaire 19 (online) was put up, but the user didn't fill it in and ended the questionnaires: "No questionnaires. Use your own judgement for the rest." That instruction is saved in the brief. So there is no `questionnaire_19.md` or 20, and online play is all Claude's calls, marked as such in `tech.md`.
+- **The user left most answers to Claude** ("your pick"), so most of the detail in `characters.md`, `board.md` and `screens.md` comes from the hints' picks.
+- **Changes from the plan:** Run n Dodge is out, so there are **four minigames** (Pong, Sumo, Head Soccer, Tug of War). The roadmap's part 37 (Run n Dodge) goes, and the end moves from 44 to 43; the next Microplan rewrites the roadmap. Minigames have no music and no time limit. Mr. Hyde's edge works only when he challenges.
+- **The docs updated:** `game_rules.md`, `board.md` (with the lengths for each lobby size), `minigames.md`, `characters.md`, `screens.md`, `tech.md`, `art_and_audio.md`, `roadmap.md`, and the README.
+- **Left as is:** `assets.md` still lists `haxball.png`, `racing.png` and `fps.png`, since the board still uses them. Part 26 rewrites the list.
+- **For later parts:** the board's width now changes with the lobby (44 to 67 spaces), so the scenery has to fit every length (part 29). The local mode's two key sets for minigames are for the minigame frame part to pick. Before the online parts, ask the user to make a free Cloudflare account, and ask which friends test online, and when.
+- Microplan 9's own files (the plan, the brief, the sim) hadn't been committed, so part 25 committed them to `development` first.
 
 ## Log
 

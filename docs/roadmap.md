@@ -17,13 +17,13 @@ A local version for testing the board rules. **One person controls every player*
 
 ## 2. Final game
 
-**In progress** (parts 25 on, see [microplan.md](microplan.md)). The user's [brief](questionnaire_answers/final_game_brief.md) of 2026-10-24 starts it, and questionnaires 16 on settle the rest. This is the last phase.
+**In progress** (parts 25 on, see [microplan.md](microplan.md)). The user's [brief](questionnaire_answers/final_game_brief.md) of 2026-10-24 starts it, questionnaires 16 to 18 settled most of the rest, and Claude made the remaining calls. This is the last phase.
 
-- **3 to 8 players.** The turn limit and the board's length depend on the lobby's size, from 20 turns and 65 spaces for 3 players down to 12 turns and 46 spaces for 8.
-- **The board:** one empty space for every filled one, and one minigame space for every quick one.
+- **3 to 8 players.** The turn limit and the board's length depend on the lobby's size, from 20 turns and 65 spaces for 3 players down to 12 turns and 46 spaces for 8 (see [game_rules.md](game_rules.md#match) and [board.md](board.md#length)).
+- **The board:** one empty space for every filled one, and one minigame space for every quick one, shuffled fresh every match.
 - **Trophies:** the first finisher gets one, and nobody else gets a finishing trophy. The most-gold and most-duels-won trophies stay.
-- **A challenger may decline** when swap is the only valid stake.
-- **Powers,** one for each monster (see the brief, and [characters.md](characters.md) once part 25 updates it).
-- **Five minigames:** Pong, Sumo, kafa topu, Tug of War and Run n Dodge.
+- **A challenger may walk away** when swap is the only valid stake.
+- **Powers,** one for each monster (see [characters.md](characters.md#powers)).
+- **Four minigames:** Pong, Sumo, Head Soccer and Tug of War (see [minigames.md](minigames.md#minigame-list)).
 - **The camera** zooms out slightly and looks from slightly higher.
-- **Online play, hosted on itch.io.**
+- **Online play in the browser, on itch.io,** through a Cloudflare relay (see [tech.md](tech.md#multiplayer)). The one-computer mode stays.

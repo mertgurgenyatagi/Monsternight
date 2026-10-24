@@ -50,3 +50,7 @@ This will be the final game. If I missed anything, ask me about it. Make sure th
 - **The third part:** the camera tweak.
 - **Trophies:** the most-gold and most-duels-won trophies stay. Only the finishing trophies change: the first finisher gets 1, the second gets none.
 - **Death:** "cannot be killed" only. Death earns gold like everyone else (unlike `tools/sim/powers_sim.py`, which also stopped Death's gold).
+
+## Answers in chat, 2026-10-24 (part 25)
+
+After questionnaire 18, with questionnaire 19 (online play) up but not filled in: "I didn't fill it out. Just use your own judgement." Then: "No questionnaires. Use your own judgement for the rest." So the questionnaires end at 18, and everything still open, online play included, is Claude's call. The docs mark those calls.
