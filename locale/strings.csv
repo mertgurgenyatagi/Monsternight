@@ -69,3 +69,15 @@ STAT_QUIET,A very quiet night,Çok sakin bir gece
 CEREMONY_AGAIN,Play again,Tekrar oyna
 SETTINGS_LANGUAGE,Language,Dil
 SETTINGS_IN_MATCH,The night goes on,Gece devam ediyor
+POWER_DRACULA,Steals blood from players nearby,Yakındaki oyuncuların kanını emer
+POWER_MEDUSA,Players nearby miss a turn,Yakındakiler bir tur kaçırır
+POWER_FRANKENSTEIN,Loses nothing as challenger,Meydan okurken hiçbir şey kaybetmez
+POWER_DEATH,Can't be killed,Öldürülemez
+POWER_HYDE,An edge in duels he starts,Başlattığı düellolarda avantajlı
+POWER_CTHULHU,Starts with 4 blood and 1 coin,4 kan ve 1 altınla başlar
+POWER_WOLFMAN,+1 to every roll,Her zara +1
+POWER_DORIAN,Wins a swap with 1 win,Takası 1 galibiyetle kazanır
+POP_PLUS_ONE,+1,+1
+POP_SAFE,Safe!,Güvende!
+POP_FREE,Free!,Bedava!
+POP_EASY,Easy!,Kolay!

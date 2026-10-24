@@ -44,6 +44,10 @@ const COIN_SIZE := 78.0 # a flying coin at the token, in px; the HUD's counter i
 const COIN_HUD := 30.0
 const BLOOD_SIZE := 60.0
 const BLOOD_HUD := 28.0
+const POP_SCALE := 1.0 / BoardCamera.ZOOM # a pop in the world keeps the size it has on screen
+const POP_ABOVE := 190.0 # from a piece's feet to a pop over it
+const DIE_POP := Vector2(170, -60) # from the die's middle to the "+1" beside it
+const BONUS_BEAT := 0.6 # the "+1" stays on show this long before the die leaves
 const BALL_SCALE := 0.4 # a crumpled piece, against its full size
 const BALL_RISE := 150.0 # the ball lifts this far before it flies
 const FLIGHT_FAST := 1.2 # the flight's time over no distance, and over the whole board
@@ -197,7 +201,7 @@ func land(player: Dictionary, id: String) -> void:
 		"coin":
 			await _land_coin(player, space)
 		"spikes":
-			await _land_spikes(player, space, piece)
+			await _land_spikes(player, space, piece, result.blood == 0 and Match.blood_is_safe(player))
 		"thief":
 			await _land_thief(player, space, result.coins != 0)
 		"church":
@@ -308,6 +312,9 @@ func duel_end(winner: Dictionary, loser: Dictionary, challenger: Dictionary, sta
 	_win_pose(winner)
 	await _lose_pose(loser, result.died)
 	await get_tree().create_timer(DUEL_BEAT, false).timeout
+	if result.free: # Frankenstein's Monster loses nothing as the challenger
+		PowerPop.show_over(_front, piece_for(loser).position - Vector2(0, POP_ABOVE), tr("POP_FREE"), POP_SCALE)
+		await get_tree().create_timer(0.9, false).timeout
 	if result.coins != 0:
 		await _duel_coin(winner, loser)
 	if result.blood != 0:
@@ -361,14 +368,18 @@ func _play_turns() -> void:
 		_hud.set_active(player)
 		Sound.play("turn_start")
 		var by_click := await _offer_die(piece)
-		var value := Match.roll()
+		var face := Match.roll()
+		var bonus := Match.roll_bonus(player)
 		if not by_click:
 			await _die.nudge().finished
 		_lift_candle()
-		await _die.tumble(value)
+		await _die.tumble(face)
 		await get_tree().create_timer(SHOW_BEAT, false).timeout
+		if bonus > 0: # the die keeps its real face; the bonus pops beside it
+			PowerPop.show_over(_front, _die.position + DIE_POP * POP_SCALE, tr("POP_PLUS_ONE"), POP_SCALE)
+			await get_tree().create_timer(BONUS_BEAT, false).timeout
 		_die.leave()
-		await walk(player, value)
+		await walk(player, face + bonus)
 		if player.space == BoardPath.FINISH:
 			await finish(player)
 			if Match.over():
@@ -659,10 +670,17 @@ func _land_coin(player: Dictionary, space: Space) -> void:
 
 # The spikes shoot up out of the token and sink back slowly, the piece jolts, and a drop falls
 # off the portrait.
-func _land_spikes(player: Dictionary, space: Space, piece: BoardPiece) -> void:
+func _land_spikes(player: Dictionary, space: Space, piece: BoardPiece, safe := false) -> void:
 	Sound.play("spikes")
 	var spikes := _stand_in(space)
 	PaperMotion.stretch(spikes, 1.6, 0.1)
+	if safe: # Death at 1 blood shrugs them off
+		await get_tree().create_timer(0.15, false).timeout
+		PowerPop.show_over(_front, piece.position - Vector2(0, POP_ABOVE), tr("POP_SAFE"), POP_SCALE)
+		await PaperMotion.tilt(piece, 9.0).finished
+		await PaperMotion.stretch(spikes, 1.0, 0.45, false).finished
+		_put_back(space, spikes)
+		return
 	var jolt := PaperMotion.hop(piece, 38.0)
 	await get_tree().create_timer(0.15, false).timeout
 	_hud.show_blood(player)

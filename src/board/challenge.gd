@@ -128,6 +128,11 @@ func ask(challenger: Dictionary) -> Dictionary:
 		_stake = WALK
 	else:
 		_make_cards(_hud.portrait_at(_opponent))
+		for player: Dictionary in [challenger, _opponent]:
+			if Match.blood_is_safe(player) and "blood" not in _valid:
+				# Death can't be bled at 1 blood: the pop sits under their portrait, which shrugs.
+				PowerPop.show_over(self, _hud.portrait_at(player) + Vector2(0, 150), tr("POP_SAFE"))
+				PaperMotion.tilt(_hud.portrait_node(player), 6.0)
 		await get_tree().create_timer(0.7, false).timeout
 		if not _timed_out:
 			_cards_open = true

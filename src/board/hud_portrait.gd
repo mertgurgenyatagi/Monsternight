@@ -13,6 +13,9 @@ const ROW_Y := 192.0
 const DROP_SIZE := 28.0 # blood.png is 128
 const DROP_STEP := 27.0
 const DROP_X := -78.0 # the first drop's middle
+const DROP_TIGHT_SIZE := 24.0 # with a fourth drop
+const DROP_TIGHT_STEP := 22.0
+const DROP_TIGHT_X := -84.0
 const COIN_X := 22.0
 const COIN_SIZE := 30.0 # coin.png is 256
 const INK := Color("f4e7c8")
@@ -92,11 +95,17 @@ func _ready() -> void:
 	_name.add_theme_font_size_override("font_size", _fitting_size())
 	add_child(_name)
 
-	var drop_scale := Vector2.ONE * DROP_SIZE / 128.0
-	for i in Match.MAX_BLOOD:
+	# A fourth drop (Cthulhu's) squeezes in beside the coin, so every drop is a little smaller and closer.
+	var cap := Match.max_blood(player)
+	var tight := cap > Match.MAX_BLOOD
+	var drop_size := DROP_TIGHT_SIZE if tight else DROP_SIZE
+	var drop_step := DROP_TIGHT_STEP if tight else DROP_STEP
+	var drop_x := DROP_TIGHT_X if tight else DROP_X
+	var drop_scale := Vector2.ONE * drop_size / 128.0
+	for i in cap:
 		var drop := Sprite2D.new()
 		drop.texture = preload("res://assets/art/icons/blood.png")
-		drop.position = Vector2(DROP_X + i * DROP_STEP, ROW_Y)
+		drop.position = Vector2(drop_x + i * drop_step, ROW_Y)
 		drop.scale = drop_scale
 		drop.set_meta("rest_scale", drop_scale)
 		drop.self_modulate = Color.WHITE if i < _shown_blood else EMPTY

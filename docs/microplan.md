@@ -161,6 +161,14 @@ Each part session adds a few lines when it finishes: what got built, what change
 - **Checked:** headless, 500 rolls for each size 3 to 8: lengths, empty and minigame halves, balance of kinds, allowed letters, shortest and longest route average to the brief's 46 to 65 (routes 4 each). A plain run at 3 and 8 players (village, church hill, forest, swamp fork, castle, gate), no errors, 25 FPS on the church hill and castle at 8 players.
 - **Not done:** the branch arrows have no icon list on them (the plan said "as before", but they never had one), and the ground-fix blemish from part 27 is untouched. Not played: "Play again" from the ceremony to a new size (it goes through `Match.start` and a new `Board`, and the headless test reconfigured 3 to 8 in one session).
 
+### Part 30: the passive powers (done 2026-10-24)
+
+- **`Match`:** `roll()` still gives the die's face; `roll_bonus(player)` is the Wolf Man's +1 and the board walks `face + bonus`. `max_blood`/`min_blood(player)` (Cthulhu 4, Death floor 1) replace `MAX_BLOOD` in `change_blood`, `die` and the HUD; `pick_monster` gives Cthulhu 4 blood and 1 coin (monsters are picked after `start`). `blood_is_safe(player)` is Death at 1 blood: `stakes` greys blood for him on either side, and spikes do nothing. `duel_result` gives a Frankenstein who lost as the challenger nothing and returns `free` when a real stake was waived. `Duel.swap_wins(challenger, stake)` and `roll_rounds(stake, swap_wins)`: Dorian needs 1 win, with no tally.
+- **Pops:** new `PowerPop.show_over(parent, at, text, scale)` (paper label, `power` sound, rises, frees itself). Used for "+1" beside the die, "Safe!" over Death on spikes (spikes shoot up, piece tilts) and under Death's portrait when blood is greyed in a challenge, "Free!" over Frankenstein after a lost duel, "Easy!" over Dorian's card in a swap duel. New strings `POWER_*` and `POP_*`.
+- **UI:** monster select shows each power line under the stand in the display font (24 px, two lines, shrinks only if needed). A 4-drop HUD portrait uses smaller, tighter drops. `Hud.portrait_node(player)` added. `Sound.TRIM`: `paddle_hit` and `stone` +3 dB.
+- **Checked:** headless: Cthulhu start/caps/respawn, Wolf Man 2 to 7, Death floor and greyed stakes, Frankenstein's losses (and normal when challenged), Dorian's swap win rate 48.8% (others 12.9%). A plain 8-player run: select lines, Cthulhu's 4 drops, "+1" with a roll of 5 walking 6, "Safe!", "Free!", 25 FPS, no errors.
+- **Not done:** the Turkish power lines were not looked at by eye; the "Easy!" pop and Death's challenge pop were not seen in a run; the Cthulhu "4" needs no pop (as planned).
+
 ## Log
 
 - **2026-10-23 to 24, Microplans 1 to 8:** the first playable, parts 1 to 24. See [microplan_first_playable.md](microplan_first_playable.md#log).

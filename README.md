@@ -28,7 +28,8 @@ What they mean in practice is in [Art and audio](docs/art_and_audio.md#principle
 - **Microplan 10 is done:** parts 28 to 30 are planned in `docs/microplan.md` (the lobby-size rules, the board for each lobby size, the passive powers). The roadmap now ends at part 43.
 - **Part 28 is done:** the lobby-size rules (turns by lobby size, one finishing trophy, Walk away on swap-only duels). Notes in `docs/microplan.md`.
 - **Part 29 is done:** the board for each lobby size (3 to 8 players), rolled fresh every match, with the four minigame spaces. Notes in `docs/microplan.md`.
-- **Next: part 30,** the passive powers.
+- **Part 30 is done:** the passive powers (Wolf Man, Cthulhu, Death, Frankenstein, Dorian), power lines in monster select, and the power pops. Notes in `docs/microplan.md`.
+- **Next: Microplan 11** (parts 31 to 33), because part 30 was a multiple of 3.
 
 **Keep the raws.** They're the sources, and the processed files can always be rebuilt from them.
 

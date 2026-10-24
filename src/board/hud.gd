@@ -106,6 +106,11 @@ func set_lit(player: Dictionary, on: bool) -> void:
 	_portraits[player.monster].set_lit(on)
 
 
+## The player's portrait node.
+func portrait_node(player: Dictionary) -> HudPortrait:
+	return _portraits[player.monster]
+
+
 ## The screen position of a player's portrait frame.
 func portrait_at(player: Dictionary) -> Vector2:
 	return _portraits[player.monster].to_global(HudPortrait.FRAME_CENTER)
