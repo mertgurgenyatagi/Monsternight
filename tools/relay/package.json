@@ -1,0 +1,11 @@
+{
+  "name": "monsternight-relay",
+  "private": true,
+  "description": "Throwaway relay for the part 32 online spike: one Durable Object per room, forwarding JSON between the sockets in it.",
+  "scripts": {
+    "dev": "wrangler dev --port 8787"
+  },
+  "devDependencies": {
+    "wrangler": "^4.0.0"
+  }
+}
