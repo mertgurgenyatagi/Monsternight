@@ -94,3 +94,25 @@ MASH_HINT,Mash %s,%s'ye bas
 MINI_GET_READY,Get ready,Hazır ol
 MINI_DRAW,"Draw, again!","Berabere, tekrar!"
 MINI_ROUND,Round %d,%d. tur
+LOBBY_TITLE,Play,Oyna
+LOBBY_HOST,Host a room,Oda kur
+LOBBY_JOIN,Join,Katıl
+LOBBY_CODE_HINT,Room code,Oda kodu
+LOBBY_LOCAL,Same screen,Aynı ekran
+LOBBY_BACK,Back,Geri
+LOBBY_COPY,Copy link,Bağlantıyı kopyala
+LOBBY_COPIED,Copied!,Kopyalandı!
+LOBBY_NAME_HINT,Your name,Adın
+LOBBY_READY,Ready,Hazır
+LOBBY_NOT_READY,Not ready,Hazır değil
+LOBBY_START,Start,Başlat
+LOBBY_LEAVE,Leave,Ayrıl
+LOBBY_FULL,This room is full,Oda dolu
+LOBBY_MISSING,No such room,Böyle bir oda yok
+LOBBY_BAD_CODE,Type the 4 letters,4 harfi yaz
+LOBBY_DROPPED,The connection dropped,Bağlantı koptu
+LOBBY_CANT_CONNECT,Can't reach the relay,Sunucuya ulaşılamıyor
+LOBBY_NAME_TAKEN,That name is taken,Bu ad alınmış
+LOBBY_HOST_LEFT,The host left,Oda sahibi ayrıldı
+LOBBY_NEED_PLAYERS,"3 to 8 players, all ready","3 ile 8 oyuncu, hepsi hazır"
+LOBBY_WAITING,Waiting for the host,Oda sahibi bekleniyor

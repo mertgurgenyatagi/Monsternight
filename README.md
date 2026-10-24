@@ -39,7 +39,8 @@ What they mean in practice is in [Art and audio](docs/art_and_audio.md#principle
 - **Part 36 is done:** Sumo (`SumoGame`, `CirclePhysics`). Notes in `docs/microplan.md`.
 - **Microplan 13 is done:** parts 37 to 39 are planned in `docs/microplan.md` (Head Soccer, the online network layer and lobby, the board over the network). The roadmap still ends at part 43; the Cloudflare deploy moved to part 41.
 - **Part 37 is done:** Head Soccer (`SoccerGame`). Notes in `docs/microplan.md`; its keys are untested on a real keyboard.
-- **Next: part 38**, Online I (the network layer and the lobby).
+- **Part 38 is done:** Online I: `Net`, the relay changes and the lobby (host, join by code or link, ready, start). Notes in `docs/microplan.md`; local mode is the lobby's "Same screen".
+- **Next: part 39**, Online II (the board over the network). Microplan 14 follows it.
 
 **Keep the raws.** They're the sources, and the processed files can always be rebuilt from them.
 
@@ -74,7 +75,7 @@ What they mean in practice is in [Art and audio](docs/art_and_audio.md#principle
   - `gen_sound_prompts.py` rebuilds `docs/sound_prompts.md`. Change sound prompts here, never by hand in the doc.
   - `make_sounds.py` generates sounds through the ElevenLabs API. It needs the key in the `ELEVENLABS_API_KEY` environment variable (ask the user for it), and it skips files that already exist.
   - `build_review.py` and `review_template.html` build a phone page for the user to rate sounds: `python tools/sounds/build_review.py . tools/sounds/review_template.html <out.html> [--raw] [<name> ...]`. By default it plays the processed OGGs and decodes WAV copies into `review_wav/` beside the page, for phones without OGG support. Publish the page with `assets/audio/` and `review_wav/` as its files. `--raw` plays `audio_raw/` instead.
-- `tools/relay/`: the spike's Cloudflare Worker relay (`npm install`, `npm run dev`).
+- `tools/relay/`: the Cloudflare Worker relay (`npm run dev` for the local one) (`npm install`, `npm run dev`).
 - `tools/release/build_release.py` builds the Windows release without the Godot MCP (see `docs/tech.md`).
 - `docs/`: the design
 - `screenshots/`: three screenshots at the end of every part, in `part_NN/` (see the "done" bar in `docs/microplan.md`). It has a `.gdignore`, so Godot skips it.
