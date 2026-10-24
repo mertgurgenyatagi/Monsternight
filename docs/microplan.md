@@ -128,7 +128,7 @@ Rough past part 15. Parts 1 to 14 are done (see the Log and the part notes).
 
 Each part session adds a few lines when it finishes: what got built, what changed from the plan, surprises, and anything left over or buggy. The next Microplan reads these instead of the code.
 
-### Built so far (parts 1 to 14, absorbed by Microplans 3 to 5)
+### Built so far (parts 1 to 15, absorbed by Microplans 3 to 5)
 
 - **Board (parts 10, 11, 12):**
   - The road is 57 spaces through the graveyard and 61 past the church (12, 8 or 12, 12, 10, 15), 15,460 px wide, rolled by `tools/board/roll_board.py` with seed 1031. `Match.TURNS` is 17, the intro glide 7.5 s. `BoardLayout.hill_width()` (2,840) stretches the church hill, and `scenery.gd`'s `_spots(location, first, last, gap)` keeps the props' density.
@@ -146,6 +146,11 @@ Each part session adds a few lines when it finishes: what got built, what change
   - `BoardPathView.light_path(lit, dimmed)` and `clear_light()` fade the lit path's spaces, dots and strip up and the other's down. `nudge_signpost(fork)` swings the post when a piece lands on it. `Board.choose_branch` keeps its signature; `_choose` glides the camera 330 px past the fork, then `follow`s the piece again.
   - A timeout shakes both arrows, lights a random one for 0.55 s, then drops the other. Checked: 8 players, 11 forks sped up, both paths taken at both forks, routes still 57, 57, 61, 61; an MCP click beside the arrows did nothing and one on the lower arrow chose it. The 25 FPS bar read 19 in a plain run with the editor open.
 
+- **Challenge (part 15):**
+  - `Match.opponents(player)` and `Match.stakes(challenger, opponent)` ("gold", "blood", "swap") are the rules. `Challenge` (`src/board/challenge.gd`, a child of `Hud`, screen coordinates) has `ask(challenger)`, giving `{opponent, stake}`, or `{}` with nobody to duel. `Board.land` awaits it for a minigame space and logs "Duel here, part 16: A vs B, stake gold"; with `{}` it gives 1 coin through the coin effect. Part 16 starts from that log line.
+  - `Hud` has `set_pickable(players)`, `clear_pickable()`, `set_lit(player, on)`, `shake(players)`, `portrait_at(player)` and the `portrait_clicked` signal. `HudPortrait` carries an `Area2D` over its frame, with `picked` and `denied` signals.
+  - The banner sits at y 272, the 20 s candle (scale 0.4) right of it, and the cards (scale 0.47) at y 600 under the chosen portrait, clamped 330 px from the screen's sides. Checked: MCP clicks on a greyed portrait and card did nothing, then a valid one chose; 24 sped-up timeout runs with 5 players were all valid (gold, blood and swap all seen); the coin fallback worked. FPS read 15 in a plain run with the editor open.
+  - The confirm beat is 0.6 s after the candle lifts away. There is no VS card yet, so the result is only logged.
 - **Code** is in `src/`:
   - Autoloads: `Sound` (`play`, `play_music`, `play_ambience`, and `quit()`, which every way out of the game goes through so no OGG leaks; `play("hop")` never repeats a hop twice in a row), `Scenes` (`change_to`, the paper transition, the texture and the cursor), `Settings` (`Settings.open()` from anywhere), and `Match` (players in turn order, each with `name`, `monster`, `space`, `blood`, `coins` and `finished`; `turn`, `TURNS`, `MAX_BLOOD`; `roll_turn_order`, `pick_monster`, `free_monsters`, `move_to`, and `change_blood` / `change_coins`, which return the real change).
   - `PaperMotion` holds `drop_in`, `set_down`, `lift_away`, `sway`, `sway_stop`, `pop_in`, `pop_out`, `lift` (it only raises), `squash`, `slide_in`, `move_to`, `flip`, `hop`, `hop_to`, `fly_to`, `tuck`, `breathe`, `tilt`, `shake`, `stretch`, `crumple` (it frees the piece at the end unless `free` is off), `unfold`, `toss` and `bounce`. New motion goes here.
