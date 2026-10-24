@@ -38,7 +38,8 @@ What they mean in practice is in [Art and audio](docs/art_and_audio.md#principle
 - **Part 13 is built** (death and respawn, and the board music), built and merged.
 - **Part 14 is built** (splits), built and merged.
 - **Part 15 is built** (challenge), built and merged.
-- **Next:** a Microplan (part 15 was a multiple of 3), to plan parts 16 to 18.
+- **Microplan 6 is done:** parts 16 to 18 are planned in `docs/microplan.md`.
+- **Next:** part 16 (the VS card, the countdown and the coin flip).
 
 **Keep the raws.** They're the sources, and the processed files can always be rebuilt from them.
 

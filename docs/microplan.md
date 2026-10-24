@@ -20,104 +20,103 @@ If a part turns out too big, split it (7a, 7b) instead of rushing it.
 
 ## Parts
 
-All three stay in part 6's **side view**. The high camera was tried and reverted (see README), so don't bring it back.
+All three stay in part 6's **side view**. The high camera was tried and reverted (see README), so don't bring it back. Part 15 logs "Duel here, part 16: A vs B, stake gold" and has `{opponent, stake}` ready; these parts start from there.
 
-### Part 13: Death and respawn, and the music
+### Part 16: The VS card, the countdown and the coin flip
 
-**Goal:** A player who loses their last drop of blood dies for real: they crumple into a paper ball, fly back to the start, and unfold there with full blood and no coins. The board music is wired to follow the leader, ready for when the tracks arrive.
-
-**Builds:**
-- **`Match.die(player) -> Dictionary`:** the rules. Coins go to 0, blood to `MAX_BLOOD`, `space` to the start, and `deaths` goes up by 1 (the stats of part 19 need it, so keep the count now). It returns the coins lost. A `finished` player can't die.
-- **`Board.died(player)`** (part 12's hook) becomes a coroutine, `Board.die(player)`, that plays the death and returns when the monster stands at the start. `land` awaits it, so the next player waits. Part 17 calls the same function for a duel's death.
-- **A non-freeing crumple.** `PaperMotion.crumple` frees the piece at the end. Add a `free` argument (default true) so the piece can stay alive, crumpled, and fly. `PaperMotion.unfold(piece)` is new: the reverse, with an overshoot.
-- **The start crowd.** The piece leaves its old space (`_leave`/`_settle`) and joins the start's crowd on arrival (`_slot`), so a crowded start still lines up.
-- **The leader and the music.** `Match.leader()` returns the player furthest along the road (a finished player counts as furthest; on a tie, the one who got there first). `Board` finds which location the leader is in and calls `Sound.play_music("board_<location>")` after every move, so the music changes when the lead does, never when the camera does. The graveyard and church share a track, and so do the boardwalk and the bog (`board_swamp`).
-
-**Polish:**
-- **The crumple:** the monster stops, folds into a paper ball with `crumple`, with the `crumple` sound.
-- **Coins lost:** if the player had coins, a few small coins spill out of the ball, fall and fade, while the HUD counter drops to 0 with `coin_lose` (one tick, not one per coin).
-- **The flight:** the ball rises, then flies in a high arc over the road back to the start with `fly`, spinning. The camera follows the ball (`follow`, same easing and cap as walking). The flight takes 1.2 s to 2.0 s by distance, never longer.
-- **The unfolding:** the ball lands on the start token with a squash and a small bounce, then unfolds into the monster with `unfold` and `respawn`. The HUD's blood drops refill one by one with `blood_gain`. A small `Glow.flare` on the token.
-- The camera holds on the start for a beat after the unfolding, then the next player.
-- **The leader's track** crossfades with the existing music fade, about 3 s. Nothing happens when the leader moves within a location, or when the file doesn't exist (missing tracks make silence, not errors, as now).
-
-**Assets:** `sfx/crumple`, `respawn`, `fly`, `coin_lose`, `blood_gain`; the pieces' art. **Missing:** the five `board_*.ogg` tracks, which the user makes. The code is written for the names in `docs/assets.md`; the part can only be checked by the log, not by ear.
-
-**Check:**
-- With a temporary script (not committed): kill a player at the castle with coins, one at the start (a short flight), and one standing on a crowded space. Check `Match` and the HUD agree afterwards, and the start's crowd lines up with 8 players there.
-- A finished player can't die. Spikes on 1 blood run the whole death, then the next player's turn.
-- Print `Match.leader()` and the chosen track name through a sped-up 17-turn match with 5 players; the track must only change when the lead changes location.
-- One contact sheet of the crumple, the flight and the unfolding from timed screenshots. 25 FPS during the flight.
-
-**Risks:** the flight crosses up to 15,000 px, so the camera must not whip. A crumpled piece has a small scale, so its shadow and outline must shrink with it.
-
-### Part 14: Splits
-
-**Goal:** At the two forks the player picks the path: a signpost shows two arrows, a 10 s candle burns, and a click sends the monster up or down. When the candle goes out, a random path is taken. This replaces part 8's random placeholder.
+**Goal:** After the challenge, a paper VS card slams down with both monsters and the stake, a 3, 2, 1 counts down, and a coin flip decides the winner, who is announced. Nothing changes on the board yet (part 17 applies the result).
 
 **Builds:**
-- **`Board.choose_branch(player, fork)`** keeps its signature (an awaitable that gives the chosen id), so `_walk` doesn't change. The placeholder is removed.
-- **The choice UI.** The signpost is already on the road (`signpost.png`, part 7). Two `arrow.png` buttons spring from it, one pointing up-right for the upper path and one down-right for the lower. Each has a small label with the stretch's name from `Translations` (graveyard or church, boardwalk or bog) and a few of that path's icons in a row, read from `BoardPath`'s kinds, never typed by hand.
-- **The candle** at the signpost, 10 s, half size like the die's.
-- **Only the arrows take clicks** while the choice is open.
-- **A roll that ends exactly on the fork** doesn't ask; the choice comes with the next move, and only when the player has steps left past the fork (`BoardPath.is_fork` tells).
+- **`Duel`** (`src/board/duel.gd`), a node on its own `CanvasLayer` above the HUD (layer 30), with an awaitable `play(challenger, opponent, stake) -> Dictionary` giving `{winner, loser}` (the player dictionaries). `Board.land`'s minigame branch awaits it right after the confirm beat and replaces the log line. It logs "Duel won by X (coin flip)".
+- **The flip is one function, `Duel._decide(challenger, opponent, stake)`,** returning the winner at random with `randf()`. Part 18 changes only this for the swap handicap. A minigame later replaces it as a whole.
+- **A dim and a hold.** The board keeps running under a dimmed backdrop (a black `ColorRect` fading to 0.55), the camera stays put. The HUD stays visible above the dim for the portraits, below the card layer.
+- **The music.** `Sound.play_music("duel")` while the duel plays, and `Board._follow_leader()` puts the board track back when it ends. The file `duel.ogg` is missing, so it's silence for now.
 
 **Polish:**
-- The signpost sways when the piece arrives, as if nudged. The arrows pop in one after the other with `pop_in`.
-- **Hover** lifts and grows an arrow, like a `PaperButton`, and the path it leads to lights up: its dots and spaces fade up a little, the other path dims. This is the point of the choice, so it must read.
-- **The camera** eases to the fork's center so both paths are in view, then back onto the piece after the choice. Judge by eye how far; tokens must stay readable.
-- **A click:** the chosen arrow squashes with `ui_click`, the other drops away with `lift_away`, the candle is snuffed, and the piece hops along the chosen path.
-- **A timeout:** the same shake as the die's, then the random pick lights up its arrow before the hop, so it's clear nobody clicked.
+- **The VS card:** two `card.png` cards, scale about 0.9, one for each monster, slam in from the sides and tilt a few degrees toward each other with `card_slam` (one slam each, 0.15 s apart). Each shows the monster's `portrait` over the card, its name from `Translations` in `display.ttf` and in the monster's `color`. A big paper "VS" (`display.ttf`, cream with a dark rim) drops between them with a third `card_slam` and a small screen shake (the `PaperMotion.shake` on the layer's root, 6 px).
+- **The stake** sits under the VS: the icon (`coin`, `blood` or `swap`) on a small paper strip with its line ("Take 1 coin"), popping in with `pop_in`. The challenger's card is marked with a small "challenger" tag (new string) and sits left.
+- **The idle:** both cards `breathe` gently, and the portraits blink as they do on the HUD, if `HudPortrait` already does something similar to copy (look, don't invent).
+- **The countdown:** the cards slide apart and the card pair shrinks a bit, then a huge 3, 2, 1 in `display.ttf` pops at the center, each with `countdown` and a squash that settles within 0.8 s, then the number tears away. "Go" is not shown as a word; `countdown_go` plays as the coin leaves.
+- **The coin flip:** the `coin.png` is flicked up from between the cards with `coin_flip`, spins (a fast `scale.x` squash cycle to fake the flip), slows, and lands with a bounce. One face shows the challenger's color rim and the other the opponent's (a tint, no new art). The coin comes to rest on the winner's side, and the pause before the result is 0.4 s so it feels like suspense.
+- **The announcement:** the winner's card lifts, grows and gets a `Glow.flare`; the loser's card greys with `grey.gdshader` and tips back. A short paper banner "X wins!" drops in, held 1.2 s. Then the cards lift away with `lift_away` and the dim fades.
+- **Skip nothing:** no key skips it; the whole thing is about 8 s.
 
-**Assets:** `board/signpost.png`, `arrow.png`, the icons, `ui/candle.png`, `flame.png`; `sfx/ui_click`, `ui_hover`, `timer_low`, `timer_out`. Nothing missing.
+**Assets:** `ui/card.png`, `coin.png`, the icons, the monsters' portraits, `sfx/card_slam`, `countdown`, `countdown_go`, `coin_flip`, `flip`. **Missing:** `duel.ogg`, which the user makes (silence for now).
 
 **Check:**
-- With the MCP's clicks, 2 players walk through each fork, once choosing each arrow. A click beside the arrows does nothing.
-- With a temporary script (not committed), let the candle run out at both forks many times, sped up; both paths must get taken.
-- Walk every route in a script as before (57, 57, 61, 61), and check the 8-player sped-up 17-turn match still ends. Test a forced roll that ends on the fork.
-- One contact sheet of the arrows popping in, a hover and the camera pull-back. 25 FPS.
+- With a temporary script (not committed): run `Duel.play` for 4 monster pairs with each stake, check the cards fit (the longest name, Frankenstein's, and the longest stake line) and that both of the winners get picked over 40 runs.
+- Run the full path with the MCP's clicks, 3 players: land on a minigame space, pick an opponent and a stake, and watch the VS card come after the confirm beat; the next player's turn starts after the banner.
+- One contact sheet of the slam, the countdown, the flip and the announcement. 25 FPS.
 
-**Risks:** the lower path (`LOWER_Y` 930) may sit under the arrows or the candle. Check both forks in a screenshot.
+**Risks:** the HUD and the card layer both draw portraits; make sure the cards cover nothing but the dim. The flip's fake spin must read as a coin at a glance.
 
-### Part 15: Challenge
+### Part 17: Duel results
 
-**Goal:** Landing on a minigame space asks for a challenge: the player clicks an opponent's portrait, then a stake card, with a 20 s candle for both together. The choice is shown, and the game logs the duel (the VS card is part 16). With nobody to duel, the space acts as a coin space.
+**Goal:** The result of a duel really happens: the winner poses, the loser crumples, and the coins, blood or places move across the board. A duel can kill, and the dead respawn.
 
 **Builds:**
-- **`Match.opponents(player) -> Array`:** every other player who hasn't finished.
-- **`Match.stakes(challenger, opponent) -> Array`:** the valid stakes. Gold if the opponent has a coin, blood if they have blood, swap if the two stand on different spaces. (Part 18 refines the swap.)
-- **`Challenge`** (`src/board/challenge.gd`), a node on the HUD's layer, with an awaitable `ask(challenger) -> Dictionary` giving `{opponent, stake}`. A timeout picks at random from the valid ones, so it always returns.
-- **`Board.land`**'s minigame branch calls it and logs "Duel here, part 16: A vs B, stake gold", handing the choice on for part 16. With no opponents it plays the coin effect instead.
-- **The HUD** gets `set_pickable(players)` and `clear_pickable()`, and a `portrait_clicked(player)` signal.
+- **`Match.duel_result(winner, loser, challenger, stake) -> Dictionary`:** the rules. Gold: 1 coin from the loser to the winner if the challenger won; if the challenger lost, the challenger pays 1 coin to the opponent. Blood: the loser of the duel loses 1 blood. Swap: only when the challenger won, `space` of both swap; if the challenger lost, nothing. It returns `{coins, blood, swapped, died}` with real changes through `change_coins`/`change_blood`, and also counts `duels_won` for the winner (part 19's stats read it; keep `duels_started` and `challenged` counters too, bumped here).
+- **`Board.duel_end(winner, loser, ...)`**, a coroutine awaited after `Duel.play`, doing the visible half. A death goes through `Board.die` (part 13) so the death and respawn are the ones the user already saw. The challenger's turn then ends.
+- **Voices:** `voices/<monster>_win` and `_lose` from `Monsters` (`voice` key; look at how the pick voice is read).
+- **The swap:** the two pieces trade places with the new `swap` motion, a shared `PaperMotion` helper if none fits (arcs that cross over each other).
+- **Stat counters** in `Match`: `duels_won`, `duels_started`, `challenged` (the spikes' blood count for the "Pincushion" stat doesn't exist yet; part 19 adds it).
 
 **Polish:**
-- **Step 1, the opponent:** a small paper banner drops in under the strip ("Pick an opponent", from `Translations`). The valid portraits bob and light their frames; hovering lifts one, a click squashes it with `ui_click`. The challenger and the finished are greyed and give `ui_denied`.
-- **Step 2, the stake:** three paper cards (`card.png`) fan out under the chosen portrait: gold, blood, swap, each with its icon and a short line ("Take 1 coin", "Take 1 blood", "Swap places"). Invalid ones are greyed with `ui_denied`; valid ones lift on hover. A click slaps the card down with `card_slam` and the others fall away.
-- **The candle** (20 s) at the banner's corner for both steps together, lifting away after the second click. It must not restart between steps. On a timeout it picks a valid opponent, then a valid stake, with a shake and a beat between so it's clear nobody clicked.
-- **The confirm beat:** the chosen portrait and card stay lit for about 0.6 s before part 16's VS card.
-- The camera stays on the piece; the HUD does the work. It must fit 8 players: cards go under the strip, never over the portraits.
+- **The win pose:** the winner's piece squashes, grows 15%, and does a small jump with `hop`, `tilt`, and its `_win` voice; a `Glow.flare` under it. The loser's piece `crumple`s with its `_lose` voice and `crumple`, then unfolds back (the non-freeing crumple from part 13, then `unfold`) unless it dies.
+- **Gold:** the coin flies from the loser's HUD counter to the winner's on the HUD layer (the flyers the coin space already uses), with `coin_lose` on the loser's side and `coin_gain` on landing. Both counts tick.
+- **Blood:** a drop breaks off the loser's HUD portrait with `blood_lose`, the portrait shakes; a challenger-lose in a blood duel drops the challenger's drop the same way. A death is a `Board.die`, whose camera and flight run in full.
+- **Swap:** the camera glides to the middle of the two pieces, both lift, `swap` plays, they cross in arcs and set down; the camera follows the challenger to their new space. The crowd slots are re-run so crowded spaces line up. Nobody gets a space effect from a swap.
+- Winning a duel on the move gives no extra move. The challenger's space effect is the duel; afterwards the turn passes on.
+- **The camera:** during gold and blood it holds on the challenger's piece; the HUD does the work.
 
-**Assets:** `ui/card.png`, `portrait_frame.png`, `candle.png`, `flame.png`; `icons/coin`, `blood`, `swap`; `sfx/card_slam`, `ui_click`, `ui_denied`, `ui_hover`, `timer_low`, `timer_out`. Nothing missing.
+**Assets:** `voices/*_win`, `*_lose`, `sfx/crumple`, `respawn`, `fly`, `swap`, `coin_lose`, `coin_gain`, `blood_lose`, `blood_gain`. Nothing missing.
 
 **Check:**
-- With the MCP's clicks, 3 players: force a player onto a minigame space with a temporary script, click an opponent and a stake. Clicks on greyed portraits and cards give only the denied sound.
-- Edge cases through a script: an opponent with 0 coins (gold greyed), everyone else finished (coin fallback), both on the same space (swap greyed).
-- Let the candle run out with 5 players many times; the random choices must always be valid.
-- One contact sheet of the banner, the cards and the confirm beat, with 8 players. 25 FPS.
+- A temporary script that forces every combination (stake × challenger wins or loses) and checks the `Match` numbers and the HUD agree. A death match (blood on 1 blood, 0 coins) kills the loser, and the challenger with 1 blood who loses dies too.
+- A swap on crowded spaces, on a fork's two paths, and with the start; a swap across the church (graveyard way vs past it) is allowed since the token ids are all that move.
+- A sped-up 8-player match that forces duels on every minigame landing for 17 turns must end with consistent totals and no errors.
+- One contact sheet of the win pose, a coin flying, a blood drop and a swap. 25 FPS.
 
-**Risks:** 8 portraits at 184 px leave little room for the banner and cards; check the layout at 8 players.
+**Risks:** a swap between pieces thousands of pixels apart shouldn't whip the camera: fly the pieces, not the camera (the camera glides to the middle and then to the challenger, like the death's flight). A duel death while the winner sits in the same spot as the respawn must still line up.
+
+### Part 18: The swap handicap and finishing at the gate
+
+**Goal:** A swap duel is the rigged 3-to-1 it should be, and players really can finish: reaching the castle gate gives the flag, the sting, and a seat on the sidelines.
+
+**Builds:**
+- **The swap handicap.** `Duel._decide` runs rounds. For a swap the challenger needs 3 round wins before the opponent wins 1; gold and blood stay at one round. It returns `{winner, loser}` as before, plus the rounds. The coin flip is fair, so the challenger wins a swap 1 time in 8. That's what the rule says; the playtest in part 23 can judge it.
+- **The rounds on screen.** For a swap the card pair keeps a small tally under the VS: three empty pips for the challenger, one for the opponent. Each flip is a quicker repeat (no VS slam, a shortened countdown at 1 s a number), and each pip fills with a tick. The flip stops at the first decisive result.
+- **Finishing.** The walk (`Board._walk`) stops at the gate when the steps reach it. `Match.finish(player) -> int` sets `finished`, remembers the order in a `finish_order` (the first gets the trophy in part 19), and returns the place. `Board.finish(player)` is the coroutine: the piece hops onto the gate, then the gate and flag moments in Polish play.
+- **The sit-out.** A finished player's piece stays at the gate in a row of onlookers (their own slots by finish order, standing a little to the right of the gate), `set_finished` on the HUD (flag) and `next_player` skips them. A finished player isn't a duel target (part 15 already enforces it) and can't die (part 13).
+- **The edge cases.** A roll that overshoots the gate counts (any roll that reaches the end). Overshooting steps are lost. If the finishing roll was on a fork's path, that's fine since the route ends at the gate anyway. If this is the last unfinished player but one, part 19 ends the match; for now the match just carries on with the one left until turn 17.
+
+**Polish:**
+- **The gate:** when the first (or any) piece arrives, the gate doors `castle_gate.png` swing open slightly (a squash/stretch on a lit slot) with a warm `Glow.flare`, `sting_finish` plays once, and `Sound.play_music` ducks for its 3 s then comes back.
+- **The flag:** the piece plants a flag (`flag.png`, the one already used by the HUD): it pops in over the piece with a sway, and the HUD portrait greys with the flag as part 9 built it. The camera holds on the gate for 2 s, then the next player.
+- **A place tag:** a small paper tag "1st", "2nd" ... pops over the piece for 2 s (from `Translations`; new strings), so finishing order reads. The first finisher's tag is gold (the 2-trophy finish, from part 19), the others plain.
+- **The onlookers:** each finished piece `breathe`s and sways slowly, and they face the board. `PaperMotion.sway` has the motion for it.
+- **The pips of the handicap:** fill with `ui_click` (high pitch if the challenger took it, dull for the opponent); three pips for the challenger drop into the tally with `pop_in`.
+
+**Assets:** `scenery/castle_gate.png`, `icons/flag.png`, `sfx/ui_click`, `countdown`, `coin_flip`, `card_slam`, `sting_finish`. **Missing:** `sting_finish.ogg` (music the user makes), so the code plays it by name and it is silent for now; the ducking is then untested by ear.
+
+**Check:**
+- Force a roll to the gate from 1, 3 and 6 spaces away (overshoot too), from the church path and from the main lane. `Match.finish` order is right; `next_player` skips the finished; the sped-up 8-player match keeps running to turn 17 with some finished.
+- Run 200 handicap rounds in a script: the challenger should win a swap about 12.5% of the time, and gold/blood about 50%.
+- One contact sheet of the tally, the gate opening and the flag, three onlookers standing. 25 FPS.
+
+**Risks:** pieces at the gate share the end of the road with the castle's scenery and the signpost; check the onlookers' row doesn't hide the doors. A finished player who held the lead is also the leader for the music (part 13 already counts them furthest).
 
 ## Roadmap
 
-Rough past part 15. Parts 1 to 14 are done (see the Log and the part notes).
+Rough past part 18. Parts 1 to 15 are done (see the Log and the part notes).
 
-13. Death and respawn (crumple, fly to the start, unfold, coins lost), filling part 12's `died` hook, and the board music following the leader.
-14. Splits: the signpost's arrows with a 10 s candle, replacing part 8's random placeholder.
-15. Challenge: pick an opponent's portrait, then a stake card, with invalid stakes greyed out and the 20 s candle.
+13. Death and respawn, and the board music following the leader.
+14. Splits: the signpost's arrows with a 10 s candle.
+15. Challenge: the opponent's portrait, then the stake card, with the 20 s candle and the coin fallback.
 16. The VS card, the countdown, and the coin flip.
 17. Duel results: the win pose and the crumple, voices, gold and blood flying across, deaths in duels (using part 13's `Board.die`), and the swap.
-18. The swap handicap (3 rounds), the no-opponent fallback, and finishing at the castle gate (the flag and `sting_finish`).
-19. Match end: 17 turns, `sting_final_turn`, the early end, and tracking the stats.
+18. The swap handicap (3 rounds) and finishing at the castle gate (the flag, `sting_finish`, the onlookers). The no-opponent fallback was already done in part 15.
+19. Match end: 17 turns, `sting_final_turn`, the early end, and tracking the stats (the spikes' blood count is new; the duel counters come from part 17).
 20. The trophy ceremony: the curtain, drumrolls, trophies, and the leaderboard with its tiebreaker.
 21. Fun stats, then back to the setup screen.
 22. Esc settings during a match, and a sweep of translations and edge cases. This includes what parts 2 and 3 left untested: a fullscreen relaunch, closing Settings with Esc, a click outside or the back button, and dragging the sliders.
@@ -128,7 +127,7 @@ Rough past part 15. Parts 1 to 14 are done (see the Log and the part notes).
 
 Each part session adds a few lines when it finishes: what got built, what changed from the plan, surprises, and anything left over or buggy. The next Microplan reads these instead of the code.
 
-### Built so far (parts 1 to 15, absorbed by Microplans 3 to 5)
+### Built so far (parts 1 to 15, absorbed by Microplans 3 to 6)
 
 - **Board (parts 10, 11, 12):**
   - The road is 57 spaces through the graveyard and 61 past the church (12, 8 or 12, 12, 10, 15), 15,460 px wide, rolled by `tools/board/roll_board.py` with seed 1031. `Match.TURNS` is 17, the intro glide 7.5 s. `BoardLayout.hill_width()` (2,840) stretches the church hill, and `scenery.gd`'s `_spots(location, first, last, gap)` keeps the props' density.
@@ -201,3 +200,6 @@ Each part session adds a few lines when it finishes: what got built, what change
 - **2026-10-24, Microplan 5:** parts 10 to 12 are done (the longer random board, the die and the turn loop, and the quick spaces). Planned parts 13 to 15: death and respawn with the music wiring, the splits, and the challenge. Roadmap changes:
   - None in the order or the end (still 24). Part 13 adds a `deaths` count for part 19's stats and a non-freeing `crumple`, and part 17 reuses its `Board.die` for duel deaths.
   - The board music is wired in part 13 but can't be heard until the user makes the five board tracks.
+- **2026-10-24, Microplan 6:** parts 13 to 15 are done (death and the music, splits, challenge). Planned parts 16 to 18: the VS card with the countdown and coin flip, the duel results, and the swap handicap with finishing at the gate. Roadmap changes:
+  - The no-opponent fallback left part 18, because part 15 already built it.
+  - The duel counters (`duels_won`, `duels_started`, `challenged`) are kept from part 17, so part 19's stats don't have to hunt for them. The end stays at 24.
