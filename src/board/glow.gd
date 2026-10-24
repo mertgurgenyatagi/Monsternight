@@ -68,6 +68,17 @@ func flare(grow := 1.5, up := 0.15, down := 0.9) -> Tween:
 	return tween
 
 
+## Eases to a new brightness, radius (in pixels) and place, for a spotlight that follows something.
+## What it eases to is what `flare` settles back to.
+func aim(strength: float, radius: float, at: Vector2, duration := 0.4) -> Tween:
+	_radius_scale = Vector2.ONE * radius / (SIZE / 2.0)
+	var tween := create_tween().set_parallel().set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	tween.tween_property(self, "_strength", strength, duration)
+	tween.tween_property(self, "scale", _radius_scale, duration)
+	tween.tween_property(self, "position", at, duration)
+	return tween
+
+
 static func _shared_texture() -> GradientTexture2D:
 	if _texture == null:
 		var gradient := Gradient.new()

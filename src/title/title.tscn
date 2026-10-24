@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3]
+[gd_scene load_steps=8 format=3]
 
 [ext_resource type="Script" path="res://src/title/title.gd" id="1_title"]
 [ext_resource type="PackedScene" path="res://src/sky/sky.tscn" id="2_sky"]
@@ -6,8 +6,7 @@
 [ext_resource type="Texture2D" path="res://assets/art/scenery/bat.png" id="4_bat"]
 [ext_resource type="Texture2D" path="res://assets/art/ui/logo.png" id="5_logo"]
 [ext_resource type="Script" path="res://src/ui/paper_button.gd" id="6_button"]
-[ext_resource type="Texture2D" path="res://assets/art/ui/curtain.png" id="7_curtain"]
-[ext_resource type="Texture2D" path="res://assets/art/ui/curtain_top.png" id="8_curtain_top"]
+[ext_resource type="Script" path="res://src/ui/curtain.gd" id="7_curtain"]
 
 [node name="Title" type="Control"]
 layout_mode = 3
@@ -63,18 +62,4 @@ text = "TITLE_QUIT"
 script = ExtResource("6_button")
 
 [node name="Curtain" type="Node2D" parent="."]
-
-[node name="Left" type="Sprite2D" parent="Curtain"]
-texture = ExtResource("7_curtain")
-centered = false
-
-[node name="Right" type="Sprite2D" parent="Curtain"]
-position = Vector2(1920, 0)
-texture = ExtResource("7_curtain")
-centered = false
-offset = Vector2(-1000, 0)
-flip_h = true
-
-[node name="Top" type="Sprite2D" parent="Curtain"]
-texture = ExtResource("8_curtain_top")
-centered = false
+script = ExtResource("7_curtain")

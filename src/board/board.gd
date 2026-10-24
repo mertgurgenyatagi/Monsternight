@@ -412,7 +412,7 @@ func _banner(text: String, hold: float, shaky := false) -> void:
 
 # The match is over: the camera glides to the castle gate, the portraits dim, a banner says so, the
 # music fades, and the results are logged. The unfinished pieces sway slowly where they stand and a
-# light flares over the gate. Then the ceremony opens, or until it is built, the title.
+# light flares over the gate. Then the curtain falls and the ceremony opens.
 func _end_match() -> void:
 	print("Match over")
 	_hud.dim()
@@ -429,8 +429,22 @@ func _end_match() -> void:
 				row.finish, " gold ", row.gold, " duels ", row.duels)
 	for stat in Match.stats():
 		print("Stat: ", stat.key, " ", stat.value, " ", stat.players.map(func(p: Dictionary) -> String: return p.name))
-	var ceremony := "res://src/ceremony/ceremony.tscn"
-	Scenes.change_to(ceremony if ResourceLoader.exists(ceremony) else "res://src/title/title.tscn")
+	await _close_curtain()
+	get_tree().change_scene_to_file("res://src/ceremony/ceremony.tscn")
+
+
+# The curtain falls over the board and holds a moment. The ceremony opens with the same curtain
+# closed, so the scene changes under it.
+func _close_curtain() -> void:
+	var layer := CanvasLayer.new()
+	layer.layer = 85
+	add_child(layer)
+	var curtain := Curtain.new()
+	layer.add_child(curtain)
+	curtain.set_spread(0.0, true)
+	Sound.play("fly", -3.0)
+	await curtain.move(1.0, 1.3, 0.0).finished
+	await get_tree().create_timer(0.6, false).timeout
 
 
 func _choose(piece: BoardPiece, fork: String) -> void:
