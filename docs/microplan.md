@@ -85,7 +85,7 @@ The last three parts. Parts 22 and 23 are sweeps and tuning, not new features; p
 
 ## Roadmap
 
-Parts 1 to 21 are done (see the Log and the part notes). The end stays at 24.
+Parts 1 to 22 are done (see the Log and the part notes). The end stays at 24.
 
 22. Esc settings in a match, Turkish, the untested leftovers from parts 2 and 3, and an edge-case sweep.
 23. Full playtests with bots, tuning from the numbers, pacing and frame rate.
@@ -95,7 +95,7 @@ Parts 1 to 21 are done (see the Log and the part notes). The end stays at 24.
 
 Each part session adds a few lines when it finishes: what got built, what changed from the plan, surprises, and anything left over or buggy. The next Microplan reads these instead of the code.
 
-### Built so far (parts 1 to 21, absorbed by Microplans 3 to 8)
+### Built so far (parts 1 to 22, absorbed by Microplans 3 to 8)
 
 - **Board (parts 10, 11, 12):**
   - The road is 57 spaces through the graveyard and 61 past the church (12, 8 or 12, 12, 10, 15), 15,460 px wide, rolled by `tools/board/roll_board.py` with seed 1031. `Match.TURNS` is 17, the intro glide 7.5 s. `BoardLayout.hill_width()` (2,840) stretches the church hill, and `scenery.gd`'s `_spots(location, first, last, gap)` keeps the props' density.
@@ -147,6 +147,10 @@ Each part session adds a few lines when it finishes: what got built, what change
   - `Match.reset()` clears players, `finish_order`, `turn`, `current`, `_arrivals` and `_turns_done`; the ceremony calls it when leaving, so `Match.names()` is empty and the setup screen opens with blank cards. Checked headless: after a reset `players` is empty, turn 1, and a new `start` gives fresh players (space `start`, `spike_blood` 0, `next_player` true).
   - After "Continue" the leaderboard lifts away and `Match.stats()` gets one card each (`_stat_card`: the title from `STAT_<KEY>_TITLE`, the holders' portraits that hop, their names, and the count-up in 0.5 s with a rising `ui_click` tick, singular lines through `STAT_<KEY>_ONE`), 2.2 s held, then `lift_away`. With no stats a single "A very quiet night" card shows. Then "Play again" (setup, through the paper sheet) and "Quit" (the title, which has its own closed curtain) leave through the ceremony's curtain closing (1.3 s, 0.6 s hold), with the music and ambience faded out.
   - Checked in a sped-up plain run (4 players; a death tie, a single holder with a count of 1, a count of 4 and 5): the cards, 25 FPS, and "Play again" changing the scene. Not run: the full board-to-setup second match, the quiet card on screen, the Turkish strings (still English only), and a screenshot of the ending's buttons.
+- **Esc, Turkish and the leftovers (part 22):**
+  - `Settings._unhandled_input` opens the panel on Esc in any scene while `Match.players` is not empty (the one shared helper); the panel closes itself on Esc, the back button or a click outside. Nothing is paused. An outside click is consumed by the panel, so the die, arrows and cards under it never see it. New `Settings.language` (`en` or `tr`, saved in `settings.cfg`, applied by `TranslationServer.set_locale`, English by default); the panel has a Language row (a button that cycles) and, in a match, the line `SETTINGS_IN_MATCH` under the title.
+  - `strings.csv` has a `tr` column for every key (`strings.tr.translation` is in `project.godot`). Only proper names (Medusa, Cthulhu, Dorian Gray) and "VS" equal the English. All text is built where it is shown, so a language change shows on the next screen or card; labels with keys on screen (the panel) update at once. Checked in Turkish: title, setup, the 8-player HUD, the VS card with "Frankenstein'ın Canavarı", the ceremony banners. The stat cards were not looked at in Turkish.
+  - Checked in a plain run: Esc over the board opens it, a click on the die behind it closes it and the die stays offered, then a real click rolls it. A fullscreen relaunch comes back fullscreen. A slider dragged to 0, half and the end gave 0 (muted), 0.507 (-5.9 dB) and 1.0 (0 dB). 2-player and 8-player pregames to a sped-up board ran with timeouts only and no errors. Not run: Esc during a duel and in the ceremony by hand (the same autoload code), and an MCP click (the runtime bridge times out on a temporary scene, and `execute_game_script` can't name autoloads: use `get_node("/root/Match")`).
 - **Code** is in `src/`:
   - Autoloads: `Sound` (`play`, `play_music`, `play_ambience`, and `quit()`, which every way out of the game goes through so no OGG leaks; `play("hop")` never repeats a hop twice in a row), `Scenes` (`change_to`, the paper transition, the texture and the cursor), `Settings` (`Settings.open()` from anywhere), and `Match` (players in turn order, each with `name`, `monster`, `space`, `blood`, `coins` and `finished`; `turn`, `TURNS`, `MAX_BLOOD`; `roll_turn_order`, `pick_monster`, `free_monsters`, `move_to`, and `change_blood` / `change_coins`, which return the real change).
   - `PaperMotion` holds `drop_in`, `set_down`, `lift_away`, `sway`, `sway_stop`, `pop_in`, `pop_out`, `lift` (it only raises), `squash`, `slide_in`, `move_to`, `flip`, `hop`, `hop_to`, `fly_to`, `tuck`, `breathe`, `tilt`, `shake`, `stretch`, `crumple` (it frees the piece at the end unless `free` is off), `unfold`, `toss` and `bounce`. New motion goes here.

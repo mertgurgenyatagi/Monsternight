@@ -9,6 +9,10 @@ extends CanvasLayer
 @onready var _sfx: PaperSlider = $Card/Sfx
 @onready var _fullscreen: PaperToggle = $Card/Fullscreen
 @onready var _back: PaperButton = $Card/Back
+@onready var _language: PaperButton = $Card/Language
+@onready var _in_match: Label = $Card/InMatch
+
+const LANGUAGE_NAMES := {"en": "English", "tr": "Türkçe"}
 
 var _closing := false
 
@@ -26,12 +30,18 @@ func _ready() -> void:
 		Settings.fullscreen = on
 		Settings.save())
 	_back.pressed.connect(close)
+	_language.pressed.connect(_next_language)
+	_language.text = LANGUAGE_NAMES[Settings.language]
+	_in_match.visible = not Match.players.is_empty()
 
 	_dim.color.a = 0.0
 	create_tween().tween_property(_dim, "color:a", 0.45, 0.3)
 	PaperMotion.set_down(_card, func() -> void: Sound.play("card_slam", -12.0)).finished \
-			.connect(func() -> void: _back.mouse_filter = Control.MOUSE_FILTER_STOP)
+			.connect(func() -> void:
+				_back.mouse_filter = Control.MOUSE_FILTER_STOP
+				_language.mouse_filter = Control.MOUSE_FILTER_STOP)
 	_back.scale = Vector2.ONE
+	_language.scale = Vector2.ONE
 
 
 func _input(event: InputEvent) -> void:
@@ -53,9 +63,17 @@ func close() -> void:
 	_closing = true
 	Settings.save()
 	_back.leave()
+	_language.leave()
 	create_tween().tween_property(_dim, "color:a", 0.0, 0.3)
 	await PaperMotion.lift_away(_card).finished
 	queue_free()
+
+
+func _next_language() -> void:
+	var languages: Array = Settings.LANGUAGES
+	Settings.language = languages[(languages.find(Settings.language) + 1) % languages.size()]
+	_language.text = LANGUAGE_NAMES[Settings.language]
+	Settings.save()
 
 
 func _sample_effect() -> void:

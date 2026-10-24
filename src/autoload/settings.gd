@@ -1,14 +1,16 @@
 extends Node
 ## The player's settings: music volume, effects volume and fullscreen. They are loaded from
 ## user://settings.cfg and applied before the first scene, and every change is applied at once
-## and saved.
+## and saved. It also opens the panel on Esc during a match.
 
 const PATH := "user://settings.cfg"
 const PANEL := preload("res://src/settings/settings_panel.tscn")
+const LANGUAGES := ["en", "tr"]
 
 var music := 1.0 : set = set_music
 var sfx := 1.0 : set = set_sfx
 var fullscreen := false : set = set_fullscreen
+var language := "en" : set = set_language
 
 var _panel: Node
 
@@ -19,13 +21,23 @@ func _ready() -> void:
 		music = clampf(file.get_value("audio", "music", 1.0), 0.0, 1.0)
 		sfx = clampf(file.get_value("audio", "sfx", 1.0), 0.0, 1.0)
 		fullscreen = file.get_value("display", "fullscreen", false)
+		language = file.get_value("display", "language", "en")
+	_apply_language()
 	_apply_music()
 	_apply_sfx()
 	_apply_fullscreen()
 
 
-## Opens the settings panel over whatever is on screen. It touches nothing behind it, so it
-## works from the title and (later) over the board. Asking again while it's open does nothing.
+## Esc opens the panel in any scene while a match is on (the title has its own button). The
+## panel closes itself on Esc, so this only sees the Esc that finds it closed.
+func _unhandled_input(event: InputEvent) -> void:
+	if event.is_action_pressed("ui_cancel") and not Match.players.is_empty():
+		get_viewport().set_input_as_handled()
+		open()
+
+
+## Opens the settings panel over whatever is on screen. It touches nothing behind it and pauses
+## nothing, so the match goes on under it. Asking again while it's open does nothing.
 func open() -> void:
 	if is_instance_valid(_panel):
 		return
@@ -43,6 +55,11 @@ func set_sfx(value: float) -> void:
 	_apply_sfx()
 
 
+func set_language(value: String) -> void:
+	language = value if value in LANGUAGES else "en"
+	_apply_language()
+
+
 func set_fullscreen(value: bool) -> void:
 	fullscreen = value
 	_apply_fullscreen()
@@ -54,6 +71,7 @@ func save() -> void:
 	file.set_value("audio", "music", music)
 	file.set_value("audio", "sfx", sfx)
 	file.set_value("display", "fullscreen", fullscreen)
+	file.set_value("display", "language", language)
 	file.save(PATH)
 
 
@@ -63,6 +81,10 @@ func _apply_music() -> void:
 
 func _apply_sfx() -> void:
 	_set_bus("SFX", sfx)
+
+
+func _apply_language() -> void:
+	TranslationServer.set_locale(language)
 
 
 func _apply_fullscreen() -> void:

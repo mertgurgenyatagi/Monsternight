@@ -44,7 +44,7 @@ theme/custom="res://src/ui/theme.tres"
 
 [internationalization]
 
-locale/translations=PackedStringArray("res://locale/strings.en.translation")
+locale/translations=PackedStringArray("res://locale/strings.en.translation", "res://locale/strings.tr.translation")
 
 [rendering]
 
