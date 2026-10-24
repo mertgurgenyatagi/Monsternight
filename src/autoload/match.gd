@@ -68,6 +68,16 @@ func start(raw_names: Array[String]) -> bool:
 	return true
 
 
+## Clears the whole match, so the next lobby starts fresh. The autoload is never recreated.
+func reset() -> void:
+	players.clear()
+	finish_order.clear()
+	turn = 1
+	current = 0
+	_arrivals = 0
+	_turns_done = false
+
+
 ## Rolls the turn order: shuffles `players` so the array order is the turn order from here on,
 ## and returns the seating order it started from. The animation only shows the result.
 func roll_turn_order() -> Array[Dictionary]:
