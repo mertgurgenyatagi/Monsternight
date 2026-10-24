@@ -51,10 +51,19 @@ const DUEL_BEAT := 0.3 # after the poses, before the stake is paid
 const WIN_GROW := 1.15 # the winner's size while they pose
 const SWAP_LIFT := 110.0 # the two pieces lift this far before they trade places
 const REVIVE_BEAT := 0.6 # the camera holds on the start after the unfolding
+const GATE_HOLD := 2.0 # the camera holds on the gate while a finisher's tag shows
+const ONLOOK_FROM := 330.0 # the first onlooker stands this far right of the gate
+const ONLOOK_STEP := 56.0 # across, from one onlooker to the next
+const ONLOOK_ROW := 4
+const FLAG_AT := Vector2(58, 8) # a planted flag, from the piece's feet
+const FLAG_SCALE := 0.9
+const TAG_RISE := 300.0 # from the piece's feet to the place tag's middle
+const GATE_LIGHT := Color(1.0, 0.7, 0.3, 0.6)
 
 @onready var _camera: BoardCamera = $Camera
 @onready var _sky: Control = $SkyLayer/Sky
 @onready var _bats: Array[Node] = $Bats.get_children()
+@onready var _scenery: Node2D = $Scenery
 
 var _location := ""
 var _intro := false
@@ -69,6 +78,7 @@ var _path_view: BoardPathView
 var _branch: BranchChoice
 var _challenge: Challenge
 var _duel: Duel
+var _onlookers: Array[BoardPiece] = [] # the finished pieces, in finish order, standing by the gate
 var _front: Node2D # over the pieces: an icon that springs up stands here, so no piece hides it
 var _settling: Tween # the camera's glide onto a piece that has just stopped
 var _track_name := "" # the board music now chosen, by where the leader is
@@ -227,6 +237,47 @@ func die(player: Dictionary) -> void:
 	_settling = _camera.glide_to(piece.global_position.x, 0.6)
 
 
+## The player has reached the castle gate: `Match.finish` gives them their place, the gate's doors swing
+## open with a warm flare and a sting, the piece plants a flag, the HUD greys its portrait with the flag,
+## and a paper tag with the place shows. Then the piece joins the onlookers beside the gate, and stays
+## there for good. Awaiting it waits until the piece stands among them.
+func finish(player: Dictionary) -> void:
+	var place := Match.finish(player)
+	var piece := piece_for(player)
+	if _settling and _settling.is_running():
+		await _settling.finished
+	piece.stop_sway()
+	var doors: GateDoors = _scenery.doors()
+	doors.open()
+	_flare_gate()
+	Sound.sting("sting_finish")
+	Sound.play(Monsters.voice(player.monster, "win"))
+	PaperMotion.hop(piece, 70.0)
+	PaperMotion.tilt(piece, 5.0)
+	await get_tree().create_timer(0.5, false).timeout
+	_plant_flag(piece)
+	_hud.set_finished(player)
+	await get_tree().create_timer(0.35, false).timeout
+	var tag := PlaceTag.new(place)
+	tag.position = piece.position - Vector2(0, TAG_RISE)
+	_front.add_child(tag)
+	tag.scale = Vector2.ONE * 1.4
+	PaperMotion.pop_in(tag)
+	Sound.play("card_slam", -6.0)
+	await get_tree().create_timer(GATE_HOLD, false).timeout
+	PaperMotion.pop_out(tag)
+	doors.close()
+	await get_tree().create_timer(0.3, false).timeout
+	tag.queue_free()
+	# The piece steps over to the onlookers, who stand a little right of the gate and face the board.
+	_leave(BoardPath.FINISH, piece)
+	var slot := _onlooker_slot(_onlookers.size())
+	_onlookers.append(piece)
+	await PaperMotion.hop_to(piece, slot, func() -> void: Sound.play("hop"), true, 90.0).finished
+	piece.watch()
+	_follow_leader()
+
+
 ## The result of a duel really happens. `Match.duel_result` settles the rules; here the winner poses,
 ## the loser crumples and unfolds (or dies, through `die`), and the coin, the blood or the places move.
 ## The camera holds on the challenger, except for a death far away and a swap. Awaiting it waits for
@@ -302,7 +353,10 @@ func _play_turns() -> void:
 		await get_tree().create_timer(SHOW_BEAT, false).timeout
 		_die.leave()
 		await walk(player, value)
-		await land(player, player.space)
+		if player.space == BoardPath.FINISH:
+			await finish(player)
+		else:
+			await land(player, player.space)
 		await get_tree().create_timer(TURN_BEAT, false).timeout
 		var turn := Match.turn
 		if not Match.next_player():
@@ -424,6 +478,34 @@ func _swap(challenger: Dictionary, opponent: Dictionary, from_challenger: String
 	await get_tree().create_timer(0.3, false).timeout
 	_settling = _camera.glide_to(mine.global_position.x, 0.6)
 	await _settling.finished
+
+
+# Where the `index`th finisher stands: in rows beside the gate, the first one nearest it.
+func _onlooker_slot(index: int) -> Vector2:
+	var row := index / ONLOOK_ROW
+	var x := ONLOOK_FROM + (index % ONLOOK_ROW) * ONLOOK_STEP + (ONLOOK_STEP / 2.0 if row % 2 == 1 else 0.0)
+	return BoardPath.finish().pos + CROWD_FRONT + Vector2(x, -CROWD_BACK * row)
+
+
+# A warm light flares in the doorway as the doors open.
+func _flare_gate() -> void:
+	var glow := Glow.new(GATE_LIGHT, 230.0)
+	glow.scale.y *= 1.4
+	glow.position = BoardPath.finish().pos + Vector2(0, -250)
+	_front.add_child(glow)
+	await glow.flare(1.5, 0.2, 1.6).finished
+	glow.queue_free()
+
+
+# The piece plants a flag beside it, which pops up and sways on its pole.
+func _plant_flag(piece: BoardPiece) -> void:
+	var flag := Flag.new()
+	flag.position = FLAG_AT
+	flag.scale = Vector2.ONE * FLAG_SCALE
+	piece.add_child(flag)
+	PaperShadow.add(flag)
+	PaperMotion.pop_in(flag).finished.connect(func() -> void: PaperMotion.sway(flag, 2.5, 3.2))
+	Sound.play("flip")
 
 
 # A flare on the ground under a piece.

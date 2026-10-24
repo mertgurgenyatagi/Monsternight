@@ -46,6 +46,18 @@ func stop_sway() -> void:
 	PaperMotion.sway_stop(_body)
 
 
+## A finished piece watches the board from beside the gate: it turns to face it (the road runs off to
+## the left), and breathes and sways slowly, out of step with the others.
+func watch() -> void:
+	_body.flip_h = true
+	var shadow := _body.get_node_or_null("Shadow") as Sprite2D
+	if shadow:
+		shadow.flip_h = true
+	var period := randf_range(5.5, 7.0)
+	PaperMotion.sway(_body, randf_range(0.8, 1.3), period).custom_step(randf_range(0.0, period))
+	PaperMotion.breathe(_body, 4.0, randf_range(3.2, 4.2))
+
+
 ## Swaps the monster for its paper ball (`on`), or the ball for the monster. The piece must have
 ## been shrunk by `PaperMotion.crumple` first, with `ball_scale` as its scale; the ball is drawn
 ## `BALL_SIZE` across on screen and rests on the piece's feet.

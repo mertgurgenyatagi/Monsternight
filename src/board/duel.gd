@@ -2,8 +2,9 @@ class_name Duel
 extends CanvasLayer
 ## The duel after a challenge: a dim over the board, a paper VS card with both monsters and the stake,
 ## a 3, 2, 1, and a coin flip that decides the winner, who is announced. It changes nothing on the
-## board; `play` just gives `{winner, loser}` (player dictionaries) for part 17 to apply. The flip is
-## `_decide`, and a minigame will replace it as a whole.
+## board; `play` gives `{winner, loser, rounds}` (player dictionaries) for `Board.duel_end` to apply. The
+## flips are `_decide`, and a minigame will replace it as a whole. A swap is rigged: the challenger must
+## win 3 flips before the opponent wins 1, and a tally under the VS shows the rounds.
 
 const CENTER := Vector2(960, 470)
 const CARD_SCALE := 0.9 # card.png is 400 x 560
@@ -16,6 +17,8 @@ const ICONS := {
 	"blood": preload("res://assets/art/icons/blood.png"),
 	"swap": preload("res://assets/art/icons/swap.png"),
 }
+const SWAP_ROUNDS := 3 # the flips the challenger must win in a row to win a swap
+const TALLY_AT := Vector2(960, 745)
 const COIN_SIZE := 150.0
 const COIN_REST_Y := 600.0
 const SHAKE := 6.0
@@ -33,6 +36,8 @@ var _greys: Array[ShaderMaterial] = []
 var _vs: Node2D
 var _strip: Node2D
 var _coin: Sprite2D
+var _coin_scale: Vector2
+var _tally: DuelTally
 var _banner: Node2D
 
 
@@ -54,12 +59,15 @@ func _ready() -> void:
 	add_child(_root)
 
 
-## Plays the whole duel and gives `{winner, loser}`. Awaiting it waits until the cards have lifted away.
+## Plays the whole duel and gives `{winner, loser, rounds}`, `rounds` being who took each flip (true for
+## the challenger). Awaiting it waits until the cards have lifted away.
 func play(challenger: Dictionary, opponent: Dictionary, stake: String) -> Dictionary:
 	Sound.play_music("duel")
-	var winner := _decide(challenger, opponent, stake)
-	var loser: Dictionary = opponent if winner == challenger else challenger
-	var challenger_won := winner == challenger
+	var decided := _decide(challenger, opponent, stake)
+	var winner: Dictionary = decided.winner
+	var loser: Dictionary = decided.loser
+	var rounds: Array = decided.rounds
+	var challenger_won: bool = rounds[-1]
 	_build(challenger, opponent, stake)
 
 	create_tween().tween_property(_dim, "color:a", DIM_ALPHA, 0.3)
@@ -86,16 +94,29 @@ func play(challenger: Dictionary, opponent: Dictionary, stake: String) -> Dictio
 	for i in 2:
 		_pull_apart(i)
 	await get_tree().create_timer(0.6, false).timeout
+	if _tally:
+		_tally.visible = true
+		_tally.come_in()
 	for n in [3, 2, 1]:
 		await _count(n)
 
-	# The flip.
-	Sound.play("countdown_go")
-	await _flip(challenger, opponent, challenger_won)
-	await get_tree().create_timer(0.4, false).timeout
+	# The flips: a swap has several, each a quicker repeat, and each fills a pip of the tally.
+	for i in rounds.size():
+		if i > 0:
+			PaperMotion.pop_out(_coin)
+			await get_tree().create_timer(0.3, false).timeout
+			for n in [2, 1]:
+				await _count(n, true)
+		Sound.play("countdown_go")
+		await _flip(challenger, opponent, rounds[i])
+		await get_tree().create_timer(0.4, false).timeout
+		if _tally:
+			_tally.fill(0 if rounds[i] else 1)
+			Sound.play("ui_click", 0.0, 1.5 if rounds[i] else 0.65)
+			await get_tree().create_timer(0.5, false).timeout
 
 	await _announce(winner, loser, challenger_won)
-	print("Duel won by ", winner.name, " (coin flip)")
+	print("Duel won by ", winner.name, " (coin flip, ", rounds.size(), " rounds)")
 	var tween := create_tween()
 	tween.tween_property(_dim, "color:a", 0.0, 0.4)
 	await tween.finished
@@ -105,13 +126,35 @@ func play(challenger: Dictionary, opponent: Dictionary, stake: String) -> Dictio
 	_cards.clear()
 	_bodies.clear()
 	_greys.clear()
-	return {"winner": winner, "loser": loser}
+	_tally = null
+	return {"winner": winner, "loser": loser, "rounds": rounds}
 
 
-## Who wins: a coin flip, so it's even. A swap handicap changes this one function in part 18, and a
-## minigame replaces it later.
-func _decide(challenger: Dictionary, opponent: Dictionary, _stake: String) -> Dictionary:
-	return challenger if randf() < 0.5 else opponent
+## Who wins: coin flips, each one even. Gold and blood are one flip. A swap goes on while the challenger
+## keeps winning, until they have `SWAP_ROUNDS` wins or the opponent takes one, so the challenger wins a
+## swap 1 time in 8. Gives `{winner, loser, rounds}`, `rounds` being the flips (true when the challenger
+## took it); the last one decides. A minigame replaces this function as a whole.
+func _decide(challenger: Dictionary, opponent: Dictionary, stake: String) -> Dictionary:
+	var rounds := roll_rounds(stake)
+	var challenger_won: bool = rounds[-1]
+	return {"winner": challenger if challenger_won else opponent,
+			"loser": opponent if challenger_won else challenger, "rounds": rounds}
+
+
+## The flips of a duel for this stake, whoever the players are.
+static func roll_rounds(stake: String) -> Array[bool]:
+	var needed := SWAP_ROUNDS if stake == "swap" else 1
+	var rounds: Array[bool] = []
+	var wins := 0
+	while true:
+		var won := randf() < 0.5
+		rounds.append(won)
+		if not won:
+			break
+		wins += 1
+		if wins >= needed:
+			break
+	return rounds
 
 
 # Everything is built off screen or hidden, then played.
@@ -203,6 +246,13 @@ func _build(challenger: Dictionary, opponent: Dictionary, stake: String) -> void
 	_coin.scale = Vector2.ONE * COIN_SIZE / _coin.texture.get_height()
 	_coin.visible = false
 	_root.add_child(_coin)
+	_coin_scale = _coin.scale
+	if stake == "swap":
+		var colors: Array[Color] = [Monsters.color(challenger.monster), Monsters.color(opponent.monster)]
+		_tally = DuelTally.new(SWAP_ROUNDS, 1, colors)
+		_tally.position = TALLY_AT
+		_tally.visible = false
+		_root.add_child(_tally)
 
 
 # One card slams in from its side and tips toward the other.
@@ -237,7 +287,8 @@ func _pull_apart(i: int) -> void:
 
 
 # A huge number pops at the center, squashes and settles within 0.8 s, then tears away.
-func _count(n: int) -> void:
+func _count(n: int, quick := false) -> void:
+	var k := 0.6 if quick else 1.0 # a repeat's numbers go by faster
 	Sound.play("countdown")
 	var number := _label(str(n), 380, CREAM, 400.0)
 	number.add_theme_color_override("font_outline_color", INK)
@@ -252,14 +303,14 @@ func _count(n: int) -> void:
 	_root.add_child(holder)
 	var tween := holder.create_tween()
 	holder.scale = Vector2.ONE * 2.2
-	tween.tween_property(holder, "scale", Vector2(0.85, 1.1), 0.14).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
-	tween.tween_property(holder, "scale", Vector2.ONE, 0.4).set_trans(Tween.TRANS_ELASTIC).set_ease(Tween.EASE_OUT)
+	tween.tween_property(holder, "scale", Vector2(0.85, 1.1), 0.14 * k).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+	tween.tween_property(holder, "scale", Vector2.ONE, 0.4 * k).set_trans(Tween.TRANS_ELASTIC).set_ease(Tween.EASE_OUT)
 	await tween.finished
 	var away := holder.create_tween().set_parallel()
-	away.tween_property(holder, "position", holder.position + Vector2(40, -260), 0.2) \
+	away.tween_property(holder, "position", holder.position + Vector2(40, -260), 0.2 * k) \
 			.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
-	away.tween_property(holder, "rotation_degrees", 14.0, 0.2)
-	away.tween_property(holder, "modulate:a", 0.0, 0.2)
+	away.tween_property(holder, "rotation_degrees", 14.0, 0.2 * k)
+	away.tween_property(holder, "modulate:a", 0.0, 0.2 * k)
 	await away.finished
 	holder.queue_free()
 
@@ -269,7 +320,9 @@ func _count(n: int) -> void:
 func _flip(challenger: Dictionary, opponent: Dictionary, challenger_won: bool) -> void:
 	var faces := [Monsters.color(challenger.monster).lerp(Color.WHITE, 0.3),
 			Monsters.color(opponent.monster).lerp(Color.WHITE, 0.3)]
-	var base := _coin.scale
+	var base := _coin_scale
+	_coin.scale = base
+	_coin.rotation = 0.0
 	var start := Vector2(960, COIN_REST_Y + 60.0)
 	var landing := Vector2(960 + (-170.0 if challenger_won else 170.0), COIN_REST_Y)
 	# An even count of half turns ends on the challenger's face.
@@ -339,6 +392,8 @@ func _announce(winner: Dictionary, loser: Dictionary, challenger_won: bool) -> v
 	for node in [_banner, _cards[0], _cards[1]]:
 		PaperMotion.lift_away(node, 700.0, 0.4)
 	PaperMotion.pop_out(_coin)
+	if _tally:
+		PaperMotion.pop_out(_tally)
 	await get_tree().create_timer(0.4, false).timeout
 
 

@@ -19,6 +19,9 @@ var turn := 1
 ## The index in `players` of the player whose turn it is.
 var current := 0
 
+## The players who have reached the castle gate, in the order they got there.
+var finish_order: Array[Dictionary] = []
+
 # Counts every arrival on a space, so a tie in `leader` goes to whoever got there first.
 var _arrivals := 0
 
@@ -54,6 +57,7 @@ func start(raw_names: Array[String]) -> bool:
 				"blood": MAX_BLOOD, "coins": 0, "finished": false, "deaths": 0, "arrived": 0,
 					"duels_started": 0, "challenged": 0, "duels_won": 0})
 	_arrivals = 0
+	finish_order.clear()
 	turn = 1
 	current = 0
 	print("Match started: ", players)
@@ -131,6 +135,18 @@ func move_to(player: Dictionary, id: String) -> bool:
 	player.arrived = _arrivals
 	print("Moved: ", player.name, " to ", id)
 	return true
+
+
+## The player has reached the castle gate: they are finished from here on, and take the next place.
+## Returns the place, 1 for the first. A player who has finished already keeps the place they have.
+func finish(player: Dictionary) -> int:
+	for i in finish_order.size():
+		if is_same(finish_order[i], player):
+			return i + 1
+	player.finished = true
+	finish_order.append(player)
+	print("Finished: ", player.name, " in place ", finish_order.size())
+	return finish_order.size()
 
 
 ## The player furthest along the road. A finished player counts as furthest, and on a tie the one

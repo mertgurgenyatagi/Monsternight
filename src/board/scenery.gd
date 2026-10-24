@@ -36,6 +36,7 @@ const MUSHROOM_LIGHT := Color(0.35, 1.0, 0.85, 0.45)
 @onready var _fog: Parallax2D = $Fog
 
 var _rng := RandomNumberGenerator.new()
+var _doors: GateDoors
 
 
 func _ready() -> void:
@@ -151,9 +152,16 @@ func _castle(location: Dictionary) -> void:
 		_torch(_x(location, at), BoardLayout.GROUND_Y + 50, 0.8)
 	# The castle gate is the finish, at the very end of the road, with a torch on either side.
 	var gate_x := BoardLayout.gate_x()
-	_prop(_lanes, "castle_gate", gate_x, BoardLayout.PROP_BASE_Y, 0.8)
+	var gate := _prop(_lanes, "castle_gate", gate_x, BoardLayout.PROP_BASE_Y, 0.8)
+	_doors = GateDoors.new()
+	gate.add_child(_doors)
 	for side in [-1.0, 1.0]:
 		_torch(gate_x + side * 150.0, BoardLayout.PROP_BASE_Y - 220.0, 0.7, side > 0.0)
+
+
+## The castle gate's doors, which a finishing piece swings open.
+func doors() -> GateDoors:
+	return _doors
 
 
 # ---- the pieces ----

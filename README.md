@@ -41,7 +41,8 @@ What they mean in practice is in [Art and audio](docs/art_and_audio.md#principle
 - **Microplan 6 is done:** parts 16 to 18 are planned in `docs/microplan.md`.
 - **Part 16 is built** (the VS card, the countdown and the coin flip), built and merged.
 - **Part 17 is built** (duel results), built and merged.
-- **Next:** part 18 (the swap handicap and finishing at the gate). Microplan 7 follows part 18.
+- **Part 18 is built** (the swap handicap and finishing at the gate), built and merged.
+- **Next:** Microplan 7 (parts 19 to 21).
 
 **Keep the raws.** They're the sources, and the processed files can always be rebuilt from them.
 
