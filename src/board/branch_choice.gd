@@ -26,6 +26,10 @@ var _stretches: Array[String] = []
 var _view: BoardPathView
 var _open := false
 var _choice := -1
+var _online := false # the host decides; the candle here is only for show
+var _mine := true # this copy's player makes the choice
+var _clicked_here := false
+var _clicked_index := -1
 
 
 func _ready() -> void:
@@ -38,8 +42,9 @@ func _ready() -> void:
 
 ## Shows the choice at `fork` and waits for it. Gives the id of the space chosen, one of
 ## `BoardPath.next(fork)`. The arrows are gone again when it returns.
-func ask(fork: String, view: BoardPathView) -> String:
+func ask(fork: String, view: BoardPathView, player := {}) -> String:
 	_view = view
+	_clicked_here = false
 	var node := BoardPath.node(fork)
 	var following: Array = node.next
 	_choice = -1
@@ -55,12 +60,32 @@ func ask(fork: String, view: BoardPathView) -> String:
 	_candle.visible = true
 	PaperMotion.pop_in(_candle)
 	_candle.start(SECONDS)
-	_candle.timed_out.connect(_on_timed_out)
-	_open = true
-	for area in _areas:
-		area.input_pickable = true
-	var by_click: bool = await _decided
-	_candle.timed_out.disconnect(_on_timed_out)
+	_online = Online.active
+	_mine = Online.is_mine(player) if _online else true
+	var by_click: bool
+	if _online:
+		_open = _mine
+		for area in _areas:
+			area.input_pickable = _mine
+		var count := _options.size()
+		var answer := await Online.decide("branch", player, SECONDS,
+				func() -> int: return randi() % count,
+				func(v: Variant) -> bool: return (v is int or v is float) and int(v) >= 0 and int(v) < count)
+		_choice = int(answer.value)
+		by_click = not answer.auto
+		if by_click and not _clicked_here: # someone else's click: the arrow answers it
+			Sound.play("ui_click")
+			PaperMotion.squash(_options[_choice])
+			_drop_others(_choice)
+		elif _clicked_here and _choice != _clicked_index:
+			_drop_others(_choice)
+	else:
+		_candle.timed_out.connect(_on_timed_out)
+		_open = true
+		for area in _areas:
+			area.input_pickable = true
+		by_click = await _decided
+		_candle.timed_out.disconnect(_on_timed_out)
 	_open = false
 	for area in _areas:
 		area.input_pickable = false
@@ -141,7 +166,12 @@ func _on_input(_viewport: Node, event: InputEvent, _shape: int, index: int) -> v
 		Sound.play("ui_click")
 		PaperMotion.squash(_options[index])
 		_drop_others(index)
-		_decided.emit(true)
+		if _online:
+			_clicked_here = true
+			_clicked_index = index
+			Online.submit(index)
+		else:
+			_decided.emit(true)
 
 
 # The clicked arrow's path stays lit, and the other arrow drops away.

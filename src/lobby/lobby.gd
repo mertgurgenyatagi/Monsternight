@@ -32,6 +32,7 @@ var _wait_id := 0 # counts attempts, so a stale timeout does nothing
 func _ready() -> void:
 	Sound.play_music("title")
 	Match.reset()
+	Online.stop()
 	Net.leave()
 	add_child(preload("res://src/sky/sky.tscn").instantiate())
 	_build_entry()
@@ -257,6 +258,8 @@ func _begin_match(names: Array, ids: Array, seed: int) -> void:
 	Net.id_by_name.clear()
 	for i in typed.size():
 		Net.id_by_name[Match.players[i].name] = int(ids[i])
+	if Net.is_online():
+		Online.begin(_host_id)
 	Sound.play("start")
 	_go("res://src/pregame/pregame.tscn")
 

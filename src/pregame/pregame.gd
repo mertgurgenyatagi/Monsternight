@@ -36,6 +36,7 @@ var _prompt: Label
 var _prompt_shown := false
 var _candle: Candle
 var _waiting := false # a player is picking right now
+var _note: TurnNote # online: whose pick it is
 
 
 func _ready() -> void:
@@ -202,7 +203,8 @@ func _select_monsters() -> void:
 	_candle.visible = false
 	_candle.scale = Vector2.ONE * CANDLE_SCALE
 	_candle.set_meta("rest_scale", _candle.scale)
-	_candle.timed_out.connect(_on_timed_out)
+	if not Online.active: # online, the host's timer ends a pick; the candle is only for show
+		_candle.timed_out.connect(_on_timed_out)
 	add_child(_candle)
 	_prompt = Label.new()
 	_prompt.size = Vector2(1100, 70)
@@ -214,10 +216,15 @@ func _select_monsters() -> void:
 	_prompt.scale = Vector2.ZERO
 	_prompt.set_meta("rest_scale", Vector2.ONE)
 	add_child(_prompt)
+	if Online.active:
+		_note = TurnNote.new()
+		add_child(_note)
 	await _drop_monsters()
 	for turn in range(Match.players.size() - 1, -1, -1):
 		await _pick_for(Match.players[turn], turn)
 	PaperMotion.pop_out(_prompt)
+	if _note:
+		_note.clear()
 	if _candle.visible:
 		PaperMotion.pop_out(_candle)
 	await get_tree().create_timer(1.2, false).timeout
@@ -258,10 +265,21 @@ func _pick_for(player: Dictionary, turn: int) -> void:
 		id = free[0]
 	else:
 		_waiting = true
+		var mine := Online.is_mine(player)
 		for piece in _pieces:
-			piece.enabled = not piece.taken
+			piece.enabled = mine and not piece.taken
 		_candle.start(PICK_SECONDS)
-		id = await _chosen
+		if Online.active:
+			_note.say(tr("ONLINE_PICK_MINE") if mine else tr("ONLINE_PICKING") % player.name, mine)
+			var open := free.duplicate()
+			var answer := await Online.decide("monster", player, PICK_SECONDS,
+					func() -> String: return open.pick_random(),
+					func(v: Variant) -> bool: return v is String and v in open)
+			id = answer.value
+			if answer.auto:
+				_note.say(tr("POP_AUTO"))
+		else:
+			id = await _chosen
 		_waiting = false
 		_candle.stop()
 		for piece in _pieces:
@@ -323,7 +341,10 @@ func _show_prompt(player_name: String, with_candle: bool) -> void:
 
 func _on_monster_clicked(piece: MonsterPiece) -> void:
 	if _waiting and piece.enabled and not piece.taken:
-		_chosen.emit(piece.id)
+		if Online.active:
+			Online.submit(piece.id)
+		else:
+			_chosen.emit(piece.id)
 
 
 # The candle ran out: a random free monster is picked, as if the player had clicked it.

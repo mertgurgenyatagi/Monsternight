@@ -21,6 +21,9 @@ const DROP_HEIGHT := 700.0
 const TOSS_HEIGHT := 170.0
 const TOSS_TIME := 0.4
 
+## False when another player rolls this die online: it is only watched.
+var clickable := true
+
 var _sprite: Sprite2D
 var _area: Area2D
 var _face := 1
@@ -61,6 +64,11 @@ func offer() -> Signal:
 	return offered
 
 
+## Stops taking clicks (the click has been sent, and the host's answer is on its way).
+func lock() -> void:
+	_area.input_pickable = false
+
+
 ## A small shake: the player's time ran out, so the die rolls by itself.
 func nudge() -> Tween:
 	_area.input_pickable = false
@@ -91,7 +99,7 @@ func _offer() -> void:
 	PaperMotion.squash(self)
 	PaperMotion.breathe(_sprite, 7.0, 2.1)
 	PaperMotion.sway(_sprite, 3.5, 3.3).custom_step(randf_range(0.0, 3.3))
-	_area.input_pickable = true
+	_area.input_pickable = clickable
 	offered.emit()
 
 

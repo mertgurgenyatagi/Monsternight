@@ -88,6 +88,8 @@ var _onlookers: Array[BoardPiece] = [] # the finished pieces, in finish order, s
 var _front: Node2D # over the pieces: an icon that springs up stands here, so no piece hides it
 var _settling: Tween # the camera's glide onto a piece that has just stopped
 var _last_turn_shown := false
+var _note: TurnNote # online: whose move it is
+var _rolled := 0 # online: the face the host rolled for this turn
 var _track_name := "" # the board music now chosen, by where the leader is
 
 
@@ -122,6 +124,9 @@ func _ready() -> void:
 	_hud = Hud.new()
 	add_child(_hud)
 	_hud.track_pieces(_by_monster)
+	if Online.active:
+		_note = TurnNote.new()
+		_hud.add_child(_note)
 	_challenge = Challenge.new()
 	_hud.add_child(_challenge)
 	_frame = MinigameFrame.new()
@@ -181,13 +186,19 @@ func land(player: Dictionary, id: String) -> void:
 	if kind in Space.DUELS:
 		if _settling and _settling.is_running():
 			await _settling.finished
+		_say("ONLINE_CHALLENGE", "ONLINE_CHALLENGE_MINE", player)
 		var choice := await _challenge.ask(player)
+		_say_clear()
 		if not choice.is_empty() and choice.stake == Challenge.WALK:
 			PaperMotion.tilt(piece_for(player), 9.0)
 			await get_tree().create_timer(0.5, false).timeout
 			return
 		if not choice.is_empty():
-			var outcome: Dictionary = await _frame.play(player, choice.opponent, choice.stake, kind)
+			var outcome: Dictionary
+			if Online.active:
+				outcome = await _fate(player, choice.opponent)
+			else:
+				outcome = await _frame.play(player, choice.opponent, choice.stake, kind)
 			_track_name = "" # the duel's music gives way to the leader's track
 			_follow_leader()
 			await duel_end(outcome.winner, outcome.loser, player, choice.stake)
@@ -372,11 +383,15 @@ func _play_turns() -> void:
 		await _camera.glide_to(piece.global_position.x).finished
 		_hud.set_active(player)
 		Sound.play("turn_start")
+		_say("ONLINE_ROLLING", "ONLINE_ROLL_MINE", player)
 		var by_click := await _offer_die(piece)
-		var face := Match.roll()
+		_say_clear()
+		var face := Match.roll(_rolled)
 		var bonus := Match.roll_bonus(player)
 		if not by_click:
 			await _die.nudge().finished
+			if Online.active:
+				PowerPop.show_over(_front, _die.position + DIE_POP * POP_SCALE, tr("POP_AUTO"), POP_SCALE)
 		_lift_candle()
 		await _die.tumble(face)
 		await get_tree().create_timer(SHOW_BEAT, false).timeout
@@ -404,6 +419,33 @@ func _play_turns() -> void:
 				await _last_turn()
 			else:
 				await get_tree().create_timer(0.2, false).timeout
+
+
+# Online, a minigame is settled by the host for now (the games themselves come over the network in
+# the next part): a banner says Fate decides, and the host's coin names the winner. The challenger
+# is side 0, so a 0 is their win.
+func _fate(challenger: Dictionary, opponent: Dictionary) -> Dictionary:
+	var answer := await Online.decide("fate", challenger, 0.0, func() -> int: return randi() % 2)
+	var challenger_won := int(answer.value) == 0
+	await _banner(tr("ONLINE_FATE"), 1.4)
+	return {"winner": challenger if challenger_won else opponent,
+			"loser": opponent if challenger_won else challenger, "rounds": []}
+
+
+# Online, the note says whose move it is: `others` for everyone else (with the player's name in it),
+# `mine` for the player's own copy.
+func _say(others: String, mine: String, player: Dictionary) -> void:
+	if _note == null:
+		return
+	if Online.is_mine(player):
+		_note.say(tr(mine), true)
+	else:
+		_note.say(tr(others) % player.name)
+
+
+func _say_clear() -> void:
+	if _note:
+		_note.clear()
 
 
 # Dracula landed: "Drain!" pops over him, and from each victim nearby a drop falls off the portrait
@@ -547,7 +589,9 @@ func _close_curtain() -> void:
 func _choose(piece: BoardPiece, fork: String) -> void:
 	await get_tree().process_frame # so a caller can await the signal choose_branch returns
 	_camera.glide_to(BoardPath.node(fork).pos.x + FORK_VIEW, 0.6)
-	var chosen := await _branch.ask(fork, _path_view)
+	_say("ONLINE_PATH", "ONLINE_PATH_MINE", piece.player)
+	var chosen := await _branch.ask(fork, _path_view, piece.player)
+	_say_clear()
 	_camera.follow(piece)
 	piece.branch_chosen.emit(chosen)
 
@@ -854,6 +898,7 @@ func _offer_die(piece: BoardPiece) -> bool:
 	var rows := ceili(_crowds.get(piece.player.space, []).size() / float(CROWD_ROW))
 	var at: Vector2 = piece.position - Vector2(0, DIE_RISE + CROWD_BACK * maxi(rows - 1, 0))
 	_die.place(at)
+	_die.clickable = Online.is_mine(piece.player)
 	_candle.rotation = 0.0
 	_candle.position = at + CANDLE_SIDE
 	_candle.set_meta("rest_position", _candle.position)
@@ -861,6 +906,21 @@ func _offer_die(piece: BoardPiece) -> bool:
 	_candle.visible = true
 	PaperMotion.pop_in(_candle)
 	_candle.start(TURN_SECONDS)
+	if Online.active:
+		# The host rolls: the click only asks, and the face comes back with everyone's answer.
+		var player: Dictionary = piece.player
+		var on_ask := Online.submit.bind({})
+		if Online.is_mine(player):
+			_die.clicked.connect(on_ask)
+		var answer := await Online.decide("roll", player, TURN_SECONDS,
+				func() -> Dictionary: return {},
+				func(_v: Variant) -> bool: return true,
+				func(_v: Variant) -> Dictionary: return {"face": randi_range(1, 6)})
+		if Online.is_mine(player):
+			_die.clicked.disconnect(on_ask)
+		_rolled = int(answer.value.face)
+		return not answer.auto
+	_rolled = 0
 	var on_click := _decided.emit.bind(true)
 	var on_out := _decided.emit.bind(false)
 	_die.clicked.connect(on_click)
