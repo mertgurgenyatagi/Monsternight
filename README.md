@@ -30,7 +30,8 @@ What they mean in practice is in [Art and audio](docs/art_and_audio.md#principle
 - **Part 29 is done:** the board for each lobby size (3 to 8 players), rolled fresh every match, with the four minigame spaces. Notes in `docs/microplan.md`.
 - **Part 30 is done:** the passive powers (Wolf Man, Cthulhu, Death, Frankenstein, Dorian), power lines in monster select, and the power pops. Notes in `docs/microplan.md`.
 - **Microplan 11 is done:** parts 31 to 33 are planned in `docs/microplan.md` (Dracula and Medusa, the online spike against a local relay, the minigame frame). The roadmap still ends at part 43.
-- **Next: part 31** (Powers II, Dracula and Medusa).
+- **Part 31 is done:** Dracula's drain and Medusa's stone with its crack (`BoardPath.nearby`, `Match.drain/petrify`, the skip in `next_player`). Notes in `docs/microplan.md`.
+- **Next: part 32** (the online spike).
 
 **Keep the raws.** They're the sources, and the processed files can always be rebuilt from them.
 

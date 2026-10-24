@@ -40,6 +40,7 @@ const START_X := BoardLayout.LEAD_IN * 0.56
 static var _nodes := {}
 static var _stretch_ids := {} # stretch id -> its space ids in order
 static var _kinds := {} # stretch id -> its kinds string, from `configure`
+static var _previous := {} # id -> the ids that lead to it, built with `_nodes`
 
 
 ## Sets up the road for a lobby of `size` players with these rolled `kinds` (`BoardRoller.roll`),
@@ -49,6 +50,7 @@ static func configure(size: int, kinds: Dictionary) -> void:
 	_kinds = kinds
 	_nodes.clear()
 	_stretch_ids.clear()
+	_previous.clear()
 
 
 static func node(id: String) -> Dictionary:
@@ -71,6 +73,27 @@ static func next(id: String) -> Array:
 
 static func is_fork(id: String) -> bool:
 	return next(id).size() > 1
+
+
+## The ids that lead to this one: two where the paths join, nothing at the start.
+static func previous(id: String) -> Array:
+	_build()
+	return _previous.get(id, [])
+
+
+## The ids that count as nearby for a landing on `id`: the space itself, one behind and one ahead,
+## following the road (characters.md). At a fork, ahead is the first space of both paths; where the
+## paths join, behind is the last space of both. The start and the finish are safe, so they are never
+## nearby, and nothing is nearby for a landing on them.
+static func nearby(id: String) -> Array:
+	var node_ := node(id)
+	if node_.is_empty() or id == START or id == FINISH:
+		return []
+	var result := [id]
+	for other in previous(id) + next(id):
+		if other != START and other != FINISH and other not in result:
+			result.append(other)
+	return result
 
 
 ## Every node's id, the start first.
@@ -112,6 +135,7 @@ static func report() -> Array[String]:
 static func _build() -> void:
 	if not _nodes.is_empty():
 		return
+	_previous.clear()
 	if _kinds.is_empty():
 		configure(4, BoardRoller.roll(4, RandomNumberGenerator.new()))
 	_add(START, Vector2(START_X, BoardLayout.lane_y(BoardLayout.Lane.MAIN, START_X)),
@@ -149,6 +173,8 @@ static func _add(id: String, pos: Vector2, lane: BoardLayout.Lane, kind: String,
 
 static func _link(id: String, following: Array) -> void:
 	_nodes[id].next = following
+	for other in following:
+		_previous[other] = _previous.get(other, []) + [id]
 
 
 # The x of `count` spaces spread evenly along a lane's curve, by its length, not just by x, so a

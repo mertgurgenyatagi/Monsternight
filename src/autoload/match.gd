@@ -37,6 +37,10 @@ var current := 0
 ## The players who have reached the castle gate, in the order they got there.
 var finish_order: Array[Dictionary] = []
 
+## The players whose stone cracked in the last `next_player`: their turn was skipped. The board
+## reads and clears this with `take_cracked` to show it.
+var cracked: Array[Dictionary] = []
+
 # Set once turn `turns` has been played to its end.
 var _turns_done := false
 
@@ -73,13 +77,15 @@ func start(raw_names: Array[String]) -> bool:
 	for i in raw_names.size():
 		players.append({"name": clean_name(raw_names[i], i), "monster": "", "space": BoardPath.START,
 				"blood": MAX_BLOOD, "coins": 0, "finished": false, "deaths": 0, "arrived": 0,
-					"duels_started": 0, "challenged": 0, "duels_won": 0, "spike_blood": 0})
+					"duels_started": 0, "challenged": 0, "duels_won": 0, "spike_blood": 0,
+					"stone": false, "just_missed": false})
 	_arrivals = 0
 	_turns_done = false
 	turns = TURNS_BY_LOBBY[raw_names.size()]
 	_seed_board()
 	board_kinds = BoardRoller.roll(raw_names.size(), board_rng)
 	finish_order.clear()
+	cracked.clear()
 	turn = 1
 	current = 0
 	print("Match started: ", players)
@@ -101,6 +107,7 @@ func _seed_board() -> void:
 func reset() -> void:
 	players.clear()
 	finish_order.clear()
+	cracked.clear()
 	turn = 1
 	current = 0
 	_arrivals = 0
@@ -173,10 +180,13 @@ func over() -> bool:
 
 
 ## Passes the turn to the next player who hasn't finished, and to the next turn after the last
-## player. Returns false, changing nothing, when the match is `over`.
+## player. A player turned to stone (Medusa) is passed over: the stone cracks, they are safe from the
+## next one until they have moved, and they go into `cracked` for the board to show. Returns false,
+## changing nothing but that, when the match is `over`.
 func next_player() -> bool:
 	if over():
 		return false
+	players[current].just_missed = false # they have moved since the last stone
 	var index := current
 	var wrapped := false
 	for _step in players.size():
@@ -187,13 +197,69 @@ func next_player() -> bool:
 		if wrapped and turn >= turns:
 			_turns_done = true
 			return false
-		if not players[index].finished:
+		var candidate: Dictionary = players[index]
+		if candidate.finished:
+			continue
+		if candidate.stone:
+			candidate.stone = false
+			candidate.just_missed = true
+			cracked.append(candidate)
+			print("Stone cracked: ", candidate.name, ", turn skipped")
 			if wrapped:
 				turn += 1
+				wrapped = false
 			current = index
-			print("Next: ", players[index].name, ", turn ", turn)
-			return true
+			continue
+		if wrapped:
+			turn += 1
+		current = index
+		print("Next: ", candidate.name, ", turn ", turn)
+		return true
 	return false
+
+
+## The players whose turn was just skipped by their stone cracking, in the order it happened. Clears
+## the list.
+func take_cracked() -> Array[Dictionary]:
+	var result := cracked.duplicate()
+	cracked.clear()
+	return result
+
+
+## The other players near the one who has just landed (`BoardPath.nearby`): not finished, and none
+## while the lander is on the start or the finish. Only a landing from a roll calls this.
+func nearby_players(player: Dictionary) -> Array[Dictionary]:
+	var near := BoardPath.nearby(player.space)
+	var result: Array[Dictionary] = []
+	for other in players:
+		if not is_same(other, player) and not other.finished and other.space in near:
+			result.append(other)
+	return result
+
+
+## Dracula landed: each player nearby with 2 or more blood loses 1 (through `change_blood`, so
+## Death's floor holds) and Dracula gains 1 for each, up to his most. The victims lose even when
+## he is full. Returns the victims who really lost blood.
+func drain(player: Dictionary) -> Array[Dictionary]:
+	var victims: Array[Dictionary] = []
+	for other in nearby_players(player):
+		if other.blood >= 2 and change_blood(other, -1) != 0:
+			change_blood(player, 1)
+			victims.append(other)
+	print("Drain: ", player.name, " took blood from ", victims.map(func(p: Dictionary) -> String: return p.name))
+	return victims
+
+
+## Medusa landed: each player nearby who isn't stone already turns to stone and will miss their next
+## turn, except one who just missed a turn. Returns the players turned to stone.
+func petrify(player: Dictionary) -> Array[Dictionary]:
+	var turned: Array[Dictionary] = []
+	for other in nearby_players(player):
+		if not other.stone and not other.just_missed:
+			other.stone = true
+			turned.append(other)
+	print("Petrify: ", player.name, " turned ", turned.map(func(p: Dictionary) -> String: return p.name))
+	return turned
 
 
 ## Puts the player on this space of the path, the one rules call that changes where they stand.
