@@ -15,9 +15,11 @@ const TAG_SIZE := Vector2(172, 52)
 const TAG_INK := Color("2a1a22")
 const LAST_INK := Color("fbe9d0")
 const LAST_COLOR := Color("c0282e")
+const TRACK_AT := Vector2(960, 284) # under the counters, even of the active, lowered portrait
 
 var _portraits := {} # monster id -> HudPortrait
 var _tag: Node2D
+var _track: ProgressTrack
 var _tag_paper: Sprite2D
 var _tag_label: Label
 var _shown_turn := 1
@@ -39,6 +41,10 @@ func _ready() -> void:
 		_portraits[player.monster] = portrait
 		portrait.picked.connect(portrait_clicked.emit.bind(player))
 	_make_tag()
+	_track = ProgressTrack.new()
+	_track.position = TRACK_AT
+	_track.modulate.a = 0.0
+	add_child(_track)
 	_shown_turn = Match.turn
 	_show_turn()
 
@@ -51,11 +57,18 @@ func come_in() -> void:
 		portrait.visible = true
 		PaperMotion.drop_in(portrait, 320.0, 0.6, i * DROP_GAP)
 		i += 1
+	create_tween().tween_property(_track, "modulate:a", 1.0, 0.6).set_delay(i * DROP_GAP)
 	_tag.visible = true
 	PaperMotion.slide_in(_tag, -TAG_SIZE.x, i * DROP_GAP + 0.3, 0.6)
 
 
+## The track under the portraits shows how far along each player's piece is.
+func track_pieces(pieces: Dictionary) -> void:
+	_track.follow(Match.players, pieces)
+
+
 func set_active(player: Dictionary) -> void:
+	_track.set_active(player.monster)
 	for id in _portraits:
 		var portrait: HudPortrait = _portraits[id]
 		var on: bool = id == player.monster

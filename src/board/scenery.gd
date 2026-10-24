@@ -16,13 +16,13 @@ const GROUND_OVERLAP := 360.0
 const FOG_OVERLAP := 900.0
 ## How thick the fog lies over each location: the foreground wisps, and a thick bank behind the
 ## houses where it's high.
-const FOG := {"village": 0.75, "graveyard": 0.35, "forest": 0.0, "swamp": 0.7, "castle": 0.0}
+const FOG := {"village": 0.6, "graveyard": 0.25, "forest": 0.0, "swamp": 0.55, "castle": 0.0}
 ## How much of the foreground fog stays, so the road and what stands on it read clearly.
 const FOREGROUND_FOG := 0.5
 ## The brightness of the layers behind the road and of the ground itself: dimmer, so the spaces
 ## and the monsters stand out.
 const DIM := {"far": 0.78, "mid": 0.74, "ground": 0.8}
-const FOG_BANK_FROM := 0.6
+const FOG_BANK_FROM := 0.58
 ## How much lower a location's ground lies than the others, to show what's behind it.
 const GROUND_DROP := {"swamp": 110.0}
 const WATER_Y := 700.0

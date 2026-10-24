@@ -19,7 +19,7 @@ const FACES: Array[Texture2D] = [
 ]
 const DROP_HEIGHT := 700.0
 const TOSS_HEIGHT := 170.0
-const TOSS_TIME := 0.6
+const TOSS_TIME := 0.4
 
 var _sprite: Sprite2D
 var _area: Area2D
@@ -84,7 +84,7 @@ func _offer() -> void:
 	rotation = 0.0
 	_show(randi_range(1, 6))
 	visible = true
-	await PaperMotion.drop_in(self, DROP_HEIGHT, 0.55).finished
+	await PaperMotion.drop_in(self, DROP_HEIGHT, 0.4).finished
 	Sound.play("die_land")
 	PaperMotion.squash(self)
 	PaperMotion.breathe(_sprite, 7.0, 2.1)
@@ -103,9 +103,9 @@ func _tumble(value: int) -> void:
 		_roll.kill()
 	_roll = create_tween()
 	# A quick crouch, with the idle wobble settling out.
-	_roll.tween_property(_sprite, "scale", Vector2(1.12, 0.8), 0.2) 			.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
-	_roll.parallel().tween_property(_sprite, "position", Vector2.ZERO, 0.2)
-	_roll.parallel().tween_property(_sprite, "rotation", 0.0, 0.2)
+	_roll.tween_property(_sprite, "scale", Vector2(1.12, 0.8), 0.12) 			.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	_roll.parallel().tween_property(_sprite, "position", Vector2.ZERO, 0.12)
+	_roll.parallel().tween_property(_sprite, "rotation", 0.0, 0.12)
 	_roll.tween_callback(Sound.play.bind("die_roll"))
 	_roll.tween_method(_toss.bind(home), 0.0, 1.0, TOSS_TIME)
 	_roll.tween_callback(func() -> void:
@@ -120,7 +120,7 @@ func _tumble(value: int) -> void:
 	_bounce(14.0, home)
 	_squash_step(Vector2(1.08, 0.9), 0.04)
 	# The number pops so it reads.
-	_roll.tween_property(_sprite, "scale", Vector2.ONE * 1.22, 0.1) \
+	_roll.tween_property(_sprite, "scale", Vector2.ONE * 1.22, 0.07) \
 			.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 	_roll.tween_property(_sprite, "scale", Vector2.ONE, 0.3) \
 			.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)

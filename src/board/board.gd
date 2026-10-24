@@ -24,7 +24,8 @@ const INTRO_HOLD := 2.0 # on the castle gate, counted from when the board starts
 const INTRO_GLIDE := 7.5
 const SKIP_GLIDE := 0.9
 const DROP_GAP := 0.45 # between one piece dropping onto the start and the next
-const HOP_BEAT := 0.12 # between two hops, so a roll of 6 can be counted by ear
+const HOP_PACE := 0.42 # the time an in-between hop takes, against a hop's usual; it flows on into the next
+const LAND_PACE := 0.7 # the same for the last hop of a walk
 const FORK_VIEW := 330.0 # the camera looks this far past a fork while the choice is open
 const CROWD_STEP := 52.0 # across a space, from one piece to the next
 const CROWD_ROW := 4 # pieces in a row, then the next row stands behind
@@ -34,8 +35,8 @@ const TURN_SECONDS := 5.0 # the candle for a roll
 const DIE_RISE := 300.0 # from the piece's feet to the die's middle, over its head
 const CANDLE_SCALE := 0.5
 const CANDLE_SIDE := Vector2(126, 70) # from the die's middle to the candle's base
-const SHOW_BEAT := 0.5 # the rolled number stays on show this long
-const TURN_BEAT := 0.4 # after a piece lands, before the camera glides on
+const SHOW_BEAT := 0.25 # the rolled number stays on show this long
+const TURN_BEAT := 0.15 # after a piece lands, before the camera glides on
 const COIN_ICON := preload("res://assets/art/icons/coin_rim.png")
 const BLOOD_ICON := preload("res://assets/art/icons/blood.png")
 const COIN_SIZE := 78.0 # a flying coin at the token, in px; the HUD's counter is 30
@@ -107,6 +108,7 @@ func _ready() -> void:
 	lanes.add_child(_branch)
 	_hud = Hud.new()
 	add_child(_hud)
+	_hud.track_pieces(_by_monster)
 	_challenge = Challenge.new()
 	_hud.add_child(_challenge)
 	_duel = Duel.new()
@@ -235,7 +237,7 @@ func die(player: Dictionary) -> void:
 	_follow_leader()
 	await get_tree().create_timer(REVIVE_BEAT + 0.6, false).timeout
 	piece.start_sway()
-	_settling = _camera.glide_to(piece.global_position.x, 0.6)
+	_settling = _camera.glide_to(piece.global_position.x, 0.4)
 
 
 ## The player has reached the castle gate: `Match.finish` gives them their place, the gate's doors swing
@@ -372,7 +374,7 @@ func _play_turns() -> void:
 			if Match.turn >= Match.TURNS and not _last_turn_shown:
 				await _last_turn()
 			else:
-				await get_tree().create_timer(0.5, false).timeout
+				await get_tree().create_timer(0.2, false).timeout
 
 
 # Turn `TURNS` begins: a sting, a flash of the sky, the counter pops and a banner drops in with a
@@ -809,7 +811,7 @@ func _walk(player: Dictionary, piece: BoardPiece, steps: int) -> void:
 	var here: String = player.space
 	# The piece steps out in front of its crowd, which closes up behind it.
 	_leave(here, piece)
-	await PaperMotion.move_to(piece, _slot(here, 0, 1), 0.18).finished
+	await PaperMotion.move_to(piece, _slot(here, 0, 1), 0.1).finished
 	var left := steps
 	while left > 0 and not BoardPath.next(here).is_empty():
 		var to: String = BoardPath.next(here)[0]
@@ -822,12 +824,11 @@ func _walk(player: Dictionary, piece: BoardPiece, steps: int) -> void:
 			_crowds[to] = _crowds.get(to, []) + [piece]
 			target = _slot_of(piece, to)
 			_settle(to, piece)
-		await PaperMotion.hop_to(piece, target, func() -> void: Sound.play("hop"), last).finished
+		await PaperMotion.hop_to(piece, target, func() -> void: Sound.play("hop"), last, 44.0,
+				LAND_PACE if last else HOP_PACE).finished
 		here = to
 		if BoardPath.is_fork(here):
 			_path_view.nudge_signpost(here)
-		if not last:
-			await get_tree().create_timer(HOP_BEAT, false).timeout
 	Match.move_to(player, here)
 	_follow_leader()
 	piece.start_sway()

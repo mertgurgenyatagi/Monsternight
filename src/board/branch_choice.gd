@@ -1,8 +1,7 @@
 class_name BranchChoice
 extends Node2D
 ## The choice at a fork. Two paper arrows spring up beside the signpost, the upper one pointing up
-## to the upper path and the lower one down to the lower path, each with its stretch's name and a
-## few of that path's icons. A candle burns for `SECONDS`. A click on an arrow, or the candle going
+## to the upper path and the lower one down to the lower path, and nothing else. A candle burns for `SECONDS`. A click on an arrow, or the candle going
 ## out, decides. Hovering an arrow lights the path it leads to and dims the other. It lives in the
 ## board's Lanes layer over the pieces. Only the arrows take clicks.
 
@@ -10,21 +9,15 @@ extends Node2D
 signal _decided(by_click: bool)
 
 const ARROW := preload("res://assets/art/board/arrow.png")
-const ICON := "res://assets/art/icons/%s_rim.png"
 const SECONDS := 10.0
 const CANDLE_SCALE := 0.5
 const CANDLE_AT := Vector2(-60, -230) # the candle floats over the pieces, from the fork's token
 const ARROW_AT := [Vector2(260, -470), Vector2(260, -340)] # the upper and the lower arrow's middle
 const ARROW_TURN := [-22.0, 20.0] # degrees
 const ARROW_SCALE := 1.1
-const TAG_AT := Vector2(150, 0) # from the arrow's middle to the middle of its name and icons
-const ICON_SIZE := 46.0
-const ICONS_MAX := 4
 const POP_GAP := 0.18
 const CLICK_BEAT := 0.35
 const TIMEOUT_BEAT := 0.55
-const INK := Color("f4e7c8")
-const OUTLINE := Color("1a1022")
 
 var _candle: Candle
 var _options: Array[Node2D] = []
@@ -120,47 +113,7 @@ func _add_option(index: int, fork_at: Vector2) -> void:
 	area.mouse_exited.connect(_hover.bind(index, false))
 	option.add_child(area)
 	_areas.append(area)
-	option.add_child(_tag(_stretches[index]))
 	_options.append(option)
-
-
-# The stretch's name over a row of a few of its icons, to the right of the arrow.
-func _tag(stretch: String) -> Node2D:
-	var tag := Node2D.new()
-	tag.position = TAG_AT
-	var label := Label.new()
-	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	label.text = tr("STRETCH_" + stretch.to_upper())
-	label.size = Vector2(300, 40)
-	label.position = Vector2(-150, -50)
-	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	label.add_theme_font_override("font", preload("res://assets/fonts/display.ttf"))
-	label.add_theme_font_size_override("font_size", 34)
-	label.add_theme_color_override("font_color", INK)
-	label.add_theme_color_override("font_outline_color", OUTLINE)
-	label.add_theme_constant_override("outline_size", 8)
-	tag.add_child(label)
-	var kinds := _icon_kinds(stretch)
-	for i in kinds.size():
-		var icon := Sprite2D.new()
-		icon.texture = load(ICON % kinds[i])
-		icon.scale = Vector2.ONE * ICON_SIZE / icon.texture.get_height()
-		icon.position = Vector2((i - (kinds.size() - 1) / 2.0) * (ICON_SIZE + 10.0), 28)
-		tag.add_child(icon)
-	return tag
-
-
-# A few of the kinds a path has, the most common first, never an empty space. Read from
-# `BoardPath`, not typed by hand.
-func _icon_kinds(stretch: String) -> Array:
-	var counts := {}
-	for id in BoardPath.stretch(stretch):
-		var kind: String = BoardPath.node(id).kind
-		if kind != "empty":
-			counts[kind] = counts.get(kind, 0) + 1
-	var kinds := counts.keys()
-	kinds.sort_custom(func(a: String, b: String) -> bool: return counts[a] > counts[b])
-	return kinds.slice(0, ICONS_MAX)
 
 
 func _hover(index: int, over: bool) -> void:

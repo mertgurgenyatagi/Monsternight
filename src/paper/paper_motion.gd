@@ -183,28 +183,29 @@ static func fly_to(piece: Node2D, target: Vector2, target_scale: Vector2, durati
 
 ## Hops from where it stands to `target`, which becomes its rest position: a quick crouch, a low
 ## arc and a squash on landing. `heavy` lands harder, with a bigger squash and a slower settle,
-## for the last hop of a walk. `landed` is called as it touches down.
+## for the last hop of a walk. `landed` is called as it touches down. `pace` is the time every part
+## takes, against the usual: a smaller one is a quicker hop.
 static func hop_to(piece: Node2D, target: Vector2, landed := Callable(), heavy := false,
-		arc := 44.0) -> Tween:
+		arc := 44.0, pace := 1.0) -> Tween:
 	var from := piece.position
 	var rest := _rest_scale(piece)
 	piece.set_meta("rest_position", target)
 	_kill(piece, "lift")
 	_kill(piece, "scale")
 	var tween := _fresh(piece, "move")
-	tween.tween_property(piece, "scale", rest * Vector2(1.1, 0.8), 0.07) 			.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	tween.tween_property(piece, "scale", rest * Vector2(1.1, 0.8), 0.07 * pace) 			.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 	tween.tween_method(func(t: float) -> void:
 			piece.position = from.lerp(target, t) - Vector2(0, arc * 4.0 * t * (1.0 - t))
 			piece.scale = rest * Vector2(1.0 - 0.1 * sin(t * PI), 1.0 + 0.14 * sin(t * PI)),
-			0.0, 1.0, 0.27).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN_OUT)
+			0.0, 1.0, 0.27 * pace).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN_OUT)
 	if landed.is_valid():
 		tween.tween_callback(landed)
 	var squash_to := Vector2(1.22, 0.68) if heavy else Vector2(1.1, 0.84)
-	tween.tween_property(piece, "scale", rest * squash_to, 0.06) 			.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	tween.tween_property(piece, "scale", rest * squash_to, 0.06 * pace) 			.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 	if heavy:
-		tween.tween_property(piece, "scale", rest, 0.4) 				.set_trans(Tween.TRANS_ELASTIC).set_ease(Tween.EASE_OUT)
+		tween.tween_property(piece, "scale", rest, 0.4 * pace) 				.set_trans(Tween.TRANS_ELASTIC).set_ease(Tween.EASE_OUT)
 	else:
-		tween.tween_property(piece, "scale", rest, 0.12) 				.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+		tween.tween_property(piece, "scale", rest, 0.12 * pace) 				.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 	return tween
 
 

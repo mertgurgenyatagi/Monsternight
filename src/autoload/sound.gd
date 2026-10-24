@@ -30,7 +30,7 @@ const TRIM := {
 	"timer_low": 1.5,
 	"timer_out": -1.0,
 	"ui_click": 1.0,
-	"ui_hover": 2.0,
+	"ui_hover": -7.0,
 	"voices/cthulhu_lose": -2.0,
 	"voices/cthulhu_pick": -3.0,
 	"voices/cthulhu_win": -3.0,

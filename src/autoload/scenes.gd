@@ -4,15 +4,15 @@ extends Node
 ## Sound for it in its _ready.
 
 const SHEET_COLOR := Color("3a2140")
-const PAPER_STRENGTH := 0.4
+const PAPER_STRENGTH := 0.28
 
 var _sheet: NinePatchRect
+var _cursor: Sprite2D
 var _busy := false
 
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
-	Input.set_custom_mouse_cursor(preload("res://assets/art/ui/cursor.png"))
 
 	var sheet_layer := CanvasLayer.new()
 	sheet_layer.layer = 90
@@ -39,10 +39,25 @@ func _ready() -> void:
 	paper.modulate.a = PAPER_STRENGTH
 	paper_layer.add_child(paper)
 
+	# The operating system's cursor moves at the display's pace, so the hand is drawn here instead,
+	# over everything, and moves with the game's 25 frames a second.
+	Input.mouse_mode = Input.MOUSE_MODE_HIDDEN
+	var cursor_layer := CanvasLayer.new()
+	cursor_layer.layer = 128
+	add_child(cursor_layer)
+	_cursor = Sprite2D.new()
+	_cursor.texture = preload("res://assets/art/ui/cursor.png")
+	_cursor.centered = false
+	cursor_layer.add_child(_cursor)
 
-# Set from here rather than in the project settings, which leak the cursor texture at exit.
+
+func _process(_delta: float) -> void:
+	_cursor.position = get_viewport().get_mouse_position()
+
+
+# The hidden cursor comes back for whatever runs after the game.
 func _exit_tree() -> void:
-	Input.set_custom_mouse_cursor(null)
+	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 
 
 ## Slides the paper sheet down over the screen, swaps the scene behind it, and slides it on
