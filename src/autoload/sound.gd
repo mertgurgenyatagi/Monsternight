@@ -6,6 +6,51 @@ const PITCH_JITTER := 0.05
 const VOICES := 8
 const DUCK_DB := -16.0 # how far a sting pushes the music down
 
+## A nudge in dB for the sounds whose files sit well above or below the rest (part 23's loudness
+## pass, by mean level; the files stay as they are). Untested by ear.
+const TRIM := {
+	"blood_gain": 1.0,
+	"blood_lose": -1.0,
+	"card_slam": 1.5,
+	"coin_flip": 2.5,
+	"coin_gain": 1.0,
+	"coin_lose": 1.0,
+	"countdown": -2.5,
+	"countdown_go": 1.0,
+	"die_land": -3.0,
+	"drumroll": -2.0,
+	"flip": -1.0,
+	"fly": 1.0,
+	"hop_1": -3.0,
+	"hop_2": -3.0,
+	"hop_3": -2.5,
+	"respawn": -2.5,
+	"spikes": 2.0,
+	"stat": -1.0,
+	"timer_low": 1.5,
+	"timer_out": -1.0,
+	"ui_click": 1.0,
+	"ui_hover": 2.0,
+	"voices/cthulhu_lose": -2.0,
+	"voices/cthulhu_pick": -3.0,
+	"voices/cthulhu_win": -3.0,
+	"voices/death_lose": -2.0,
+	"voices/death_win": 1.5,
+	"voices/dorian_lose": 1.0,
+	"voices/dorian_pick": 2.0,
+	"voices/dorian_win": 2.0,
+	"voices/dracula_lose": 1.0,
+	"voices/dracula_win": 2.5,
+	"voices/frankenstein_lose": -2.5,
+	"voices/frankenstein_pick": -2.5,
+	"voices/hyde_lose": -2.0,
+	"voices/hyde_win": 2.0,
+	"voices/medusa_pick": 1.0,
+	"voices/medusa_win": 2.0,
+	"voices/wolfman_lose": 1.0,
+	"voices/wolfman_pick": -1.5,
+}
+
 var _voices: Array[AudioStreamPlayer] = []
 var _next_voice := 0
 var _last_hop := 0
@@ -54,7 +99,7 @@ func play(sound: String, volume_db := 0.0, pitch := 1.0) -> void:
 	var player := _voices[_next_voice]
 	_next_voice = (_next_voice + 1) % VOICES
 	player.stream = _stream(sound if "/" in sound else "sfx/" + sound)
-	player.volume_db = volume_db
+	player.volume_db = volume_db + TRIM.get(sound, 0.0)
 	player.pitch_scale = pitch * randf_range(1.0 - PITCH_JITTER, 1.0 + PITCH_JITTER)
 	player.play()
 
