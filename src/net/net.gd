@@ -1,7 +1,7 @@
 extends Node
 ## Online play's one connection: a WebSocketPeer to the relay (tools/relay), in a room named by a
 ## 4-letter code. The protocol is our own JSON. Out: {to, data} (to 0 is everyone else). In:
-## hello (my id, whether I am the host, the peers), join, leave, msg, and full or missing when the
+## hello (my id, whether I am the host, the peers), join, leave, host (the host left; this is the new one), msg, and full or missing when the
 ## relay refuses. `send` and `broadcast` carry a kind and a payload, so the game never sees JSON.
 ## Nothing here waits on a timer of a peer's answer (a background tab throttles its timers).
 
@@ -10,6 +10,7 @@ signal refused(reason: String) ## "full", "missing" or "closed" before hello
 signal disconnected ## the socket dropped for good, after the one retry
 signal peer_joined(id: int)
 signal peer_left(id: int)
+signal host_changed(id: int) ## the host left and the relay named a new one (possibly me: `is_host` is already set)
 signal received(from: int, kind: String, payload: Dictionary)
 
 const DEFAULT_RELAY := "ws://127.0.0.1:8787"
@@ -213,6 +214,9 @@ func _handle(msg: Dictionary) -> void:
 		"leave":
 			peers.erase(int(msg.id))
 			peer_left.emit(int(msg.id))
+		"host":
+			is_host = int(msg.id) == my_id
+			host_changed.emit(int(msg.id))
 		"msg":
 			received.emit(int(msg.from), msg.kind, msg.payload)
 		"full", "missing":

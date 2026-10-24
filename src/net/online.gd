@@ -12,8 +12,22 @@ extends Node
 ## Something arrived (a submission for the host, a result for the others).
 signal _arrived
 
+## A player's standing changed: `state` is "" (back to normal), "dropped" (their connection left) or
+## "away" (three automatic choices in a row). `name` is the player's.
+signal presence_changed(name: String, state: String)
+## The host left and this copy is the host now.
+signal became_host
+
 ## Extra seconds the host waits for a remote player's answer, for the trip over the relay.
 const GRACE := 1.0
+
+## Automatic choices in a row before a player is marked away.
+const AWAY_AFTER := 3
+## The most seconds the host gives a dropped or away player, by kind of decision.
+const SHORT_SECONDS := {"roll": 1.0, "branch": 2.0, "opponent": 3.0, "stake": 3.0, "monster": 3.0}
+## The least a new host gives the decision it takes over, so the answer the old host's copy had
+## already sent can reach it.
+const TAKEOVER_MIN := 2.0
 
 ## True while a match started from an online lobby is on.
 var active := false
@@ -25,11 +39,16 @@ var bot := false
 var _seq := 0
 var _results := {} # seq -> {kind, value, auto}, waiting for a copy to reach its decide
 var _submits := {} # seq -> {from, kind, value}, waiting for the host to reach its decide
-var _open := {} # the decision this copy is on: {seq, kind, name, sent}
+var _open := {} # the decision this copy is on: {seq, kind, name, sent, value, start, seconds}
+var _dropped := {} # player name -> true, once their connection left
+var _autos := {} # player name -> automatic choices in a row
+var _away := {} # player name -> true
 
 
 func _ready() -> void:
 	Net.received.connect(_on_received)
+	Net.peer_left.connect(_on_peer_left)
+	Net.host_changed.connect(_on_host_changed)
 	var args := OS.get_cmdline_user_args()
 	bot = "--bot" in args or Net.page_param("bot") not in ["", "0"]
 
@@ -42,6 +61,20 @@ func begin(host: int) -> void:
 	_results.clear()
 	_submits.clear()
 	_open = {}
+	_dropped.clear()
+	_autos.clear()
+	_away.clear()
+
+
+## Set before going back to the lobby after a match, so the lobby keeps the room and its seats.
+var back_to_room := false
+
+
+## Leaves the match and the room for good: the others see a dropped player.
+func leave_match() -> void:
+	Match.reset()
+	stop()
+	Net.leave()
 
 
 ## Back to local play.
@@ -51,6 +84,14 @@ func stop() -> void:
 	_results.clear()
 	_submits.clear()
 	_arrived.emit()
+
+
+## "dropped" for a player whose connection left, "away" for one who has let the timers play three
+## choices in a row, otherwise "".
+func status(player_name: String) -> String:
+	if _dropped.has(player_name):
+		return "dropped"
+	return "away" if _away.has(player_name) else ""
 
 
 ## True when this copy is the one that decides for `player`. Always true in local play.
@@ -69,6 +110,7 @@ func submit(value: Variant) -> void:
 	if not can_submit():
 		return
 	_open.sent = true
+	_open.value = value
 	if Net.is_host:
 		_submits[_open.seq] = {"from": Net.my_id, "kind": _open.kind, "value": value}
 		_arrived.emit()
@@ -85,27 +127,37 @@ func decide(kind: String, player: Dictionary, seconds: float, auto: Callable,
 		valid := Callable(), settle := Callable()) -> Dictionary:
 	_seq += 1
 	var seq := _seq
-	_open = {"seq": seq, "kind": kind, "name": player.name, "sent": not is_mine(player)}
+	_open = {"seq": seq, "kind": kind, "name": player.name, "sent": not is_mine(player),
+			"start": Time.get_ticks_msec(), "seconds": seconds}
 	var result: Dictionary
-	if Net.is_host:
-		result = await _host_decides(seq, kind, player, seconds, auto, valid, settle)
-		Net.broadcast("decided", {"seq": seq, "kind": kind, "value": result.value, "auto": result.auto})
-	else:
-		while not _results.has(seq):
+	var promoted := false
+	if not Net.is_host:
+		while not _results.has(seq) and not Net.is_host:
 			if not active:
 				return {"value": null, "auto": true}
 			await _arrived
+		promoted = Net.is_host and not _results.has(seq)
+	if Net.is_host:
+		var left := seconds
+		if promoted and seconds > 0.0: # took over a decision that is already running
+			left = maxf(seconds - (Time.get_ticks_msec() - _open.start) / 1000.0, TAKEOVER_MIN)
+		result = await _host_decides(seq, kind, player, left, auto, valid, settle)
+		Net.broadcast("decided", {"seq": seq, "kind": kind, "value": result.value, "auto": result.auto})
+	else:
 		result = _results[seq]
 		_results.erase(seq)
 		if result.kind != kind:
 			push_error("Online: decision %d is %s here and %s on the host" % [seq, kind, result.kind])
 	_open = {}
+	_note_choice(player.name, seconds > 0.0 and kind != "minigame", result.auto)
 	return {"value": result.value, "auto": result.auto}
 
 
 func _host_decides(seq: int, kind: String, player: Dictionary, seconds: float, auto: Callable,
 		valid: Callable, settle: Callable) -> Dictionary:
-	var wait := seconds + (0.0 if is_mine(player) else GRACE)
+	if SHORT_SECONDS.has(kind) and status(player.name) != "":
+		seconds = minf(seconds, SHORT_SECONDS[kind])
+	var wait := seconds + (0.0 if is_mine(player) or status(player.name) != "" else GRACE)
 	var deadline := Time.get_ticks_msec() + wait * 1000.0
 	if bot and is_mine(player) and seconds > 0.0:
 		_bot_answers(seq, kind, auto)
@@ -140,6 +192,49 @@ func _bot_answers(seq: int, kind: String, auto: Callable) -> void:
 	if _open.get("seq", 0) == seq and can_submit():
 		print("Bot answers ", kind)
 		submit(auto.call())
+
+
+# Counts the player's automatic choices in a row; the same on every copy, because every copy sees
+# the same results.
+func _note_choice(player_name: String, counts: bool, auto: bool) -> void:
+	if not counts:
+		return
+	if not auto:
+		_autos[player_name] = 0
+		if _away.erase(player_name) and not _dropped.has(player_name):
+			presence_changed.emit(player_name, "")
+		return
+	_autos[player_name] = int(_autos.get(player_name, 0)) + 1
+	if _autos[player_name] >= AWAY_AFTER and not _away.has(player_name):
+		_away[player_name] = true
+		if not _dropped.has(player_name):
+			presence_changed.emit(player_name, "away")
+
+
+func _on_peer_left(id: int) -> void:
+	if not active:
+		return
+	for player_name: String in Net.id_by_name:
+		if int(Net.id_by_name[player_name]) == id and not _dropped.has(player_name):
+			_dropped[player_name] = true
+			presence_changed.emit(player_name, "dropped")
+	_arrived.emit()
+
+
+# The relay named a new host. Every copy follows it; if it is this one, the decision that is open
+# becomes this copy's to time, and answers that went to the old host are given again.
+func _on_host_changed(id: int) -> void:
+	if not active:
+		return
+	host_id = id
+	if not _open.is_empty() and _open.sent and _open.has("value") and is_mine({"name": _open.name}):
+		if Net.is_host:
+			_submits[_open.seq] = {"from": Net.my_id, "kind": _open.kind, "value": _open.value}
+		else:
+			Net.send(host_id, "submit", {"seq": _open.seq, "kind": _open.kind, "value": _open.value})
+	if Net.is_host:
+		became_host.emit()
+	_arrived.emit()
 
 
 func _on_received(from: int, kind: String, payload: Dictionary) -> void:

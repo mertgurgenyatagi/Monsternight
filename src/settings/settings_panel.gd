@@ -33,6 +33,8 @@ func _ready() -> void:
 	_language.pressed.connect(_next_language)
 	_language.text = LANGUAGE_NAMES[Settings.language]
 	_in_match.visible = not Match.players.is_empty()
+	if Online.active:
+		_add_leave()
 
 	_dim.color.a = 0.0
 	create_tween().tween_property(_dim, "color:a", 0.45, 0.3)
@@ -42,6 +44,23 @@ func _ready() -> void:
 				_language.mouse_filter = Control.MOUSE_FILTER_STOP)
 	_back.scale = Vector2.ONE
 	_language.scale = Vector2.ONE
+
+
+# Online, Back moves left to make room for Leave, which goes to the title. For the others in the match
+# it is a dropped player.
+func _add_leave() -> void:
+	_back.offset_left = 140.0
+	_back.offset_right = 470.0
+	var leave := PaperButton.new()
+	leave.text = "SETTINGS_LEAVE"
+	leave.position = Vector2(530, 722)
+	leave.size = Vector2(330, 104)
+	_card.add_child(leave)
+	leave.enter(0.5)
+	leave.pressed.connect(func() -> void:
+		Online.leave_match()
+		Scenes.change_to("res://src/title/title.tscn")
+		close())
 
 
 func _input(event: InputEvent) -> void:

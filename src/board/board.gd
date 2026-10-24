@@ -101,6 +101,9 @@ func _enter_tree() -> void:
 	BoardPath.configure(size, Match.board_kinds)
 
 
+var _notices: Array[String] = []
+
+
 func _ready() -> void:
 	Sound.play_music("")
 	print("Board: ", Match.players)
@@ -127,6 +130,11 @@ func _ready() -> void:
 	if Online.active:
 		_note = TurnNote.new()
 		_hud.add_child(_note)
+		Online.presence_changed.connect(_on_presence)
+		Net.host_changed.connect(_on_host_changed)
+		for player in Match.players: # a copy that arrives late still shows who is gone
+			if Online.status(player.name) != "":
+				_hud.set_presence(player, Online.status(player.name))
 	_challenge = Challenge.new()
 	_hud.add_child(_challenge)
 	_frame = MinigameFrame.new()
@@ -418,6 +426,33 @@ func _play_turns() -> void:
 				await _last_turn()
 			else:
 				await get_tree().create_timer(0.2, false).timeout
+
+
+# Online: a player's connection dropped, they went away, or they are back. Their card dims and a
+# short banner says so; the ones who are not on this board (a name that is not a player) are skipped.
+func _on_presence(player_name: String, state: String) -> void:
+	for player in Match.players:
+		if player.name == player_name:
+			_hud.set_presence(player, state)
+			Sound.play("leave" if state != "" else "join")
+			if state != "":
+				_notice(tr("BANNER_DROPPED" if state == "dropped" else "BANNER_AWAY") % player_name)
+
+
+func _on_host_changed(id: int) -> void:
+	for player_name: String in Net.id_by_name:
+		if int(Net.id_by_name[player_name]) == id:
+			_notice(tr("BANNER_HOST") % player_name)
+
+
+# A short banner that waits for the one before it.
+func _notice(text: String) -> void:
+	_notices.append(text)
+	if _notices.size() > 1:
+		return
+	while not _notices.is_empty():
+		await _banner(_notices[0], 1.2)
+		_notices.pop_front()
 
 
 # Online, the note says whose move it is: `others` for everyone else (with the player's name in it),

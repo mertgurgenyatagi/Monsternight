@@ -71,6 +71,7 @@ func setup(minigame: Minigame, players: Array[Dictionary], seed_value: int) -> v
 	MinigameInput.absent = []
 	Net.received.connect(_on_received)
 	Net.peer_left.connect(_on_peer_left)
+	Net.host_changed.connect(_on_host_changed)
 
 
 func _exit_tree() -> void:
@@ -78,6 +79,8 @@ func _exit_tree() -> void:
 		Net.received.disconnect(_on_received)
 	if Net.peer_left.is_connected(_on_peer_left):
 		Net.peer_left.disconnect(_on_peer_left)
+	if Net.host_changed.is_connected(_on_host_changed):
+		Net.host_changed.disconnect(_on_host_changed)
 	MinigameInput.source = Callable()
 	MinigameInput.absent = []
 
@@ -218,6 +221,22 @@ func _on_peer_left(id: int) -> void:
 	if side >= 0 and _host and not _ended:
 		_drop(side)
 		Net.broadcast("mini_absent", {"r": round_id, "side": side})
+
+
+# The host left mid-round. If this copy is the host now, it judges and sends snapshots from here on
+# (its game is the nearest to the old host's), and a duelist who left with the old host is absent.
+func _on_host_changed(_id: int) -> void:
+	if not Net.is_host or _host or _ended:
+		return
+	_host = true
+	game.remote_judge = false
+	_heard = [0.0, 0.0]
+	for side in 2:
+		if _ids[side] != Net.my_id and _ids[side] not in Net.peers:
+			_drop(side)
+			Net.broadcast("mini_absent", {"r": round_id, "side": side})
+	if game.verdict != -2: # this copy's game had already ended and was waiting for the old host
+		_on_game_finished(game.verdict)
 
 
 func _on_received(from: int, kind: String, payload: Dictionary) -> void:
