@@ -25,7 +25,9 @@ What they mean in practice is in [Art and audio](docs/art_and_audio.md#principle
 - **Part 25 is done:** the questionnaires, and the docs updated for the final game.
 - **Part 26 is done:** the final game's 10 images and 14 sounds, made and approved (`docs/assets.md`).
 - **Part 27 is done:** the camera tweak, waiting for the user's verdict on the before-and-after sheet (`screenshots/part_27/1.png`).
-- **Next: the Microplan** (parts 28 to 30).
+- **Microplan 10 is done:** parts 28 to 30 are planned in `docs/microplan.md` (the lobby-size rules, the board for each lobby size, the passive powers). The roadmap now ends at part 43.
+- **Part 28 is done:** the lobby-size rules (turns by lobby size, one finishing trophy, Walk away on swap-only duels). Notes in `docs/microplan.md`.
+- **Next: part 29,** the board for each lobby size.
 
 **Keep the raws.** They're the sources, and the processed files can always be rebuilt from them.
 

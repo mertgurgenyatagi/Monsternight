@@ -2,7 +2,7 @@ extends Control
 ## The setup screen: 2 to 8 paper name cards, one per player. Begin stores the players in
 ## Match once the names are valid; Back returns to the title.
 
-const CARD_COUNT_DEFAULT := 2
+const CARD_COUNT_DEFAULT := 4
 const ROW_MAX := 4
 const SPACING := Vector2(280, 360)
 const ROWS_CENTER_Y := 545.0

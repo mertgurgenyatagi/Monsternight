@@ -3,17 +3,21 @@ extends Node
 ## and their names; later parts add monster, blood, coins, position, trophies and stats to each
 ## player. Online play will have the host run this and send the results to everyone.
 
-const MIN_PLAYERS := 2
+const MIN_PLAYERS := 3
 const MAX_PLAYERS := 8
 const NAME_LENGTH := 12
-const TURNS := 17
+## The turns of a match by the number of players (game_rules.md).
+const TURNS_BY_LOBBY := {3: 20, 4: 17, 5: 15, 6: 14, 7: 13, 8: 12}
 const MAX_BLOOD := 3
 
 ## One dictionary per player. Right after `start` this is the seating order; `roll_turn_order`
 ## reshuffles it, and from then on the array order is the turn order.
 var players: Array[Dictionary] = []
 
-## The turn the match is on, from 1 to `TURNS`.
+## The turns this match lasts, set by `start` from `TURNS_BY_LOBBY`. `reset` leaves it alone.
+static var turns := 17
+
+## The turn the match is on, from 1 to `turns`.
 var turn := 1
 
 ## The index in `players` of the player whose turn it is.
@@ -22,7 +26,7 @@ var current := 0
 ## The players who have reached the castle gate, in the order they got there.
 var finish_order: Array[Dictionary] = []
 
-# Set once turn `TURNS` has been played to its end.
+# Set once turn `turns` has been played to its end.
 var _turns_done := false
 
 # Counts every arrival on a space, so a tie in `leader` goes to whoever got there first.
@@ -61,6 +65,7 @@ func start(raw_names: Array[String]) -> bool:
 					"duels_started": 0, "challenged": 0, "duels_won": 0, "spike_blood": 0})
 	_arrivals = 0
 	_turns_done = false
+	turns = TURNS_BY_LOBBY[raw_names.size()]
 	finish_order.clear()
 	turn = 1
 	current = 0
@@ -118,7 +123,7 @@ func roll() -> int:
 	return value
 
 
-## True when the match is over: turn `TURNS` has been played out, or no more than one player is
+## True when the match is over: turn `turns` has been played out, or no more than one player is
 ## left who hasn't reached the gate.
 func over() -> bool:
 	return _turns_done or players.filter(func(p: Dictionary) -> bool: return not p.finished).size() <= 1
@@ -136,7 +141,7 @@ func next_player() -> bool:
 		if index >= players.size():
 			index = 0
 			wrapped = true
-		if wrapped and turn >= TURNS:
+		if wrapped and turn >= turns:
 			_turns_done = true
 			return false
 		if not players[index].finished:
@@ -288,8 +293,8 @@ func change_coins(player: Dictionary, delta: int) -> int:
 
 ## Every player ranked by trophies, best first: `{player, trophies, finish, gold, duels, rank, by}`.
 ## `finish` is the place at the gate (0 for none), `gold` the coins and `duels` the duels won. `by` says
-## what each trophy kind gave: `{finish, gold, duels}`. 2 trophies for the first finisher, 1 for the
-## second, 1 for the most gold and 1 for the most duels won, a tie giving all of them the trophy and
+## what each trophy kind gave: `{finish, gold, duels}`. 1 trophy for the first finisher only, 1 for the
+## most gold and 1 for the most duels won, a tie giving all of them the trophy and
 ## a count of 0 none. Equal trophies are split by the finishing trophy, then the gold trophy, then the
 ## duel trophy; players still equal share a rank (and keep turn order in the list).
 func results() -> Array:
@@ -302,7 +307,7 @@ func results() -> Array:
 	for i in players.size():
 		var player: Dictionary = players[i]
 		var place := _place(player)
-		var by := {"finish": 2 if place == 1 else (1 if place == 2 else 0),
+		var by := {"finish": 1 if place == 1 else 0,
 				"gold": 1 if most_gold > 0 and player.coins == most_gold else 0,
 				"duels": 1 if most_duels > 0 and player.duels_won == most_duels else 0}
 		rows.append({"player": player, "trophies": by.finish + by.gold + by.duels, "finish": place,

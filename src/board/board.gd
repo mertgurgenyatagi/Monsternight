@@ -164,6 +164,10 @@ func land(player: Dictionary, id: String) -> void:
 		if _settling and _settling.is_running():
 			await _settling.finished
 		var choice := await _challenge.ask(player)
+		if not choice.is_empty() and choice.stake == Challenge.WALK:
+			PaperMotion.tilt(piece_for(player), 9.0)
+			await get_tree().create_timer(0.5, false).timeout
+			return
 		if not choice.is_empty():
 			var outcome: Dictionary = await _duel.play(player, choice.opponent, choice.stake)
 			_track_name = "" # the duel's music gives way to the leader's track
@@ -371,13 +375,13 @@ func _play_turns() -> void:
 			return
 		if Match.turn != turn:
 			_hud.set_turn(Match.turn)
-			if Match.turn >= Match.TURNS and not _last_turn_shown:
+			if Match.turn >= Match.turns and not _last_turn_shown:
 				await _last_turn()
 			else:
 				await get_tree().create_timer(0.2, false).timeout
 
 
-# Turn `TURNS` begins: a sting, a flash of the sky, the counter pops and a banner drops in with a
+# Turn `turns` begins: a sting, a flash of the sky, the counter pops and a banner drops in with a
 # slight shake. A candle on screen sputters. Only the first time.
 func _last_turn() -> void:
 	_last_turn_shown = true

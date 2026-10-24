@@ -170,7 +170,7 @@ func _make_tag() -> void:
 
 # The tag's text, with the tag blood red on the last turn.
 func _show_turn() -> void:
-	var last := _shown_turn >= Match.TURNS
-	_tag_label.text = TranslationServer.translate("TURN_COUNTER") % [_shown_turn, Match.TURNS]
+	var last := _shown_turn >= Match.turns
+	_tag_label.text = TranslationServer.translate("TURN_COUNTER") % [_shown_turn, Match.turns]
 	_tag_paper.self_modulate = LAST_COLOR if last else Color.WHITE
 	_tag_label.add_theme_color_override("font_color", LAST_INK if last else TAG_INK)
