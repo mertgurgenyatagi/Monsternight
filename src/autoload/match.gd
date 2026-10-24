@@ -17,6 +17,13 @@ var players: Array[Dictionary] = []
 ## The turns this match lasts, set by `start` from `TURNS_BY_LOBBY`. `reset` leaves it alone.
 static var turns := 17
 
+## The kinds of this match's board, rolled by `start` for the lobby's size (`BoardRoller`), as
+## {stretch id: kinds string}. The board hands them to `BoardPath.configure`.
+var board_kinds := {}
+
+## Rolls the board. `start` seeds it fresh, or from `--seed N` after `--` on the command line.
+var board_rng := RandomNumberGenerator.new()
+
 ## The turn the match is on, from 1 to `turns`.
 var turn := 1
 
@@ -66,11 +73,24 @@ func start(raw_names: Array[String]) -> bool:
 	_arrivals = 0
 	_turns_done = false
 	turns = TURNS_BY_LOBBY[raw_names.size()]
+	_seed_board()
+	board_kinds = BoardRoller.roll(raw_names.size(), board_rng)
 	finish_order.clear()
 	turn = 1
 	current = 0
 	print("Match started: ", players)
 	return true
+
+
+# Seeds the board's dice: from `--seed N` in the user arguments, so a board can be reproduced, or
+# at random.
+func _seed_board() -> void:
+	var args := OS.get_cmdline_user_args()
+	var at := args.find("--seed")
+	if at >= 0 and at + 1 < args.size() and args[at + 1].is_valid_int():
+		board_rng.seed = args[at + 1].to_int()
+	else:
+		board_rng.randomize()
 
 
 ## Clears the whole match, so the next lobby starts fresh. The autoload is never recreated.
