@@ -258,6 +258,16 @@ func set_finished() -> void:
 	tween.tween_property(_name, "modulate", Color(0.7, 0.7, 0.7), GREY_TIME)
 
 
+## Greys the portrait to stone while the player misses a turn (Medusa), or lets the colour back.
+func set_stone(on: bool) -> void:
+	if finished:
+		return
+	var from = _grey.get_shader_parameter("amount")
+	create_tween().tween_method(func(amount: float) -> void:
+			_grey.set_shader_parameter("amount", amount), 0.0 if from == null else float(from),
+			0.95 if on else 0.0, GREY_TIME)
+
+
 ## Where the blood or coin counter is, on screen.
 func anchor(what: String) -> Vector2:
 	return to_global(_drops[1].position if what == "blood" else _coin.position)

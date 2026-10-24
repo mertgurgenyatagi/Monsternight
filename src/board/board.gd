@@ -171,6 +171,11 @@ func _intro_done() -> void:
 ## space springs to life and the coin or blood flies to or from the player's portrait. Empty spaces
 ## do nothing, at once. Awaiting it waits for the end of the effect.
 func land(player: Dictionary, id: String) -> void:
+	# Dracula's and Medusa's powers fire before the space does.
+	if player.monster == "dracula":
+		await _power_drain(player)
+	elif player.monster == "medusa":
+		await _power_stone(player)
 	var result := Match.land(player)
 	var kind: String = result.kind
 	if kind in Space.DUELS:
@@ -399,6 +404,72 @@ func _play_turns() -> void:
 				await _last_turn()
 			else:
 				await get_tree().create_timer(0.2, false).timeout
+
+
+# Dracula landed: "Drain!" pops over him, and from each victim nearby a drop falls off the portrait
+# and flies to his, one after another, while the victims recoil. His own count fills when the last
+# drop is in. `Match.drain` has already moved the blood.
+func _power_drain(player: Dictionary) -> void:
+	var victims := Match.drain(player)
+	if victims.is_empty():
+		return
+	if _settling and _settling.is_running():
+		await _settling.finished
+	var piece := piece_for(player)
+	PowerPop.show_over(_front, piece.position - Vector2(0, POP_ABOVE), tr("POP_DRAIN"), POP_SCALE)
+	PaperMotion.tilt(piece, 6.0)
+	await get_tree().create_timer(0.5, false).timeout
+	var last: Signal
+	for victim in victims:
+		PaperMotion.tilt(piece_for(victim), 9.0)
+		var drop := _flyer(BLOOD_ICON, _hud.anchor(victim, "blood"), BLOOD_HUD)
+		Sound.play("fly")
+		_hud.show_blood(victim) # the drop leaves the victim's portrait
+		var flight := PaperMotion.fly_to(drop, _hud.anchor(player, "blood"),
+				Vector2.ONE * BLOOD_HUD / BLOOD_ICON.get_width(), 0.6, 0.0, 70.0)
+		flight.finished.connect(drop.queue_free)
+		last = flight.finished
+		await get_tree().create_timer(0.3, false).timeout
+	await last
+	_hud.show_blood(player)
+	await get_tree().create_timer(0.4, false).timeout
+
+
+# Medusa landed: her gaze tilts her piece, then each victim nearby goes grey with a squash, one after
+# another, "Stone!" over them, and their portraits grey too. `Match.petrify` has already marked them.
+func _power_stone(player: Dictionary) -> void:
+	var turned := Match.petrify(player)
+	if turned.is_empty():
+		return
+	if _settling and _settling.is_running():
+		await _settling.finished
+	PaperMotion.tilt(piece_for(player), 6.0)
+	await get_tree().create_timer(0.3, false).timeout
+	for victim in turned:
+		var piece := piece_for(victim)
+		Sound.play("stone")
+		PowerPop.show_over(_front, piece.position - Vector2(0, POP_ABOVE), tr("POP_STONE"), POP_SCALE)
+		piece.set_stone(true)
+		_hud.set_stone(victim, true)
+		PaperMotion.squash(piece)
+		await get_tree().create_timer(0.35, false).timeout
+	await get_tree().create_timer(0.5, false).timeout
+
+
+# A stone player's turn comes: the camera glides to them, the grey shakes and flakes off with the old
+# colour flashing back, "Crack!" pops, and the turn passes on without the die.
+func _crack(player: Dictionary) -> void:
+	var piece := piece_for(player)
+	await _camera.glide_to(piece.global_position.x, 0.7).finished
+	_hud.set_active(player)
+	Sound.play("stone_crack")
+	PaperMotion.shake(piece)
+	await get_tree().create_timer(0.25, false).timeout
+	piece.set_stone(false)
+	_hud.set_stone(player, false)
+	PaperMotion.squash(piece)
+	PowerPop.show_over(_front, piece.position - Vector2(0, POP_ABOVE), tr("POP_CRACK"), POP_SCALE)
+	await get_tree().create_timer(1.1, false).timeout
 
 
 # Turn `turns` begins: a sting, a flash of the sky, the counter pops and a banner drops in with a
