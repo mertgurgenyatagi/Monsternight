@@ -22,6 +22,9 @@ var active := false
 var rng := RandomNumberGenerator.new()
 ## True on an online copy that is not the host: the game plays on for show, but only the host ends it.
 var remote_judge := false
+## What this copy's own game ended with, kept when it was not the judge (-2 before it ends). A copy
+## that becomes the host after the round has ended on it announces this.
+var verdict := -2
 
 
 func setup(left: Dictionary, right: Dictionary, challenger: int, edge_value: float) -> void:
@@ -46,6 +49,7 @@ func finish(winner_side: int) -> void:
 	if not active:
 		return
 	active = false
+	verdict = winner_side
 	if not remote_judge:
 		finished.emit(winner_side)
 

@@ -80,6 +80,50 @@ func _run() -> void:
 	var back: Dictionary = net.decode(JSON.stringify({"t": "msg", "from": 1, "data": JSON.parse_string(text).data}))
 	_check(back.kind == "decided" and int(back.payload.value.face) == 3, "a result survives the JSON trip")
 
+
+	# --- the host leaves ---
+	online.begin(1)
+	var seen: Array = []
+	online.presence_changed.connect(func(n: String, st: String) -> void: seen.append([n, st]))
+	var cy := {"name": "Cy"}
+	_later(func() -> void:
+		online.submit("v") # Cy's answer goes to the old host...
+		net.is_host = true # ...which leaves, and the relay names Cy
+		online._on_host_changed(3), 0.05)
+	t = Time.get_ticks_msec()
+	r = await online.decide("pick", cy, 5.0, func() -> String: return "auto")
+	_check(r.value == "v" and not r.auto and Time.get_ticks_msec() - t < 1000,
+			"an answer sent to a host that left is given again to the new host")
+	_check(online.host_id == 3, "everyone follows the new host id")
+	# --- a new host takes over a decision nobody has answered ---
+	net.is_host = false
+	online.begin(1)
+	_later(func() -> void:
+		net.is_host = true
+		online._on_host_changed(3), 0.05)
+	t = Time.get_ticks_msec()
+	r = await online.decide("pick", ann, 0.3, func() -> String: return "auto")
+	_check(r.auto and Time.get_ticks_msec() - t >= 2000, "the new host times the open decision (at least 2 s)")
+	# --- dropped and away players ---
+	online.begin(3)
+	seen.clear()
+	online._on_peer_left(2)
+	_check(online.status("Bob") == "dropped" and seen == [["Bob", "dropped"]], "a peer that left is dropped")
+	t = Time.get_ticks_msec()
+	r = await online.decide("roll", bob, 20.0, func() -> Dictionary: return {})
+	var took := Time.get_ticks_msec() - t
+	_check(r.auto and took < 1600, "a dropped player's roll takes the short timer, no grace (%d ms)" % took)
+	seen.clear()
+	for i in 3:
+		online._note_choice("Dan", true, true)
+	_check(online.status("Dan") == "away" and seen == [["Dan", "away"]], "three automatic choices in a row make a player away")
+	online._note_choice("Dan", true, false)
+	_check(online.status("Dan") == "" and seen.back() == ["Dan", ""], "an answer clears away")
+	online._note_choice("Eve", false, true)
+	online._note_choice("Eve", false, true)
+	online._note_choice("Eve", false, true)
+	_check(online.status("Eve") == "", "decisions that need no answer do not count")
+
 	online.stop()
 	print("FAILS: ", _fails)
 	quit(1 if _fails else 0)

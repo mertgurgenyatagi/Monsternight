@@ -129,3 +129,10 @@ ONLINE_PICK_MINE,Pick a monster!,Bir canavar seç!
 MINI_WATCHING,Watching,İzliyorsun
 MINI_NAMES,%s vs %s,%s ve %s karşı karşıya
 MINI_WAITING,Waiting for %s...,%s bekleniyor...
+PRESENCE_DROPPED,Reconnecting,Bağlanıyor
+PRESENCE_AWAY,Away,Uzakta
+BANNER_DROPPED,%s lost the connection,%s bağlantıyı kaybetti
+BANNER_AWAY,%s is away,%s uzakta
+BANNER_HOST,%s is the host now,%s artık oda sahibi
+CEREMONY_WAIT_HOST,Waiting for the host,Oda sahibi bekleniyor
+SETTINGS_LEAVE,Leave,Ayrıl

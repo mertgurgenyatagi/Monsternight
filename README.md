@@ -43,7 +43,8 @@ What they mean in practice is in [Art and audio](docs/art_and_audio.md#principle
 - **Part 39 is done:** Online II: `Online` decides every choice on the host and all copies replay the same turn loop (die, path, challenge, monster, "Fate decides" for minigames). Notes in `docs/microplan.md`.
 - **Microplan 14 is done:** parts 40 to 42 are planned in `docs/microplan.md` (the minigames over the network, drops/rejoin/host migration, the deploy and itch.io build). The roadmap now ends at part 44.
 - **Part 40 is done:** Online III: the minigames over the network (`MiniLink`: input stream, host snapshots, spectators). Notes in `docs/microplan.md`; Sumo, Soccer and Tug are untested over the wire.
-- **Next: part 41** (Online IV, drops, rejoin, a leaving host, Play again online).
+- **Part 41a is done:** Online IV, first half: host migration, dropped and away players, Play again online, Leave. Notes in `docs/microplan.md`.
+- **Next: part 41b** (the decision log and rejoin after a reload, then part 42). No screenshots are taken any more.
 
 **Keep the raws.** They're the sources, and the processed files can always be rebuilt from them.
 
@@ -81,7 +82,7 @@ What they mean in practice is in [Art and audio](docs/art_and_audio.md#principle
 - `tools/relay/`: the Cloudflare Worker relay (`npm run dev` for the local one) (`npm install`, `npm run dev`).
 - `tools/release/build_release.py` builds the Windows release without the Godot MCP (see `docs/tech.md`).
 - `docs/`: the design
-- `screenshots/`: three screenshots at the end of every part, in `part_NN/` (see the "done" bar in `docs/microplan.md`). It has a `.gdignore`, so Godot skips it.
+- `screenshots/`: the old per-part screenshots (parts up to 40). No new ones are taken. It has a `.gdignore`, so Godot skips it.
 
 ## Handover: how this project works
 

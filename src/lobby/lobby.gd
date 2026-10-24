@@ -25,6 +25,7 @@ var _start_button: PaperButton
 var _copy_button: PaperButton
 var _banner: PaperBanner
 var _is_ready := false
+var _resent := false
 var _leaving := false
 var _wait_id := 0 # counts attempts, so a stale timeout does nothing
 
@@ -32,8 +33,12 @@ var _wait_id := 0 # counts attempts, so a stale timeout does nothing
 func _ready() -> void:
 	Sound.play_music("title")
 	Match.reset()
+	var again := Online.back_to_room and Net.is_online()
+	Online.back_to_room = false
+	var my_name := _name_in_last_match()
 	Online.stop()
-	Net.leave()
+	if not again:
+		Net.leave()
 	add_child(preload("res://src/sky/sky.tscn").instantiate())
 	_build_entry()
 	_build_room()
@@ -42,11 +47,42 @@ func _ready() -> void:
 	Net.disconnected.connect(func() -> void: _drop("LOBBY_DROPPED"))
 	Net.peer_joined.connect(_on_peer_joined)
 	Net.peer_left.connect(_on_peer_left)
+	Net.host_changed.connect(_on_host_changed)
 	Net.received.connect(_on_received)
+	if again:
+		_resume_room(my_name)
+		return
 	var linked := Net.room_from_link()
 	if linked != "":
 		_code_edit.text = linked
 		_join()
+
+
+# The name this peer played under in the match that just ended, or "".
+func _name_in_last_match() -> String:
+	for player_name: String in Net.id_by_name:
+		if int(Net.id_by_name[player_name]) == Net.my_id:
+			return player_name
+	return ""
+
+
+# Back from a match with the connection still open ("Play again"): the same room, everyone who is
+# still here, nobody ready. The host builds the seats; the others send their name and wait for them.
+func _resume_room(my_name: String) -> void:
+	_host_id = Net.my_id if Net.is_host else Online.host_id
+	_state = LobbyState.new()
+	_is_ready = false
+	if Net.is_host:
+		_state.add(Net.my_id)
+		for id in Net.peers:
+			_state.add(id)
+	_enter_room()
+	# A default "Player N" is not carried over: it would clash with the other seats' own defaults.
+	var generic := range(1, Match.MAX_PLAYERS + 1).any(func(n: int) -> bool: return my_name == tr("PLAYER_DEFAULT") % n)
+	_name_edit.text = "" if generic else my_name
+	_send_profile()
+	if not Net.is_host:
+		_show_banner("CEREMONY_WAIT_HOST")
 
 
 # --- the choosing view ---
@@ -286,8 +322,27 @@ func _on_peer_left(id: int) -> void:
 		_state.remove(id)
 		Sound.play("leave")
 		_publish()
-	elif id == _host_id:
-		_drop("LOBBY_HOST_LEFT")
+	# A host that left is replaced by the relay's `host` message (see `_on_host_changed`).
+
+
+# The host left while we were in the room. The relay named the longest-connected peer; if that is
+# this copy it builds the seats from what it has, the others wait for them.
+func _on_host_changed(id: int) -> void:
+	_host_id = id
+	_resent = false
+	if Net.is_host:
+		var old := _state
+		_state = LobbyState.new()
+		_state.add(Net.my_id)
+		for peer in Net.peers:
+			_state.add(peer)
+		for seat in _state.seats: # keep the names and ready marks the old seats had
+			var at := old.seat_of(seat.id)
+			if at >= 0:
+				_state.set_profile(seat.id, old.seats[at].name, old.seats[at].ready)
+		_publish()
+		_send_profile()
+	_refresh()
 
 
 func _apply_profile(id: int, payload: Dictionary) -> void:
@@ -323,6 +378,10 @@ func _on_received(from: int, kind: String, payload: Dictionary) -> void:
 				var mine := _state.seat_of(Net.my_id)
 				if mine >= 0:
 					_is_ready = _state.seats[mine].ready
+					# The host may have built its seats before our name reached it: say it once more.
+					if not _resent and _name_edit.text != "" and _state.seats[mine].name != _name_edit.text.strip_edges():
+						_resent = true
+						_send_profile()
 				_refresh()
 		"denied":
 			if from == _host_id:

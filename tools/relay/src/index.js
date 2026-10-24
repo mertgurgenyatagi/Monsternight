@@ -2,7 +2,8 @@
 // Messages are JSON. Client to relay: {to: <peer id>, data: ...}, with to 0 meaning everyone else.
 // Relay to client: {t: "hello", id, host, peers: [ids]} on joining (host is true for the first
 // socket into an empty room), {t: "join", id}, {t: "leave", id}, and {t: "msg", from, data}. The
-// relay never looks inside data. It also closes a socket right after telling it why:
+// relay never looks inside data. When the host leaves, the lowest id left gets the room and everyone is
+// told {t: "host", id} right after the {t: "leave"}. It also closes a socket right after telling it why:
 // {t: "full"} for a ninth player, {t: "missing"} for /room/<code>?join=1 when nobody is in the room.
 // What a message means is the clients' business; the relay only forwards it.
 
@@ -34,6 +35,7 @@ export class Room {
     this.ctx.acceptWebSocket(server);
     server.serializeAttachment({ id });
     const others = this.peers(server);
+    if (others.length === 0) await this.ctx.storage.put("host", id);
     server.send(JSON.stringify({ t: "hello", id, host: others.length === 0, peers: others.map((p) => p.id) }));
     for (const p of others) p.ws.send(JSON.stringify({ t: "join", id }));
     return new Response(null, { status: 101, webSocket: pair[0] });
@@ -68,10 +70,17 @@ export class Room {
     this.gone(ws);
   }
 
-  gone(ws) {
+  async gone(ws) {
     const id = ws.deserializeAttachment().id;
     if (id === 0) return;
-    for (const p of this.peers(ws)) p.ws.send(JSON.stringify({ t: "leave", id }));
+    const rest = this.peers(ws);
+    for (const p of rest) p.ws.send(JSON.stringify({ t: "leave", id }));
+    // The host left: the longest-connected socket left (the lowest id, since ids only grow) holds the room now.
+    if (rest.length > 0 && (await this.ctx.storage.get("host")) === id) {
+      const next = Math.min(...rest.map((p) => p.id));
+      await this.ctx.storage.put("host", next);
+      for (const p of rest) p.ws.send(JSON.stringify({ t: "host", id: next }));
+    }
   }
 }
 

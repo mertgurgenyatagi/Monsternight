@@ -111,6 +111,11 @@ func set_stone(player: Dictionary, on: bool) -> void:
 	_portraits[player.monster].set_stone(on)
 
 
+## Online: shows a player as dropped, away, or back ("").
+func set_presence(player: Dictionary, state: String) -> void:
+	_portraits[player.monster].set_presence(state)
+
+
 ## The player's portrait node.
 func portrait_node(player: Dictionary) -> HudPortrait:
 	return _portraits[player.monster]

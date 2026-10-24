@@ -57,6 +57,7 @@ var _area: Area2D
 var _bob: Tween
 var _lit := false
 var _glow: Glow
+var _presence: Label
 
 
 func _init(for_player := {}) -> void:
@@ -266,6 +267,28 @@ func set_stone(on: bool) -> void:
 	create_tween().tween_method(func(amount: float) -> void:
 			_grey.set_shader_parameter("amount", amount), 0.0 if from == null else float(from),
 			0.95 if on else 0.0, GREY_TIME)
+
+
+## Online: dims the whole portrait with a small word on the frame for a player whose connection is
+## gone ("dropped") or who lets the timers play ("away"); "" brings them back. It is a dim, not
+## Medusa's stone grey.
+func set_presence(state: String) -> void:
+	var dim := {"dropped": Color(0.55, 0.55, 0.75, 0.6), "away": Color(0.78, 0.78, 0.78, 0.8)}
+	create_tween().tween_property(self, "modulate", dim.get(state, Color.WHITE), 0.4)
+	if _presence == null:
+		_presence = Label.new()
+		_presence.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		_presence.size = Vector2(WIDTH, 30)
+		_presence.position = Vector2(-WIDTH / 2, FRAME_CENTER.y + 22)
+		_presence.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		_presence.add_theme_font_override("font", preload("res://assets/fonts/display.ttf"))
+		_presence.add_theme_font_size_override("font_size", 24)
+		_presence.add_theme_color_override("font_color", Color("fbe9d0"))
+		_presence.add_theme_color_override("font_outline_color", OUTLINE)
+		_presence.add_theme_constant_override("outline_size", 8)
+		add_child(_presence)
+	_presence.text = tr({"dropped": "PRESENCE_DROPPED", "away": "PRESENCE_AWAY"}.get(state, "")) if state != "" else ""
+	_presence.visible = state != ""
 
 
 ## Where the blood or coin counter is, on screen.
