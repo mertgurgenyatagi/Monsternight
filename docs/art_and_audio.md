@@ -38,7 +38,7 @@ The whole game runs at **25 FPS**, so every movement steps like stop motion on p
 
 - A side view of the board, not a full top-down view.
 - The camera follows whoever is rolling.
-- In the final game it sits slightly further out and slightly higher (the brief), and the scenery must still read as one real place. Part 27 tries it.
+- In the final game it sits slightly further out and slightly higher (the brief), and the scenery must still read as one real place. Part 27 did it: zoom 0.88 (`BoardCamera.ZOOM`) and a slightly higher horizon.
 
 ## Audio
 

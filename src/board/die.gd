@@ -49,7 +49,9 @@ func _ready() -> void:
 ## Sets where the die rests, in its parent's space.
 func place(at: Vector2) -> void:
 	position = at
+	scale = Vector2.ONE / BoardCamera.ZOOM # stays the size it was before the zoom
 	set_meta("rest_position", at)
+	set_meta("rest_scale", scale)
 
 
 ## Drops in from above the screen and lands with a squash, then bobs and wobbles until it's
@@ -80,7 +82,7 @@ func leave() -> Tween:
 
 func _offer() -> void:
 	await get_tree().process_frame
-	scale = Vector2.ONE
+	scale = Vector2.ONE / BoardCamera.ZOOM
 	rotation = 0.0
 	_show(randi_range(1, 6))
 	visible = true

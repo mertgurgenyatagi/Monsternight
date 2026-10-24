@@ -162,6 +162,14 @@ Each part session adds a few lines when it finishes: what got built, what change
 - **For the wiring parts:** `Sound.TRIM` has nothing for the new sounds yet. By level, `paddle_hit` (-26 LUFS) and `stone` (-27) came out quieter than the -22 target, because their hits reach the peak limit first, so give them about +3 dB. The rope is thin, so scale it up in the engine if it looks weak.
 - **The Gemini key** in `.env` has no image quota, so `tools/images/make_images.py` (Gemini API) works only with billing on. `.env` is now gitignored. The user made the images by hand.
 
+### Part 27: The camera tweak (2026-10-24)
+
+- **Built:** `BoardCamera.ZOOM := 0.88` (the one number to retune, or set to 1.0 to undo the zoom), with `HALF_WIDTH` and `HALF_HEIGHT` (the zoomed view's half size in world px). The camera's clamps, the limits (now -73 to 1153), `BoardLayout.layer_x` and the scenery strips' ends all use them, and `SPEED` and `FOLLOW_SPEED` are divided by `ZOOM`. The die, its candle, the fork's candle and the branch arrows are scaled by `1 / ZOOM`, so they stay the size they were. Parallax with the zoom checked by eye: the layers line up with the road at six places.
+- **The raised angle** (constants only): `GROUND_Y` 780 to 750, `PROP_BASE_Y` 840 to 810, `HILL_TOP_Y` 565 to 542, `UPPER_Y` 650 to 627, `LOWER_Y` 930 to 935, `FAR_Y` 380 to 350, `WATER_Y` 700 to 670 and the fog bank 600 to 570. `MAIN_Y` stays at 880.
+- **Covering the bigger view:** each ground strip gets a fill under it (`_ground_fill` in `scenery.gd`): its bottom 8 rows stretched down 200 px, sharing its fades. No new art. **Known blemish:** the stretched rows show faint vertical streaks where roots meet the bottom edge. A taller ground image would fix it, for the next Microplan if the user keeps the zoom.
+- **Checked:** before-and-after sheet of six views (`screenshots/part_27/1.png`, before on the left); a plain 8-player run on the village start at 25 FPS with no errors or warnings. World-to-HUD flights use `get_global_transform_with_canvas` and the bats read the canvas transform, so they follow the zoom with no change. **Not checked by eye:** the fork with its arrows, the death flight, the church hill and castle at 25 FPS in motion, the die.
+- **Undoing it:** set `ZOOM` to 1.0 and put the layout constants above back.
+
 ## Log
 
 - **2026-10-23 to 24, Microplans 1 to 8:** the first playable, parts 1 to 24. See [microplan_first_playable.md](microplan_first_playable.md#log).

@@ -4,7 +4,8 @@ class_name BoardLayout
 ## (part 7) agree. Move a lane or change a count here, never by hand in the scenery.
 ##
 ## World x runs from 0 at the village end to `width()` at the castle gate. The view is always
-## one 1080-tall screen, so world y is screen y.
+## one 1080-tall screen at the old zoom, so world y is screen y there; the zoom shows a little more
+## above and below.
 
 enum Lane { MAIN, UPPER, LOWER }
 
@@ -27,11 +28,11 @@ const LOCATIONS := [
 ]
 
 const MAIN_Y := 880.0 # the road
-const UPPER_Y := 650.0 # over the church hill, and the boardwalk
-const LOWER_Y := 930.0 # through the graveyard, and the bog
-const GROUND_Y := 780.0 # the top of the ground strips
-const PROP_BASE_Y := 840.0 # where tall props stand, their feet hidden behind the ground strip
-const HILL_TOP_Y := 565.0 # the top of the hill's plateau, well over the upper lane so its spaces stand on the grass
+const UPPER_Y := 627.0 # over the church hill, and the boardwalk
+const LOWER_Y := 935.0 # through the graveyard, and the bog
+const GROUND_Y := 750.0 # the top of the ground strips
+const PROP_BASE_Y := 810.0 # where tall props stand, their feet hidden behind the ground strip
+const HILL_TOP_Y := 542.0 # the top of the hill's plateau, well over the upper lane so its spaces stand on the grass
 
 static var _locations: Array[Dictionary] = []
 
@@ -107,6 +108,6 @@ static func lane_y(lane: Lane, x: float) -> float:
 
 ## Where a piece goes inside a parallax layer with this scroll scale, so it's in the middle of
 ## the screen when the camera's centre is at world x. Layers scroll from the camera's top-left
-## corner, which is 960 px left of its centre.
+## corner, which is half the zoomed view left of its centre.
 static func layer_x(x: float, scroll: float) -> float:
-	return 960.0 + scroll * (x - 960.0)
+	return BoardCamera.HALF_WIDTH + scroll * (x - BoardCamera.HALF_WIDTH)

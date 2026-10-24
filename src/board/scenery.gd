@@ -10,7 +10,7 @@ extends Node2D
 const ART := "res://assets/art/scenery/%s.png"
 const STRIP_SHADER := preload("res://src/board/strip.gdshader")
 const FAR_SCALE := 0.75
-const FAR_Y := 380.0
+const FAR_Y := 350.0
 const FAR_OVERLAP := 700.0 # how far neighbouring strips blend into each other, in world x
 const GROUND_OVERLAP := 360.0
 const FOG_OVERLAP := 900.0
@@ -25,7 +25,7 @@ const DIM := {"far": 0.78, "mid": 0.74, "ground": 0.8}
 const FOG_BANK_FROM := 0.58
 ## How much lower a location's ground lies than the others, to show what's behind it.
 const GROUND_DROP := {"swamp": 110.0}
-const WATER_Y := 700.0
+const WATER_Y := 670.0
 const LAMP_LIGHT := Color(1.0, 0.78, 0.4, 0.55)
 const TORCH_LIGHT := Color(1.0, 0.55, 0.25, 0.5)
 const MUSHROOM_LIGHT := Color(0.35, 1.0, 0.85, 0.45)
@@ -51,7 +51,7 @@ func _ready() -> void:
 		_strip(_far, location.id + "_far", location, FAR_Y, FAR_SCALE, FAR_OVERLAP, first, last)
 		var fog: float = FOG[location.id]
 		if fog >= FOG_BANK_FROM:
-			_fog_band(_mid, "fog_2", location, 600.0, 1.0, fog * 0.7, -7.0)
+			_fog_band(_mid, "fog_2", location, 570.0, 1.0, fog * 0.7, -7.0)
 	# The props stand behind their location's ground strip, so the strips come after them.
 	_village(BoardLayout.location("village"))
 	_graveyard(BoardLayout.location("graveyard"))
@@ -63,6 +63,7 @@ func _ready() -> void:
 		var ground := _strip(_lanes, location.id + "_ground", location, _ground_y(location), 1.0,
 				GROUND_OVERLAP, i == 0, i == locations.size() - 1)
 		ground.self_modulate = Color.WHITE * DIM.ground
+		_ground_fill(ground)
 		var fog: float = FOG[location.id]
 		if fog > 0.0:
 			_fog_band(_fog, "fog_1", location, 930.0, 0.75, fog * 0.6 * FOREGROUND_FOG, 11.0)
@@ -236,7 +237,7 @@ func _sway(prop: Sprite2D, degrees: float) -> void:
 # last strips run past the board's ends, far enough to fill the screen at the camera's limits.
 func _strip(layer: Parallax2D, art: String, location: Dictionary, y: float, size: float,
 		overlap: float, first: bool, last: bool) -> Sprite2D:
-	var beyond := 960.0 / layer.scroll_scale.x - 960.0 + 200.0
+	var beyond := BoardCamera.HALF_WIDTH / layer.scroll_scale.x - BoardCamera.HALF_WIDTH + 200.0
 	var from: float = location.from - (beyond if first else overlap / 2)
 	var to: float = location.to + (beyond if last else overlap / 2)
 	var scroll := layer.scroll_scale.x
@@ -277,6 +278,24 @@ func _tiled(layer: Node2D, art: String, from: float, to: float, y: float, size: 
 	strip.material = material
 	layer.add_child(strip)
 	return strip
+
+
+# The ground strip's bottom rows stretched down past the bottom of the zoomed-out view, so the
+# strip never ends on screen. It shares the strip's fades.
+func _ground_fill(ground: Sprite2D) -> void:
+	var rows := 8.0
+	var height := ground.texture.get_height()
+	var fill := Sprite2D.new()
+	fill.texture = ground.texture
+	fill.centered = false
+	fill.texture_repeat = CanvasItem.TEXTURE_REPEAT_ENABLED
+	fill.region_enabled = true
+	fill.region_rect = Rect2(ground.region_rect.position.x, height - rows, ground.region_rect.size.x, rows)
+	fill.position = ground.position + Vector2(0, height * ground.scale.y)
+	fill.scale = Vector2(ground.scale.x, 200.0 / rows)
+	fill.material = ground.material
+	fill.self_modulate = ground.self_modulate
+	ground.get_parent().add_child(fill)
 
 
 func _ground_y(location: Dictionary) -> float:
