@@ -81,6 +81,7 @@ var _duel: Duel
 var _onlookers: Array[BoardPiece] = [] # the finished pieces, in finish order, standing by the gate
 var _front: Node2D # over the pieces: an icon that springs up stands here, so no piece hides it
 var _settling: Tween # the camera's glide onto a piece that has just stopped
+var _last_turn_shown := false
 var _track_name := "" # the board music now chosen, by where the leader is
 
 
@@ -355,16 +356,81 @@ func _play_turns() -> void:
 		await walk(player, value)
 		if player.space == BoardPath.FINISH:
 			await finish(player)
+			if Match.over():
+				await _banner(tr("BANNER_EVERYONE_HOME"), 1.4)
+				await _end_match()
+				return
 		else:
 			await land(player, player.space)
 		await get_tree().create_timer(TURN_BEAT, false).timeout
 		var turn := Match.turn
 		if not Match.next_player():
-			print("Match over")
+			await _end_match()
 			return
 		if Match.turn != turn:
 			_hud.set_turn(Match.turn)
-			await get_tree().create_timer(0.5, false).timeout
+			if Match.turn >= Match.TURNS and not _last_turn_shown:
+				await _last_turn()
+			else:
+				await get_tree().create_timer(0.5, false).timeout
+
+
+# Turn `TURNS` begins: a sting, a flash of the sky, the counter pops and a banner drops in with a
+# slight shake. A candle on screen sputters. Only the first time.
+func _last_turn() -> void:
+	_last_turn_shown = true
+	Sound.sting("sting_final_turn", 3.0)
+	_sky.flash()
+	if _candle.visible:
+		_candle.gust()
+	await get_tree().create_timer(0.5, false).timeout
+	_hud.last_turn()
+	await _banner(tr("BANNER_LAST_TURN"), 1.6, true)
+
+
+# Drops a paper banner in under the HUD's strip, holds it `hold` seconds, then lifts it away. A
+# `shaky` one is red and jerks a little while it holds. Awaiting it waits until it is gone.
+func _banner(text: String, hold: float, shaky := false) -> void:
+	var banner := PaperBanner.new(text, shaky)
+	var at := Vector2(960, 330)
+	banner.position = at
+	banner.set_meta("rest_position", at)
+	banner.set_meta("rest_scale", Vector2.ONE)
+	_hud.add_child(banner)
+	PaperMotion.drop_in(banner, 420.0, 0.5)
+	Sound.play("card_slam", -4.0)
+	await get_tree().create_timer(0.5, false).timeout
+	if shaky:
+		var shake := banner.create_tween().set_loops(int(hold / 0.2))
+		shake.tween_property(banner, "position:x", at.x + 5.0, 0.05)
+		shake.tween_property(banner, "position:x", at.x - 5.0, 0.1)
+		shake.tween_property(banner, "position:x", at.x, 0.05)
+	await get_tree().create_timer(hold, false).timeout
+	await PaperMotion.lift_away(banner, 500.0, 0.4).finished
+	banner.queue_free()
+
+
+# The match is over: the camera glides to the castle gate, the portraits dim, a banner says so, the
+# music fades, and the results are logged. The unfinished pieces sway slowly where they stand and a
+# light flares over the gate. Then the ceremony opens, or until it is built, the title.
+func _end_match() -> void:
+	print("Match over")
+	_hud.dim()
+	for player in Match.players:
+		if not player.finished:
+			piece_for(player).wait()
+	Sound.play_music("")
+	_track_name = "end"
+	await _camera.glide_to(BoardPath.finish().pos.x, 2.0).finished
+	_flare_gate()
+	await _banner(tr("BANNER_NIGHT_OVER"), 2.0)
+	for row in Match.results():
+		print("Result: ", row.rank, ". ", row.player.name, " trophies ", row.trophies, " finish ",
+				row.finish, " gold ", row.gold, " duels ", row.duels)
+	for stat in Match.stats():
+		print("Stat: ", stat.key, " ", stat.value, " ", stat.players.map(func(p: Dictionary) -> String: return p.name))
+	var ceremony := "res://src/ceremony/ceremony.tscn"
+	Scenes.change_to(ceremony if ResourceLoader.exists(ceremony) else "res://src/title/title.tscn")
 
 
 func _choose(piece: BoardPiece, fork: String) -> void:

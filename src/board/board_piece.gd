@@ -58,6 +58,13 @@ func watch() -> void:
 	PaperMotion.breathe(_body, 4.0, randf_range(3.2, 4.2))
 
 
+## The match is over and this piece is still on the road: it sways slowly where it stands.
+func wait() -> void:
+	stop_sway()
+	var period := randf_range(6.5, 8.0)
+	PaperMotion.sway(_body, randf_range(0.8, 1.2), period).custom_step(randf_range(0.0, period))
+
+
 ## Swaps the monster for its paper ball (`on`), or the ball for the monster. The piece must have
 ## been shrunk by `PaperMotion.crumple` first, with `ball_scale` as its scale; the ball is drawn
 ## `BALL_SIZE` across on screen and rests on the piece's feet.

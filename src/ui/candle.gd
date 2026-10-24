@@ -61,6 +61,12 @@ func start(seconds: float) -> void:
 	_tween.tween_callback(func() -> void: _relighting = false)
 
 
+## The flame sputters once, as if a draught passed.
+func gust() -> void:
+	_flame.sputter = 1.0
+	create_tween().tween_property(_flame, "sputter", 0.0, 0.8).set_delay(0.3)
+
+
 ## Puts the candle out early, with no sound and no signal.
 func stop() -> void:
 	if not burning:
