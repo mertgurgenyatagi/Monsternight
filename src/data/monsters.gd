@@ -23,6 +23,11 @@ static func name_key(id: String) -> String:
 	return "MONSTER_" + id.to_upper()
 
 
+## The translation key of the monster's short power line (characters.md).
+static func power_key(id: String) -> String:
+	return "POWER_" + id.to_upper()
+
+
 static func display_name(id: String) -> String:
 	return TranslationServer.translate(name_key(id))
 

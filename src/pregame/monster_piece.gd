@@ -10,12 +10,18 @@ const STAND_SCALE := 0.85
 const HIT := Rect2(-95, -310, 190, 340)
 const CREAM := Color("efe4cc")
 const GREY_TIME := 0.3
+const POWER_FONT := preload("res://assets/fonts/display.ttf")
+const POWER_WIDTH := 200.0
+const POWER_HEIGHT := 64.0
+const POWER_SIZE := 24
+const POWER_MIN := 16
 
 var taken := false
 ## Only a free monster answers the mouse, and only while a player is picking.
 var enabled := false : set = set_enabled
 
 var _name: Label
+var _power: Label
 var _hit: Control
 var _grey: Array[ShaderMaterial] = []
 
@@ -41,6 +47,23 @@ func _ready() -> void:
 	_name.modulate.a = 0.0
 	_name.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(_name)
+
+	# The power line stays under the stand, in the display font, so everyone can read all eight.
+	_power = Label.new()
+	_power.size = Vector2(POWER_WIDTH, POWER_HEIGHT)
+	_power.position = Vector2(-POWER_WIDTH / 2.0, 96)
+	_power.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_power.vertical_alignment = VERTICAL_ALIGNMENT_TOP
+	_power.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_power.add_theme_font_override("font", POWER_FONT)
+	_power.add_theme_color_override("font_color", CREAM)
+	_power.add_theme_color_override("font_outline_color", Color("1a1022"))
+	_power.add_theme_constant_override("outline_size", 6)
+	_power.add_theme_constant_override("line_spacing", -4)
+	_power.text = tr(Monsters.power_key(id))
+	_power.add_theme_font_size_override("font_size", _fitting_power_size())
+	_power.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(_power)
 
 	_hit = Control.new()
 	_hit.position = HIT.position
@@ -76,6 +99,7 @@ func take(picker_name: String) -> void:
 	_name.text = picker_name
 	_name.add_theme_color_override("font_color", CREAM)
 	_fade_name(1.0)
+	create_tween().tween_property(_power, "modulate", Color(0.6, 0.6, 0.6, 0.55), GREY_TIME)
 	create_tween().tween_method(func(amount: float) -> void:
 			for mat in _grey:
 				mat.set_shader_parameter("amount", amount), 0.0, 1.0, GREY_TIME)
@@ -91,6 +115,18 @@ func head_position() -> Vector2:
 func deny() -> void:
 	Sound.play("ui_denied")
 	PaperMotion.shake(self)
+
+
+# The biggest size at which the power line fits its two lines.
+func _fitting_power_size() -> int:
+	var size := POWER_SIZE
+	while size > POWER_MIN:
+		var lines := POWER_FONT.get_multiline_string_size(_power.text, HORIZONTAL_ALIGNMENT_LEFT,
+				POWER_WIDTH - 8.0, size)
+		if lines.y <= POWER_HEIGHT and lines.x <= POWER_WIDTH - 8.0:
+			break
+		size -= 1
+	return size
 
 
 func _make_sprite(texture: Texture2D, centered: bool) -> Sprite2D:

@@ -8,7 +8,11 @@ const MAX_PLAYERS := 8
 const NAME_LENGTH := 12
 ## The turns of a match by the number of players (game_rules.md).
 const TURNS_BY_LOBBY := {3: 20, 4: 17, 5: 15, 6: 14, 7: 13, 8: 12}
+## The most blood a player can have, and Cthulhu's (characters.md).
 const MAX_BLOOD := 3
+const CTHULHU_BLOOD := 4
+## What the Wolf Man adds to every roll.
+const WOLFMAN_BONUS := 1
 
 ## One dictionary per player. Right after `start` this is the seating order; `roll_turn_order`
 ## reshuffles it, and from then on the array order is the turn order.
@@ -127,6 +131,9 @@ func pick_monster(player: Dictionary, id: String) -> bool:
 	if id not in free_monsters() or player.monster != "":
 		return false
 	player.monster = id
+	if id == "cthulhu": # starts with a full 4 blood and 1 coin
+		player.blood = max_blood(player)
+		player.coins = 1
 	print("Monster picked: ", player.name, " is ", id)
 	return true
 
@@ -136,11 +143,27 @@ func active() -> Dictionary:
 	return players[current]
 
 
-## The die: 1 to 6. The rules decide the number; the die only shows it.
+## The die's face, 1 to 6. The rules decide the number; the die only shows it.
 func roll() -> int:
 	var value := randi_range(1, 6)
 	print("Rolled: ", active().name, " ", value)
 	return value
+
+
+## What a roll adds for this player: 1 for the Wolf Man, 0 for everyone else. The spaces moved are
+## the face plus this.
+func roll_bonus(player: Dictionary) -> int:
+	return WOLFMAN_BONUS if player.monster == "wolfman" else 0
+
+
+## The most blood this player can have: 4 for Cthulhu, 3 for everyone else.
+func max_blood(player: Dictionary) -> int:
+	return CTHULHU_BLOOD if player.monster == "cthulhu" else MAX_BLOOD
+
+
+## The least blood this player can have: 1 for Death, who can't be killed, 0 for everyone else.
+func min_blood(player: Dictionary) -> int:
+	return 1 if player.monster == "death" else 0
 
 
 ## True when the match is over: turn `turns` has been played out, or no more than one player is
@@ -213,9 +236,9 @@ func leader() -> Dictionary:
 func die(player: Dictionary) -> Dictionary:
 	if player.finished:
 		return {}
-	var result := {"coins": player.coins, "blood": MAX_BLOOD - player.blood}
+	var result := {"coins": player.coins, "blood": max_blood(player) - player.blood}
 	player.coins = 0
-	player.blood = MAX_BLOOD
+	player.blood = max_blood(player)
 	player.deaths += 1
 	move_to(player, BoardPath.START)
 	print("Died: ", player.name, " (death ", player.deaths, ") ", result)
@@ -253,16 +276,22 @@ func opponents(player: Dictionary) -> Array[Dictionary]:
 
 
 ## The stakes the challenger can ask of this opponent: "gold" if they have a coin, "blood" if they
-## have blood and "swap" if the two stand on different spaces. Part 18 refines the swap.
+## have blood and "swap" if the two stand on different spaces. Blood is off the table whenever Death
+## is in the duel with 1 blood, whichever side they are on.
 func stakes(challenger: Dictionary, opponent: Dictionary) -> Array[String]:
 	var result: Array[String] = []
 	if opponent.coins > 0:
 		result.append("gold")
-	if opponent.blood > 0:
+	if opponent.blood > 0 and not blood_is_safe(challenger) and not blood_is_safe(opponent):
 		result.append("blood")
 	if challenger.space != opponent.space:
 		result.append("swap")
 	return result
+
+
+## True for Death at 1 blood, whose blood can't be staked or spiked.
+func blood_is_safe(player: Dictionary) -> bool:
+	return player.monster == "death" and player.blood <= min_blood(player)
 
 
 ## Applies a finished duel. The loser pays the stake: gold is 1 coin from the loser to the winner, and
@@ -270,13 +299,18 @@ func stakes(challenger: Dictionary, opponent: Dictionary) -> Array[String]:
 ## `space`; a challenger who lost a swap loses nothing. The challenger's `duels_started`, the
 ## opponent's `challenged` and the winner's `duels_won` go up. Returns the real changes: `coins` that
 ## moved, `blood` the loser lost, whether they `swapped`, and whether the loser `died` (blood at 0,
-## which the board shows through `Board.die`, which settles it).
+## which the board shows through `Board.die`, which settles it). A Frankenstein's Monster who lost as
+## the challenger pays nothing, and `free` says that a real stake was waived.
 func duel_result(winner: Dictionary, loser: Dictionary, challenger: Dictionary, stake: String) -> Dictionary:
 	var opponent: Dictionary = winner if is_same(loser, challenger) else loser
 	challenger.duels_started += 1
 	opponent.challenged += 1
 	winner.duels_won += 1
-	var result := {"coins": 0, "blood": 0, "swapped": false, "died": false}
+	var result := {"coins": 0, "blood": 0, "swapped": false, "died": false, "free": false}
+	if is_same(loser, challenger) and loser.monster == "frankenstein":
+		result.free = (stake == "gold" and loser.coins > 0) or (stake == "blood" and loser.blood > 0)
+		print("Duel: ", winner.name, " beat ", loser.name, " for ", stake, " ", result)
+		return result
 	match stake:
 		"gold":
 			result.coins = -change_coins(loser, -1)
@@ -294,11 +328,11 @@ func duel_result(winner: Dictionary, loser: Dictionary, challenger: Dictionary, 
 	return result
 
 
-## Adds `delta` to the player's blood, kept between 0 and `MAX_BLOOD`. Returns the change that
-## really happened. Reaching 0 is a death, which `die` settles and the board shows.
+## Adds `delta` to the player's blood, kept between `min_blood` and `max_blood`. Returns the change
+## that really happened. Reaching 0 is a death, which `die` settles and the board shows.
 func change_blood(player: Dictionary, delta: int) -> int:
 	var before: int = player.blood
-	player.blood = clampi(before + delta, 0, MAX_BLOOD)
+	player.blood = clampi(before + delta, min_blood(player), max_blood(player))
 	print("Blood: ", player.name, " ", before, " -> ", player.blood)
 	return player.blood - before
 

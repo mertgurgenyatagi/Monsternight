@@ -84,6 +84,8 @@ func play(challenger: Dictionary, opponent: Dictionary, stake: String) -> Dictio
 	_jolt()
 	_strip.visible = true
 	PaperMotion.pop_in(_strip, 0.1)
+	if stake == "swap" and challenger.monster == "dorian":
+		PowerPop.show_over(_root, _cards[0].position + Vector2(0, -250), tr("POP_EASY"))
 	for body in _bodies:
 		PaperMotion.breathe(body)
 	await get_tree().create_timer(0.9, false).timeout
@@ -135,15 +137,24 @@ func play(challenger: Dictionary, opponent: Dictionary, stake: String) -> Dictio
 ## swap 1 time in 8. Gives `{winner, loser, rounds}`, `rounds` being the flips (true when the challenger
 ## took it); the last one decides. A minigame replaces this function as a whole.
 func _decide(challenger: Dictionary, opponent: Dictionary, stake: String) -> Dictionary:
-	var rounds := roll_rounds(stake)
+	var rounds := roll_rounds(stake, swap_wins(challenger, stake))
 	var challenger_won: bool = rounds[-1]
 	return {"winner": challenger if challenger_won else opponent,
 			"loser": opponent if challenger_won else challenger, "rounds": rounds}
 
 
-## The flips of a duel for this stake, whoever the players are.
-static func roll_rounds(stake: String) -> Array[bool]:
-	var needed := SWAP_ROUNDS if stake == "swap" else 1
+## The flips the challenger must win to win this stake: 1, except a swap, which takes `SWAP_ROUNDS`,
+## or 1 for Dorian Gray as the challenger.
+static func swap_wins(challenger: Dictionary, stake: String) -> int:
+	if stake == "swap" and challenger.monster != "dorian":
+		return SWAP_ROUNDS
+	return 1
+
+
+## The flips of a duel for this stake: a swap goes on while the challenger keeps winning, until they
+## have `swap_wins` wins or the opponent takes one. Any other stake is one flip.
+static func roll_rounds(stake: String, swap_wins := SWAP_ROUNDS) -> Array[bool]:
+	var needed := swap_wins if stake == "swap" else 1
 	var rounds: Array[bool] = []
 	var wins := 0
 	while true:
@@ -247,7 +258,7 @@ func _build(challenger: Dictionary, opponent: Dictionary, stake: String) -> void
 	_coin.visible = false
 	_root.add_child(_coin)
 	_coin_scale = _coin.scale
-	if stake == "swap":
+	if stake == "swap" and swap_wins(challenger, stake) > 1:
 		var colors: Array[Color] = [Monsters.color(challenger.monster), Monsters.color(opponent.monster)]
 		_tally = DuelTally.new(SWAP_ROUNDS, 1, colors)
 		_tally.position = TALLY_AT
