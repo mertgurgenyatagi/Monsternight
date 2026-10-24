@@ -1,9 +1,9 @@
 # Microplan
 
-The [final game](roadmap.md#2-final-game), built in parts after the first playable's 24. The numbers go on from there. `/microplan` plans three parts at a time in detail, and a rough roadmap to the end (see `.claude/skills/microplan/SKILL.md`). It runs in its own session, after part 33, 36, 39 and so on.
+The [final game](roadmap.md#2-final-game), built in parts after the first playable's 24. The numbers go on from there. `/microplan` plans three parts at a time in detail, and a rough roadmap to the end (see `.claude/skills/microplan/SKILL.md`). It runs in its own session, after part 36, 39, 42 and so on.
 
 - **The brief:** the user's direction for the final game is [final_game_brief.md](questionnaire_answers/final_game_brief.md), saved word for word. The design docs ([game_rules.md](game_rules.md), [board.md](board.md), [characters.md](characters.md), [minigames.md](minigames.md), [screens.md](screens.md), [tech.md](tech.md)) say what the final game is. Questionnaires ended at 18; the rest is Claude's call.
-- **The code map:** the first playable's Part notes ("Built so far" in [microplan_first_playable.md](microplan_first_playable.md#part-notes)) describe the code as it stands, and "The code since part 24" below adds what parts 25 to 30 changed. Read the section your part touches instead of rereading the code.
+- **The code map:** the first playable's Part notes ("Built so far" in [microplan_first_playable.md](microplan_first_playable.md#part-notes)) describe the code as it stands, and "The code since part 24" below adds what parts 25 to 33 changed. Read the section your part touches instead of rereading the code.
 
 ## Building a part
 
@@ -24,90 +24,98 @@ If a part turns out too big, split it (31a, 31b) instead of rushing it.
 
 ## Parts
 
-Three parts: the last two powers (Dracula and Medusa) with their moments on the board, a throwaway online spike that finds the riskiest unknown early, and the minigame frame that every game plugs into. After part 33 the rules, the board and the powers are all in, in the hot-seat mode, and the first minigame can be built on a finished frame. Duels stay the coin flip until the frame is in.
+Three parts: the first three of the four minigames, each plugged into the finished frame (part 33) through `Minigames.GAMES`. Pong first (the simplest physics, and the closest to the frame's stub), Tug of War next (the smallest, one key, which also tests the action key on both sets), Sumo third (circle physics that Head Soccer, part 37, builds on). Every game is a `Minigame` subclass in `src/minigames/`, draws its own table in the frame's 1920 x 1080 space around `Minigame.TABLE_CENTER` (table 1480 x 640, y 220 to 860), reads keys only through `MinigameInput`, calls `finish(side)` or `finish(Minigame.DRAW)`, and applies `edge` (Mr. Hyde: 0 or 0.1) in its own way, written down in its Part notes. Each game lasts about 20 to 30 seconds, with no time limit (Q17).
 
-### Part 31: Powers II, Dracula and Medusa
+**Shared by all three:**
+- **Test habit:** a headless driver sets `MinigameInput.source` to a scripted function, steps the game with fixed time and asserts the winner. A few real key presses through the MCP `simulate_key` once per game is enough to prove the keys work.
+- **Edge:** a small, invisible lean for the challenger (not a head start anyone can see). A driver checks that at 0.1 the challenger wins more often than at 0 with equal scripted play.
+- **Keys:** the keycaps come from `controls()`. One computer: left side W A S D and Q (action); right side the arrows and K. Keep every game to what one hand can do, since two hands on one keyboard may ghost.
+- **Table look:** a paper cutout on the dark table, from the `assets/art/minigames/` images, with no per-frame allocations.
 
-**Goal:** when Dracula lands, he drains 1 blood from each player nearby and the blood flies to him; when Medusa lands, each player nearby turns to grey stone and misses their next turn, with the stone cracking off on their turn. Both fire before the space they land on.
+### Part 34: Pong
+
+**Goal:** a minigame space of kind `pong` plays real Pong: two cardboard paddles, a crumpled-paper ball, first goal wins.
 
 **Builds:**
-- **`BoardPath.nearby(id)`** (new, static): the ids that count as nearby for a landing on `id`: the space itself, one behind and one ahead, following the road (`characters.md#nearby`). At a fork, "ahead" is the first space of both paths; where the paths join, "behind" is the last space of both. A reverse map (`_previous`, built with `_nodes`) gives "behind"; `next(id)` gives "ahead". The START and FINISH nodes are not nearby for anyone (they are safe).
-- **`Match`:**
-  - `nearby_players(player)`: the other players whose `space` is in `BoardPath.nearby(player.space)`, skipping the finished and those still on the start. Called only for a landing from a roll (the board calls it; a swap never does).
-  - Dracula: `drain(player)` returns the victims (blood 2 or more), lowers each by 1 through `change_blood` (so Death's floor and caps hold), and gives Dracula +1 each up to `max_blood`. The steal happens at full blood: victims lose, Dracula stays.
-  - Medusa: `petrify(player)` marks every nearby player `stone = true`, except one with `just_missed` set (nobody misses two turns in a row). `next_player()` consults it: a stone player's turn is skipped for roll, move and space, the stone is cleared, `just_missed` is set and cleared once that player has moved. The turn counter and `_last_turn` follow the skip as a normal turn; check an 8-player game where several are stoned at once.
-- **`Board.land`:** before the space's own effect, Dracula's `_power_drain` and Medusa's `_power_stone` run (only when the landing came from a roll, which `_play_turns` knows).
-- **Dracula's moment:** a "Drain!" `PowerPop` over Dracula; for each victim a `PowerPop` "-1" is not needed (the blood drop leaving is the sign); the drops fly from the victim's HUD portrait to Dracula's, as every blood flight does (`Hud` already animates a blood change). The victims' pieces recoil with `PaperMotion.tilt`.
-- **Medusa's moment:** "Stone!" over each victim's piece, the piece turns grey (a modulate tween; the piece's shadow stays), with no new art: tint the piece's own portrait grey and add a flat grey paper rim. `Sound.play("stone")` for the turn to stone and `stone_crack` on the victim's turn, where the grey flakes off (a quick scale pop and the tint returning) and a banner-less "Free!"-style pop shows "Crack!". Stone players keep being valid duel targets.
-- **HUD:** a stone player's portrait gets the same grey tint, so the whole table sees who misses a turn.
-- Strings (English and Turkish): `POP_DRAIN`, `POP_STONE`, `POP_CRACK`.
+- **`PongGame`** (`src/minigames/pong_game.gd`), registered as `Minigames.GAMES["pong"]`. The table is `pong_table.png` scaled to 1480 x 640, the paddles are `paddle.png` tinted with `color_of(side)`, the ball is `crumpled.png`. The challenger is the left paddle.
+- **Movement:** `MinigameInput.direction(side).y` moves the paddle at a fixed speed (about 640 px/s), clamped to the table. Arrows only.
+- **Ball:** after the go it eases in over 0.4 s from the middle towards a random side at a gentle speed, then speeds up about 6% on each paddle hit, up to a cap. Where the ball strikes the paddle bends its angle (centre goes straight, the ends go steep). The table's top and bottom bounce it. The first ball past a paddle's line is the point and the other side wins. Never a draw.
+- **Hyde's edge:** the challenger's paddle moves 10% faster (`speed * (1 + edge)`).
+- **Fixed-step physics** in `_physics_process`, split into sub-steps so the ball never moves more than half its radius at once and can't tunnel through a paddle.
+- **Sounds:** `paddle_hit` on a paddle (pitch up a hair with the ball's speed), `bounce` on a wall.
 
 **Polish:**
-- The stone arrives in a short beat: Medusa's pop, then the victims go grey one after another (a tiny stagger so they never change together), each with a squash.
-- The crack is a small shake, a flash of the old colour, and the turn glides on without the die.
-- Dracula's drops fly in a stagger, and the camera stays on him.
-- The sounds `stone` and `stone_crack` have their trims set (done in part 30); `power` for the pops.
+- The paddle squashes on a hit (0.1 s) and springs back. The ball spins with its speed and leaves no trail (minimalism).
+- A small puff of paper bits where the ball crosses the goal line; the scoring side's paddle hops once, the other's droops.
+- The first serve is slow enough that a ready player is never beaten by it.
+- A side with no key down, or an absent side, does not move, and loses by not playing.
+- `controls()` gives the up and down keycap line for each side.
 
-**Assets:** none new. `power.ogg`, `stone.ogg` and `stone_crack.ogg` exist; the grey is a tint of existing art.
+**Assets:** `pong_table`, `paddle`, `crumpled`, `paddle_hit`, `bounce`. None new.
 
 **Check:**
-- Headless: `BoardPath.nearby` at a normal space, a fork, a join, the start and the finish, for sizes 3 and 8; Dracula steals from two nearby players, not from one with 1 blood, and stays at 3 when full; Death's victim never drops below 1; Medusa stones nearby players and not a `just_missed` one; `next_player` skips a stone player once and never twice in a row; a swap never fires either power.
-- A plain 8-player run with Dracula and Medusa forced next to others (set `space` directly): both powers fire before the space, the stone cracks on its turn, 25 FPS. No errors or warnings.
-- Screenshots: Dracula's drain with the flying drops, Medusa's stoned pieces, the crack.
+- Headless: the ball bounces off the walls and paddles and never tunnels at the speed cap; scripted paddle tracking makes a long rally and a lone paddle loses; the first ball past a line finishes with the right winner; the speed cap holds; the Hyde test.
+- A plain run: a 4-player game, force a Pong space, play it with the MCP keys once, see the winner applied. 25 FPS.
+- Screenshots: the ball mid-rally, a paddle squash, the result.
 
-**Risks:** the turn loop (`Board._play_turns`) is where skips live: keep the skip inside `Match.next_player`, not in the loop, so a future online host runs the same rule. A stone player standing on a fork is still "nearby" for the next landing.
+**Risks:** first goal wins can end in seconds if a side stands still. That's accepted (nobody can refuse a duel, and "shitty" is the standard).
 
-### Part 32: The online spike
+### Part 35: Tug of War
 
-**Goal:** prove the riskiest unknown: two browser tabs, one Cloudflare-style WebSocket relay, one tiny Godot web build in which a room code connects the tabs and a click in one shows up in the other, with the measured round-trip. Throwaway code on its own branch: nothing of it stays unless part 38 reuses a piece.
-
-**Builds:**
-- **The relay** in `tools/relay/` (new): a Cloudflare Worker with one Durable Object per room, WebSocket Hibernation API. It accepts a socket on `/room/<code>`, tells each peer its id and the peer list, and forwards a message to one peer or to all. The spike runs it **locally with `wrangler dev`**, so it needs no Cloudflare account yet (an account is only needed to deploy, part 38; ask the user for it then, with which friends test). `wrangler` is run with `npx`. Do not install anything global.
-- **A throwaway scene** `src/spike/spike.tscn` (not on the title): a code field, Host/Join, a list of peers, and a button that sends "ping" with a timestamp to everyone, plus the reply's round-trip in ms. Godot side: `WebSocketMultiplayerPeer`, the relay speaking the Godot multiplayer protocol as a pure forwarder if that is tractable, otherwise a tiny hand-made JSON protocol over `WebSocketPeer` (the spike decides, and writes down which).
-- **The web export:** install the web export templates if missing (see `docs/tech.md`; the Windows templates were also missing at part 24), export the spike without threads, and serve it with `python -m http.server`. Two Playwright tabs open it, join one room and exchange pings. A report in the Part notes: what worked, what was slow, the measured round trip on localhost, and the risks for the real thing.
-- A short decision note in `docs/tech.md`: the protocol chosen, how big the export is, and the load time.
-
-**Polish:** none; it is a spike. Keep it ugly and small, and never touch the real game's scenes except the one test hook that opens the spike scene.
-
-**Assets:** none.
-
-**Check:** two Playwright tabs on `localhost` exchange a ping and a pong through the local relay; a third joining the same code sees both; leaving and rejoining the room with the same code works. The web export's file size and first-load time are noted.
-
-**Risks:** the export templates may not install (large download: ask the user before downloading if it fails or is blocked); a browser build may behave differently from the editor's run (audio unlock, input focus). If the Godot multiplayer protocol is not feasible over a plain forwarder, the fallback is a JSON protocol and an RPC layer of our own. That decides how parts 39 and 40 are written, so record it.
-
-### Part 33: The minigame frame
-
-**Goal:** a minigame space now takes you from the challenge to a VS card, into a (stub) minigame that plays a full round for two chosen players with real keyboard input, and back to the board with the result applied. The coin-flip duel is gone. Everything every game needs is in the frame, so parts 34 to 37 each add only a game.
+**Goal:** a minigame space of kind `tug_of_war` plays Tug of War: a rope with a marker, each press of the action key pulls it your way, and past your line wins.
 
 **Builds:**
-- **`Minigame`** (new base class, `src/minigames/minigame.gd`): what a game implements. `setup(left_player, right_player, challenger_side, edges)` places the two; `read_input(side)` comes from the seam below; the game emits `finished(winner_side)` (or `draw`, which replays the round, per `minigames.md#draws`). Mr. Hyde's edge arrives as an `edge` number (0 or about 0.1) that each game's part applies.
-- **`MinigameInput`** (new, the seam): the games read the two sides' keys only through it (`MinigameInput.pressed(side, key)` for arrows, A, S, D; and `just_pressed`). In the one-computer mode it maps two keyboard sets: the left side uses **W A S D** as up, left, down, right plus **Q** (action), **E** (special), **R** (dash); the right side uses the **arrow keys** plus **K**, **L**, **;**. (Claude's call, `minigames.md#controls`: the fixed key names A, S, D describe the online keys; one computer needs two sets.) Later, the network feeds the same calls. An absent side reads as nothing pressed.
-- **`MinigameFrame`** (new scene, `src/minigames/minigame_frame.tscn`): on a minigame space, after `Challenge` returns, the board hands the pair and the stake to the frame, which shows the VS card (two portraits, names, the stake), the instructions (the game's key line for each side, 2 s), a 3-2-1 countdown with `ui_click` ticks and `whistle`, the game, then the result: the winner's pop and the loser's, `whistle`, and back to the board. The frame returns `{winner, loser}`, and `Board` applies it with the existing `duel_end` path. The frame is a layer above the board, which keeps its place (the camera stays; only the table is covered, like a curtain).
-- **The stub game** `src/minigames/stub_game.gd` (a throwaway square on a table that the two sides move, first to touch a flag wins), so the frame is checked end to end. Parts 34 to 37 replace it kind by kind through a table `Minigames.for_kind(kind)` (`pong`, `sumo`, `head_soccer`, `tug_of_war`); until a game exists, its kind uses the stub.
-- **Everyone watches:** the frame draws the table the same for the two players and anyone else, from the game's state (no input from watchers), so online can send state to watchers later. The watchers' view is the same node tree; in the local mode there are no extra watchers.
-- **Mr. Hyde's hook:** the frame passes `edge = 0.1` when the challenger is Mr. Hyde, and 0 otherwise.
-- **Swap handicap rounds:** a swap duel is several rounds (`Duel.roll_rounds` was a stand-in): the frame plays rounds until the challenger has won 3 before losing 1 (Dorian: 1), showing a tally between rounds. `DuelTally` (`src/board/duel_tally.gd`) already draws this; check it fits.
-- **`Duel`** (the coin flip) stays as the code for the `roll_rounds` maths and the tests, but nothing calls its coin flip on the board any more.
-- Strings (both languages): the VS card's key lines, "Get ready", "Draw, again!".
+- **`TugGame`** (`src/minigames/tug_game.gd`), registered as `GAMES["tug_of_war"]`. Side view: the rope (`rope.png`, 121 px tall, tiled sideways, scaled up if it looks weak) across the table; the `ribbon.png` marker at the middle; two lines (cut-paper flags) at each side; each player's portrait pawn at its end of the rope, leaning back as they pull. The challenger is on the left.
+- **Rules:** one key, `MinigameInput.just_pressed(side, "action")` (Q on the left, K on the right; S online). Each press moves the marker a step towards that side. The marker also creeps back to the middle slowly, so mashing has to keep up and a single lead doesn't hold (tuned in the build). Two presses in the same physics frame cancel. The first marker past a line wins. If both cross in one frame, the bigger lead that step wins, else the challenger (written down). Never a draw.
+- **Hyde's edge:** each of the challenger's pulls is 10% stronger.
+- **Sound:** `rope_pull` on each press, with a little pitch jitter, one voice per side so it isn't a machine gun.
 
 **Polish:**
-- The VS card slams in as two torn paper strips from the sides (`PaperMotion.pop_in`/`tilt`), with the portraits wobbling; the instructions line shows each side's keys as small paper keycaps.
-- The countdown numbers pop and fade with the `ui_click`, then `whistle`; the stub's end has the winner's portrait jump and the loser's slump (the existing `_win_pose`/`_lose_pose` poses).
-- A draw shows a short "Draw, again!" banner and replays; the round count and tally between swap rounds slide in and out.
-- No music in minigames (the brief); only their own sounds.
+- The rope pulls taut on each press (a quick x-scale pulse) and the marker wiggles with a damped wave; the pawns lean and straighten with each press, and the one losing ground slides on their feet.
+- Flat paper-bit dust puffs at the pawns' feet when they pull; the ribbon flutters with the marker's speed.
+- The line the marker crosses flashes once (a tilt pop) before the frame's win beat.
+- A small "Mash Q" / "Mash K" hint by each pawn fades after the first press.
+- `controls()` gives the one-key line.
 
-**Assets:** `whistle`, `ui_click`, existing portraits; none new.
+**Assets:** `rope`, `ribbon`, `rope_pull`. None new.
 
 **Check:**
-- Headless: `MinigameInput` maps both key sets to the right sides and does not mix them; the frame's round logic gives swap results like `Duel.roll_rounds` and handles draws; Hyde's edge is 0.1 only as challenger.
-- A plain run with 4 players: land on a minigame space (force a kind), pick an opponent, play the stub with real key presses (MCP `simulate_key`, it is enough to prove the keys work), see the winner applied to coins/blood/swap. A swap duel plays several rounds with the tally. 25 FPS.
-- Screenshots: the VS card, the countdown over the stub table, the result back on the board.
+- Headless: one press per side moves the marker equally; alternating presses stay near the middle; the faster presser wins; same-frame cancellation; the creep back; Hyde's 10%; a held key does not repeat.
+- A plain run: a Tug of War space, real Q and K presses through the MCP, the winner applied. 25 FPS.
+- Screenshots: the opening, mid-pull with the lean, the crossing.
 
-**Risks:** the frame sits over the board, which uses mouse clicks and the candle: make sure no board click leaks through while the frame is up. The two key sets on one keyboard can ghost (some keyboards can't register three keys at once); keep each game to what two hands can do, and note it. The seam's design decides how the online input is plugged in part 40: keep it a plain function, not a node tied to the keyboard.
+**Risks:** OS key repeat must never count as presses (the seam rolls `just_pressed` once per physics frame; check by holding). The creep-back sets who wins; part 42 retunes it with friends.
+
+### Part 36: Sumo
+
+**Goal:** a minigame space of kind `sumo` plays Sumo: two round pieces on a round ring push each other with the arrow keys; out of the ring loses, and both out at once is a draw that replays.
+
+**Builds:**
+- **`CirclePhysics`** (`src/minigames/circle_physics.gd`, small static helpers: collide two circles, bounce a circle off a wall or a circle), kept reusable because Head Soccer (part 37) needs it.
+- **`SumoGame`** (`src/minigames/sumo_game.gd`), registered as `GAMES["sumo"]`. From above: `sumo_ring.png` as a circle centred on the table (radius about 290 px); the pieces are tinted `space.png` with portraits, a little larger than a board token. They start on opposite sides, held still until the go.
+- **Physics:** the input is an acceleration, friction slows each piece, speed is capped. Pieces collide as circles (restitution about 0.7) and the closing speed adds to the shove, so a charge hits harder. A piece whose centre leaves the ring falls and loses. Both falling in the same physics frame is `Minigame.DRAW`. A, S and D do nothing and the ring never shrinks (Q17).
+- **Fixed step with sub-steps**, as in Pong, so a fast hit never skips the collision.
+- **Hyde's edge:** the challenger's piece is 10% heavier (shoves harder, is shoved less), invisible.
+- **Sounds:** `sumo_bump` on a collision, with volume following the closing speed. The fall reuses `bounce` pitched down (noted).
+
+**Polish:**
+- On a bump both pieces squash along the line of impact and spring back, with a small puff of paper bits at the contact point; the ring jiggles a pixel or two on a hard hit.
+- Each piece tilts into its move; its shadow stretches with its speed.
+- The fall: the piece shrinks, spins a little and fades away, and the other's portrait hops before the frame's win beat.
+- `controls()` gives the four-arrow keycap line.
+
+**Assets:** `sumo_ring`, `space` (tinted), `sumo_bump`. None new.
+
+**Check:**
+- Headless: a pushed piece goes out and loses; two out in one frame gives a draw (and the frame replays it); a head-on hit of equal pieces sends both back equally; Hyde's heavier piece wins more head-ons; sub-steps stop tunnelling; a still opponent is eventually pushed out.
+- A plain run: a Sumo space, arrows and WASD through the MCP, the winner applied. 25 FPS.
+- Screenshots: the opening, a bump with the squash, the fall.
+
+**Risks:** the feel of the circle physics decides the game and Head Soccer's ball extends it, so tune friction and restitution by playing. Diagonals on one keyboard can ghost against the opponent's keys: the push is an acceleration, so a lost key just feels like a slower piece.
 
 ## Roadmap
 
-Very rough. The next Microplan (after part 33) rewrites it. It still ends at 43. The end may still move: the four minigames and the online parts are the big unknowns, and the spike (part 32) is where we learn how big the online part is.
+Very rough. The next Microplan (after part 36) rewrites it. It still ends at 43. The end may still move: the four minigames and the online parts are the big unknowns, and the spike (part 32) is where we learn how big the online part is.
 
 25. Questionnaires 16 to 18 and the docs. (done)
 26. Asset retrieval. (done)
@@ -117,7 +125,7 @@ Very rough. The next Microplan (after part 33) rewrites it. It still ends at 43.
 30. Powers I: the passive ones. (done)
 31. Powers II: Dracula's steal and Medusa's stone. (done)
 32. An online spike with a local relay (no Cloudflare account needed yet). (done)
-33. The minigame frame.
+33. The minigame frame. (done)
 34. Pong.
 35. Tug of War.
 36. Sumo.
@@ -133,7 +141,7 @@ Very rough. The next Microplan (after part 33) rewrites it. It still ends at 43.
 
 Each part session adds a few lines when it finishes: what got built, what changed from the plan, surprises, and anything left over or buggy. The next Microplan reads these instead of the code.
 
-### The code since part 24 (absorbed by Microplan 11)
+### The code since part 24 (parts 25 to 33; the frame and spike notes stay for parts 34 to 38)
 
 - **Design and assets (parts 25, 26):** four minigames (Pong, Sumo, Head Soccer, Tug of War), no minigame music, no time limit, Mr. Hyde's edge only when he challenges; online play is Claude's call (`tech.md`). Images in `assets/art/minigames/`: `pong_table`, `paddle` (grey, to tint), `sumo_ring`, `goal` (faces right, mirror for the left), `ball`, `boot` (grey, to tint), `rope` (121 px tall, tiles sideways), `ribbon`. Reused: Pong's ball is `crumpled.png`, sumo pieces are tinted `space.png` with portraits, Head Soccer's heads are portraits on `boot.png`. Sounds in `assets/audio/sfx/`: `whistle`, `paddle_hit`, `bounce`, `kick`, `jump`, `sumo_bump`, `rope_pull`, `power`, `stone`, `stone_crack`, `join`, `leave`, `ready`, `start`. Lobby sounds are short synthetic blips. The rope is thin: scale it in the engine if weak. The Gemini key has no image quota; the user makes images by hand.
 - **Camera (part 27):** `BoardCamera.ZOOM := 0.88` (1.0 undoes it) with `HALF_WIDTH`/`HALF_HEIGHT`. Raised-angle constants: `GROUND_Y` 750, `PROP_BASE_Y` 810, `HILL_TOP_Y` 542, `UPPER_Y` 627, `LOWER_Y` 935, `FAR_Y` 350, `WATER_Y` 670, fog bank 570, `MAIN_Y` 880. Clickable things are scaled by `1 / ZOOM`. **Known blemish:** `scenery.gd`'s `_ground_fill` stretches each ground strip's bottom rows down 200 px, leaving faint root streaks; a taller ground image would fix it. The user's verdict on the zoom (`screenshots/part_27/1.png`) was never recorded in the README, so assume it stays.
@@ -151,3 +159,4 @@ Each part session adds a few lines when it finishes: what got built, what change
 - **2026-10-24, Microplan 9:** the start of the final game, from the user's brief. Planned parts 25 to 27: the questionnaires, asset retrieval, and the camera tweak. Sketched the roadmap to part 44.
 - **2026-10-24, Microplan 10:** planned parts 28 to 30: the lobby-size rules, the board for each lobby size, and the passive powers. The roadmap ends at 43 because Run n Dodge is out (part 25), and Head Soccer goes last of the four minigames (it has the most new physics).
 - **2026-10-24, Microplan 11:** planned parts 31 to 33: Dracula and Medusa, the online spike, and the minigame frame. The roadmap is unchanged (still ends at 43). One change inside it: the spike (32) runs against a local `wrangler dev` relay, so the overnight automation is not blocked waiting for a Cloudflare account; the account is asked for at part 38, when the real deploy happens. The frame (33) takes the one-computer key sets as Claude's call: WASD with Q, E, R for the left player; the arrows with K, L and ; for the right.
+- **2026-10-24, Microplan 12:** planned parts 34 to 36: Pong, Tug of War and Sumo, each a `Minigame` subclass plugged into `Minigames.GAMES`. The roadmap is unchanged (still ends at 43). Order: Pong, then Tug of War (smallest, tests the action key), then Sumo, whose circle physics goes into a small reusable `CirclePhysics` for Head Soccer (37). Mr. Hyde's edge is a hidden 10% in each game (paddle speed, pull strength, piece weight).

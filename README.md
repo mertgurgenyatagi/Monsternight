@@ -33,7 +33,8 @@ What they mean in practice is in [Art and audio](docs/art_and_audio.md#principle
 - **Part 31 is done:** Dracula's drain and Medusa's stone with its crack (`BoardPath.nearby`, `Match.drain/petrify`, the skip in `next_player`). Notes in `docs/microplan.md`.
 - **Part 32 is done:** the online spike (relay in `tools/relay/`, throwaway scene `src/spike/`, a Web export preset): two and three browser tabs talk through a local relay with our own JSON protocol. Findings in `docs/microplan.md`.
 - **Part 33 is done:** the minigame frame (`src/minigames/`: `Minigame`, `MinigameInput`, `Minigames`, `MinigameFrame`, a stub game); a minigame space now plays it instead of the coin flip. Notes in `docs/microplan.md`.
-- **Next: a Microplan session** (the most recent part, 33, is a multiple of 3), which plans parts 34 to 36.
+- **Microplan 12 is done:** parts 34 to 36 are planned in `docs/microplan.md` (Pong, Tug of War, Sumo). The roadmap still ends at part 43.
+- **Next: part 34**, Pong.
 
 **Keep the raws.** They're the sources, and the processed files can always be rebuilt from them.
 
