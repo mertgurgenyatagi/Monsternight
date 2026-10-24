@@ -86,6 +86,8 @@ POP_STONE,Stone!,Taş!
 POP_CRACK,Crack!,Çatırt!
 KEYS_MOVE,Move,Hareket
 KEYS_UPDOWN,Move up and down,Yukarı aşağı
+KEYS_MASH,Mash to pull,Çekmek için bas bas
+MASH_HINT,Mash %s,%s'ye bas
 MINI_GET_READY,Get ready,Hazır ol
 MINI_DRAW,"Draw, again!","Berabere, tekrar!"
 MINI_ROUND,Round %d,%d. tur

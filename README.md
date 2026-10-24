@@ -35,7 +35,8 @@ What they mean in practice is in [Art and audio](docs/art_and_audio.md#principle
 - **Part 33 is done:** the minigame frame (`src/minigames/`: `Minigame`, `MinigameInput`, `Minigames`, `MinigameFrame`, a stub game); a minigame space now plays it instead of the coin flip. Notes in `docs/microplan.md`.
 - **Microplan 12 is done:** parts 34 to 36 are planned in `docs/microplan.md` (Pong, Tug of War, Sumo). The roadmap still ends at part 43.
 - **Part 34 is done:** Pong (`PongGame`). Notes in `docs/microplan.md`.
-- **Next: part 35**, Tug of War.
+- **Part 35 is done:** Tug of War (`TugGame`). Notes in `docs/microplan.md`.
+- **Next: part 36**, Sumo.
 
 **Keep the raws.** They're the sources, and the processed files can always be rebuilt from them.
 
