@@ -1,9 +1,9 @@
 # Microplan
 
-The [final game](roadmap.md#2-final-game), built in parts after the first playable's 24. The numbers go on from there. `/microplan` plans three parts at a time in detail, and a rough roadmap to the end (see `.claude/skills/microplan/SKILL.md`). It runs in its own session, after part 30, 33, 36 and so on.
+The [final game](roadmap.md#2-final-game), built in parts after the first playable's 24. The numbers go on from there. `/microplan` plans three parts at a time in detail, and a rough roadmap to the end (see `.claude/skills/microplan/SKILL.md`). It runs in its own session, after part 33, 36, 39 and so on.
 
 - **The brief:** the user's direction for the final game is [final_game_brief.md](questionnaire_answers/final_game_brief.md), saved word for word. The design docs ([game_rules.md](game_rules.md), [board.md](board.md), [characters.md](characters.md), [minigames.md](minigames.md), [screens.md](screens.md), [tech.md](tech.md)) say what the final game is. Questionnaires ended at 18; the rest is Claude's call.
-- **The code map:** the first playable's Part notes ("Built so far" in [microplan_first_playable.md](microplan_first_playable.md#part-notes)) describe the code as it stands. Read the section your part touches instead of rereading the code.
+- **The code map:** the first playable's Part notes ("Built so far" in [microplan_first_playable.md](microplan_first_playable.md#part-notes)) describe the code as it stands, and "The code since part 24" below adds what parts 25 to 30 changed. Read the section your part touches instead of rereading the code.
 
 ## Building a part
 
@@ -20,113 +20,109 @@ A part is done when:
 7. The Godot editor is closed (after the MCP server is ended), because an open editor gets in the way of the overnight automation's screen watching. A Microplan session closes it too.
 8. The session's last message ends with `q7Zk#x2` as a line of its own, which the overnight automation looks for (see README, Handover 6). A Microplan session ends the same way.
 
-If a part turns out too big, split it (28a, 28b) instead of rushing it.
+If a part turns out too big, split it (31a, 31b) instead of rushing it.
 
 ## Parts
 
-Three parts that turn the first playable's rules into the final game's, without any minigame or online code: the lobby-size rules, the board built for each lobby size, and the passive powers. Each is playable by hand with the hot-seat setup screen (kept as the local mode, and how every part is tested). Duels are still the coin flip until the minigame frame (part 33).
+Three parts: the last two powers (Dracula and Medusa) with their moments on the board, a throwaway online spike that finds the riskiest unknown early, and the minigame frame that every game plugs into. After part 33 the rules, the board and the powers are all in, in the hot-seat mode, and the first minigame can be built on a finished frame. Duels stay the coin flip until the frame is in.
 
-### Part 28: The lobby-size rules
+### Part 31: Powers II, Dracula and Medusa
 
-**Goal:** a match is 3 to 8 players, its turn count follows the lobby's size, only the first finisher gets a finishing trophy, and a challenger can walk away from a swap-only duel. Plus a look at the camera leftovers from part 27.
+**Goal:** when Dracula lands, he drains 1 blood from each player nearby and the blood flies to him; when Medusa lands, each player nearby turns to grey stone and misses their next turn, with the stone cracking off on their turn. Both fire before the space they land on.
 
 **Builds:**
-- **`Match`:** `TURNS` (const 17) becomes a static var `turns`, set by `Match.start` from a table `TURNS_BY_LOBBY` (3:20, 4:17, 5:15, 6:14, 7:13, 8:12; see `game_rules.md`). `Board`, `Hud` (the "Turn 3/17" tag, the last-turn squash) and `_last_turn` read it. `Match.reset` leaves it alone (the next `start` sets it).
-- **Setup screen:** the player count runs 3 to 8, defaulting to 4; the Begin button says why it is off below 3 (a short line, new string in both languages). Check what the old 2-player default touched (`setup.gd`, `pregame.gd`'s test match of 2, `ceremony.gd`'s test matches).
-- **Trophies:** `Match.results()` gives the finishing trophy to the first finisher only, 1 trophy (the first-finisher copy-twice in the ceremony goes: `first` round shows one). Second and later finishers get none. Gold and duels trophies stay, ties share. The tiebreaker keeps its order. The ceremony's rounds, and the leaderboard's `×N`, follow `results()`; the early end ("Everyone else is home") now triggers when all but one have finished, as before.
-- **The swap opt-out:** in `Challenge`, when the only valid stake for the chosen opponent is swap (gold and blood both greyed), the challenger gets a "Walk away" paper button beside the cards. Picking it, or letting the 20 s timer run out onto it, ends the space like an empty one (nothing is given: not even the coin the old "nobody to duel" fallback gives). A timeout still picks a random valid choice, and walking away counts as valid and can be chosen by that dice. Nobody with an opponent but no valid stake: walk away is the only choice, taken without asking after a short banner.
+- **`BoardPath.nearby(id)`** (new, static): the ids that count as nearby for a landing on `id`: the space itself, one behind and one ahead, following the road (`characters.md#nearby`). At a fork, "ahead" is the first space of both paths; where the paths join, "behind" is the last space of both. A reverse map (`_previous`, built with `_nodes`) gives "behind"; `next(id)` gives "ahead". The START and FINISH nodes are not nearby for anyone (they are safe).
+- **`Match`:**
+  - `nearby_players(player)`: the other players whose `space` is in `BoardPath.nearby(player.space)`, skipping the finished and those still on the start. Called only for a landing from a roll (the board calls it; a swap never does).
+  - Dracula: `drain(player)` returns the victims (blood 2 or more), lowers each by 1 through `change_blood` (so Death's floor and caps hold), and gives Dracula +1 each up to `max_blood`. The steal happens at full blood: victims lose, Dracula stays.
+  - Medusa: `petrify(player)` marks every nearby player `stone = true`, except one with `just_missed` set (nobody misses two turns in a row). `next_player()` consults it: a stone player's turn is skipped for roll, move and space, the stone is cleared, `just_missed` is set and cleared once that player has moved. The turn counter and `_last_turn` follow the skip as a normal turn; check an 8-player game where several are stoned at once.
+- **`Board.land`:** before the space's own effect, Dracula's `_power_drain` and Medusa's `_power_stone` run (only when the landing came from a roll, which `_play_turns` knows).
+- **Dracula's moment:** a "Drain!" `PowerPop` over Dracula; for each victim a `PowerPop` "-1" is not needed (the blood drop leaving is the sign); the drops fly from the victim's HUD portrait to Dracula's, as every blood flight does (`Hud` already animates a blood change). The victims' pieces recoil with `PaperMotion.tilt`.
+- **Medusa's moment:** "Stone!" over each victim's piece, the piece turns grey (a modulate tween; the piece's shadow stays), with no new art: tint the piece's own portrait grey and add a flat grey paper rim. `Sound.play("stone")` for the turn to stone and `stone_crack` on the victim's turn, where the grey flakes off (a quick scale pop and the tint returning) and a banner-less "Free!"-style pop shows "Crack!". Stone players keep being valid duel targets.
+- **HUD:** a stone player's portrait gets the same grey tint, so the whole table sees who misses a turn.
+- Strings (English and Turkish): `POP_DRAIN`, `POP_STONE`, `POP_CRACK`.
 
 **Polish:**
-- The "Walk away" button is a `PaperButton` that pops in with the cards, with `ui_click`; when pressed the cards lift away and the piece does a small shrug (`PaperMotion.tilt`), with no new sound. Its text in English and Turkish.
-- The lobby-size turns change the HUD's counter text: check the longest ("Turn 12/12", "Last turn!") still fits.
-- The first-finisher trophy is shown once on the leaderboard, ceremony pops are unchanged otherwise.
+- The stone arrives in a short beat: Medusa's pop, then the victims go grey one after another (a tiny stagger so they never change together), each with a squash.
+- The crack is a small shake, a flash of the old colour, and the turn glides on without the die.
+- Dracula's drops fly in a stagger, and the camera stays on him.
+- The sounds `stone` and `stone_crack` have their trims set (done in part 30); `power` for the pops.
+
+**Assets:** none new. `power.ogg`, `stone.ogg` and `stone_crack.ogg` exist; the grey is a tint of existing art.
+
+**Check:**
+- Headless: `BoardPath.nearby` at a normal space, a fork, a join, the start and the finish, for sizes 3 and 8; Dracula steals from two nearby players, not from one with 1 blood, and stays at 3 when full; Death's victim never drops below 1; Medusa stones nearby players and not a `just_missed` one; `next_player` skips a stone player once and never twice in a row; a swap never fires either power.
+- A plain 8-player run with Dracula and Medusa forced next to others (set `space` directly): both powers fire before the space, the stone cracks on its turn, 25 FPS. No errors or warnings.
+- Screenshots: Dracula's drain with the flying drops, Medusa's stoned pieces, the crack.
+
+**Risks:** the turn loop (`Board._play_turns`) is where skips live: keep the skip inside `Match.next_player`, not in the loop, so a future online host runs the same rule. A stone player standing on a fork is still "nearby" for the next landing.
+
+### Part 32: The online spike
+
+**Goal:** prove the riskiest unknown: two browser tabs, one Cloudflare-style WebSocket relay, one tiny Godot web build in which a room code connects the tabs and a click in one shows up in the other, with the measured round-trip. Throwaway code on its own branch: nothing of it stays unless part 38 reuses a piece.
+
+**Builds:**
+- **The relay** in `tools/relay/` (new): a Cloudflare Worker with one Durable Object per room, WebSocket Hibernation API. It accepts a socket on `/room/<code>`, tells each peer its id and the peer list, and forwards a message to one peer or to all. The spike runs it **locally with `wrangler dev`**, so it needs no Cloudflare account yet (an account is only needed to deploy, part 38; ask the user for it then, with which friends test). `wrangler` is run with `npx`. Do not install anything global.
+- **A throwaway scene** `src/spike/spike.tscn` (not on the title): a code field, Host/Join, a list of peers, and a button that sends "ping" with a timestamp to everyone, plus the reply's round-trip in ms. Godot side: `WebSocketMultiplayerPeer`, the relay speaking the Godot multiplayer protocol as a pure forwarder if that is tractable, otherwise a tiny hand-made JSON protocol over `WebSocketPeer` (the spike decides, and writes down which).
+- **The web export:** install the web export templates if missing (see `docs/tech.md`; the Windows templates were also missing at part 24), export the spike without threads, and serve it with `python -m http.server`. Two Playwright tabs open it, join one room and exchange pings. A report in the Part notes: what worked, what was slow, the measured round trip on localhost, and the risks for the real thing.
+- A short decision note in `docs/tech.md`: the protocol chosen, how big the export is, and the load time.
+
+**Polish:** none; it is a spike. Keep it ugly and small, and never touch the real game's scenes except the one test hook that opens the spike scene.
 
 **Assets:** none.
 
-**Check:**
-- Headless: `Match.results()` for a first finisher with several behind, ties in gold and duels, and nobody finishing; `Match.start` with 3 to 8 sets `turns` to the table; 2 is refused.
-- A plain sped-up run with 3 players (20 turns, last-turn banner on turn 20) and 8 (12). A forced swap-only choice shows "Walk away"; clicking it by MCP ends the space, and the timeout run picks it sometimes.
-- The part 27 leftovers by eye in a plain run: the fork with its arrows, a far death flight, the die. Fix a number in `BoardCamera`/`BoardLayout` only if something is clearly off; if the user's verdict on the zoom has come in the README, follow it.
-- Screenshots: the 8-player HUD at turn 1 of 12, the "Walk away" button, the ceremony's leaderboard with one trophy for the first finisher.
+**Check:** two Playwright tabs on `localhost` exchange a ping and a pong through the local relay; a third joining the same code sees both; leaving and rejoining the room with the same code works. The web export's file size and first-load time are noted.
 
-**Risks:** the ceremony and stats were written for two finishing trophies; read `Match.results()`'s `by` shape and the ceremony's rounds before changing them. The user may reply to part 27 with "undo the zoom": that is `ZOOM = 1.0` plus the constants listed in the Part 27 notes.
+**Risks:** the export templates may not install (large download: ask the user before downloading if it fails or is blocked); a browser build may behave differently from the editor's run (audio unlock, input focus). If the Godot multiplayer protocol is not feasible over a plain forwarder, the fallback is a JSON protocol and an RPC layer of our own. That decides how parts 39 and 40 are written, so record it.
 
-### Part 29: The board for each lobby size
+### Part 33: The minigame frame
 
-**Goal:** each lobby size gets its own road, from 46 to 65 spaces on average, rolled fresh every match, with the four minigame spaces on it. The scenery fits every length.
+**Goal:** a minigame space now takes you from the challenge to a VS card, into a (stub) minigame that plays a full round for two chosen players with real keyboard input, and back to the board with the result applied. The coin-flip duel is gone. Everything every game needs is in the frame, so parts 34 to 37 each add only a game.
 
 **Builds:**
-- **`BoardRoller`** (new, `src/board/board_roller.gd`): the logic of `tools/board/roll_board.py` in GDScript, so the board is rolled at runtime. Input: the lobby size and the bags from `board.md`'s Space mix. Output: the `kinds` string of each of the seven stretches. Half empty; the filled half split into quick spaces and minigame spaces 1 to 1; the quick ones in equal numbers of the four kinds (the graveyard's only spikes and thieves, the church path's only churches and coins), the minigames in equal numbers of the four games, an odd space going to a random kind. Each stretch is a shuffled bag. Use a `RandomNumberGenerator` that `Match.start` seeds, and keep `--seed N` working on the board for tests.
-- **`BoardLayout`:** the village, forest and castle space counts come from the lobby size (table in `board.md`: village 14/12/11/10/9/8, forest the same, castle 17/16/13/11/10/10). The splits stay (graveyard 8, church 12, boardwalk and bog 10). `_locations`, `hill_width()` and `BoardPath._nodes` are cached statics, so add `BoardLayout.configure(size)` and `BoardPath.configure(size, kinds)`, which clear them and rebuild. `Board` calls them before building the scenery.
-- **`BoardPath`:** `KINDS` gets `p` pong, `u` sumo, `e` head soccer and `w` tug of war (`s` spikes and `h` church are taken), with the kinds named `pong`, `sumo`, `head_soccer`, `tug_of_war`. `STRETCHES` loses its hard-coded kinds string and gets lengths from the size. `racing` and `fps` kinds go.
-- **Scenery:** `scenery.gd`'s `_spots(location, first, last, gap)` already keeps the props' density, so a shorter village or a longer castle should only change the number of props. Check every length (the board is 44 to 67 spaces wide, about 12,000 to 16,500 px), the far layers' ends, the moon/star/sky coverage, the progress track, the intro glide time (scale `INTRO_GLIDE` with the width so it never feels slower than 7.5 s), and the church hill's width.
-- **Minigame icons:** `Space` shows the icon of its kind. The four icons are `pong.png`, `sumo.png`, `tug_of_war.png` and `haxball.png` (rename it `head_soccer.png`, and its `_rim`, and the `.import` files; fix every reference). The unused `racing` and `fps` icons are deleted (files and imports) once nothing references them. `docs/assets.md` is updated.
-- **The ground fix** (if the user kept the zoom): a taller ground strip for the village at least, to remove part 27's root streaks; ask nothing, just regenerate with the existing tool or note it if the art needs a new Gemini image.
-- **`tools/board/roll_board.py`** stays as the offline sanity tool but must print the same kinds counts; a short note in the Part notes, or delete it if the GDScript replaces it entirely.
+- **`Minigame`** (new base class, `src/minigames/minigame.gd`): what a game implements. `setup(left_player, right_player, challenger_side, edges)` places the two; `read_input(side)` comes from the seam below; the game emits `finished(winner_side)` (or `draw`, which replays the round, per `minigames.md#draws`). Mr. Hyde's edge arrives as an `edge` number (0 or about 0.1) that each game's part applies.
+- **`MinigameInput`** (new, the seam): the games read the two sides' keys only through it (`MinigameInput.pressed(side, key)` for arrows, A, S, D; and `just_pressed`). In the one-computer mode it maps two keyboard sets: the left side uses **W A S D** as up, left, down, right plus **Q** (action), **E** (special), **R** (dash); the right side uses the **arrow keys** plus **K**, **L**, **;**. (Claude's call, `minigames.md#controls`: the fixed key names A, S, D describe the online keys; one computer needs two sets.) Later, the network feeds the same calls. An absent side reads as nothing pressed.
+- **`MinigameFrame`** (new scene, `src/minigames/minigame_frame.tscn`): on a minigame space, after `Challenge` returns, the board hands the pair and the stake to the frame, which shows the VS card (two portraits, names, the stake), the instructions (the game's key line for each side, 2 s), a 3-2-1 countdown with `ui_click` ticks and `whistle`, the game, then the result: the winner's pop and the loser's, `whistle`, and back to the board. The frame returns `{winner, loser}`, and `Board` applies it with the existing `duel_end` path. The frame is a layer above the board, which keeps its place (the camera stays; only the table is covered, like a curtain).
+- **The stub game** `src/minigames/stub_game.gd` (a throwaway square on a table that the two sides move, first to touch a flag wins), so the frame is checked end to end. Parts 34 to 37 replace it kind by kind through a table `Minigames.for_kind(kind)` (`pong`, `sumo`, `head_soccer`, `tug_of_war`); until a game exists, its kind uses the stub.
+- **Everyone watches:** the frame draws the table the same for the two players and anyone else, from the game's state (no input from watchers), so online can send state to watchers later. The watchers' view is the same node tree; in the local mode there are no extra watchers.
+- **Mr. Hyde's hook:** the frame passes `edge = 0.1` when the challenger is Mr. Hyde, and 0 otherwise.
+- **Swap handicap rounds:** a swap duel is several rounds (`Duel.roll_rounds` was a stand-in): the frame plays rounds until the challenger has won 3 before losing 1 (Dorian: 1), showing a tally between rounds. `DuelTally` (`src/board/duel_tally.gd`) already draws this; check it fits.
+- **`Duel`** (the coin flip) stays as the code for the `roll_rounds` maths and the tests, but nothing calls its coin flip on the board any more.
+- Strings (both languages): the VS card's key lines, "Get ready", "Draw, again!".
 
 **Polish:**
-- The minigame spaces' hover and wake are the same as the old duel-space ones. Each of the four games reads clearly from its icon, with the cream rim.
-- The branch choice arrows list up to 4 icons of each path, most common first, as before; with four new kinds, the church path still shows churches and coins, the graveyard spikes and thieves, the swamp paths a mix.
-- The board's intro glide is the same feel at every width.
-- The progress track and the signposts keep working at every width.
+- The VS card slams in as two torn paper strips from the sides (`PaperMotion.pop_in`/`tilt`), with the portraits wobbling; the instructions line shows each side's keys as small paper keycaps.
+- The countdown numbers pop and fade with the `ui_click`, then `whistle`; the stub's end has the winner's portrait jump and the loser's slump (the existing `_win_pose`/`_lose_pose` poses).
+- A draw shows a short "Draw, again!" banner and replays; the round count and tally between swap rounds slide in and out.
+- No music in minigames (the brief); only their own sounds.
 
-**Assets:** the icons from part 26 (`sumo`, `tug_of_war` and the renamed `head_soccer`; Pong's exists).
-
-**Check:**
-- Headless: for every lobby size 3 to 8, over 500 rolls, the route lengths (shortest and longest) average to the brief's number, every stretch's bag counts are exact, and the church and graveyard hold only their kinds.
-- A plain run for 3 and for 8 players: walk the intro glide over the whole board and look for edges, gaps in the sky, missing props. 25 FPS on the church hill and the castle at both widths. No errors or warnings.
-- Screenshots: a 3-player village start, an 8-player castle, and the swamp fork with its arrows' new icons.
-
-**Risks:** the size of the rewrite of the cached statics: do `configure` first and test with 8 then 3 in one session (the ceremony's "Play again" must rebuild for a new size). Minigame icons: if two of them look alike at the board's size, tell the user.
-
-### Part 30: Powers I, the passive ones
-
-**Goal:** monster select tells you each monster's power, and the six powers that need no other player's board position work: the Wolf Man's roll, Cthulhu's start, Death, Dorian Gray's swap, Frankenstein as challenger, and the pop of a word when a power fires. Dracula, Medusa (the "nearby" ones) and Mr. Hyde's edge come later.
-
-**Builds:**
-- **`Monsters`:** a `power_key` for each monster, and `strings.csv` lines (English and Turkish) for the eight cards' short power line (the table's wording in `characters.md`).
-- **Monster select:** the card/piece shows its power line (a small paper tag under the name). It must fit 8 cards.
-- **`Match`:**
-  - `roll()` adds 1 for the Wolf Man (move 2 to 7); `Match.max_blood(player)` is 4 for Cthulhu and 3 for others, replacing `MAX_BLOOD` in `change_blood`, `die` and the HUD's drops; Cthulhu starts with 4 blood and 1 coin (and keeps its respawn at 4, with no coin).
-  - Death's blood never drops below 1 in `change_blood`, and spikes at 1 blood do nothing. `Match.stakes` greys blood when Death has 1 blood (as challenger or challenged).
-  - Frankenstein as the challenger loses nothing on `duel_result`: no coin, no blood, no death. The loss still counts as a loss in `duels_won` for the winner and as a started duel for him.
-  - Dorian Gray as the challenger needs 1 win in a swap: `Duel.roll_rounds(stake, challenger_wins_needed)`.
-- **The pops:** a `PowerPop` (small paper label, `pop_in`, rise and `pop_out`) over the piece or the die, with `Sound.play("power")`. "+1" beside the Wolf Man's die, "4" in Cthulhu's HUD blood on the drop-in (no pop needed), "Safe!" when Death's spikes do nothing or his blood stake is greyed, "Free!" on Frankenstein's lost duel, "Easy!" on Dorian's swap. New strings in both languages. Dracula and Medusa's pops are for part 31.
-- **HUD:** the blood drops show a fourth for Cthulhu, with the same flights.
-- **Sounds:** `Sound.TRIM` gets about +3 dB for `paddle_hit` and `stone` (part 26's note), though they are used later.
-
-**Polish:**
-- The Wolf Man's die shows its real face, then the "+1" pops beside it and the move count includes it.
-- Death's "Safe!" is a shrug (`PaperMotion.tilt`) with the pop, not a death.
-- The monster cards' power lines are in the display font, same size, and readable in Turkish.
-
-**Assets:** none new (`power.ogg` and the display font exist).
+**Assets:** `whistle`, `ui_click`, existing portraits; none new.
 
 **Check:**
-- Headless: the six powers against the rules in `characters.md`: roll ranges (Wolf Man 2 to 7, others 1 to 6), blood caps, Death never below 1, Frankenstein's losses, Dorian's swap rounds (2,000 runs, Dorian's win rate against the old 12.4%), and that nothing changes for a monster without the power.
-- A plain run, 8 players with every monster: monster select shows 8 power lines; the board runs a few sped-up turns; Cthulhu has 4 drops; a forced spikes landing for Death at 1 blood does nothing. No errors or warnings. 25 FPS.
-- Screenshots: monster select with the power lines, the Wolf Man's "+1", and Cthulhu's four drops.
+- Headless: `MinigameInput` maps both key sets to the right sides and does not mix them; the frame's round logic gives swap results like `Duel.roll_rounds` and handles draws; Hyde's edge is 0.1 only as challenger.
+- A plain run with 4 players: land on a minigame space (force a kind), pick an opponent, play the stub with real key presses (MCP `simulate_key`, it is enough to prove the keys work), see the winner applied to coins/blood/swap. A swap duel plays several rounds with the tally. 25 FPS.
+- Screenshots: the VS card, the countdown over the stub table, the result back on the board.
 
-**Risks:** `MAX_BLOOD` is used by the HUD, `Match.die` and `change_blood`; search before changing. The stake greying for Death at 1 blood needs a rule in `Match.stakes`: when blood is greyed and gold is not valid (the opponent has no coins) and swap is, the opt-out from part 28 applies.
+**Risks:** the frame sits over the board, which uses mouse clicks and the candle: make sure no board click leaks through while the frame is up. The two key sets on one keyboard can ghost (some keyboards can't register three keys at once); keep each game to what two hands can do, and note it. The seam's design decides how the online input is plugged in part 40: keep it a plain function, not a node tied to the keyboard.
 
 ## Roadmap
 
-Very rough. The next Microplan (after part 30) rewrites it. It ends at 43 now, not 44: Run n Dodge (old 37) is out, as part 25 decided. The end may still move.
+Very rough. The next Microplan (after part 33) rewrites it. It still ends at 43. The end may still move: the four minigames and the online parts are the big unknowns, and the spike (part 32) is where we learn how big the online part is.
 
 25. Questionnaires 16 to 18 and the docs. (done)
 26. Asset retrieval. (done)
 27. The camera tweak. (done)
-28. The lobby-size rules, and the swap opt-out.
-29. The board for each lobby size, with the four minigame spaces.
-30. Powers I: the passive ones.
-31. Powers II: Dracula's steal and Medusa's stone ("nearby" along the road), with their moments on the board.
-32. An online spike: a web export in a browser, and two tabs talking through the Cloudflare relay. Throwaway code. Ask the user for the free Cloudflare account and which friends test, before this part.
-33. The minigame frame: from the VS card into a minigame and back, the shared table, the two local key sets, the first point, input through one seam so online can feed it later, and Mr. Hyde's advantage hook.
+28. The lobby-size rules, and the swap opt-out. (done)
+29. The board for each lobby size, with the four minigame spaces. (done)
+30. Powers I: the passive ones. (done)
+31. Powers II: Dracula's steal and Medusa's stone.
+32. An online spike with a local relay (no Cloudflare account needed yet).
+33. The minigame frame.
 34. Pong.
 35. Tug of War.
 36. Sumo.
 37. Head Soccer.
-38. Online I: the lobby (join, names, ready, start) and the web build.
+38. Online I: the lobby (join, names, ready, start), the web build, and the Cloudflare deploy. Ask the user for the free Cloudflare account and which friends test.
 39. Online II: the board over the network (the host runs the rules, everyone draws), the timers and absent players.
 40. Online III: the minigames over the network, and everyone watching.
 41. Online IV: drops, reloads, the host leaving, and the itch.io page.
@@ -137,40 +133,18 @@ Very rough. The next Microplan (after part 30) rewrites it. It ends at 43 now, n
 
 Each part session adds a few lines when it finishes: what got built, what changed from the plan, surprises, and anything left over or buggy. The next Microplan reads these instead of the code.
 
-### Carried over from parts 25 to 27 (absorbed by Microplan 10)
+### The code since part 24 (absorbed by Microplan 11)
 
-- **Design:** questionnaires 16 to 18 are answered and saved; 19 was never filled in and the user ended them ("Use your own judgement for the rest"), so online play is Claude's call, marked in `tech.md`. Four minigames (Pong, Sumo, Head Soccer, Tug of War), no minigame music, no time limit, Mr. Hyde's edge only when he challenges.
-- **Assets (part 26):** 10 images and 14 sounds, all approved. Icons `sumo` and `tug_of_war` (with `_rim`); `assets/art/minigames/` holds `pong_table`, `paddle` (grey, to tint), `sumo_ring`, `goal` (faces right, mirror for the left), `ball`, `boot` (grey, to tint), `rope` (121 px tall, tiles sideways) and `ribbon`. Sounds in `assets/audio/sfx/`: `whistle`, `paddle_hit`, `bounce`, `kick`, `jump`, `sumo_bump`, `rope_pull`, `power`, `stone`, `stone_crack`, `join`, `leave`, `ready`, `start`. Head Soccer keeps `haxball.png` (to be renamed `head_soccer.png` in part 29). Reused for the final game (see `assets.md`): Pong's ball is `crumpled.png`, sumo pieces are tinted `space.png` with portraits, Head Soccer's heads are portraits on `boot.png`, Medusa's stone is the piece tinted grey. `Sound.TRIM` has nothing for the new sounds yet; `paddle_hit` and `stone` want about +3 dB. The rope is thin: scale it in the engine if weak. The Gemini key has no image quota, so `tools/images/make_images.py` needs billing; the user makes images by hand. Lobby sounds are short synthetic blips; only `start` is a door.
-- **Camera (part 27):** `BoardCamera.ZOOM := 0.88` (the one number; 1.0 undoes it) with `HALF_WIDTH`/`HALF_HEIGHT`; limits -73 to 1153. Constants for the raised angle: `GROUND_Y` 780→750, `PROP_BASE_Y` 840→810, `HILL_TOP_Y` 565→542, `UPPER_Y` 650→627, `LOWER_Y` 930→935, `FAR_Y` 380→350, `WATER_Y` 700→670, the fog bank 600→570; `MAIN_Y` stays 880. Clickable things (die, candle, branch arrows) are scaled by `1 / ZOOM`. `scenery.gd`'s `_ground_fill` stretches each ground strip's bottom rows down 200 px: **known blemish**, faint vertical root streaks at the bottom edge, which a taller ground image would fix. **Not checked by eye:** the fork with arrows, the death flight, the church hill and castle at 25 FPS in motion, the die. The user's verdict on the before-and-after sheet (`screenshots/part_27/1.png`) was still pending.
-- **Board code today:** the `kinds` strings in `BoardPath.STRETCHES` are hand-baked from `tools/board/roll_board.py` (seed 1031), `BoardLayout.LOCATIONS` has fixed space counts (12, 12, 12, 10, 15), and `BoardPath`, `BoardLayout` cache statics. `Match.TURNS` is a const 17, `Match.MAX_BLOOD` 3. `KINDS` still holds `x` haxball, `r` racing and `f` fps. Part 28 to 30 change these.
-
-### Part 28: the lobby-size rules (done 2026-10-24)
-
-- **`Match`:** `MIN_PLAYERS` is 3, `TURNS_BY_LOBBY` holds the table, and `Match.turns` is a static var set by `start` (`Board`, `Hud` read it; `TURNS` is gone). `results()` gives `by.finish` 1 to the first finisher only; the ceremony's "second" round is gone and "first" throws one copy.
-- **Setup:** the default is 4 cards and Remove stops at 3, so Begin can never be off for too few players: the planned "why it is off" line was not needed and not added.
-- **Walk away:** `Challenge` returns `{opponent, stake: Challenge.WALK}` when the challenger walks away (button under the cards when swap is the only valid stake; it is in the timeout's random pick). With no valid stake at all the banner says "Nothing to win here" and walks away alone. `Board.land` tilts the piece and ends the space with nothing given. New strings `CHALLENGE_WALK`, `CHALLENGE_NOTHING`.
-- **Checked:** headless table, results and refusal of 2; an 8-player board (HUD "Turn 1 of 12" fits) and a clicked Walk away; the 8-player ceremony. Not done: the sped-up 3-player 20-turn run and the timeout-picks-walk run were not played out (kept short); the camera leftovers were not touched.
-- **Test hint:** a headless `-s` script can't see autoloads in `_init`; use `_process`. Running the board as a child of a driver scene works for forcing a challenge.
-
-### Part 29: the board for each lobby size (done 2026-10-24)
-
-- **`BoardRoller`** rolls the kinds at runtime: per stretch, half empty, the filled half split 1 to 1 into minigames and quick spaces, kinds shared equally (odd ones to random kinds), then shuffled. The graveyard only has spikes and thieves, the church path only churches and coins, so both now have minigames too (the brief's half). `Match.start` seeds `Match.board_rng` (`-- --seed N` replays a board) and keeps `Match.board_kinds`; `Board._enter_tree` calls `BoardPath.configure(size, kinds)`, which calls `BoardLayout.configure(size)`, before the camera and scenery are built. `BoardLayout.COUNTS` holds the lobby table. `roll_board.py` is deleted.
-- **Kinds and icons:** `p` pong, `u` sumo, `e` head_soccer, `w` tug_of_war; `racing` and `fps` are gone, `haxball` icons renamed `head_soccer` (the `.import` files were regenerated). `make_outlines.py` follows. All four games share the purple token.
-- **Intro glide:** `min(7.5, width / 2100)` seconds (6.0 s at 8 players, 7.5 at 3).
-- **Scenery:** unchanged. `_spots` already scales the props with each location, and the far layers, sky and progress track fit widths from 12,600 to 16,780 px (checked by eye at both ends).
-- **Checked:** headless, 500 rolls for each size 3 to 8: lengths, empty and minigame halves, balance of kinds, allowed letters, shortest and longest route average to the brief's 46 to 65 (routes 4 each). A plain run at 3 and 8 players (village, church hill, forest, swamp fork, castle, gate), no errors, 25 FPS on the church hill and castle at 8 players.
-- **Not done:** the branch arrows have no icon list on them (the plan said "as before", but they never had one), and the ground-fix blemish from part 27 is untouched. Not played: "Play again" from the ceremony to a new size (it goes through `Match.start` and a new `Board`, and the headless test reconfigured 3 to 8 in one session).
-
-### Part 30: the passive powers (done 2026-10-24)
-
-- **`Match`:** `roll()` still gives the die's face; `roll_bonus(player)` is the Wolf Man's +1 and the board walks `face + bonus`. `max_blood`/`min_blood(player)` (Cthulhu 4, Death floor 1) replace `MAX_BLOOD` in `change_blood`, `die` and the HUD; `pick_monster` gives Cthulhu 4 blood and 1 coin (monsters are picked after `start`). `blood_is_safe(player)` is Death at 1 blood: `stakes` greys blood for him on either side, and spikes do nothing. `duel_result` gives a Frankenstein who lost as the challenger nothing and returns `free` when a real stake was waived. `Duel.swap_wins(challenger, stake)` and `roll_rounds(stake, swap_wins)`: Dorian needs 1 win, with no tally.
-- **Pops:** new `PowerPop.show_over(parent, at, text, scale)` (paper label, `power` sound, rises, frees itself). Used for "+1" beside the die, "Safe!" over Death on spikes (spikes shoot up, piece tilts) and under Death's portrait when blood is greyed in a challenge, "Free!" over Frankenstein after a lost duel, "Easy!" over Dorian's card in a swap duel. New strings `POWER_*` and `POP_*`.
-- **UI:** monster select shows each power line under the stand in the display font (24 px, two lines, shrinks only if needed). A 4-drop HUD portrait uses smaller, tighter drops. `Hud.portrait_node(player)` added. `Sound.TRIM`: `paddle_hit` and `stone` +3 dB.
-- **Checked:** headless: Cthulhu start/caps/respawn, Wolf Man 2 to 7, Death floor and greyed stakes, Frankenstein's losses (and normal when challenged), Dorian's swap win rate 48.8% (others 12.9%). A plain 8-player run: select lines, Cthulhu's 4 drops, "+1" with a roll of 5 walking 6, "Safe!", "Free!", 25 FPS, no errors.
-- **Not done:** the Turkish power lines were not looked at by eye; the "Easy!" pop and Death's challenge pop were not seen in a run; the Cthulhu "4" needs no pop (as planned).
+- **Design and assets (parts 25, 26):** four minigames (Pong, Sumo, Head Soccer, Tug of War), no minigame music, no time limit, Mr. Hyde's edge only when he challenges; online play is Claude's call (`tech.md`). Images in `assets/art/minigames/`: `pong_table`, `paddle` (grey, to tint), `sumo_ring`, `goal` (faces right, mirror for the left), `ball`, `boot` (grey, to tint), `rope` (121 px tall, tiles sideways), `ribbon`. Reused: Pong's ball is `crumpled.png`, sumo pieces are tinted `space.png` with portraits, Head Soccer's heads are portraits on `boot.png`. Sounds in `assets/audio/sfx/`: `whistle`, `paddle_hit`, `bounce`, `kick`, `jump`, `sumo_bump`, `rope_pull`, `power`, `stone`, `stone_crack`, `join`, `leave`, `ready`, `start`. Lobby sounds are short synthetic blips. The rope is thin: scale it in the engine if weak. The Gemini key has no image quota; the user makes images by hand.
+- **Camera (part 27):** `BoardCamera.ZOOM := 0.88` (1.0 undoes it) with `HALF_WIDTH`/`HALF_HEIGHT`. Raised-angle constants: `GROUND_Y` 750, `PROP_BASE_Y` 810, `HILL_TOP_Y` 542, `UPPER_Y` 627, `LOWER_Y` 935, `FAR_Y` 350, `WATER_Y` 670, fog bank 570, `MAIN_Y` 880. Clickable things are scaled by `1 / ZOOM`. **Known blemish:** `scenery.gd`'s `_ground_fill` stretches each ground strip's bottom rows down 200 px, leaving faint root streaks; a taller ground image would fix it. The user's verdict on the zoom (`screenshots/part_27/1.png`) was never recorded in the README, so assume it stays.
+- **Rules (part 28):** `Match.MIN_PLAYERS` 3, `TURNS_BY_LOBBY`, static `Match.turns` set by `start`. `results()` gives `by.finish` 1 to the first finisher only. Setup defaults to 4 players and stops at 3. `Challenge` returns `{opponent, stake: Challenge.WALK}` for a walk away; `Board.land` ends the space with nothing given. A headless `-s` script can't see autoloads in `_init`; use `_process`. Running the board as a child of a driver scene works for forcing a challenge.
+- **Board (part 29):** `BoardRoller` rolls `kinds` per stretch at runtime; `Match.start` seeds `Match.board_rng` (`-- --seed N` replays) and keeps `Match.board_kinds`; `Board._enter_tree` calls `BoardPath.configure(size, kinds)` (which calls `BoardLayout.configure`) before camera and scenery. Kinds: `p` pong, `u` sumo, `e` head_soccer, `w` tug_of_war, plus the old quick ones; the graveyard and church path have minigames too. Icons `pong`, `sumo`, `head_soccer`, `tug_of_war` (with `_rim`, baked by `make_outlines.py`); all share the purple token. Intro glide is `min(7.5, width / 2100)` s. `BoardPath` holds `_nodes`, `_stretch_ids`, `_kinds` statics; `next(id)` gives the following ids (two at a fork), `routes()` every way. The branch arrows have no icon list (the plan assumed one). "Play again" to a new size was not played, only tested headless.
+- **Powers (part 30):** `Match.roll_bonus`, `max_blood`/`min_blood`, `blood_is_safe`, `duel_result` (returns `free`), `Duel.swap_wins`/`roll_rounds(stake, swap_wins)`. `PowerPop.show_over(parent, at, text, scale)` is the pop; `Hud.portrait_node(player)` gives a portrait to fly blood to or tint. `Board._play_turns` is the turn loop: glide, die, walk `face + bonus`, `land` or `finish`, then `Match.next_player()`. Strings `POWER_*` and `POP_*`. Not seen by eye: the Turkish power lines, the "Easy!" pop, Death's challenge pop.
+- **Test habit:** headless drivers for rules, plain runs with a temporary uncommitted script for screenshots and `Engine.get_frames_per_second()`; never `--write-movie`.
 
 ## Log
 
 - **2026-10-23 to 24, Microplans 1 to 8:** the first playable, parts 1 to 24. See [microplan_first_playable.md](microplan_first_playable.md#log).
 - **2026-10-24, Microplan 9:** the start of the final game, from the user's brief. Planned parts 25 to 27: the questionnaires, asset retrieval, and the camera tweak. Sketched the roadmap to part 44.
-- **2026-10-24, Microplan 10:** planned parts 28 to 30: the lobby-size rules, the board for each lobby size, and the passive powers. They are the rules that don't need minigames or networking, so they can be tested by hand in the hot-seat mode. The roadmap now ends at 43 because Run n Dodge is out (part 25), and Head Soccer goes last of the four minigames (it has the most new physics). Dracula and Medusa wait for part 31 because "nearby" depends on the new board. The online spike stays at 32, ahead of the minigame frame, so the riskiest unknown is found before the frame is built over it. Part 27's unchecked items are folded into part 28.
+- **2026-10-24, Microplan 10:** planned parts 28 to 30: the lobby-size rules, the board for each lobby size, and the passive powers. The roadmap ends at 43 because Run n Dodge is out (part 25), and Head Soccer goes last of the four minigames (it has the most new physics).
+- **2026-10-24, Microplan 11:** planned parts 31 to 33: Dracula and Medusa, the online spike, and the minigame frame. The roadmap is unchanged (still ends at 43). One change inside it: the spike (32) runs against a local `wrangler dev` relay, so the overnight automation is not blocked waiting for a Cloudflare account; the account is asked for at part 38, when the real deploy happens. The frame (33) takes the one-computer key sets as Claude's call: WASD with Q, E, R for the left player; the arrows with K, L and ; for the right.
