@@ -141,6 +141,8 @@ Each part session adds a few lines when it finishes: what got built, what change
 
 ## Log
 
+- **2026-10-24, sweeping changes 2:** the user's list of eight fixes plus a request for smoother lines. Head Soccer: `ARENA` 1700 x 680 (own table), the right head mirrored (portraits face right), no stall re-serve (`_rest`, `STALL_TIME` and the `rest` state key are gone), no ball squash, the ball spins only while rolling. Monster select: names always visible (Frankenstein on two lines), `MonsterPiece.selected`, power line and greyed `PaperButton` Confirm in `Pregame`; a disabled `PaperButton` greys out. `DeltaPop`, `PowerBeam`, `Board._delta/_beam`. `tools/sounds/make_rope_tug.py` makes `rope_tug.ogg`. Harness lesson: a texture only `load`ed inside `_draw` draws white until something else has used it.
+
 - **2026-10-23 to 24, Microplans 1 to 8:** the first playable, parts 1 to 24. See [microplan_first_playable.md](microplan_first_playable.md#log).
 - **2026-10-24, Microplan 9:** the start of the final game, from the user's brief. Planned parts 25 to 27: the questionnaires, asset retrieval, and the camera tweak. Sketched the roadmap to part 44.
 - **2026-10-24, Microplan 10:** planned parts 28 to 30: the lobby-size rules, the board for each lobby size, and the passive powers. The roadmap ends at 43 because Run n Dodge is out (part 25).
