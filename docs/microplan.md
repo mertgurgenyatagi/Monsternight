@@ -153,6 +153,15 @@ Each part session adds a few lines when it finishes: what got built, what change
 - **For later parts:** the board's width now changes with the lobby (44 to 67 spaces), so the scenery has to fit every length (part 29). The local mode's two key sets for minigames are for the minigame frame part to pick. Before the online parts, ask the user to make a free Cloudflare account, and ask which friends test online, and when.
 - Microplan 9's own files (the plan, the brief, the sim) hadn't been committed, so part 25 committed them to `development` first.
 
+### Part 26: Asset retrieval (2026-10-24)
+
+- **Built:** the final game's list in `assets.md` is **10 images and 14 sounds**, all made, processed and approved by the user. Prompts are in `asset_prompts.md` and `gen_sound_prompts.py`. `--headless --import` runs with no errors. The contact sheets are in `screenshots/part_26/`.
+- **Images** (`assets/art/`): icons `sumo`, `tug_of_war` (each with a `_rim`), and in a new folder `minigames/`: `pong_table`, `paddle` (grey, to tint), `sumo_ring`, `goal` (faces right, mirror it for the left goal), `ball`, `boot` (grey, to tint), `rope` (121 px tall, tiles sideways) and `ribbon`.
+- **Sounds** (`assets/audio/sfx/`): `whistle`, `paddle_hit`, `bounce`, `kick`, `jump`, `sumo_bump`, `rope_pull`, `power`, `stone`, `stone_crack`, `join`, `leave`, `ready`, `start`. Five were remade after the user's review: `kick`, `jump`, `join`, `leave`, `ready`. The user wants the lobby sounds basic and synthetic, so `join`, `leave` and `ready` are short blips (0.1 to 0.2 s), and only `start` is a door.
+- **Changes from the plan:** only **two** new icons, not three. Head Soccer keeps `haxball.png` (a ball between goalposts), and the board part renames it `head_soccer.png`. Almost everything else is reused (see "Reused for the final game" in `assets.md`): Pong's ball is `crumpled.png`, the sumo pieces are tinted `space.png` with portraits, Head Soccer's heads are portraits on `boot.png`, and Medusa's stone is the piece tinted grey.
+- **For the wiring parts:** `Sound.TRIM` has nothing for the new sounds yet. By level, `paddle_hit` (-26 LUFS) and `stone` (-27) came out quieter than the -22 target, because their hits reach the peak limit first, so give them about +3 dB. The rope is thin, so scale it up in the engine if it looks weak.
+- **The Gemini key** in `.env` has no image quota, so `tools/images/make_images.py` (Gemini API) works only with billing on. `.env` is now gitignored. The user made the images by hand.
+
 ## Log
 
 - **2026-10-23 to 24, Microplans 1 to 8:** the first playable, parts 1 to 24. See [microplan_first_playable.md](microplan_first_playable.md#log).

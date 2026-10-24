@@ -223,6 +223,9 @@ def process(name, line):
     if tall := re.search(r"(\d+) tall", line):
         h = int(tall.group(1))
         return resize(pm, max(1, round(pm.shape[1] * h / pm.shape[0])), h)
+    if wide := re.search(r"(\d+) wide", line):
+        # Both edges of the strip show (the rope), so it keeps its own height
+        return tile_sideways(pm, int(wide.group(1)))
     w, h = map(int, re.search(r"(\d+) × (\d+)", line).groups())
     if strip:
         n = REPEATS.get(name, 1)

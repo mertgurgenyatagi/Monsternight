@@ -15,15 +15,16 @@ What they mean in practice is in [Art and audio](docs/art_and_audio.md#principle
 ## Status
 
 - **Design: done.** The first playable's design came from 15 questionnaires, and the final game's from the user's brief and questionnaires 16 to 18 (part 25). The user then ended the questionnaires and left the rest, online play included, to Claude. The docs mark Claude's calls.
-- **Images:** all 84 are done. The 83 Gemini raws are in `images_raw/` as `.jfif` (JPEG), and `tools/images/process_images.py` has processed them into `assets/art/`. `paper_texture.png` was made separately.
-- **Sounds:** all 60 effects, voices and ambience loops are done. The raws are in `audio_raw/` as WAV, and `tools/sounds/process_sounds.py` has processed them into the OGGs in `assets/audio/`, which the user reviewed and approved.
+- **Images:** all 94 are done (the first playable's 84, and 10 for the final game from part 26). The 83 Gemini raws are in `images_raw/` as `.jfif` (JPEG), and `tools/images/process_images.py` has processed them into `assets/art/`. `paper_texture.png` was made separately.
+- **Sounds:** all 74 effects, voices and ambience loops are done (60, and 14 for the final game from part 26). The raws are in `audio_raw/` as WAV, and `tools/sounds/process_sounds.py` has processed them into the OGGs in `assets/audio/`, which the user reviewed and approved.
 - **Fonts:** done. `display.ttf` is Grenze Gotisch Bold and `body.ttf` is Spectral Medium, both with their OFL licenses, and both cover Turkish letters.
 - **Missing:** the 11 music tracks, which the user makes separately.
 - **The first playable is done** (parts 1 to 24, 2026-10-23 to 24): a whole local match, one person clicking for everyone, with the real assets and coin-flip duels. It runs at 25 FPS. Its plan and notes are archived in `docs/microplan_first_playable.md`, and the notes are the map of the code. The release script `tools/release/build_release.py` and `export_presets.cfg` are ready, but the Godot export templates are not installed, so nothing has been exported yet (see `docs/tech.md`).
 - **The camera:** a high camera was tried in part 7 and reverted, because the scenery looked fake. On 2026-10-24 the user asked for a slight zoom out and a slightly higher angle, and part 27 tries it.
 - **The final game started on 2026-10-24:** 3 to 8 players, a power for each monster, four minigames (Pong, Sumo, Head Soccer, Tug of War), and online play in the browser on itch.io. Microplan 9 planned parts 25 to 27 in `docs/microplan.md`.
 - **Part 25 is done:** the questionnaires, and the docs updated for the final game.
-- **Next: part 26**, asset retrieval. It's interactive: the user must be there, so the overnight automation must not start it.
+- **Part 26 is done:** the final game's 10 images and 14 sounds, made and approved (`docs/assets.md`).
+- **Next: part 27**, the camera tweak. Then the Microplan.
 
 **Keep the raws.** They're the sources, and the processed files can always be rebuilt from them.
 

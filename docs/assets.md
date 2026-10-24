@@ -2,7 +2,7 @@
 
 Every asset the game needs, as a running list. Claude adds to it as the game grows. The user fetches each file and puts it in `assets/`, at the root of the repository, using the folder and file name given here. Claude then wires it in. A file that's in place is done.
 
-This list covers the [first playable](roadmap.md#1-first-playable): 84 images, 2 fonts, and 71 sounds. Minigame assets come later.
+The [first playable](roadmap.md#1-first-playable) needed 84 images, 2 fonts, and 71 sounds. The final game adds 10 images and 14 sounds (part 26): the minigames' pieces, two icons, and the sounds of the minigames, the powers and the lobby. Everything else is reused (see [Reused for the final game](#reused-for-the-final-game)).
 
 ## For every image
 
@@ -110,10 +110,27 @@ Each location below has a far strip (the distant skyline), a ground strip (the e
 | `thief.png` | A sneaky gloved hand, grabbing | 128 × 128 |
 | `church.png` | A little chapel | 128 × 128 |
 | `pong.png` | Two paddles and a ball | 128 × 128 |
-| `haxball.png` | A ball between two goalposts | 128 × 128 |
-| `racing.png` | A coffin on wheels | 128 × 128 |
-| `fps.png` | A crosshair | 128 × 128 |
+| `sumo.png` | Two round pieces pushing each other in a round ring, seen from above | 128 × 128 |
+| `tug_of_war.png` | A rope pulled tight, with a ribbon tied in its middle | 128 × 128 |
+| `haxball.png` | A ball between two goalposts. Becomes Head Soccer's icon (see below) | 128 × 128 |
+| `racing.png` | A coffin on wheels. Goes when the board stops using it | 128 × 128 |
+| `fps.png` | A crosshair. Goes when the board stops using it | 128 × 128 |
 | `flag.png` | A small pennant. Marks the finish and players who have finished | 128 × 128 |
+
+### Minigames: `assets/art/minigames/`
+
+Paper pieces on a painted table (see [minigames.md](minigames.md)). Pieces in grey are tinted in each monster's color by the game, so one file serves all eight.
+
+| File | What it shows | Size |
+|---|---|---|
+| `pong_table.png` | Pong's table seen from above: dark green, with a pale border and a dashed line down the middle | 1600 × 900 |
+| `paddle.png` | A grey cardboard paddle seen from above: a tall, thin rectangle with rounded ends. Tinted | 300 tall |
+| `sumo_ring.png` | A round clay sumo ring edged with a thick straw rope, seen from above | 1000 × 1000 |
+| `goal.png` | A goal seen from the side, facing right: bone posts and a string net. Mirrored for the right-hand goal | 500 tall |
+| `ball.png` | Head Soccer's ball: pumpkin orange with dark purple patches, like the one on `haxball.png` | 128 × 128 |
+| `boot.png` | A little grey boot seen from the side, toe to the right. Two under each head. Tinted | 160 × 100 |
+| `rope.png` | A thick hemp rope lying straight sideways. Tiles sideways | 1024 wide |
+| `ribbon.png` | A red cloth ribbon tied in a knot, Tug of War's marker | 128 × 128 |
 
 ### Monsters: `assets/art/monsters/`
 
@@ -150,6 +167,23 @@ Each monster needs two files: a full body (`<name>.png`, standing, facing right,
 | `trophy.png` | A paper trophy cup | 256 × 256 |
 | `curtain.png` | The left half of a red theater curtain. The game mirrors it for the right half | 1000 × 1080 |
 | `curtain_top.png` | The curtain's scalloped top border | 1920 × 200 |
+
+### Reused for the final game
+
+Principle 2: a new image only where nothing old can do the job.
+
+| Need | Reuses |
+|---|---|
+| Pong's ball | `monsters/crumpled.png`, a paper ball on a painted table |
+| Sumo's two pieces | `board/space.png`, tinted in the monster's color, with the portrait on top |
+| Head Soccer's big heads | The portraits, with two `boot.png` under each |
+| Head Soccer's icon | `icons/haxball.png`, renamed `head_soccer.png` when the board part swaps the spaces |
+| Head Soccer's and Tug of War's backdrops | The board's scenery: the sky, the moon, the far and ground strips, and the swamp water. The minigame parts pick the places |
+| Tug of War's players and lines | The monsters' bodies, and a `flag.png` stuck in the ground at each line |
+| Medusa's stone | The piece tinted grey. When it cracks off, a few `path_dot.png` scraps, tinted grey, fly off as chips |
+| Dracula's steal | `blood.png`, flying like any blood |
+| The powers' word pops | Text in the display font |
+| The lobby | `panel.png` for the room code card, `button.png` for Copy link and Ready, and the readiness as text |
 
 ### Fonts: `assets/fonts/`
 
@@ -225,6 +259,27 @@ Quiet, seamless loops of 30 to 60 seconds that play under the music.
 | `drumroll.ogg` | A drumroll before each trophy, about 3 seconds |
 | `trophy.ogg` | A warm organ chord as a trophy is handed out |
 | `stat.ogg` | A playful plink for each fun stat |
+
+**The final game's effects** (part 26), also in `assets/audio/sfx/`:
+
+| File | What it sounds like |
+|---|---|
+| `whistle.ogg` | A referee's whistle: the first point, in every minigame |
+| `paddle_hit.ogg` | Pong: the paper ball off a cardboard paddle |
+| `bounce.ogg` | A ball off a wall or the ground, in Pong and Head Soccer, and off a head |
+| `sumo_bump.ogg` | Sumo: two heavy pieces slamming together |
+| `kick.ogg` | Head Soccer: a boot kicking the ball |
+| `jump.ogg` | Head Soccer: a springy little jump. The landing is a hop |
+| `rope_pull.ogg` | Tug of War: the rope yanked tight, on every press |
+| `power.ogg` | An eerie theremin swoop under every power's word pop |
+| `stone.ogg` | Medusa's victims turning to stone |
+| `stone_crack.ogg` | The stone cracking off on their turn |
+| `join.ogg` | Someone joins the lobby: two knocks on a door |
+| `leave.ogg` | Someone leaves or drops: a door closing |
+| `ready.ogg` | Someone clicks Ready: a rubber stamp on paper |
+| `start.ogg` | The host starts the match: a heavy door creaking open |
+
+No new music: minigames have none (Q17), and the lobby plays `title.ogg`.
 
 ### Monster voices: `assets/audio/voices/`
 
