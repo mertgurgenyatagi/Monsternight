@@ -46,7 +46,7 @@ What they mean in practice is in [Art and audio](docs/art_and_audio.md#principle
 - **Part 19 is built** (match end, the last turn and the stats), built and merged.
 - **Part 20 is built** (the trophy ceremony), built and merged.
 - **Part 21 is built** (fun stats and back to the setup screen), built and merged.
-- **Microplan 8 is next:** parts 22 to 24 are the last (the last part, 21, was a multiple of 3).
+- **Microplan 8 is done:** parts 22 to 24 are planned in `docs/microplan.md`, and are the last. Part 24 ends the process.
 
 **Keep the raws.** They're the sources, and the processed files can always be rebuilt from them.
 

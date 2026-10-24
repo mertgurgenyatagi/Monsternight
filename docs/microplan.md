@@ -21,100 +21,81 @@ If a part turns out too big, split it (7a, 7b) instead of rushing it.
 
 ## Parts
 
-All three build the end of the match and stay in part 6's **side view** (the high camera was reverted, see README). Part 19 gives `Match.results()`, which parts 20 and 21 read. The ceremony is its own scene on the title's curtain.
+The last three parts. Parts 22 and 23 are sweeps and tuning, not new features; part 24 closes the first playable. All stay in part 6's **side view**. Because they touch every scene, each ends by running the full loop (title, setup, board, ceremony, stats, setup) once.
 
-### Part 19: Match end, the last turn and the stats
+### Part 22: Esc settings in a match, Turkish, and the untested leftovers
 
-**Goal:** The match really ends: a sting and a banner on the last turn, a fast finish when only one player is left, a closing beat on the board, and every number the ceremony needs counted in `Match`.
-
-**Builds:**
-- **`Match.over()`:** true when turn `TURNS` is done, or when no more than one player is unfinished (the early end: "right away once all players but one have reached the end"). `next_player` returns false by that same rule, so `_play_turns` needs no second check. A match that starts with 1 unfinished player left isn't possible (2 to 8 players).
-- **`Match.results() -> Array`:** one dictionary per player, ranked: `{player, trophies, finish, gold, duels, rank}`, plus `Match.stats() -> Array` of `{key, players, value}` for the four fun stats. The rules are in `docs/game_rules.md` (2 for the first finisher, 1 for the second, 1 for most gold, 1 for most `duels_won`, ties all get it, no trophy for a 0 count; tiebreak by finishing trophy, then gold trophy, then duel trophy; players still tied share the rank). The stats: `deaths`, `duels_started`, `challenged` and the new `spike_blood`. A stat only counts if someone scored at least 1.
-- **`spike_blood`:** every player carries it from `start`. `Match.land`'s spikes branch adds the real blood lost to it, and a duel or a church doesn't. Check the spikes branch in `Match.land` and the one `Board.land` death check.
-- **The last turn:** `Hud.set_turn` already marks the last turn (the counter's last state). When `Match.turn` becomes `TURNS`, `Board` plays `Sound.sting("sting_final_turn", 3.0)`, the turn tag does a `PaperMotion.squash` pop and goes red, and a paper banner "Last turn!" (new string) drops in at the top for 1.6 s, then `lift_away`. Only once.
-- **The end:** `_play_turns` returns on `Match.over()`; `Board` then calls `_end_match()`: the camera glides to the castle gate, the HUD portraits dim a little, a banner "The night is over" (new string) holds 2 s, the board music fades, and it logs the results. The scene change to the ceremony is a stub in this part: `Scenes.change_to("res://src/ceremony/ceremony.tscn")` is only called if the file exists, otherwise it prints the results and goes back to the title.
-
-**Polish:**
-- **The last-turn sting:** a quick flash of the sky (`Sky.flash()`), the candle flames sputter once if a candle is on screen, and the banner has a slight shake.
-- **The early end:** when a finish leaves one unfinished player, the finish's flag and tag play in full first, then a banner "Everyone else is home" (new string, shorter than the final one) leads into the same end beat, so it never cuts off the gate scene.
-- **The end beat:** the unfinished players' pieces sway slowly where they stand and the finished onlookers `breathe` (they already do); the dying fog is not touched. A single `Glow.flare` over the gate.
-- **Translations:** every new string goes in `strings.csv` with Turkish.
-
-**Assets:** `sfx/sting_final_turn` (**missing:** music the user makes, so silent and the ducking is untested by ear), `banner` and `paper` art already used by the other banners. Nothing else missing.
-
-**Check:**
-- A temporary script feeds `Match` fixed finish orders, golds and duels and checks `results()` for: a simple win, all the ties (gold, duels), the tiebreaker chain, nobody finishing, and the early end after 7 of 8 finish.
-- A sped-up run (`Engine.time_scale`, short test, per the no-long-runs rule) with 3 players and `TURNS` temporarily 2: the last-turn banner comes once, the end beat plays, and the results print. Revert `TURNS` after.
-- One contact sheet of the last-turn banner and the end beat. 25 FPS.
-
-**Risks:** the earlier headless sped-up matches in parts 17 and 18 were never reached to turn 17, so this is the first full end; keep it short with `TURNS` lowered. Don't change `TURNS` for good.
-
-### Part 20: The trophy ceremony
-
-**Goal:** After the board, the curtain closes, then opens on a stage where trophies are handed out one at a time with drumrolls, and the leaderboard rises.
+**Goal:** Esc opens Settings anywhere in a match without stopping it, the game can be played in Turkish, and the things parts 2 and 3 left untested are proven.
 
 **Builds:**
-- **`Ceremony`** (`src/ceremony/ceremony.tscn` and `ceremony.gd`), the scene the board changes to. It reads `Match.results()`. The title's curtain code (`src/title/title.gd`, look at how it swings) is copied or shared: lift it into a small `Curtain` node used by both if that's cleaner, and keep the title working.
-- **The order:** the trophies go from the least to the most meaningful, one kind at a time: *most duels won*, *most gold*, *second to finish*, *first to finish*. A kind nobody won is skipped. Each is a "round": the title card (the trophy's name), the drumroll (3 s, `drumroll`), then the winner or the tied winners step into the light, `trophy` plays, and the trophy flies into their stand.
-- **The stage:** the board's dark backdrop (the church hill's night sky, no scenery), a spotlight (a soft warm `Glow` polygon), each player's piece in a row on a paper stand, in finish-then-rank order from the left. Every piece carries a trophy counter underneath, hidden until the trophies are awarded (the counts are secret until the ceremony).
-- **The leaderboard:** after the last trophy, the pieces rearrange by rank with `toss` arcs and a panel lists "1st Name  ★3" and so on, with ties shown as the same rank. The best player(s) get a `Glow.flare` and a crown-sized trophy and their monster's `_win` voice.
+- **Esc in a match:** `Settings.open()` already works from anywhere. `Board`, `Pregame`, `Ceremony` and the stats open it on Esc (one small shared helper, not copied four times). The match keeps running: no `get_tree().paused`, timers and the candle go on. Esc again, the back button or a click outside closes it. While it is open, board clicks (die, branch arrows, portraits, duel cards) must not leak through to the scene underneath: check each.
+- **Turkish:** `strings.csv` gets a `tr` column for every key (the fonts cover Turkish letters). Settings gets a language toggle if it has none (check `Settings`), saved with the other settings. Long Turkish names and cards must still fit: check the longest in the HUD, the VS card, the stat titles and the ceremony stands. Plurals and "x N" lines go through the format, not code.
+- **Leftovers from parts 2 and 3:** a fullscreen relaunch (the saved mode comes back), closing Settings with Esc, a click outside, and the back button, and dragging both sliders with the mouse (check the bus volume values).
+- **Edge-case sweep:** a 2-player and an 8-player match through the pregame; a player who never rolls (timeouts only) for a whole turn; `Match` after `reset()` once more. Fix small things; bigger ones become a note for part 23 or 24.
 
 **Polish:**
-- **The curtain:** `curtain.png` halves (the right mirrored) and `curtain_top.png`. They close over the board with a sway and `curtain`-style sound (`paper_swish` if it exists; look in `assets/audio/sfx/` and use the nearest, don't invent one), hold 0.6 s, the scene changes under them, then they open wide on the stage with the `ceremony` music. `ceremony.ogg` is **missing** (the user makes it), so it is silent for now.
-- **The drumroll:** the spotlight narrows and a small tremble builds in the pieces' stands (`PaperMotion.shake` rising from 1 to 5 px), the title card breathes. On the last beat the trem stops, silence for 0.3 s, then `trophy`.
-- **The trophy:** `trophy.png` pops in at the center with `pop_in`, a `Glow.flare`, spins once with a squash and flies to the winner's stand with `fly_to`, where it settles with a `bounce`. Tied winners each get their own copy, thrown one after another 0.2 s apart. The winner's piece does the win pose (`hop` and the `_win` voice), the others clap by swaying.
-- **Zero trophies:** a player who ends with none just stands there, a little dim, with a small shrug (`tilt`).
-- **Pacing:** the whole ceremony is about 35 to 45 s with 4 rounds. No skip. A click on the leaderboard (the "Continue" button, `PaperButton`) moves on to part 21's stats, which for now goes back to the setup screen.
+- **Open and close:** the overlay uses the existing paper motion (`drop_in` / `lift_away`) with `ui_click`; the dim behind it fades, never pops. Identical in every scene.
+- **In-match line:** while Settings is open during a match, a small line "The night goes on" (new string, English and Turkish) sits under the title.
+- **Translations:** no English string may show in Turkish mode. A temporary script lists keys with an empty `tr` cell and any `tr` text identical to the English (to review by eye).
 
-**Assets:** `ui/curtain.png`, `ui/curtain_top.png`, `ui/trophy.png`, `sfx/drumroll`, `trophy`, the monsters' bodies and `_win` voices, `Monsters.color`. **Missing:** `ceremony.ogg`.
+**Assets:** none. **Missing:** all music and `sting_final_turn` (the user makes them).
 
 **Check:**
-- A temporary scene that opens `Ceremony` with a fixed `Match` (4 and 8 players, with ties and without) and prints the order of the rounds; compare against `Match.results()`.
-- A real board to ceremony hand-off with `TURNS` lowered to 2 (revert after).
-- One contact sheet of the curtain, a drumroll, a trophy flying, and the leaderboard. 25 FPS.
+- MCP: press Esc on the board mid-roll, click the die behind the overlay (nothing happens), close, the die still works; the same in a duel and the ceremony. One screenshot with Settings open over the board.
+- Turkish: one plain run through the title, setup and a sped-up board with `TURNS` lowered (revert after); a contact sheet of four screens. 25 FPS.
 
-**Risks:** 8 pieces and their trophy counters on one stage need the narrowest layout to be checked (the longest name, Frankenstein's). Don't leave a camera or Board node running during the ceremony.
+**Risks:** input leaking through the overlay is the likely bug. A language change needs `TranslationServer.set_locale` and a refresh of labels already on screen: check which scenes build their text once.
 
-### Part 21: Fun stats and back to the setup screen
+### Part 23: Full playtests and tuning
 
-**Goal:** After the leaderboard, the fun stats come up one by one with their titles, and then everyone returns to the setup screen, ready for another match.
+**Goal:** the first playable plays well from start to finish with the real numbers, and its pace and fairness are measured rather than guessed.
 
 **Builds:**
-- **The stats scene** (inside `Ceremony`, after the leaderboard): for each of the four stats in order, *Frequent Corpse* (`deaths`), *The Bully* (`duels_started`), *The Punching Bag* (`challenged`), *The Pincushion* (`spike_blood`), a paper card with the title (`display.ttf`), the winner's portrait or the tied winners', and the number. A stat nobody scored at least 1 in is skipped. Titles and unit lines ("3 deaths", "4 duels started") come from `strings.csv` with Turkish, with plurals handled by the format.
-- **The ending:** a "Play again" `PaperButton` and "Quit" back on the title; Play again changes to the setup screen. `Match.reset()` clears everything (players, turn, `finish_order`, `arrived` counter) so the next lobby starts fresh. `Sound` fades the ceremony music out and the title/setup ambience in.
-- **Setup:** the setup screen must open clean after a match: check it doesn't keep the last players' names or `Match` state that would carry (names are typed again, that's by design).
+- **A sped-up bot match** (a temporary script, not committed, random choices through the existing timeouts): 8 players, the real 17 turns. Respect the no-long-runs rule: run in short chunks, or run the turn loop headless with animations skipped by a temporary test flag that is removed afterwards. Collect: how many finish by turn 17 (target about 2), the gold and duel spread, deaths per player, and the real match length at normal speed (estimated from average turn time).
+- **Tuning from the numbers:** only these knobs, each with a one-line reason in the notes: `Match.TURNS`, the space mix in `roll_board.py` (a new seed if the forest's six empty spaces bother the user: ask), the coin and blood amounts, the timers. The user's decisions (57 and 61 spaces, one die, 17 turns, one empty for every filled one) change only if the numbers are clearly off, and then ask first.
+- **Pacing trims:** list the longest dead moments (intro glide 7.5 s, a far death 4.7 s, the duel 9.5 s, the ceremony 40 s) and cut only what is clearly too long, keeping the Polish intact. Per-turn time at 8 players matters most.
 
 **Polish:**
-- **Each stat card** slides in from below with a tilt, the `stat` plink plays, the portraits `hop` once and the number counts up from 0 in 0.5 s with a tick each time (`ui_click`, pitch rising). The card is held 2.2 s, then `lift_away`.
-- **A joke on empty:** if no stat shows at all (a very quiet match), a single paper card says "A very quiet night" (new string).
-- **The leaving:** the curtain closes again with the same motion as part 20, so the loop reads as a closed circuit. The whole stats section is about 12 to 15 s.
-- **Cleanup:** make sure every `Tween` and the music handle stop at scene change.
+- **The feel pass:** run the game normally and watch for a pop, a snap or a missed beat in the walk, the die, the duel and the ceremony; fix each with existing `PaperMotion` calls. No new effects.
+- **Frame rate:** read `Engine.get_frames_per_second()` on the heaviest views (8-player HUD, church hill with fog, the duel with the dim, the ceremony). Under 25: look at the cause (Glow polygons and shadow copies first).
+- **Audio balance:** list the loudest and quietest sounds per bus by file peak and fix with `volume_db` in `Sound`, not the files. Untested by ear: the user judges.
 
-**Assets:** `sfx/stat`, `ui_click`, the same curtain and portraits. Nothing missing.
+**Assets:** none missing besides the music.
 
-**Check:**
-- A temporary script runs the stats for tie, empty and single-winner cases and prints what shows.
-- A full pass: setup with 3 players, play the board with `TURNS` lowered to 2, the ceremony, the stats, and the setup screen again; the second match starts from a clean `Match` (turn 1, nobody finished, zero stats). Revert `TURNS`.
-- One contact sheet of two stat cards and the setup screen after. 25 FPS.
+**Check:** the bot results as a short table in the Part notes; three screenshots of the heaviest views; no errors or warnings in any run.
 
-**Risks:** state leaking between matches is the real danger here (`finish_order`, `_arrivals`, the autoload `Match` itself is never recreated). A bug may only show in the second match.
+**Risks:** tuning can go on forever. Stop at: about 2 of 8 finishing by turn 17 (1 to 3 is fine), no stat or trophy that nobody ever gets, and 25 FPS everywhere.
+
+### Part 24: Bug bash and the release build
+
+**Goal:** the first playable is done: nothing in the notes' "Still open" list is a bug, and a release build runs.
+
+**Builds:**
+- **The bug bash:** run what earlier parts logged as "not run": the board-to-setup second match, the quiet card on screen, the ending's buttons, an MCP click on Continue, and 8-player monster select. Then one real playthrough with the MCP's simulated input on a short match (`TURNS` lowered, reverted after), reading `get_editor_errors` and the output log at the end.
+- **Release:** the Godot MCP's autoloads (`MCPRuntimeBridge`, `MCPInputBridge`, `MCPScreenshotBridge`) and the plugin must not ship. Do it through an export preset (exclude `addons/godot_mcp/*`, `screenshots/*`, `images_raw/*`, `audio_raw/*`, `tools/*`, `docs/*`) and a release-only override or a script that strips the three autoload lines, whichever is smaller; the development project keeps the MCP. Export a Windows build and launch it for a few seconds; check it reaches the title with no console errors. Export templates may need installing: ask the user.
+- **Docs:** README Status to the finished state, `docs/roadmap.md` marks the first playable done, `docs/tech.md` gets a short "Building a release" section.
+
+**Polish:** the window title and icon (check what `project.godot` has), `Sound.quit()` leaving no leaks in the release build, every scene starting with `Sound` and `Settings` state from the saved file.
+
+**Assets:** the icon, if there is none, from the logo already in `assets/art/`. Nothing new made.
+
+**Check:** the exported build starts and shows the title, setup and a few seconds of board; the MCP autoloads are not in its project; no errors in the output.
+
+**The end:** part 24 is the last. When it is merged, the README's Status says "The first playable is done; the process is over", so later sessions do nothing and write no `q7Zk#x2` (README, Handover 6). Part 24's own last message still ends with `q7Zk#x2`.
 
 ## Roadmap
 
-Rough past part 21. Parts 1 to 18 are done (see the Log and the part notes).
+Parts 1 to 21 are done (see the Log and the part notes). The end stays at 24.
 
-19. Match end: the last-turn sting and banner, the early end, `Match.results()` and the stats (the spikes' blood count is new).
-20. The trophy ceremony: the curtain, drumrolls, trophies, and the leaderboard with its tiebreaker.
-21. Fun stats, then back to the setup screen with `Match` reset.
-22. Esc settings during a match, and a sweep of translations and edge cases. This includes what parts 2 and 3 left untested: a fullscreen relaunch, closing Settings with Esc, a click outside or the back button, and dragging the sliders.
-23. Full playtests and tuning: the 17 turns and the 57 spaces, and a reroll of the board if the user wants one.
-24. Bug bash and the final polish pass. Drop the Godot MCP's autoloads from the release build.
+22. Esc settings in a match, Turkish, the untested leftovers from parts 2 and 3, and an edge-case sweep.
+23. Full playtests with bots, tuning from the numbers, pacing and frame rate.
+24. The bug bash, the release build without the MCP, and the finished docs. The process is over after it.
 
 ## Part notes
 
 Each part session adds a few lines when it finishes: what got built, what changed from the plan, surprises, and anything left over or buggy. The next Microplan reads these instead of the code.
 
-### Built so far (parts 1 to 21, absorbed by Microplans 3 to 6)
+### Built so far (parts 1 to 21, absorbed by Microplans 3 to 8)
 
 - **Board (parts 10, 11, 12):**
   - The road is 57 spaces through the graveyard and 61 past the church (12, 8 or 12, 12, 10, 15), 15,460 px wide, rolled by `tools/board/roll_board.py` with seed 1031. `Match.TURNS` is 17, the intro glide 7.5 s. `BoardLayout.hill_width()` (2,840) stretches the church hill, and `scenery.gd`'s `_spots(location, first, last, gap)` keeps the props' density.
@@ -221,3 +202,5 @@ Each part session adds a few lines when it finishes: what got built, what change
   - The duel counters (`duels_won`, `duels_started`, `challenged`) are kept from part 17, so part 19's stats don't have to hunt for them. The end stays at 24.
 - **2026-10-24, Microplan 7:** parts 16 to 18 are done (the VS card, duel results, the swap handicap and the gate). Planned parts 19 to 21: match end and the stats, the trophy ceremony, and the fun stats with the return to setup. Roadmap changes:
   - None in the order or the end (still 24). `Match.results()` and `stats()` are built in part 19 so that 20 and 21 only draw. Part 21 adds `Match.reset()`, since the autoload outlives a match.
+- **2026-10-24, Microplan 8:** parts 19 to 21 are done (match end, the trophy ceremony, fun stats and the return). Planned the last three, 22 to 24: Esc settings in a match with Turkish and the untested leftovers, playtests and tuning, and the bug bash with the release build. Roadmap changes:
+  - None in the order; the end stays at 24 and is now fixed. Turkish was planned in earlier parts but never done (`strings.csv` is English only), so part 22 does it in one go. Part 24 ends the process, so the README will say so afterwards.
