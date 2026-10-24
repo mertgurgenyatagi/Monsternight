@@ -107,6 +107,17 @@ func set_turn(n: int) -> void:
 	PaperMotion.flip(_tag, _show_turn)
 
 
+## The last turn begins: the counter pops (it is already red from `set_turn`).
+func last_turn() -> void:
+	PaperMotion.squash(_tag)
+
+
+## The portraits dim a little, for the end of the match.
+func dim(duration := 1.0) -> void:
+	for id in _portraits:
+		create_tween().tween_property(_portraits[id], "modulate", Color(0.72, 0.7, 0.78), duration)
+
+
 ## With a `gap`, drops that come back appear one by one, that many seconds apart.
 func show_blood(player: Dictionary, gap := 0.0) -> void:
 	_portraits[player.monster].show_blood(gap)

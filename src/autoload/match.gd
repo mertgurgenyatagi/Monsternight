@@ -22,6 +22,9 @@ var current := 0
 ## The players who have reached the castle gate, in the order they got there.
 var finish_order: Array[Dictionary] = []
 
+# Set once turn `TURNS` has been played to its end.
+var _turns_done := false
+
 # Counts every arrival on a space, so a tie in `leader` goes to whoever got there first.
 var _arrivals := 0
 
@@ -55,8 +58,9 @@ func start(raw_names: Array[String]) -> bool:
 	for i in raw_names.size():
 		players.append({"name": clean_name(raw_names[i], i), "monster": "", "space": BoardPath.START,
 				"blood": MAX_BLOOD, "coins": 0, "finished": false, "deaths": 0, "arrived": 0,
-					"duels_started": 0, "challenged": 0, "duels_won": 0})
+					"duels_started": 0, "challenged": 0, "duels_won": 0, "spike_blood": 0})
 	_arrivals = 0
+	_turns_done = false
 	finish_order.clear()
 	turn = 1
 	current = 0
@@ -104,9 +108,17 @@ func roll() -> int:
 	return value
 
 
+## True when the match is over: turn `TURNS` has been played out, or no more than one player is
+## left who hasn't reached the gate.
+func over() -> bool:
+	return _turns_done or players.filter(func(p: Dictionary) -> bool: return not p.finished).size() <= 1
+
+
 ## Passes the turn to the next player who hasn't finished, and to the next turn after the last
-## player. Returns false, changing nothing, when turn `TURNS` is over or everyone has finished.
+## player. Returns false, changing nothing, when the match is `over`.
 func next_player() -> bool:
+	if over():
+		return false
 	var index := current
 	var wrapped := false
 	for _step in players.size():
@@ -115,6 +127,7 @@ func next_player() -> bool:
 			index = 0
 			wrapped = true
 		if wrapped and turn >= TURNS:
+			_turns_done = true
 			return false
 		if not players[index].finished:
 			if wrapped:
@@ -186,6 +199,7 @@ func land(player: Dictionary) -> Dictionary:
 			result.coins = change_coins(player, 1)
 		"spikes":
 			result.blood = change_blood(player, -1)
+			player.spike_blood -= result.blood
 		"thief":
 			result.coins = change_coins(player, -1)
 		"church":
@@ -262,12 +276,73 @@ func change_coins(player: Dictionary, delta: int) -> int:
 	return player.coins - before
 
 
+## Every player ranked by trophies, best first: `{player, trophies, finish, gold, duels, rank, by}`.
+## `finish` is the place at the gate (0 for none), `gold` the coins and `duels` the duels won. `by` says
+## what each trophy kind gave: `{finish, gold, duels}`. 2 trophies for the first finisher, 1 for the
+## second, 1 for the most gold and 1 for the most duels won, a tie giving all of them the trophy and
+## a count of 0 none. Equal trophies are split by the finishing trophy, then the gold trophy, then the
+## duel trophy; players still equal share a rank (and keep turn order in the list).
+func results() -> Array:
+	var most_gold := 0
+	var most_duels := 0
+	for player in players:
+		most_gold = maxi(most_gold, player.coins)
+		most_duels = maxi(most_duels, player.duels_won)
+	var rows: Array = []
+	for i in players.size():
+		var player: Dictionary = players[i]
+		var place := _place(player)
+		var by := {"finish": 2 if place == 1 else (1 if place == 2 else 0),
+				"gold": 1 if most_gold > 0 and player.coins == most_gold else 0,
+				"duels": 1 if most_duels > 0 and player.duels_won == most_duels else 0}
+		rows.append({"player": player, "trophies": by.finish + by.gold + by.duels, "finish": place,
+				"gold": player.coins, "duels": player.duels_won, "rank": 0, "by": by, "seat": i})
+	rows.sort_custom(func(a: Dictionary, b: Dictionary) -> bool:
+		var ka := _rank_key(a)
+		var kb := _rank_key(b)
+		return ka > kb if ka != kb else a.seat < b.seat)
+	for i in rows.size():
+		rows[i].rank = 1 if i == 0 else (rows[i - 1].rank if _rank_key(rows[i]) == _rank_key(rows[i - 1]) else i + 1)
+	for row in rows:
+		row.erase("seat")
+	return rows
+
+
+## The four fun stats, each `{key, players, value}`: `deaths`, `duels_started`, `challenged` and
+## `spike_blood`, with the players who have the highest count (all of them on a tie). A stat nobody
+## scored 1 in is left out.
+func stats() -> Array:
+	var result: Array = []
+	for key in ["deaths", "duels_started", "challenged", "spike_blood"]:
+		var best := 0
+		for player in players:
+			best = maxi(best, player[key])
+		if best < 1:
+			continue
+		var holders := players.filter(func(p: Dictionary) -> bool: return p[key] == best)
+		result.append({"key": key, "players": holders, "value": best})
+	return result
+
+
 ## The names the setup screen shows again after a match, or an empty list at first.
 func names() -> Array[String]:
 	var result: Array[String] = []
 	for player in players:
 		result.append(player.name)
 	return result
+
+
+# The player's place at the gate, 1 for the first, or 0 for not having finished.
+func _place(player: Dictionary) -> int:
+	for i in finish_order.size():
+		if is_same(finish_order[i], player):
+			return i + 1
+	return 0
+
+
+# What ranks a row: trophies, then the finishing, gold and duel trophies, compared as an array.
+func _rank_key(row: Dictionary) -> Array:
+	return [row.trophies, row.by.finish, row.by.gold, row.by.duels]
 
 
 # How far along the road a player is: a finished player is past everyone.
