@@ -183,6 +183,9 @@ func land(player: Dictionary, id: String) -> void:
 		await _power_stone(player)
 	var result := Match.land(player)
 	var kind: String = result.kind
+	var forced := Net.debug_value("mini") # a test can force every landing to be this minigame
+	if forced in Space.DUELS and kind not in Space.DUELS:
+		kind = forced
 	if kind in Space.DUELS:
 		if _settling and _settling.is_running():
 			await _settling.finished
@@ -194,11 +197,7 @@ func land(player: Dictionary, id: String) -> void:
 			await get_tree().create_timer(0.5, false).timeout
 			return
 		if not choice.is_empty():
-			var outcome: Dictionary
-			if Online.active:
-				outcome = await _fate(player, choice.opponent)
-			else:
-				outcome = await _frame.play(player, choice.opponent, choice.stake, kind)
+			var outcome: Dictionary = await _frame.play(player, choice.opponent, choice.stake, kind)
 			_track_name = "" # the duel's music gives way to the leader's track
 			_follow_leader()
 			await duel_end(outcome.winner, outcome.loser, player, choice.stake)
@@ -419,17 +418,6 @@ func _play_turns() -> void:
 				await _last_turn()
 			else:
 				await get_tree().create_timer(0.2, false).timeout
-
-
-# Online, a minigame is settled by the host for now (the games themselves come over the network in
-# the next part): a banner says Fate decides, and the host's coin names the winner. The challenger
-# is side 0, so a 0 is their win.
-func _fate(challenger: Dictionary, opponent: Dictionary) -> Dictionary:
-	var answer := await Online.decide("fate", challenger, 0.0, func() -> int: return randi() % 2)
-	var challenger_won := int(answer.value) == 0
-	await _banner(tr("ONLINE_FATE"), 1.4)
-	return {"winner": challenger if challenger_won else opponent,
-			"loser": opponent if challenger_won else challenger, "rounds": []}
 
 
 # Online, the note says whose move it is: `others` for everyone else (with the player's name in it),

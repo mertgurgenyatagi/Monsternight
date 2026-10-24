@@ -55,8 +55,8 @@ func controls() -> Array:
 
 func _serve() -> void:
 	ball = Vector2.ZERO
-	var angle := randf_range(-0.4, 0.4)
-	var dir := 1.0 if randf() < 0.5 else -1.0
+	var angle := rng.randf_range(-0.4, 0.4)
+	var dir := 1.0 if rng.randf() < 0.5 else -1.0
 	velocity = Vector2(dir * cos(angle), sin(angle)) * SERVE_SPEED
 	speed = SERVE_SPEED
 	_serve_t = 0.0
@@ -75,6 +75,30 @@ func paddle_speed(side: int) -> float:
 func _physics_process(delta: float) -> void:
 	if active:
 		step(delta)
+
+
+func get_state() -> Dictionary:
+	return {"py": paddle_y.duplicate(), "ball": Minigame.pack(ball), "vel": Minigame.pack(velocity),
+			"speed": speed, "hits": rally_hits, "serve": _serve_t, "scored": _scored}
+
+
+func set_state(d: Dictionary) -> void:
+	for i in 2:
+		paddle_y[i] = float(d.py[i])
+	ball = Minigame.unpack(d.ball)
+	velocity = Minigame.unpack(d.vel)
+	speed = float(d.speed)
+	rally_hits = int(d.hits)
+	_serve_t = float(d.serve)
+	_scored = int(d.scored)
+
+
+func blend_keys() -> Array:
+	return ["py"]
+
+
+func blend_pairs() -> Array:
+	return [["ball", "vel"]]
 
 
 ## One physics step: the paddles move, the ball moves in sub-steps and may bounce, score or hit a paddle.
