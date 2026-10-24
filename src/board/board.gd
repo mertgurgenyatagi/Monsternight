@@ -64,6 +64,7 @@ var _die: Die
 var _candle: Candle
 var _path_view: BoardPathView
 var _branch: BranchChoice
+var _challenge: Challenge
 var _front: Node2D # over the pieces: an icon that springs up stands here, so no piece hides it
 var _settling: Tween # the camera's glide onto a piece that has just stopped
 var _track_name := "" # the board music now chosen, by where the leader is
@@ -91,6 +92,8 @@ func _ready() -> void:
 	lanes.add_child(_branch)
 	_hud = Hud.new()
 	add_child(_hud)
+	_challenge = Challenge.new()
+	_hud.add_child(_challenge)
 	pieces_landed.connect(_hud.come_in)
 	pieces_landed.connect(_follow_leader)
 	pieces_landed.connect(_play_turns)
@@ -139,8 +142,15 @@ func land(player: Dictionary, id: String) -> void:
 	var result := Match.land(player)
 	var kind: String = result.kind
 	if kind in Space.DUELS:
-		print("Duel here, part 15: ", player.name, " on ", id)
-		return
+		if _settling and _settling.is_running():
+			await _settling.finished
+		var choice := await _challenge.ask(player)
+		if not choice.is_empty():
+			print("Duel here, part 16: ", player.name, " vs ", choice.opponent.name, ", stake ", choice.stake)
+			return
+		# Nobody to duel: the space acts as a coin space.
+		kind = "coin"
+		result.coins = Match.change_coins(player, 1)
 	if kind not in QUICK:
 		return
 	var space := _path_view.space_at(id)

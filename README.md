@@ -37,7 +37,8 @@ What they mean in practice is in [Art and audio](docs/art_and_audio.md#principle
 - **Microplan 5 is done:** parts 13 to 15 are planned in `docs/microplan.md`.
 - **Part 13 is built** (death and respawn, and the board music), built and merged.
 - **Part 14 is built** (splits), built and merged.
-- **Next:** part 15 (challenge), then a Microplan after it (part 15 is a multiple of 3).
+- **Part 15 is built** (challenge), built and merged.
+- **Next:** a Microplan (part 15 was a multiple of 3), to plan parts 16 to 18.
 
 **Keep the raws.** They're the sources, and the processed files can always be rebuilt from them.
 

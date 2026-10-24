@@ -177,6 +177,28 @@ func land(player: Dictionary) -> Dictionary:
 	return result
 
 
+## Everyone the challenger can duel: every other player who hasn't finished.
+func opponents(player: Dictionary) -> Array[Dictionary]:
+	var result: Array[Dictionary] = []
+	for other in players:
+		if not is_same(other, player) and not other.finished:
+			result.append(other)
+	return result
+
+
+## The stakes the challenger can ask of this opponent: "gold" if they have a coin, "blood" if they
+## have blood and "swap" if the two stand on different spaces. Part 18 refines the swap.
+func stakes(challenger: Dictionary, opponent: Dictionary) -> Array[String]:
+	var result: Array[String] = []
+	if opponent.coins > 0:
+		result.append("gold")
+	if opponent.blood > 0:
+		result.append("blood")
+	if challenger.space != opponent.space:
+		result.append("swap")
+	return result
+
+
 ## Adds `delta` to the player's blood, kept between 0 and `MAX_BLOOD`. Returns the change that
 ## really happened. Reaching 0 is a death, which `die` settles and the board shows.
 func change_blood(player: Dictionary, delta: int) -> int:

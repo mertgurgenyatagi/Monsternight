@@ -23,10 +23,21 @@ const COIN_TIME := 1.0 # no count takes longer than this
 const COIN_TICK := 0.14
 const GREY_TIME := 0.5
 
+## The portrait was clicked while it is pickable and valid.
+signal picked
+## The portrait was clicked while it is pickable but not a valid choice.
+signal denied
+
+const DIM := Color(0.5, 0.5, 0.55)
+const BOB := 5.0
+const BOB_TIME := 0.5
+
 ## The player's dictionary in `Match.players`.
 var player: Dictionary
 var active := false
 var finished := false
+## While a choice is open: "" (not a choice), "valid" or "denied".
+var pickable := ""
 
 var _color: Color
 var _frame: Sprite2D
@@ -39,6 +50,10 @@ var _shown_blood: int
 var _shown_coins: int
 var _ticking := false
 var _grey: ShaderMaterial
+var _area: Area2D
+var _bob: Tween
+var _lit := false
+var _glow: Glow
 
 
 func _init(for_player := {}) -> void:
@@ -104,6 +119,17 @@ func _ready() -> void:
 	_count.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_count.text = str(_shown_coins)
 	add_child(_count)
+	_area = Area2D.new()
+	var shape := CollisionShape2D.new()
+	shape.shape = RectangleShape2D.new()
+	shape.shape.size = Vector2(FRAME_SIZE, FRAME_SIZE)
+	shape.position = FRAME_CENTER
+	_area.add_child(shape)
+	_area.input_pickable = false
+	_area.input_event.connect(_on_input)
+	_area.mouse_entered.connect(_on_mouse_entered)
+	_area.mouse_exited.connect(_on_mouse_exited)
+	add_child(_area)
 	start_sway()
 
 
@@ -164,6 +190,48 @@ func show_coins(at_once := false) -> void:
 	_ticking = false
 
 
+## Opens or closes this portrait as a choice. "valid" bobs, lights its frame and lifts on hover and
+## gives `picked` on a click; "denied" greys out and gives `denied` on a click; "" closes it again.
+func set_pickable(mode: String) -> void:
+	if mode == pickable:
+		return
+	pickable = mode
+	_area.input_pickable = mode != ""
+	if _bob and _bob.is_valid():
+		_bob.kill()
+	_set_bob(0.0)
+	if get_meta("raised", false):
+		PaperMotion.lift(self, false)
+	create_tween().tween_property(self, "modulate", DIM if mode == "denied" else Color.WHITE, 0.25)
+	if mode == "valid":
+		if not active:
+			PaperMotion.sway_stop(self)
+		_bob = create_tween().set_loops().set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+		_bob.tween_method(_set_bob, 0.0, 1.0, BOB_TIME)
+		_bob.tween_method(_set_bob, 1.0, 0.0, BOB_TIME)
+		_bob.custom_step(randf_range(0.0, BOB_TIME))
+	elif mode == "" and not active:
+		start_sway()
+	create_tween().tween_property(_frame, "self_modulate", _resting_color(), 0.25)
+
+
+## Keeps the frame lit, with a glow behind it, as the chosen one; or lets it go.
+func set_lit(on: bool) -> void:
+	if on == _lit:
+		return
+	_lit = on
+	create_tween().tween_property(_frame, "self_modulate", _resting_color(), 0.25)
+	if on:
+		_glow = Glow.new(Color(1.0, 0.85, 0.5, 0.55), 100.0)
+		_glow.position = FRAME_CENTER
+		add_child(_glow)
+		move_child(_glow, 0)
+		_glow.pulse(0.3, 0.6, 0.8)
+	elif _glow:
+		_glow.queue_free()
+		_glow = null
+
+
 ## Plants the finished flag on the portrait's corner and greys the portrait a little.
 func set_finished() -> void:
 	if finished:
@@ -188,10 +256,41 @@ func anchor(what: String) -> Vector2:
 
 func _resting_color() -> Color:
 	var base := _color.lightened(0.25) if active else _color.darkened(0.12)
+	if _lit or pickable == "valid":
+		base = _color.lightened(0.45)
 	if finished:
 		var grey := base.get_luminance() * 0.7
 		return base.lerp(Color(grey, grey, grey), 0.7)
 	return base
+
+
+func _set_bob(amount: float) -> void:
+	var y := -BOB * amount
+	_frame.position.y = FRAME_CENTER.y + y
+	_portrait.position.y = FRAME_CENTER.y + y
+
+
+func _on_input(_viewport: Node, event: InputEvent, _shape: int) -> void:
+	if pickable != "" and event is InputEventMouseButton and event.pressed 			and event.button_index == MOUSE_BUTTON_LEFT:
+		if pickable == "valid":
+			Sound.play("ui_click")
+			PaperMotion.squash(self)
+			picked.emit()
+		else:
+			Sound.play("ui_denied")
+			PaperMotion.shake(self)
+			denied.emit()
+
+
+func _on_mouse_entered() -> void:
+	if pickable == "valid":
+		Sound.play("ui_hover")
+		PaperMotion.lift(self, true)
+
+
+func _on_mouse_exited() -> void:
+	if pickable == "valid":
+		PaperMotion.lift(self, false)
 
 
 func _lose_drop(drop: Sprite2D) -> void:

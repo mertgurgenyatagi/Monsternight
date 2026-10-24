@@ -4,6 +4,9 @@ extends CanvasLayer
 ## in the corner. The rules change `Match` first, then the board tells the HUD to show it.
 ## It sits over the board and under Settings, and doesn't move with the camera.
 
+## A pickable portrait was clicked (see `set_pickable`).
+signal portrait_clicked(player: Dictionary)
+
 const STEP := 184.0 # from one portrait to the next, so eight fit across 1920 px
 const TOP_Y := 14.0 # where a portrait hangs from
 const DROP_GAP := 0.12
@@ -34,6 +37,7 @@ func _ready() -> void:
 		portrait.visible = false
 		add_child(portrait)
 		_portraits[player.monster] = portrait
+		portrait.picked.connect(portrait_clicked.emit.bind(player))
 	_make_tag()
 	_shown_turn = Match.turn
 	_show_turn()
@@ -61,6 +65,37 @@ func set_active(player: Dictionary) -> void:
 
 func set_finished(player: Dictionary) -> void:
 	_portraits[player.monster].set_finished()
+
+
+## Opens every portrait as a choice: the `players` are valid and bob, and the others are greyed and
+## answer a click with `ui_denied`. A click on a valid one gives `portrait_clicked`.
+func set_pickable(players: Array) -> void:
+	for id in _portraits:
+		var portrait: HudPortrait = _portraits[id]
+		var valid := players.any(func(p: Dictionary) -> bool: return p.monster == id)
+		portrait.set_pickable("valid" if valid else "denied")
+
+
+## Closes the choice: the portraits go back to normal.
+func clear_pickable() -> void:
+	for id in _portraits:
+		_portraits[id].set_pickable("")
+
+
+## The `players`' portraits jerk from side to side, for "nobody chose".
+func shake(players: Array) -> void:
+	for player in players:
+		PaperMotion.shake(_portraits[player.monster])
+
+
+## Keeps this player's portrait lit as the chosen one, or lets it go.
+func set_lit(player: Dictionary, on: bool) -> void:
+	_portraits[player.monster].set_lit(on)
+
+
+## The screen position of a player's portrait frame.
+func portrait_at(player: Dictionary) -> Vector2:
+	return _portraits[player.monster].to_global(HudPortrait.FRAME_CENTER)
 
 
 ## The counter's number flips to turn `n`.
