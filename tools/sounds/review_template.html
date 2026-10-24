@@ -1,0 +1,294 @@
+<title>Monsternight Sound Review</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Grenze+Gotisch:wght@500;700&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap">
+<style>
+/* Layout: one column of sound cards under a sticky progress bar, built for a thumb on a phone. */
+:root {
+  --bg: #ece8f1;
+  --card: #f9f7fb;
+  --ink: #1d1828;
+  --muted: #6a6279;
+  --line: #d6cfe0;
+  --accent: #d9581f;
+  --accent-ink: #ffffff;
+  --good: #2f7d4f;
+  --redo: #b3302a;
+  --display: "Grenze Gotisch", "UnifrakturMaguntia", Georgia, serif;
+  --body: "Spectral", Georgia, "Times New Roman", serif;
+  --mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #14111d; --card: #1f1a2b; --ink: #ede7f6; --muted: #a59cb6; --line: #352d45;
+    --accent: #f07a3e; --accent-ink: #1a0f08; --good: #5cc487; --redo: #f0716a; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #14111d; --card: #1f1a2b; --ink: #ede7f6; --muted: #a59cb6; --line: #352d45;
+  --accent: #f07a3e; --accent-ink: #1a0f08; --good: #5cc487; --redo: #f0716a; color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--ink); font: 17px/1.45 var(--body);
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 0 48px;
+}
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--bg); }
+.wrap { max-width: 640px; margin: 0 auto; }
+
+header.top {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--bg);
+  padding-block: 14px 12px; border-bottom: 1px solid var(--line);
+  display: grid; gap: 10px;
+}
+h1 { font: 700 2rem/1 var(--display); margin: 0; letter-spacing: 0.01em; text-wrap: balance; }
+.lede { margin: 0; color: var(--muted); font-size: 0.95rem; }
+.bar { height: 6px; border-radius: 3px; background: var(--line); overflow: hidden; }
+.bar > i { display: block; height: 100%; width: 0; background: var(--accent); transition: width .3s; }
+.meta { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 0.9rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+.filters { display: flex; gap: 6px; }
+.filters button {
+  font: 600 0.85rem var(--body); color: var(--ink); background: transparent;
+  border: 1px solid var(--line); border-radius: 999px; padding: 6px 12px; min-height: 36px; cursor: pointer;
+}
+.filters button[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.saveinfo { font-size: 0.85rem; color: var(--muted); margin: 0; }
+
+h2 { font: 700 1.6rem/1.1 var(--display); margin: 28px 0 4px; }
+h3 { font: 600 0.8rem var(--body); text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin: 18px 0 2px; }
+.list { display: grid; gap: 10px; margin-top: 8px; }
+
+.card { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 12px; display: grid; gap: 10px; }
+.card[data-status="good"] { border-color: var(--good); }
+.card[data-status="redo"] { border-color: var(--redo); }
+.head { display: grid; grid-template-columns: 56px 1fr; gap: 12px; align-items: center; }
+.play {
+  width: 56px; height: 56px; border-radius: 50%; border: 0; cursor: pointer;
+  background: var(--accent); color: var(--accent-ink); display: grid; place-items: center;
+}
+.play svg { width: 22px; height: 22px; fill: currentColor; }
+.play .stop { display: none; }
+.card.playing .play .go { display: none; }
+.card.playing .play .stop { display: block; }
+.info { min-width: 0; display: grid; gap: 2px; }
+.name { font: 600 0.95rem var(--mono); overflow-wrap: anywhere; display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; }
+.len { font: 400 0.8rem var(--body); color: var(--muted); }
+.subject { font-size: 0.9rem; color: var(--muted); font-style: italic; }
+.prog { height: 3px; background: var(--line); border-radius: 2px; overflow: hidden; margin-top: 4px; }
+.prog > i { display: block; height: 100%; width: 0; background: var(--accent); }
+
+.marks { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+.mark.next { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.mark {
+  min-height: 44px; border-radius: 8px; border: 1px solid var(--line); background: transparent; color: var(--ink);
+  font: 600 1rem var(--body); cursor: pointer;
+}
+.mark.good[aria-pressed="true"] { background: var(--good); border-color: var(--good); color: var(--card); }
+.mark.redo[aria-pressed="true"] { background: var(--redo); border-color: var(--redo); color: var(--card); }
+textarea {
+  width: 100%; min-height: 64px; resize: vertical; border-radius: 8px; border: 1px solid var(--line);
+  background: var(--bg); color: var(--ink); font: 1rem/1.4 var(--body); padding: 10px;
+}
+.status { font-size: 0.8rem; color: var(--muted); min-height: 1em; margin: -4px 0 0; }
+.empty { color: var(--muted); font-style: italic; padding: 16px 0; }
+button:focus-visible, textarea:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) { .bar > i { transition: none; } }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <h1>Monsternight Sounds</h1>
+    <p class="lede">Tap to play. Mark each sound Good or Redo, and write what's off.</p>
+    <div class="bar" aria-hidden="true"><i id="barfill"></i></div>
+    <div class="meta">
+      <span id="count">0 reviewed</span>
+      <div class="filters" role="group" aria-label="Show">
+        <button type="button" id="f-all" data-f="all" aria-pressed="true">All</button>
+        <button type="button" id="f-todo" data-f="todo" aria-pressed="false">To review</button>
+        <button type="button" id="f-redo" data-f="redo" aria-pressed="false">Redo</button>
+      </div>
+    </div>
+    <p class="saveinfo" id="saveinfo">Connecting to saved notes…</p>
+  </header>
+  <main id="main"></main>
+</div>
+
+<script>
+const SOUNDS = /*SOUNDS*/[];
+const GROUPS = { sfx: "Effects", voices: "Voices", ambience: "Ambience" };
+const LS_KEY = "monsternight-sound-notes";
+
+const state = {};      // key -> { status, note }
+const cards = {};      // key -> element refs
+const timers = {}, chains = {}, dirty = {};
+let col = null, filter = "all", current = null;
+
+const keyOf = s => s.path.replace("/", ".");
+const isReviewed = k => !!(state[k] && (state[k].status || (state[k].note || "").trim()));
+
+// ---------- render
+function el(tag, cls, text) { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
+
+function build() {
+  const main = document.getElementById("main");
+  let lastFolder = null, lastMonster = null, list = null;
+  for (const s of SOUNDS) {
+    const k = keyOf(s);
+    state[k] = state[k] || { status: "", note: "" };
+    if (s.folder !== lastFolder) {
+      main.append(el("h2", null, GROUPS[s.folder]));
+      list = el("div", "list"); main.append(list);
+      lastFolder = s.folder; lastMonster = null;
+    }
+    if (s.folder === "voices") {
+      const m = s.name.replace(/_(pick|win|lose)$/, "");
+      if (m !== lastMonster) { list = el("div", "list"); main.append(el("h3", null, m), list); lastMonster = m; }
+    }
+    const card = el("section", "card"); card.id = "c-" + k.replace(".", "-");
+    const head = el("div", "head");
+    const play = el("button", "play"); play.type = "button"; play.setAttribute("aria-label", "Play " + s.name);
+    play.innerHTML = '<svg class="go" viewBox="0 0 24 24"><path d="M7 4.5v15l13-7.5z"/></svg><svg class="stop" viewBox="0 0 24 24"><path d="M6 6h12v12H6z"/></svg>';
+    play.onclick = () => toggle(s);
+    const info = el("div", "info");
+    const name = el("div", "name", s.name);
+    name.append(el("span", "len", s.loop ? s.seconds + " s loop" : s.seconds + " s"));
+    const prog = el("div", "prog"); const fill = el("i"); prog.append(fill);
+    info.append(name, el("div", "subject", s.subject), prog);
+    head.append(play, info);
+
+    const marks = el("div", "marks");
+    const good = el("button", "mark good", "Good"), redo = el("button", "mark redo", "Redo");
+    for (const [b, v] of [[good, "good"], [redo, "redo"]]) {
+      b.type = "button"; b.id = "m-" + v + "-" + k.replace(".", "-");
+      b.onclick = () => { state[k].status = state[k].status === v ? "" : v; paint(k); save(k, 0); };
+      marks.append(b);
+    }
+    const next = el("button", "mark next", "Next ▸"); next.type = "button"; next.id = "x-" + k.replace(".", "-");
+    next.setAttribute("aria-label", "Play the next sound");
+    next.onclick = () => goNext(k);
+    marks.append(next);
+    const ta = el("textarea"); ta.id = "n-" + k.replace(".", "-"); ta.rows = 2;
+    ta.placeholder = "What's off? e.g. ends abruptly, should sound like…";
+    ta.setAttribute("aria-label", "Note for " + s.name);
+    ta.oninput = () => { state[k].note = ta.value; paint(k, true); save(k, 800); };
+    ta.onblur = () => { if (timers[k]) save(k, 0); };
+    const status = el("p", "status");
+    card.append(head, marks, ta, status);
+    list.append(card);
+    cards[k] = { card, good, redo, ta, status, fill };
+    paint(k, false, true);
+  }
+  applyFilter(); counts();
+}
+
+// skipRefresh: while building, later cards don't exist yet, so the filter and counts wait
+function paint(k, fromTyping, skipRefresh) {
+  const c = cards[k], st = state[k];
+  c.card.dataset.status = st.status;
+  c.good.setAttribute("aria-pressed", st.status === "good");
+  c.redo.setAttribute("aria-pressed", st.status === "redo");
+  if (!fromTyping && document.activeElement !== c.ta) c.ta.value = st.note || "";
+  if (!skipRefresh) { applyFilter(); counts(); }
+}
+
+function counts() {
+  const done = SOUNDS.filter(s => isReviewed(keyOf(s))).length;
+  const redo = SOUNDS.filter(s => state[keyOf(s)].status === "redo").length;
+  document.getElementById("count").textContent = done + " of " + SOUNDS.length + " reviewed" + (redo ? " · " + redo + " to redo" : "");
+  document.getElementById("barfill").style.width = (done / SOUNDS.length * 100) + "%";
+}
+
+function applyFilter() {
+  for (const s of SOUNDS) {
+    const k = keyOf(s), show = filter === "all" || (filter === "todo" && !isReviewed(k)) || (filter === "redo" && state[k].status === "redo");
+    cards[k].card.hidden = !show;
+  }
+  document.querySelectorAll(".list").forEach(l => {
+    const any = [...l.children].some(c => !c.hidden);
+    l.hidden = !any;
+    const prev = l.previousElementSibling;
+    if (prev && (prev.tagName === "H3" || prev.tagName === "H2")) prev.hidden = !any;
+  });
+}
+
+document.querySelectorAll(".filters button").forEach(b => b.onclick = () => {
+  filter = b.dataset.f;
+  document.querySelectorAll(".filters button").forEach(x => x.setAttribute("aria-pressed", x === b));
+  applyFilter();
+});
+
+// Scroll to the next card the filter shows, and play it
+function goNext(k) {
+  const i = SOUNDS.findIndex(s => keyOf(s) === k);
+  const s = SOUNDS.slice(i + 1).find(x => !cards[keyOf(x)].card.hidden);
+  if (!s) { setStatus(k, "That was the last one."); return; }
+  const c = cards[keyOf(s)].card;
+  const top = c.getBoundingClientRect().top + window.scrollY - document.querySelector("header.top").offsetHeight - 8;
+  window.scrollTo({ top, behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+  toggle(s);
+}
+
+// ---------- audio
+const audio = new Audio();
+audio.preload = "none";
+function setPlaying(k, on) { if (k && cards[k]) { cards[k].card.classList.toggle("playing", on); if (!on) cards[k].fill.style.width = "0"; } }
+function toggle(s) {
+  const k = keyOf(s);
+  if (current === k && !audio.paused) { audio.pause(); setPlaying(k, false); current = null; return; }
+  setPlaying(current, false);
+  current = k;
+  audio.src = s.fallback && !audio.canPlayType('audio/ogg; codecs="vorbis"') ? s.fallback : s.src;
+  audio.loop = s.loop;
+  setPlaying(k, true);
+  audio.play().catch(() => { setPlaying(k, false); cards[k].status.textContent = "Couldn't play this file. Check your connection and tap again."; });
+}
+audio.ontimeupdate = () => { if (current && audio.duration) cards[current].fill.style.width = (audio.currentTime / audio.duration * 100) + "%"; };
+audio.onended = () => { setPlaying(current, false); current = null; };
+
+// ---------- saving
+function setStatus(k, t) { cards[k].status.textContent = t; }
+function save(k, delay) {
+  dirty[k] = true;
+  clearTimeout(timers[k]);
+  setStatus(k, "Saving…");
+  timers[k] = setTimeout(() => { timers[k] = null; flush(k); }, delay);
+}
+function flush(k) {
+  const s = SOUNDS.find(x => keyOf(x) === k);
+  const body = { file: s.path, status: state[k].status || "", note: state[k].note || "", updated: new Date().toISOString() };
+  if (!col) {
+    try { localStorage.setItem(LS_KEY, JSON.stringify(state)); setStatus(k, "Saved on this device only"); }
+    catch { setStatus(k, "Not saved. This browser blocks storage."); }
+    dirty[k] = false;
+    return;
+  }
+  chains[k] = (chains[k] || Promise.resolve())
+    .then(() => col.doc(k).set(body))
+    .then(() => { if (!timers[k]) { dirty[k] = false; setStatus(k, "Saved"); } },
+          e => setStatus(k, "Not saved (" + (e && e.code || "error") + "). Edit again to retry."));
+}
+
+// ---------- start
+try { const local = JSON.parse(localStorage.getItem(LS_KEY) || "{}"); Object.assign(state, local); } catch {}
+build();
+
+(async () => {
+  const info = document.getElementById("saveinfo");
+  const db = window.claude && claude.use ? await claude.use("db") : null;
+  if (!db) { info.textContent = "Notes save on this device only."; return; }
+  col = db.collection("notes");
+  info.textContent = "Notes save automatically, and Claude can read them.";
+  col.onSnapshot(snap => {
+    for (const d of snap.docs) {
+      const k = d.id, data = d.data();
+      if (!cards[k] || dirty[k]) continue;
+      state[k] = { status: data.status || "", note: data.note || "" };
+      paint(k);
+    }
+  }, e => { info.textContent = "Lost the connection to saved notes (" + e.code + "). Reload the page."; });
+})();
+</script>

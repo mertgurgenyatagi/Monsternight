@@ -1,0 +1,22 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://src/pregame/pregame.gd" id="1_pregame"]
+[ext_resource type="PackedScene" path="res://src/sky/sky.tscn" id="2_sky"]
+
+[node name="Pregame" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_pregame")
+
+[node name="Sky" parent="." instance=ExtResource("2_sky")]
+layout_mode = 1
+
+[node name="Cards" type="Node2D" parent="."]
+
+[node name="Monsters" type="Node2D" parent="."]
+
+[node name="Fly" type="Node2D" parent="."]

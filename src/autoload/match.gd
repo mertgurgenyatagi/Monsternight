@@ -1,0 +1,360 @@
+extends Node
+## The one place match state lives. Only the rules code changes it. Part 3 holds the players
+## and their names; later parts add monster, blood, coins, position, trophies and stats to each
+## player. Online play will have the host run this and send the results to everyone.
+
+const MIN_PLAYERS := 2
+const MAX_PLAYERS := 8
+const NAME_LENGTH := 12
+const TURNS := 17
+const MAX_BLOOD := 3
+
+## One dictionary per player. Right after `start` this is the seating order; `roll_turn_order`
+## reshuffles it, and from then on the array order is the turn order.
+var players: Array[Dictionary] = []
+
+## The turn the match is on, from 1 to `TURNS`.
+var turn := 1
+
+## The index in `players` of the player whose turn it is.
+var current := 0
+
+## The players who have reached the castle gate, in the order they got there.
+var finish_order: Array[Dictionary] = []
+
+# Set once turn `TURNS` has been played to its end.
+var _turns_done := false
+
+# Counts every arrival on a space, so a tie in `leader` goes to whoever got there first.
+var _arrivals := 0
+
+
+## A typed name as it will be kept: trimmed, capped, and "Player N" when blank.
+static func clean_name(raw: String, index: int) -> String:
+	var cleaned := raw.strip_edges().left(NAME_LENGTH).strip_edges()
+	return cleaned if cleaned else TranslationServer.translate("PLAYER_DEFAULT") % (index + 1)
+
+
+## The seats whose cleaned name is already taken by an earlier seat. Names are compared
+## without regard to case, so players can always tell each other apart.
+static func duplicates(raw_names: Array[String]) -> Array[int]:
+	var seen := {}
+	var result: Array[int] = []
+	for i in raw_names.size():
+		var key := clean_name(raw_names[i], i).to_lower()
+		if key in seen:
+			result.append(i)
+		else:
+			seen[key] = true
+	return result
+
+
+## Begins a match with these typed names. Returns false, changing nothing, if the setup isn't
+## valid.
+func start(raw_names: Array[String]) -> bool:
+	if raw_names.size() < MIN_PLAYERS or raw_names.size() > MAX_PLAYERS or not duplicates(raw_names).is_empty():
+		return false
+	players.clear()
+	for i in raw_names.size():
+		players.append({"name": clean_name(raw_names[i], i), "monster": "", "space": BoardPath.START,
+				"blood": MAX_BLOOD, "coins": 0, "finished": false, "deaths": 0, "arrived": 0,
+					"duels_started": 0, "challenged": 0, "duels_won": 0, "spike_blood": 0})
+	_arrivals = 0
+	_turns_done = false
+	finish_order.clear()
+	turn = 1
+	current = 0
+	print("Match started: ", players)
+	return true
+
+
+## Clears the whole match, so the next lobby starts fresh. The autoload is never recreated.
+func reset() -> void:
+	players.clear()
+	finish_order.clear()
+	turn = 1
+	current = 0
+	_arrivals = 0
+	_turns_done = false
+
+
+## Rolls the turn order: shuffles `players` so the array order is the turn order from here on,
+## and returns the seating order it started from. The animation only shows the result.
+func roll_turn_order() -> Array[Dictionary]:
+	var seating := players.duplicate()
+	players.shuffle()
+	print("Turn order: ", names())
+	return seating
+
+
+## The monsters nobody has picked yet, in the order of characters.md.
+func free_monsters() -> Array[String]:
+	var result: Array[String] = []
+	for id in Monsters.IDS:
+		if not players.any(func(p: Dictionary) -> bool: return p.monster == id):
+			result.append(id)
+	return result
+
+
+## Gives the player this monster. Returns false, changing nothing, if it's taken, if there's no
+## such monster, or if the player already has one.
+func pick_monster(player: Dictionary, id: String) -> bool:
+	if id not in free_monsters() or player.monster != "":
+		return false
+	player.monster = id
+	print("Monster picked: ", player.name, " is ", id)
+	return true
+
+
+## The player whose turn it is.
+func active() -> Dictionary:
+	return players[current]
+
+
+## The die: 1 to 6. The rules decide the number; the die only shows it.
+func roll() -> int:
+	var value := randi_range(1, 6)
+	print("Rolled: ", active().name, " ", value)
+	return value
+
+
+## True when the match is over: turn `TURNS` has been played out, or no more than one player is
+## left who hasn't reached the gate.
+func over() -> bool:
+	return _turns_done or players.filter(func(p: Dictionary) -> bool: return not p.finished).size() <= 1
+
+
+## Passes the turn to the next player who hasn't finished, and to the next turn after the last
+## player. Returns false, changing nothing, when the match is `over`.
+func next_player() -> bool:
+	if over():
+		return false
+	var index := current
+	var wrapped := false
+	for _step in players.size():
+		index += 1
+		if index >= players.size():
+			index = 0
+			wrapped = true
+		if wrapped and turn >= TURNS:
+			_turns_done = true
+			return false
+		if not players[index].finished:
+			if wrapped:
+				turn += 1
+			current = index
+			print("Next: ", players[index].name, ", turn ", turn)
+			return true
+	return false
+
+
+## Puts the player on this space of the path, the one rules call that changes where they stand.
+## Returns false, changing nothing, if there's no such space.
+func move_to(player: Dictionary, id: String) -> bool:
+	if BoardPath.node(id).is_empty():
+		return false
+	player.space = id
+	_arrivals += 1
+	player.arrived = _arrivals
+	print("Moved: ", player.name, " to ", id)
+	return true
+
+
+## The player has reached the castle gate: they are finished from here on, and take the next place.
+## Returns the place, 1 for the first. A player who has finished already keeps the place they have.
+func finish(player: Dictionary) -> int:
+	for i in finish_order.size():
+		if is_same(finish_order[i], player):
+			return i + 1
+	player.finished = true
+	finish_order.append(player)
+	print("Finished: ", player.name, " in place ", finish_order.size())
+	return finish_order.size()
+
+
+## The player furthest along the road. A finished player counts as furthest, and on a tie the one
+## who got there first leads. Empty before there are players.
+func leader() -> Dictionary:
+	var best := {}
+	for player in players:
+		if best.is_empty() or _progress(player) > _progress(best) 				or (_progress(player) == _progress(best) and player.arrived < best.arrived):
+			best = player
+	return best
+
+
+## The player dies for real: coins go to 0, blood is full again and they stand on the start,
+## and their death count goes up. Returns the `coins` lost and the `blood` refilled, or nothing
+## at all for a finished player, who can't die. The board shows the death (`Board.die`).
+func die(player: Dictionary) -> Dictionary:
+	if player.finished:
+		return {}
+	var result := {"coins": player.coins, "blood": MAX_BLOOD - player.blood}
+	player.coins = 0
+	player.blood = MAX_BLOOD
+	player.deaths += 1
+	move_to(player, BoardPath.START)
+	print("Died: ", player.name, " (death ", player.deaths, ") ", result)
+	return result
+
+
+## The rules for the space the player stands on: a coin gives 1 coin, spikes take 1 blood, a thief
+## takes 1 coin and a church gives 1 blood. Every other space does nothing. Returns the space's
+## `kind` and the real `coins` and `blood` changes, so a thief on 0 coins or a church on full blood
+## changes nothing.
+func land(player: Dictionary) -> Dictionary:
+	var kind: String = BoardPath.node(player.space).kind
+	var result := {"kind": kind, "coins": 0, "blood": 0}
+	match kind:
+		"coin":
+			result.coins = change_coins(player, 1)
+		"spikes":
+			result.blood = change_blood(player, -1)
+			player.spike_blood -= result.blood
+		"thief":
+			result.coins = change_coins(player, -1)
+		"church":
+			result.blood = change_blood(player, 1)
+	print("Landed: ", player.name, " on ", player.space, " (", kind, ") ", result)
+	return result
+
+
+## Everyone the challenger can duel: every other player who hasn't finished.
+func opponents(player: Dictionary) -> Array[Dictionary]:
+	var result: Array[Dictionary] = []
+	for other in players:
+		if not is_same(other, player) and not other.finished:
+			result.append(other)
+	return result
+
+
+## The stakes the challenger can ask of this opponent: "gold" if they have a coin, "blood" if they
+## have blood and "swap" if the two stand on different spaces. Part 18 refines the swap.
+func stakes(challenger: Dictionary, opponent: Dictionary) -> Array[String]:
+	var result: Array[String] = []
+	if opponent.coins > 0:
+		result.append("gold")
+	if opponent.blood > 0:
+		result.append("blood")
+	if challenger.space != opponent.space:
+		result.append("swap")
+	return result
+
+
+## Applies a finished duel. The loser pays the stake: gold is 1 coin from the loser to the winner, and
+## blood is 1 of the loser's blood. A swap happens only if the challenger won, and then the two trade
+## `space`; a challenger who lost a swap loses nothing. The challenger's `duels_started`, the
+## opponent's `challenged` and the winner's `duels_won` go up. Returns the real changes: `coins` that
+## moved, `blood` the loser lost, whether they `swapped`, and whether the loser `died` (blood at 0,
+## which the board shows through `Board.die`, which settles it).
+func duel_result(winner: Dictionary, loser: Dictionary, challenger: Dictionary, stake: String) -> Dictionary:
+	var opponent: Dictionary = winner if is_same(loser, challenger) else loser
+	challenger.duels_started += 1
+	opponent.challenged += 1
+	winner.duels_won += 1
+	var result := {"coins": 0, "blood": 0, "swapped": false, "died": false}
+	match stake:
+		"gold":
+			result.coins = -change_coins(loser, -1)
+			change_coins(winner, result.coins)
+		"blood":
+			result.blood = -change_blood(loser, -1)
+			result.died = loser.blood == 0 and result.blood != 0 and not loser.finished
+		"swap":
+			if is_same(winner, challenger) and challenger.space != opponent.space:
+				var there: String = opponent.space
+				move_to(opponent, challenger.space)
+				move_to(challenger, there)
+				result.swapped = true
+	print("Duel: ", winner.name, " beat ", loser.name, " for ", stake, " ", result)
+	return result
+
+
+## Adds `delta` to the player's blood, kept between 0 and `MAX_BLOOD`. Returns the change that
+## really happened. Reaching 0 is a death, which `die` settles and the board shows.
+func change_blood(player: Dictionary, delta: int) -> int:
+	var before: int = player.blood
+	player.blood = clampi(before + delta, 0, MAX_BLOOD)
+	print("Blood: ", player.name, " ", before, " -> ", player.blood)
+	return player.blood - before
+
+
+## Adds `delta` to the player's coins, never below 0. Returns the change that really happened.
+func change_coins(player: Dictionary, delta: int) -> int:
+	var before: int = player.coins
+	player.coins = maxi(before + delta, 0)
+	print("Coins: ", player.name, " ", before, " -> ", player.coins)
+	return player.coins - before
+
+
+## Every player ranked by trophies, best first: `{player, trophies, finish, gold, duels, rank, by}`.
+## `finish` is the place at the gate (0 for none), `gold` the coins and `duels` the duels won. `by` says
+## what each trophy kind gave: `{finish, gold, duels}`. 2 trophies for the first finisher, 1 for the
+## second, 1 for the most gold and 1 for the most duels won, a tie giving all of them the trophy and
+## a count of 0 none. Equal trophies are split by the finishing trophy, then the gold trophy, then the
+## duel trophy; players still equal share a rank (and keep turn order in the list).
+func results() -> Array:
+	var most_gold := 0
+	var most_duels := 0
+	for player in players:
+		most_gold = maxi(most_gold, player.coins)
+		most_duels = maxi(most_duels, player.duels_won)
+	var rows: Array = []
+	for i in players.size():
+		var player: Dictionary = players[i]
+		var place := _place(player)
+		var by := {"finish": 2 if place == 1 else (1 if place == 2 else 0),
+				"gold": 1 if most_gold > 0 and player.coins == most_gold else 0,
+				"duels": 1 if most_duels > 0 and player.duels_won == most_duels else 0}
+		rows.append({"player": player, "trophies": by.finish + by.gold + by.duels, "finish": place,
+				"gold": player.coins, "duels": player.duels_won, "rank": 0, "by": by, "seat": i})
+	rows.sort_custom(func(a: Dictionary, b: Dictionary) -> bool:
+		var ka := _rank_key(a)
+		var kb := _rank_key(b)
+		return ka > kb if ka != kb else a.seat < b.seat)
+	for i in rows.size():
+		rows[i].rank = 1 if i == 0 else (rows[i - 1].rank if _rank_key(rows[i]) == _rank_key(rows[i - 1]) else i + 1)
+	for row in rows:
+		row.erase("seat")
+	return rows
+
+
+## The four fun stats, each `{key, players, value}`: `deaths`, `duels_started`, `challenged` and
+## `spike_blood`, with the players who have the highest count (all of them on a tie). A stat nobody
+## scored 1 in is left out.
+func stats() -> Array:
+	var result: Array = []
+	for key in ["deaths", "duels_started", "challenged", "spike_blood"]:
+		var best := 0
+		for player in players:
+			best = maxi(best, player[key])
+		if best < 1:
+			continue
+		var holders := players.filter(func(p: Dictionary) -> bool: return p[key] == best)
+		result.append({"key": key, "players": holders, "value": best})
+	return result
+
+
+## The names the setup screen shows again after a match, or an empty list at first.
+func names() -> Array[String]:
+	var result: Array[String] = []
+	for player in players:
+		result.append(player.name)
+	return result
+
+
+# The player's place at the gate, 1 for the first, or 0 for not having finished.
+func _place(player: Dictionary) -> int:
+	for i in finish_order.size():
+		if is_same(finish_order[i], player):
+			return i + 1
+	return 0
+
+
+# What ranks a row: trophies, then the finishing, gold and duel trophies, compared as an array.
+func _rank_key(row: Dictionary) -> Array:
+	return [row.trophies, row.by.finish, row.by.gold, row.by.duels]
+
+
+# How far along the road a player is: a finished player is past everyone.
+func _progress(player: Dictionary) -> float:
+	return INF if player.finished else BoardPath.node(player.space).pos.x

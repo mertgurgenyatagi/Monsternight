@@ -1,0 +1,17 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://src/ui/candle_test.gd" id="1_test"]
+[ext_resource type="PackedScene" path="res://src/sky/sky.tscn" id="2_sky"]
+[ext_resource type="Script" path="res://src/ui/candle.gd" id="3_candle"]
+
+[node name="CandleTest" type="Node2D"]
+script = ExtResource("1_test")
+
+[node name="SkyLayer" type="CanvasLayer" parent="."]
+layer = -1
+
+[node name="Sky" parent="SkyLayer" instance=ExtResource("2_sky")]
+
+[node name="Candle" type="Node2D" parent="."]
+position = Vector2(960, 900)
+script = ExtResource("3_candle")

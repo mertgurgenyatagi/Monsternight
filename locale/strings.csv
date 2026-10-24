@@ -1,0 +1,69 @@
+keys,en,tr
+TITLE_PLAY,Play,Oyna
+TITLE_SETTINGS,Settings,Ayarlar
+TITLE_QUIT,Quit,Çık
+SETTINGS_TITLE,Settings,Ayarlar
+SETTINGS_MUSIC,Music,Müzik
+SETTINGS_SFX,Effects,Efektler
+SETTINGS_FULLSCREEN,Fullscreen,Tam ekran
+SETTINGS_BACK,Back,Geri
+SETUP_TITLE,Who is playing?,Kim oynuyor?
+SETUP_ADD,Add player,Oyuncu ekle
+SETUP_REMOVE,Remove player,Oyuncu çıkar
+SETUP_BEGIN,Begin,Başla
+SETUP_BACK,Back,Geri
+PLAYER_DEFAULT,Player %d,Oyuncu %d
+MONSTER_DRACULA,Dracula,Drakula
+MONSTER_MEDUSA,Medusa,Medusa
+MONSTER_FRANKENSTEIN,Frankenstein's Monster,Frankenstein'ın Canavarı
+MONSTER_DEATH,Death,Ölüm
+MONSTER_HYDE,Mr. Hyde,Bay Hyde
+MONSTER_CTHULHU,Cthulhu,Cthulhu
+MONSTER_WOLFMAN,The Wolf Man,Kurt Adam
+MONSTER_DORIAN,Dorian Gray,Dorian Gray
+PICK_PROMPT,"%s, pick your monster","%s, canavarını seç"
+TURN_COUNTER,Turn %d of %d,Tur %d / %d
+STRETCH_CHURCH,Church,Kilise
+STRETCH_GRAVEYARD,Graveyard,Mezarlık
+STRETCH_BOARDWALK,Boardwalk,İskele
+STRETCH_BOG,Bog,Bataklık
+CHALLENGE_OPPONENT,Pick an opponent,Rakip seç
+CHALLENGE_STAKE,Pick a stake,Bahis seç
+STAKE_GOLD,Take 1 coin,1 altın al
+STAKE_BLOOD,Take 1 blood,1 kan al
+STAKE_SWAP,Swap places,Yer değiştir
+DUEL_VS,VS,VS
+DUEL_CHALLENGER,Challenger,Meydan okuyan
+DUEL_WINS,%s wins!,%s kazandı!
+PLACE_1,1st,1.
+PLACE_2,2nd,2.
+PLACE_3,3rd,3.
+PLACE_4,4th,4.
+PLACE_5,5th,5.
+PLACE_6,6th,6.
+PLACE_7,7th,7.
+PLACE_8,8th,8.
+BANNER_LAST_TURN,Last turn!,Son tur!
+BANNER_NIGHT_OVER,The night is over,Gece sona erdi
+BANNER_EVERYONE_HOME,Everyone else is home,Herkes eve vardı
+TROPHY_DUELS,Most duels won,En çok düello kazanan
+TROPHY_GOLD,Most gold,En çok altın
+TROPHY_SECOND,Second to finish,İkinci varan
+TROPHY_FIRST,First to finish,İlk varan
+CEREMONY_CONTINUE,Continue,Devam
+STAT_DEATHS_TITLE,Frequent Corpse,Müdavim Ceset
+STAT_DEATHS,%d deaths,%d ölüm
+STAT_DEATHS_ONE,%d death,%d ölüm
+STAT_DUELS_STARTED_TITLE,The Bully,Kabadayı
+STAT_DUELS_STARTED,%d duels started,%d düello başlattı
+STAT_DUELS_STARTED_ONE,%d duel started,%d düello başlattı
+STAT_CHALLENGED_TITLE,The Punching Bag,Yumruk Torbası
+STAT_CHALLENGED,%d times challenged,%d kez meydan okundu
+STAT_CHALLENGED_ONE,%d time challenged,%d kez meydan okundu
+STAT_SPIKE_BLOOD_TITLE,The Pincushion,Toplu İğne Yastığı
+STAT_SPIKE_BLOOD,%d blood lost to spikes,dikenlerde %d kan kaybetti
+STAT_SPIKE_BLOOD_ONE,%d blood lost to spikes,dikenlerde %d kan kaybetti
+STAT_QUIET,A very quiet night,Çok sakin bir gece
+CEREMONY_AGAIN,Play again,Tekrar oyna
+SETTINGS_LANGUAGE,Language,Dil
+SETTINGS_IN_MATCH,The night goes on,Gece devam ediyor
