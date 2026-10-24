@@ -132,6 +132,8 @@ func _ready() -> void:
 		_note = TurnNote.new()
 		_hud.add_child(_note)
 		Online.presence_changed.connect(_on_presence)
+		Online.rejoined.connect(func(player_name: String) -> void: _notice(tr("BANNER_BACK") % player_name))
+		Online.room_lost.connect(func() -> void: _notice(tr("BANNER_CLOSED")))
 		Net.host_changed.connect(_on_host_changed)
 		for player in Match.players: # a copy that arrives late still shows who is gone
 			if Online.status(player.name) != "":

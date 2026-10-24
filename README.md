@@ -45,7 +45,8 @@ What they mean in practice is in [Art and audio](docs/art_and_audio.md#principle
 - **Part 40 is done:** Online III: the minigames over the network (`MiniLink`: input stream, host snapshots, spectators). Notes in `docs/microplan.md`; Sumo, Soccer and Tug are untested over the wire.
 - **Part 41a is done:** Online IV, first half: host migration, dropped and away players, Play again online, Leave. Notes in `docs/microplan.md`.
 - **Sweeping changes 2 (2026-10-24, branch `sweeping-changes-2`):** monster select shows names always and powers on selection with a Confirm button; Head Soccer's heads face each other, the arena is bigger (1700 x 680), the ball no longer resets and has no squash or air spin; the Choose opponent banner is lower; `DeltaPop` ("-1" tags) and `PowerBeam` (Dracula's and Medusa's wedges) in `src/board/`; a softer rope sound (`rope_tug`). Not fixable here: 2D MSAA is unsupported in the Compatibility renderer, so only `draw_line`s got `antialiased`.
-- **Next: part 41b** (the decision log and rejoin after a reload, then part 42). No screenshots are taken any more.
+- **Part 41b is done:** Online IV, second half: the decision log, Rejoin on the title after a reload (`rejoin`/`resume`, catch-up at 12x speed behind `CatchUpCurtain`), "X is back" and "The room closed" banners. Notes in `docs/microplan.md`.
+- **Next: part 42** (the deploy and the itch.io build). No screenshots are taken any more.
 
 **Keep the raws.** They're the sources, and the processed files can always be rebuilt from them.
 

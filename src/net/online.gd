@@ -17,6 +17,12 @@ signal _arrived
 signal presence_changed(name: String, state: String)
 ## The host left and this copy is the host now.
 signal became_host
+## A dropped player came back (their copy has caught up or is catching up).
+signal rejoined(name: String)
+## The socket is gone for good: the room is closed to this copy.
+signal room_lost
+## A rejoin did not work: `reason` is "missing", "full", "closed" or "held".
+signal rejoin_failed(reason: String)
 
 ## Extra seconds the host waits for a remote player's answer, for the trip over the relay.
 const GRACE := 1.0
@@ -28,6 +34,11 @@ const SHORT_SECONDS := {"roll": 1.0, "branch": 2.0, "opponent": 3.0, "stake": 3.
 ## The least a new host gives the decision it takes over, so the answer the old host's copy had
 ## already sent can reach it.
 const TAKEOVER_MIN := 2.0
+## How fast a rejoining copy replays the decisions it missed (the engine's time scale).
+const CATCH_UP_SPEED := 12.0
+## A rejoin asks again this often, this many times, before giving up.
+const REJOIN_WAIT := 2.5
+const REJOIN_TRIES := 4
 
 ## True while a match started from an online lobby is on.
 var active := false
@@ -43,20 +54,37 @@ var _open := {} # the decision this copy is on: {seq, kind, name, sent, value, s
 var _dropped := {} # player name -> true, once their connection left
 var _autos := {} # player name -> automatic choices in a row
 var _away := {} # player name -> true
+var _log: Array = [] # every decision and minigame verdict so far, in order: a rejoiner replays it
+var _replay := {} # while catching up: seq -> the logged decision
+var _replay_minis: Array = [] # while catching up: the logged minigame verdicts, in order
+var _replay_total := 0
+var _replay_done := 0
+var _rejoin_name := ""
+var _rejoin_tries := 0
+var _rejoin_id := 0 # counts attempts, so a stale wait does nothing
+var _curtain: CatchUpCurtain
+
+## True while this copy replays what it missed, at speed and without sound, behind the curtain.
+var catching_up := false
 
 
 func _ready() -> void:
 	Net.received.connect(_on_received)
 	Net.peer_left.connect(_on_peer_left)
 	Net.host_changed.connect(_on_host_changed)
+	Net.connected.connect(_on_connected)
+	Net.refused.connect(_on_refused)
+	Net.disconnected.connect(_on_disconnected)
 	var args := OS.get_cmdline_user_args()
 	bot = "--bot" in args or Net.page_param("bot") not in ["", "0"]
 
 
 ## Begins online play for the match the lobby has just started.
-func begin(host: int) -> void:
+func begin(host: int, seed := 0, names: Array = []) -> void:
 	active = true
 	host_id = host
+	match_seed = seed
+	match_names = names
 	_seq = 0
 	_results.clear()
 	_submits.clear()
@@ -64,6 +92,10 @@ func begin(host: int) -> void:
 	_dropped.clear()
 	_autos.clear()
 	_away.clear()
+	_log.clear()
+	_replay.clear()
+	_replay_minis.clear()
+	_remember()
 
 
 ## Set before going back to the lobby after a match, so the lobby keeps the room and its seats.
@@ -79,6 +111,9 @@ func leave_match() -> void:
 
 ## Back to local play.
 func stop() -> void:
+	_end_catch_up()
+	_rejoin_name = ""
+	_forget()
 	active = false
 	_open = {}
 	_results.clear()
@@ -127,6 +162,10 @@ func decide(kind: String, player: Dictionary, seconds: float, auto: Callable,
 		valid := Callable(), settle := Callable()) -> Dictionary:
 	_seq += 1
 	var seq := _seq
+	if catching_up:
+		if _replay.has(seq):
+			return _replayed(seq, kind, player, seconds)
+		_end_catch_up() # the log has run out: this decision is live
 	_open = {"seq": seq, "kind": kind, "name": player.name, "sent": not is_mine(player),
 			"start": Time.get_ticks_msec(), "seconds": seconds}
 	var result: Dictionary
@@ -149,6 +188,7 @@ func decide(kind: String, player: Dictionary, seconds: float, auto: Callable,
 		if result.kind != kind:
 			push_error("Online: decision %d is %s here and %s on the host" % [seq, kind, result.kind])
 	_open = {}
+	_log.append({"k": "d", "seq": seq, "kind": kind, "value": result.value, "auto": result.auto})
 	_note_choice(player.name, seconds > 0.0 and kind != "minigame", result.auto)
 	return {"value": result.value, "auto": result.auto}
 
@@ -201,14 +241,209 @@ func _note_choice(player_name: String, counts: bool, auto: bool) -> void:
 		return
 	if not auto:
 		_autos[player_name] = 0
-		if _away.erase(player_name) and not _dropped.has(player_name):
+		if _away.erase(player_name) and not _dropped.has(player_name) and not catching_up:
 			presence_changed.emit(player_name, "")
 		return
 	_autos[player_name] = int(_autos.get(player_name, 0)) + 1
 	if _autos[player_name] >= AWAY_AFTER and not _away.has(player_name):
 		_away[player_name] = true
+		if not _dropped.has(player_name) and not catching_up:
+			presence_changed.emit(player_name, "away")
+
+
+## The seed of the match the lobby started, which a rejoiner needs to start the same one.
+var match_seed := 0
+## The names as the lobby gave them to `Match.start` (the match shuffles its own order from them).
+var match_names: Array = []
+
+
+## A minigame round's verdict (the winning side or `Minigame.DRAW`), kept for a rejoiner.
+func log_mini(winner: int) -> void:
+	if active:
+		_log.append({"k": "m", "winner": winner})
+
+
+## While catching up, the next logged minigame verdict, so the frame can skip the game. Null when it
+## is live: not catching up, or the log ran out, meaning the round was on when the rejoiner arrived,
+## so it is played (or watched) from here.
+func take_mini() -> Variant:
+	if not catching_up:
+		return null
+	if _replay_minis.is_empty():
+		_end_catch_up()
+		return null
+	var winner := int(_replay_minis.pop_front())
+	_log.append({"k": "m", "winner": winner})
+	return winner
+
+
+# A decision answered from the log, at once.
+func _replayed(seq: int, kind: String, player: Dictionary, seconds: float) -> Dictionary:
+	var entry: Dictionary = _replay[seq]
+	_replay.erase(seq)
+	if entry.kind != kind:
+		push_error("Online: decision %d is %s here and %s in the log" % [seq, kind, entry.kind])
+	_open = {}
+	_log.append(entry)
+	_replay_done += 1
+	if _curtain:
+		_curtain.progress = _replay_done / float(maxi(_replay_total, 1))
+	_note_choice(player.name, seconds > 0.0 and kind != "minigame", bool(entry.auto))
+	return {"value": entry.value, "auto": bool(entry.auto)}
+
+
+# The replay is over: normal speed, sound back, the curtain opens on the live turn.
+func _end_catch_up() -> void:
+	if not catching_up:
+		return
+	catching_up = false
+	Engine.time_scale = 1.0
+	AudioServer.set_bus_mute(0, false)
+	_replay.clear()
+	_replay_minis.clear()
+	if _curtain:
+		_curtain.open()
+		_curtain = null
+	var me := _my_name()
+	if me != "": # coming back clears this player's standing
+		_autos[me] = 0
+		_away.erase(me)
+	for player_name: String in _away: # the standings held back during the replay
 		if not _dropped.has(player_name):
 			presence_changed.emit(player_name, "away")
+	for player_name: String in _dropped:
+		presence_changed.emit(player_name, "dropped")
+
+
+func _my_name() -> String:
+	for player_name: String in Net.id_by_name:
+		if int(Net.id_by_name[player_name]) == Net.my_id:
+			return player_name
+	return ""
+
+
+## Asks to come back to the match in room `room` as `player_name` (a reloaded tab). The host sends
+## the log; `rejoin_failed` says why if it cannot.
+func start_rejoin(room: String, player_name: String) -> void:
+	_rejoin_name = player_name
+	_rejoin_tries = 0
+	_rejoin_id += 1
+	if not Net.open_room(room, true):
+		_give_up("closed")
+
+
+## The room and name a reloaded tab can rejoin as ("" for both when there is none).
+func saved_seat() -> Dictionary:
+	if not OS.has_feature("web"):
+		return {"room": "", "name": ""}
+	var room = JavaScriptBridge.eval("sessionStorage.getItem('mn_room') || ''")
+	var player_name = JavaScriptBridge.eval("sessionStorage.getItem('mn_name') || ''")
+	return {"room": str(room), "name": str(player_name)}
+
+
+# The tab's sessionStorage keeps the room and the name, so a reload can offer "Rejoin".
+func _remember() -> void:
+	var me := _my_name()
+	if OS.has_feature("web") and Net.is_online() and me != "":
+		JavaScriptBridge.eval("sessionStorage.setItem('mn_room', %s); sessionStorage.setItem('mn_name', %s)"
+				% [JSON.stringify(Net.code), JSON.stringify(me)])
+
+
+func _forget() -> void:
+	if OS.has_feature("web"):
+		JavaScriptBridge.eval("sessionStorage.removeItem('mn_room'); sessionStorage.removeItem('mn_name')")
+
+
+func _give_up(reason: String) -> void:
+	_rejoin_name = ""
+	_rejoin_id += 1
+	Net.leave()
+	_forget()
+	rejoin_failed.emit(reason)
+
+
+func _on_connected() -> void:
+	if _rejoin_name != "":
+		_ask_to_rejoin()
+
+
+# One ask, then a wait: the host may not have seen the old socket go yet, so it asks again.
+func _ask_to_rejoin() -> void:
+	_rejoin_tries += 1
+	var attempt := _rejoin_id
+	Net.broadcast("rejoin", {"name": _rejoin_name})
+	await get_tree().create_timer(REJOIN_WAIT, true, false, true).timeout
+	if attempt != _rejoin_id or _rejoin_name == "":
+		return
+	if _rejoin_tries >= REJOIN_TRIES:
+		_give_up("held")
+	else:
+		_ask_to_rejoin()
+
+
+func _on_refused(reason: String) -> void:
+	if _rejoin_name != "":
+		_give_up(reason)
+
+
+func _on_disconnected() -> void:
+	if active:
+		room_lost.emit()
+
+
+# The host's side of a rejoin: the name must be a player of this match whose old socket is gone.
+func _host_handles_rejoin(from: int, player_name: String) -> void:
+	var old := int(Net.id_by_name.get(player_name, -1))
+	if old < 0 or old == Net.my_id or (old != from and old in Net.peers):
+		return # the rejoiner asks again; the old socket may just not have been noticed yet
+	Net.id_by_name[player_name] = from
+	_dropped.erase(player_name)
+	_autos[player_name] = 0
+	_away.erase(player_name)
+	var names := match_names
+	var ids: Array = names.map(func(n: String) -> int: return int(Net.id_by_name.get(n, 0)))
+	Net.broadcast("rejoined", {"name": player_name, "id": from})
+	Net.send(from, "resume", {"names": names, "ids": ids, "seed": match_seed, "host": Net.my_id,
+			"log": _log, "dropped": _dropped.keys()})
+	presence_changed.emit(player_name, "")
+	rejoined.emit(player_name)
+
+
+# The host said this copy may come back: start the same match and replay the log.
+func _on_resume(payload: Dictionary) -> void:
+	if _rejoin_name == "" or active:
+		return
+	_rejoin_name = ""
+	_rejoin_id += 1
+	var names: Array[String] = []
+	for n in payload.get("names", []):
+		names.append(str(n))
+	var seed := int(payload.get("seed", 0))
+	if not Match.start(names, seed):
+		_give_up("closed")
+		return
+	Net.id_by_name.clear()
+	var ids: Array = payload.get("ids", [])
+	for i in names.size():
+		Net.id_by_name[names[i]] = int(ids[i])
+	begin(int(payload.get("host", 0)), seed, names)
+	for player_name in payload.get("dropped", []):
+		_dropped[str(player_name)] = true
+	for entry: Dictionary in payload.get("log", []):
+		if entry.k == "d":
+			_replay[int(entry.seq)] = {"k": "d", "seq": int(entry.seq), "kind": str(entry.kind),
+					"value": entry.value, "auto": bool(entry.auto)}
+		else:
+			_replay_minis.append(int(entry.winner))
+	_replay_total = _replay.size()
+	_replay_done = 0
+	if not _replay.is_empty():
+		catching_up = true
+		AudioServer.set_bus_mute(0, true)
+		Engine.time_scale = CATCH_UP_SPEED
+		_curtain = CatchUpCurtain.new()
+		get_tree().root.add_child(_curtain)
+	Scenes.change_to("res://src/pregame/pregame.tscn")
 
 
 func _on_peer_left(id: int) -> void:
@@ -238,9 +473,25 @@ func _on_host_changed(id: int) -> void:
 
 
 func _on_received(from: int, kind: String, payload: Dictionary) -> void:
+	if kind == "resume": # the one message a copy that is not in the match yet can get
+		_on_resume(payload)
+		return
 	if not active:
 		return
 	match kind:
+		"rejoin":
+			if Net.is_host:
+				_host_handles_rejoin(from, str(payload.get("name", "")))
+		"rejoined":
+			var player_name := str(payload.get("name", ""))
+			if from == host_id and not Net.is_host and Net.id_by_name.has(player_name):
+				Net.id_by_name[player_name] = int(payload.get("id", 0))
+				_dropped.erase(player_name)
+				_autos[player_name] = 0
+				_away.erase(player_name)
+				if not catching_up:
+					presence_changed.emit(player_name, "")
+					rejoined.emit(player_name)
 		"submit":
 			if Net.is_host and not _submits.has(int(payload.get("seq", 0))):
 				_submits[int(payload.get("seq", 0))] = {"from": from, "kind": str(payload.get("kind", "")),

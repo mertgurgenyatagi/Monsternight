@@ -295,7 +295,7 @@ func _begin_match(names: Array, ids: Array, seed: int) -> void:
 	for i in typed.size():
 		Net.id_by_name[Match.players[i].name] = int(ids[i])
 	if Net.is_online():
-		Online.begin(_host_id)
+		Online.begin(_host_id, seed, typed)
 	Sound.play("start")
 	_go("res://src/pregame/pregame.tscn")
 

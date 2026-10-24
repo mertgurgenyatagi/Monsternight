@@ -138,3 +138,9 @@ BANNER_AWAY,%s is away,%s uzakta
 BANNER_HOST,%s is the host now,%s artık oda sahibi
 CEREMONY_WAIT_HOST,Waiting for the host,Oda sahibi bekleniyor
 SETTINGS_LEAVE,Leave,Ayrıl
+TITLE_REJOIN,Rejoin,Geri dön
+REJOIN_FAILED,Can't rejoin that room,O odaya geri dönülemiyor
+REJOINING,Rejoining...,Geri dönülüyor...
+CATCHING_UP,Catching up...,Yetişiliyor...
+BANNER_BACK,%s is back,%s geri döndü
+BANNER_CLOSED,The room closed,Oda kapandı

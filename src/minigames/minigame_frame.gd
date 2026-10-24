@@ -88,13 +88,25 @@ func play(challenger: Dictionary, opponent: Dictionary, stake: String, kind: Str
 			game = Minigames.for_kind(kind)
 		var link: MiniLink = null
 		var round_seed := 0
+		var missed: Variant = null # a round played before this copy rejoined: only its verdict is known
 		if Online.active:
 			# Online the host picks the round's number, which every copy seeds its game with.
 			var started := await Online.decide("minigame", challenger, 0.0,
 					func() -> Dictionary: return {"seed": randi()})
 			round_seed = int(started.value.seed)
 			game.rng.seed = round_seed
-			link = MiniLink.new()
+			missed = Online.take_mini()
+			if missed == null:
+				link = MiniLink.new()
+		if missed != null:
+			game.free()
+			game = null
+			var gone := int(missed)
+			if gone != Minigame.DRAW:
+				rounds.append(gone == 0)
+				if _tally:
+					_tally.fill(0 if gone == 0 else 1)
+			continue
 		game.setup(challenger, opponent, 0, edge)
 		_stage = Node2D.new()
 		_root.add_child(_stage)
@@ -112,6 +124,7 @@ func play(challenger: Dictionary, opponent: Dictionary, stake: String, kind: Str
 		if link:
 			link.begin()
 			side = await link.wait_end()
+			Online.log_mini(side)
 		else:
 			game.begin()
 			side = await game.finished
