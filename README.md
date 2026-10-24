@@ -48,7 +48,9 @@ What they mean in practice is in [Art and audio](docs/art_and_audio.md#principle
 - **Part 21 is built** (fun stats and back to the setup screen), built and merged.
 - **Part 22 is built** (Esc settings in a match, Turkish, the leftovers), built and merged.
 - **Part 23 is built** (playtests and tuning: no number changed, only the sound trims), built and merged.
-- **Microplan 8 is done:** parts 22 to 24 are planned in `docs/microplan.md`, and are the last. Part 24 ends the process.
+- **Microplan 8 is done:** parts 22 to 24 are planned in `docs/microplan.md`, and are the last.
+- **Part 24 is built** (bug bash and the release build), built and merged. The release script `tools/release/build_release.py` and `export_presets.cfg` are ready, but the Godot export templates are not installed, so no `.exe` was exported yet: install them from the editor and run the script (see `docs/tech.md`).
+- **The first playable is done; the process is over.** Later sessions do nothing.
 
 **Keep the raws.** They're the sources, and the processed files can always be rebuilt from them.
 
@@ -82,6 +84,7 @@ What they mean in practice is in [Art and audio](docs/art_and_audio.md#principle
   - `gen_sound_prompts.py` rebuilds `docs/sound_prompts.md`. Change sound prompts here, never by hand in the doc.
   - `make_sounds.py` generates sounds through the ElevenLabs API. It needs the key in the `ELEVENLABS_API_KEY` environment variable (ask the user for it), and it skips files that already exist.
   - `build_review.py` and `review_template.html` build a phone page for the user to rate sounds: `python tools/sounds/build_review.py . tools/sounds/review_template.html <out.html> [--raw] [<name> ...]`. By default it plays the processed OGGs and decodes WAV copies into `review_wav/` beside the page, for phones without OGG support. Publish the page with `assets/audio/` and `review_wav/` as its files. `--raw` plays `audio_raw/` instead.
+- `tools/release/build_release.py` builds the Windows release without the Godot MCP (see `docs/tech.md`).
 - `docs/`: the design
 - `screenshots/`: three screenshots at the end of every part, in `part_NN/` (see the "done" bar in `docs/microplan.md`). It has a `.gdignore`, so Godot skips it.
 

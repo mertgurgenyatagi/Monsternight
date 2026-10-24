@@ -33,6 +33,10 @@ The board is all mouse clicks, and minigames use the keyboard. See [screens.md](
 - Images are PNG with transparency. Sounds are OGG.
 - Claude doesn't need to worry about where assets come from. Real assets are used from the start.
 
+## Building a release
+
+The development project carries the Godot MCP (its plugin and the autoloads `MCPRuntimeBridge`, `MCPInputBridge` and `MCPScreenshotBridge`), which must not ship. `python tools/release/build_release.py [<out_dir>]`, run from the repository root, copies only `assets/`, `src/`, `locale/`, the bus layout and the project files into a scratch folder, cuts the MCP out of that copy's `project.godot`, imports it and exports the "Windows Desktop" preset of `export_presets.cfg` (`<out_dir>`, `build/` by default, gets one `Monsternight.exe` with the pack embedded). The preset also excludes `addons/godot_mcp`, `screenshots`, the raws, `tools` and `docs`. It needs the Godot 4.7.2 export templates installed (Editor > Manage Export Templates), and `--stage <empty_dir>` makes just the stripped copy to test. The window title is the project name and the icon is `moon.png`.
+
 ## Open questions
 
 - How do players connect online? This gets decided when online play is built.
