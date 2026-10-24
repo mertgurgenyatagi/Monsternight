@@ -14,43 +14,16 @@ What they mean in practice is in [Art and audio](docs/art_and_audio.md#principle
 
 ## Status
 
-- **Design** is done, after 15 questionnaires.
+- **Design:** the first playable's design came from 15 questionnaires. The final game's design reopens them from 16 on (part 25).
 - **Images:** all 84 are done. The 83 Gemini raws are in `images_raw/` as `.jfif` (JPEG), and `tools/images/process_images.py` has processed them into `assets/art/`. `paper_texture.png` was made separately.
 - **Sounds:** all 60 effects, voices and ambience loops are done. The raws are in `audio_raw/` as WAV, and `tools/sounds/process_sounds.py` has processed them into the OGGs in `assets/audio/`, which the user reviewed and approved.
 - **Fonts:** done. `display.ttf` is Grenze Gotisch Bold and `body.ttf` is Spectral Medium, both with their OFL licenses, and both cover Turkish letters.
 - **Missing:** the 11 music tracks, which the user makes separately.
-- **Part 1 is built** (the foundation and title screen), built and merged; the user reviews it afterwards. The game runs at 25 FPS.
-- **Part 2 is built** (settings overlay), built and merged.
-- **Part 3 is built** (setup screen and `Match`), built and merged.
-- **Part 4 is built** (turn order roll and the timer candle), built and merged.
-- **Part 5 is built** (monster select), built and merged.
-- **Part 6 is built** (the board's scenery), built and merged.
-- **Reverted (2026-10-23):** the user tried the high-camera board in a part 7 build, found the scenery looked fake and unlike a real environment, and chose to revert the design adjustment with git, as if it never happened. The side view of part 6 stands. A high camera or a contrast rule is not part of the design now. Ask the user before reviving either.
-- **Microplan 3 is done:** parts 7 to 9 are planned in `docs/microplan.md`.
-- **Part 7 is built** (the board path), built and merged. The user's feedback during the build changed the plan: two of every three spaces are empty plain tokens, and everything on the road has an outline and sits on a dark road strip, with dimmer scenery and thinner fog, for contrast. See the part notes in `docs/microplan.md`.
-- **Part 8 is built** (monster pieces), built and merged.
-- **Part 9 is built** (the HUD), built and merged.
-- **Microplan 4 is done:** parts 10 to 12 are planned in `docs/microplan.md`. The user decided the board on 2026-10-23: 57 spaces on the graveyard way (61 past the church), one empty space for every filled one, still one die, and 17 turns. Part 10 builds it, and rolls the layout once with a script.
-- **Part 10 is built** (the longer, random board), built and merged.
-- **Part 11 is built** (the die and the turn loop), built and merged.
-- **Part 12 is built** (quick spaces), built and merged.
-- **Microplan 5 is done:** parts 13 to 15 are planned in `docs/microplan.md`.
-- **Part 13 is built** (death and respawn, and the board music), built and merged.
-- **Part 14 is built** (splits), built and merged.
-- **Part 15 is built** (challenge), built and merged.
-- **Microplan 6 is done:** parts 16 to 18 are planned in `docs/microplan.md`.
-- **Part 16 is built** (the VS card, the countdown and the coin flip), built and merged.
-- **Part 17 is built** (duel results), built and merged.
-- **Part 18 is built** (the swap handicap and finishing at the gate), built and merged.
-- **Microplan 7 is done:** parts 19 to 21 are planned in `docs/microplan.md`.
-- **Part 19 is built** (match end, the last turn and the stats), built and merged.
-- **Part 20 is built** (the trophy ceremony), built and merged.
-- **Part 21 is built** (fun stats and back to the setup screen), built and merged.
-- **Part 22 is built** (Esc settings in a match, Turkish, the leftovers), built and merged.
-- **Part 23 is built** (playtests and tuning: no number changed, only the sound trims), built and merged.
-- **Microplan 8 is done:** parts 22 to 24 are planned in `docs/microplan.md`, and are the last.
-- **Part 24 is built** (bug bash and the release build), built and merged. The release script `tools/release/build_release.py` and `export_presets.cfg` are ready, but the Godot export templates are not installed, so no `.exe` was exported yet: install them from the editor and run the script (see `docs/tech.md`).
-- **The first playable is done; the process is over.** Later sessions do nothing.
+- **The first playable is done** (parts 1 to 24, 2026-10-23 to 24): a whole local match, one person clicking for everyone, with the real assets and coin-flip duels. It runs at 25 FPS. Its plan and notes are archived in `docs/microplan_first_playable.md`, and the notes are the map of the code. The release script `tools/release/build_release.py` and `export_presets.cfg` are ready, but the Godot export templates are not installed, so nothing has been exported yet (see `docs/tech.md`).
+- **The camera:** a high camera was tried in part 7 and reverted, because the scenery looked fake. On 2026-10-24 the user asked for a slight zoom out and a slightly higher angle, and part 27 tries it.
+- **The final game started on 2026-10-24.** The user's brief, `docs/questionnaire_answers/final_game_brief.md`, wins over the docs until part 25 updates them.
+- **Microplan 9 is done:** parts 25 to 27 are planned in `docs/microplan.md`.
+- **Next: part 25**, the questionnaires. Parts 25 and 26 are interactive: the user must be there, so the overnight automation must not start them.
 
 **Keep the raws.** They're the sources, and the processed files can always be rebuilt from them.
 
@@ -64,7 +37,8 @@ What they mean in practice is in [Art and audio](docs/art_and_audio.md#principle
 - [Art and audio](docs/art_and_audio.md): principles, visual style, movement, camera, sound
 - [Tech](docs/tech.md): engine, project layout, multiplayer, language, assets
 - [Roadmap](docs/roadmap.md): what gets built, and in what order
-- [Microplan](docs/microplan.md): the first playable in parts, the next three planned in detail
+- [Microplan](docs/microplan.md): the final game in parts, the next three planned in detail
+- [First playable's microplan](docs/microplan_first_playable.md): parts 1 to 24, archived, and the map of the code
 - [Assets](docs/assets.md): every file the game needs
 - [Asset prompts](docs/asset_prompts.md): the Gemini prompt for every image, and how each one is processed
 - [Sound prompts](docs/sound_prompts.md): the ElevenLabs prompt for every sound except the music, and how each one is processed
@@ -90,7 +64,7 @@ What they mean in practice is in [Art and audio](docs/art_and_audio.md#principle
 
 ## Handover: how this project works
 
-1. **Source of truth.** The design came from 15 questionnaires (https://claude.ai/artifact/4EQdWyaX3PzgggQHBMe2Xi). The answers are saved word for word in `docs/questionnaire_answers/`, and they win if a doc ever disagrees. A later answer beats an earlier one. Where the user left a choice to Claude, the docs say so. The questionnaires are finished, so ask the user directly about anything new.
+1. **Source of truth.** The design came from 15 questionnaires (https://claude.ai/artifact/4EQdWyaX3PzgggQHBMe2Xi). The answers are saved word for word in `docs/questionnaire_answers/`, and they win if a doc ever disagrees. A later answer beats an earlier one. The user's final game brief (`final_game_brief.md` there) counts as an answer too. Where the user left a choice to Claude, the docs say so. Outside a questionnaire part, ask the user directly about anything new.
 2. **Assets.** Claude lists what it needs in `docs/assets.md`, and the user provides the files. Images come from Gemini and sounds from ElevenLabs, using the prompt docs, and Claude's scripts process the raws into `assets/`. The music is made separately. Real assets from the start, no placeholders.
 3. **Branches.** `main` → `development` → a branch for each piece of work. Merge finished work into `development`. A part session starts on `development` and does all of its own git without asking for approval:
    - It creates the part's branch, like `part-1-title`.
@@ -99,7 +73,7 @@ What they mean in practice is in [Art and audio](docs/art_and_audio.md#principle
    - It leaves `development` checked out, ready for the next session.
 
    It still asks the user about anything else it needs to.
-4. **Microplan.** The first playable is built in about 24 parts. `/microplan` plans the next three in detail, in its own session, after part 3, 6, 9 and so on. Each part is built in its own session, on its own branch, and meets the "done" bar in `docs/microplan.md`. Planning and building never share a session, to save tokens.
+4. **Microplan.** The first playable was built in parts 1 to 24. The final game goes on from part 25. `/microplan` plans the next three in detail, in its own session, after part 27, 30, 33 and so on. Each part is built in its own session, on its own branch, and meets the "done" bar in `docs/microplan.md`. Planning and building never share a session, to save tokens.
 5. **Saving tokens.** The user hit their limits in part 1. Part sessions run on Sonnet 5.5 at medium effort, and Opus for the Microplan or a tricky part.
    - **Never use `--write-movie` or `tools/godot/capture.py`, not even briefly.** It encodes every frame at full size, takes ages and makes the PC roar. The user has stopped it twice. Test logic headless. To see motion, run the game normally with a temporary script (not committed) that saves a few `get_viewport().get_texture().get_image().save_png(...)` screenshots at set moments, and paste them into one contact sheet with Pillow. For the frame rate, print `Engine.get_frames_per_second()` from a plain run.
    - Don't spend long on screenshots: three good ones are enough, and a handful of timed ones in one Pillow contact sheet is enough for motion.
