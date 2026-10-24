@@ -14,7 +14,7 @@ const ROAD_WIDTH := 78.0
 const ROAD_COLOR := Color(0.1, 0.06, 0.16, 0.5)
 
 var _rng := RandomNumberGenerator.new()
-const LIT := Color(1.25, 1.22, 1.1)
+const LIT := Color(1.1, 1.08, 1.02)
 const DIMMED := Color(0.55, 0.5, 0.62, 0.55)
 const LIGHT_TIME := 0.25
 

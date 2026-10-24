@@ -37,7 +37,7 @@ func tint(top: Color, bottom: Color, duration := 1.5) -> void:
 ## Lightning: the sky flashes pale twice, like a paper lamp switched on and off.
 func flash() -> void:
 	var tween := create_tween()
-	for peak in [0.85, 0.0, 0.6, 0.0]:
+	for peak in [0.4, 0.0, 0.28, 0.0]:
 		tween.tween_property(_flash, "color:a", peak, 0.04)
 		tween.tween_interval(0.08)
 	tween.tween_property(_flash, "color:a", 0.0, 0.3)

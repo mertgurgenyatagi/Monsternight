@@ -4,13 +4,13 @@ extends Camera2D
 ## wherever it's sent: the intro now, the active player from part 8 on, and follows a walking piece.
 
 ## Glide speed when no duration is given, in pixels a second.
-const SPEED := 1800.0
+const SPEED := 2800.0
 
 ## How quickly a following camera closes the gap, and its top speed in pixels a second.
-const FOLLOW_RATE := 3.0
-const FOLLOW_SPEED := 2600.0
+const FOLLOW_RATE := 6.0
+const FOLLOW_SPEED := 3200.0
 ## A follow starts from a standstill and takes this long to reach full pace, so it never snaps.
-const FOLLOW_EASE_IN := 0.7
+const FOLLOW_EASE_IN := 0.3
 
 var _glide: Tween
 var _target: Node2D
@@ -45,7 +45,7 @@ func center_x() -> float:
 func glide_to(x: float, duration := -1.0) -> Tween:
 	var target := clampf(x, 960.0, BoardLayout.width() - 960.0)
 	if duration < 0.0:
-		duration = clampf(absf(target - position.x) / SPEED, 0.4, 2.0)
+		duration = clampf(absf(target - position.x) / SPEED, 0.3, 1.4)
 	stop()
 	_glide = create_tween()
 	_glide.tween_property(self, "position:x", target, duration) \

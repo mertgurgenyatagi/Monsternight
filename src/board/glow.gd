@@ -4,6 +4,9 @@ extends Sprite2D
 ## lamps, the castle torches and the forest mushrooms.
 
 const SIZE := 256
+## Every glow is this much weaker than the color it is given: they add light, and too many made the
+## board feel like a blaze.
+const TAME := 0.6
 
 static var _texture: GradientTexture2D
 static var _material: CanvasItemMaterial
@@ -21,7 +24,7 @@ func _init(color := Color.WHITE, radius := 128.0) -> void:
 	texture = _shared_texture()
 	material = _shared_material()
 	self_modulate = color
-	_strength = color.a
+	_strength = color.a * TAME
 	scale = Vector2.ONE * radius / (SIZE / 2.0)
 	_radius_scale = scale
 
@@ -47,8 +50,8 @@ func flicker(every := Vector2(3.0, 8.0)) -> void:
 ## Swells and fades slowly, forever, starting at a random point so no two keep step.
 func pulse(low: float, high: float, period: float) -> void:
 	_pulse = create_tween().set_loops().set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
-	_pulse.tween_property(self, "_strength", high, period / 2)
-	_pulse.tween_property(self, "_strength", low, period / 2)
+	_pulse.tween_property(self, "_strength", high * TAME, period / 2)
+	_pulse.tween_property(self, "_strength", low * TAME, period / 2)
 	_pulse.custom_step(randf_range(0.0, period))
 
 
@@ -58,7 +61,7 @@ func flare(grow := 1.5, up := 0.15, down := 0.9) -> Tween:
 		_pulse.pause()
 	var before := _strength
 	var tween := create_tween().set_parallel()
-	tween.tween_property(self, "_strength", 1.0, up).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	tween.tween_property(self, "_strength", TAME, up).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 	tween.tween_property(self, "scale", _radius_scale * grow, up).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 	tween.chain().tween_property(self, "_strength", before, down).set_trans(Tween.TRANS_SINE)
 	tween.parallel().tween_property(self, "scale", _radius_scale, down).set_trans(Tween.TRANS_SINE)
@@ -73,7 +76,7 @@ func flare(grow := 1.5, up := 0.15, down := 0.9) -> Tween:
 func aim(strength: float, radius: float, at: Vector2, duration := 0.4) -> Tween:
 	_radius_scale = Vector2.ONE * radius / (SIZE / 2.0)
 	var tween := create_tween().set_parallel().set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
-	tween.tween_property(self, "_strength", strength, duration)
+	tween.tween_property(self, "_strength", strength * TAME, duration)
 	tween.tween_property(self, "scale", _radius_scale, duration)
 	tween.tween_property(self, "position", at, duration)
 	return tween
