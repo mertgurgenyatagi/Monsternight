@@ -879,7 +879,7 @@ Sound: a single isolated one-shot, dry and close-miked, starting instantly, on a
 **Settings:** duration 0.5 s, looping off, prompt influence 75%.
 
 ```text
-A small boot kicking a light, hollow ball hard: one punchy, hollow thump.
+A boot striking a soft leather football: one dull, punchy thump of leather and air.
 
 Style: spooky but lighthearted and theatrical. Crisp, clean, professionally recorded sound.
 
@@ -890,10 +890,10 @@ Sound: a single isolated one-shot, dry and close-miked, starting instantly, on a
 
 ### `sfx/jump.ogg`
 
-**Settings:** duration 0.5 s, looping off, prompt influence 50%.
+**Settings:** duration 0.5 s, looping off, prompt influence 75%.
 
 ```text
-A quick, light, springy jump: one short, soft boing, like a small spring.
+A person pushing off the ground in a quick jump: a short, dry scuff of a shoe and a soft rustle of cloth.
 
 Style: spooky but lighthearted and theatrical. Crisp, clean, professionally recorded sound.
 
@@ -978,14 +978,14 @@ Sound: a single isolated one-shot, dry and close-miked, starting instantly, on a
 
 ## Lobby: `sfx/`
 
-The three door sounds share one door.
+Join and leave are the same blip rising and falling, and ready is a third. Only the start is a door, and the user chose synthetic sounds for the rest (the knocks were rejected).
 
 ### `sfx/join.ogg`
 
-**Settings:** duration 1 s, looping off, prompt influence 75%.
+**Settings:** duration 1 s, looping off, prompt influence 60%.
 
 ```text
-Two quick, firm knocks on a heavy old wooden door.
+A short, clean, synthetic two-note blip rising in pitch, like a simple interface notification.
 
 Style: spooky but lighthearted and theatrical. Crisp, clean, professionally recorded sound.
 
@@ -996,10 +996,10 @@ Sound: a single isolated one-shot, dry and close-miked, starting instantly, on a
 
 ### `sfx/leave.ogg`
 
-**Settings:** duration 1 s, looping off, prompt influence 75%.
+**Settings:** duration 1 s, looping off, prompt influence 60%.
 
 ```text
-A heavy old wooden door pushed shut: one soft, heavy, wooden thud.
+A short, clean, synthetic two-note blip falling in pitch, like a simple interface notification.
 
 Style: spooky but lighthearted and theatrical. Crisp, clean, professionally recorded sound.
 
@@ -1010,17 +1010,17 @@ Sound: a single isolated one-shot, dry and close-miked, starting instantly, on a
 
 ### `sfx/ready.ogg`
 
-**Settings:** duration 0.5 s, looping off, prompt influence 75%.
+**Settings:** duration 0.5 s, looping off, prompt influence 60%.
 
 ```text
-A rubber stamp pressed down hard on a sheet of paper: one firm, dry thunk.
+A single short, clean, synthetic confirmation blip, like a simple interface tick.
 
 Style: spooky but lighthearted and theatrical. Crisp, clean, professionally recorded sound.
 
 Sound: a single isolated one-shot, dry and close-miked, starting instantly, on a clean silent background.
 ```
 
-**Processing:** 0.3 s, one-shot.
+**Processing:** 0.5 s, one-shot.
 
 ### `sfx/start.ogg`
 

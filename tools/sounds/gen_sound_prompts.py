@@ -1,4 +1,4 @@
-# Generates docs/sound_prompts.md so the shared blocks stay word for word identical.
+﻿# Generates docs/sound_prompts.md so the shared blocks stay word for word identical.
 import math
 import sys
 
@@ -140,8 +140,8 @@ minigames = [
     effect("whistle", "A referee's whistle: one short, sharp, shrill blast.", 0.6),
     effect("paddle_hit", "A crumpled paper ball hitting a stiff cardboard paddle: one hollow, papery tock.", 0.3),
     effect("bounce", f"{BALL.capitalize()} bouncing once off a wooden board: one short, springy tap.", 0.3),
-    effect("kick", f"A small boot kicking {BALL} hard: one punchy, hollow thump.", 0.4),
-    effect("jump", "A quick, light, springy jump: one short, soft boing, like a small spring.", 0.4, 50),
+    effect("kick", "A boot striking a soft leather football: one dull, punchy thump of leather and air.", 0.4),
+    effect("jump", "A person pushing off the ground in a quick jump: a short, dry scuff of a shoe and a soft rustle of cloth.", 0.4),
     effect("sumo_bump", "Two heavy, padded bodies slamming into each other: one deep, soft, heavy thud.", 0.5),
     effect("rope_pull", "A thick hemp rope yanked tight in one quick tug: one short, strained creak of the fibers.", 0.5),
 ]
@@ -153,9 +153,9 @@ powers = [
 ]
 
 lobby = [
-    effect("join", f"Two quick, firm knocks on {DOOR}.", 0.6),
-    effect("leave", f"{DOOR.capitalize()} pushed shut: one soft, heavy, wooden thud.", 0.6),
-    effect("ready", "A rubber stamp pressed down hard on a sheet of paper: one firm, dry thunk.", 0.3),
+    effect("join", "A short, clean, synthetic two-note blip rising in pitch, like a simple interface notification.", 0.6, 60),
+    effect("leave", "A short, clean, synthetic two-note blip falling in pitch, like a simple interface notification.", 0.6, 60),
+    effect("ready", "A single short, clean, synthetic confirmation blip, like a simple interface tick.", 0.5, 60),
     effect("start", f"{DOOR.capitalize()} creaking slowly open: one long, low, eerie creak.", 1.5, 50),
 ]
 
@@ -302,7 +302,7 @@ SECTIONS = [
         "and the whistle ends every minigame's round.",
     ),
     ("Powers", "sfx", powers, "`power` plays under every power's word pop. The two stone sounds share their words."),
-    ("Lobby", "sfx", lobby, "The three door sounds share one door."),
+    ("Lobby", "sfx", lobby, "Join and leave are the same blip rising and falling, and ready is a third. Only the start is a door, and the user chose synthetic sounds for the rest (the knocks were rejected)."),
 ]
 
 INTRO = """# Sound prompts
