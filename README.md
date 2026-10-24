@@ -38,7 +38,8 @@ What they mean in practice is in [Art and audio](docs/art_and_audio.md#principle
 - **Part 35 is done:** Tug of War (`TugGame`). Notes in `docs/microplan.md`.
 - **Part 36 is done:** Sumo (`SumoGame`, `CirclePhysics`). Notes in `docs/microplan.md`.
 - **Microplan 13 is done:** parts 37 to 39 are planned in `docs/microplan.md` (Head Soccer, the online network layer and lobby, the board over the network). The roadmap still ends at part 43; the Cloudflare deploy moved to part 41.
-- **Next: part 37**, Head Soccer.
+- **Part 37 is done:** Head Soccer (`SoccerGame`). Notes in `docs/microplan.md`; its keys are untested on a real keyboard.
+- **Next: part 38**, Online I (the network layer and the lobby).
 
 **Keep the raws.** They're the sources, and the processed files can always be rebuilt from them.
 
