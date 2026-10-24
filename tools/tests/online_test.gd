@@ -124,6 +124,38 @@ func _run() -> void:
 	online._note_choice("Eve", false, true)
 	_check(online.status("Eve") == "", "decisions that need no answer do not count")
 
+	# --- the log and catching up ---
+	net.is_host = true
+	net.my_id = 1
+	online.begin(1, 77)
+	await online.decide("roll", ann, 0.0, func() -> Dictionary: return {},
+			Callable(), func(_v: Variant) -> Dictionary: return {"face": 5})
+	await online.decide("branch", bob, 0.0, func() -> int: return 1)
+	online.log_mini(0)
+	online.log_mini(-1)
+	online.log_mini(1)
+	var kept: Array = JSON.parse_string(JSON.stringify(online._log)) # as a rejoiner receives it
+	_check(kept.size() == 5 and kept[0].kind == "roll" and kept[2].k == "m", "the host keeps every decision and verdict")
+	# A rejoiner's copy: not the host, and every logged decision comes back at once.
+	net.is_host = false
+	net.my_id = 9
+	online.begin(1, 77)
+	for entry: Dictionary in kept:
+		if entry.k == "d":
+			online._replay[int(entry.seq)] = {"k": "d", "seq": int(entry.seq), "kind": str(entry.kind),
+					"value": entry.value, "auto": bool(entry.auto)}
+		else:
+			online._replay_minis.append(int(entry.winner))
+	online.catching_up = true
+	t = Time.get_ticks_msec()
+	r = await online.decide("roll", ann, 20.0, func() -> Dictionary: return {})
+	_check(int(r.value.face) == 5 and r.auto and Time.get_ticks_msec() - t < 200, "a logged decision is answered at once")
+	_check(online.take_mini() == 0, "the first logged verdict comes back")
+	_check(online.take_mini() == -1 and online.take_mini() == 1, "draws and later verdicts follow in order")
+	_check(online.catching_up and online.take_mini() == null and not online.catching_up,
+			"a spent verdict log ends the catch-up (the round is live)")
+	_check(online._log.size() == 4, "the rejoiner replays into its own log")
+
 	online.stop()
 	print("FAILS: ", _fails)
 	quit(1 if _fails else 0)
