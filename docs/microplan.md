@@ -129,9 +129,9 @@ Very rough. The next Microplan (after part 36) rewrites it. It still ends at 43.
 31. Powers II: Dracula's steal and Medusa's stone. (done)
 32. An online spike with a local relay (no Cloudflare account needed yet). (done)
 33. The minigame frame. (done)
-34. Pong.
-35. Tug of War.
-36. Sumo.
+34. Pong. (done)
+35. Tug of War. (done)
+36. Sumo. (done)
 37. Head Soccer.
 38. Online I: the lobby (join, names, ready, start), the web build, and the Cloudflare deploy. Ask the user for the free Cloudflare account and which friends test.
 39. Online II: the board over the network (the host runs the rules, everyone draws), the timers and absent players.
