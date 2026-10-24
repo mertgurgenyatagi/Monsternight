@@ -10,11 +10,11 @@ signal _decided(by_click: bool)
 
 const ARROW := preload("res://assets/art/board/arrow.png")
 const SECONDS := 10.0
-const CANDLE_SCALE := 0.5
+const CANDLE_SCALE := 0.5 / BoardCamera.ZOOM
 const CANDLE_AT := Vector2(-60, -230) # the candle floats over the pieces, from the fork's token
 const ARROW_AT := [Vector2(260, -470), Vector2(260, -340)] # the upper and the lower arrow's middle
 const ARROW_TURN := [-22.0, 20.0] # degrees
-const ARROW_SCALE := 1.1
+const ARROW_SCALE := 1.1 / BoardCamera.ZOOM
 const POP_GAP := 0.18
 const CLICK_BEAT := 0.35
 const TIMEOUT_BEAT := 0.55
