@@ -4,6 +4,7 @@ extends Node
 const FADE := 1.5
 const PITCH_JITTER := 0.05
 const VOICES := 8
+const DUCK_DB := -16.0 # how far a sting pushes the music down
 
 var _voices: Array[AudioStreamPlayer] = []
 var _next_voice := 0
@@ -13,6 +14,8 @@ var _music: Array[AudioStreamPlayer] = []
 var _ambience: Array[AudioStreamPlayer] = []
 var _music_name := ""
 var _ambience_name := ""
+var _duck_effect: AudioEffectAmplify
+var _duck_tween: Tween
 
 
 func _ready() -> void:
@@ -43,7 +46,7 @@ func quit() -> void:
 ## Plays an effect from assets/audio/sfx, or from another folder if the name has one
 ## ("voices/dracula_pick"). Each play is pitched slightly differently, and "hop" picks one of
 ## the three hops, never the one before.
-func play(sound: String, volume_db := 0.0) -> void:
+func play(sound: String, volume_db := 0.0, pitch := 1.0) -> void:
 	if sound == "hop":
 		# Never the same hop twice in a row.
 		_last_hop = (_last_hop + randi_range(0, 1)) % 3 + 1
@@ -52,8 +55,16 @@ func play(sound: String, volume_db := 0.0) -> void:
 	_next_voice = (_next_voice + 1) % VOICES
 	player.stream = _stream(sound if "/" in sound else "sfx/" + sound)
 	player.volume_db = volume_db
-	player.pitch_scale = randf_range(1.0 - PITCH_JITTER, 1.0 + PITCH_JITTER)
+	player.pitch_scale = pitch * randf_range(1.0 - PITCH_JITTER, 1.0 + PITCH_JITTER)
 	player.play()
+
+
+## Plays a sting, a short piece of music, over the board's track, which ducks for `length` seconds and
+## comes back. A missing file plays as silence, because the music arrives later (the music still ducks).
+func sting(sound: String, length := 3.0) -> void:
+	if ResourceLoader.exists(_path("sfx/" + sound)):
+		play(sound)
+	_duck(length)
 
 
 ## Crossfades to a track in assets/audio/music. Asking for the track that's already playing
@@ -72,6 +83,20 @@ func play_ambience(loop: String) -> void:
 		return
 	_ambience_name = loop
 	_crossfade(_ambience, "ambience/" + loop if loop else "")
+
+
+# The music bus gets quieter for `length` seconds, through an effect of its own, so neither the volume
+# setting nor a crossfade is in the way.
+func _duck(length: float) -> void:
+	if _duck_effect == null:
+		_duck_effect = AudioEffectAmplify.new()
+		AudioServer.add_bus_effect(AudioServer.get_bus_index("Music"), _duck_effect)
+	if _duck_tween and _duck_tween.is_valid():
+		_duck_tween.kill()
+	_duck_tween = create_tween()
+	_duck_tween.tween_property(_duck_effect, "volume_db", DUCK_DB, 0.2)
+	_duck_tween.tween_interval(length)
+	_duck_tween.tween_property(_duck_effect, "volume_db", 0.0, 0.8)
 
 
 func _crossfade(pair: Array[AudioStreamPlayer], sound: String) -> void:
