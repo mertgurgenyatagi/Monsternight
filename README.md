@@ -34,7 +34,8 @@ What they mean in practice is in [Art and audio](docs/art_and_audio.md#principle
 - **Part 32 is done:** the online spike (relay in `tools/relay/`, throwaway scene `src/spike/`, a Web export preset): two and three browser tabs talk through a local relay with our own JSON protocol. Findings in `docs/microplan.md`.
 - **Part 33 is done:** the minigame frame (`src/minigames/`: `Minigame`, `MinigameInput`, `Minigames`, `MinigameFrame`, a stub game); a minigame space now plays it instead of the coin flip. Notes in `docs/microplan.md`.
 - **Microplan 12 is done:** parts 34 to 36 are planned in `docs/microplan.md` (Pong, Tug of War, Sumo). The roadmap still ends at part 43.
-- **Next: part 34**, Pong.
+- **Part 34 is done:** Pong (`PongGame`). Notes in `docs/microplan.md`.
+- **Next: part 35**, Tug of War.
 
 **Keep the raws.** They're the sources, and the processed files can always be rebuilt from them.
 
