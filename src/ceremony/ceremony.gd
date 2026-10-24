@@ -33,6 +33,7 @@ var _stage: Node2D
 var _spot: Glow
 var _curtain: Curtain
 var _scale := 1.0
+var _board: Node2D # the leaderboard panel
 
 
 func _ready() -> void:
@@ -402,7 +403,151 @@ func _leaderboard() -> void:
 	button.enter(0.2)
 	button.pressed.connect(func() -> void:
 			button.leave()
-			Scenes.change_to("res://src/setup/setup.tscn"))
+			_stats())
+
+
+# --- The fun stats -------------------------------------------------------------------------------
+
+# The leaderboard lifts away, then each stat gets a card, and then the ending.
+func _stats() -> void:
+	Sound.play("flip", -4.0)
+	PaperMotion.lift_away(_board, 900.0, 0.5)
+	await _wait(0.7)
+	_board.queue_free()
+	var shown := Match.stats()
+	if shown.is_empty():
+		await _stat_card(null)
+	for stat in shown:
+		await _stat_card(stat)
+	_ending()
+
+
+# One paper card: the stat's title, the portraits of whoever holds it, and the number counting up.
+# `null` makes the card for a match where nothing happened.
+func _stat_card(stat) -> void:
+	var size := Vector2(940, 520)
+	var at := Vector2(960, 510)
+	var card := Node2D.new()
+	card.position = at + Vector2(0, 900)
+	card.rotation_degrees = -7.0
+	card.set_meta("rest_position", at)
+	card.z_index = 5
+	add_child(card)
+	var paper := Sprite2D.new()
+	paper.texture = preload("res://assets/art/ui/panel.png")
+	paper.scale = size / paper.texture.get_size()
+	paper.self_modulate = Color("f0dcc0")
+	card.add_child(paper)
+	PaperShadow.add(paper)
+
+	var title := _card_label(tr("STAT_QUIET") if stat == null else tr("STAT_%s_TITLE" % stat.key.to_upper()),
+			DISPLAY, 64, Color("a8341c"), Vector2(size.x - 80.0, 90))
+	title.position = Vector2(-size.x / 2.0 + 40.0, -size.y / 2.0 + 40.0)
+	card.add_child(title)
+
+	var portraits: Array[Sprite2D] = []
+	var counter: Label
+	if stat != null:
+		var holders: Array = stat.players
+		var room := (size.x - 100.0) / holders.size()
+		var width := minf(200.0, room - 10.0)
+		for i in holders.size():
+			var x := (i - (holders.size() - 1) / 2.0) * room
+			var portrait := Sprite2D.new()
+			portrait.texture = Monsters.portrait(holders[i].monster)
+			portrait.scale = Vector2.ONE * width / portrait.texture.get_width()
+			portrait.position = Vector2(x, -35.0)
+			portrait.set_meta("rest_position", portrait.position)
+			card.add_child(portrait)
+			portraits.append(portrait)
+			var name_label := _card_label(holders[i].name, BODY, 30, INK, Vector2(room - 6.0, 40))
+			name_label.position = Vector2(x - (room - 6.0) / 2.0, -35.0 + width / 2.0 + 8.0)
+			card.add_child(name_label)
+		counter = _card_label("", DISPLAY, 72, INK, Vector2(size.x - 80.0, 100))
+		counter.position = Vector2(-size.x / 2.0 + 40.0, size.y / 2.0 - 135.0)
+		card.add_child(counter)
+
+	var slide := card.create_tween().set_parallel().set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	slide.tween_property(card, "position", at, 0.7)
+	slide.tween_property(card, "rotation_degrees", 0.0, 0.7)
+	await _wait(0.45)
+	Sound.play("stat")
+	await _wait(0.4)
+	if stat != null:
+		for portrait in portraits:
+			PaperMotion.hop(portrait, 30.0)
+		var key: String = "STAT_%s" % stat.key.to_upper()
+		var ticks := func(n: float) -> void:
+			var whole := int(round(n))
+			var text := tr(key + "_ONE") if whole == 1 else tr(key)
+			var changed := counter.text != text % whole
+			counter.text = text % whole
+			if changed and whole > 0:
+				Sound.play("ui_click", -6.0, 1.0 + 0.12 * whole)
+		var count := create_tween()
+		count.tween_method(ticks, 0.0, float(stat.value), 0.5)
+		await count.finished
+		PaperMotion.squash(counter)
+		print("Stat: ", stat.key, " ", stat.players.map(func(p: Dictionary) -> String: return p.name), " ", counter.text)
+	else:
+		print("Stat: none, a very quiet night")
+	await _wait(2.2)
+	await PaperMotion.lift_away(card, 900.0, 0.45).finished
+	card.queue_free()
+	await _wait(0.25)
+
+
+func _card_label(text: String, font: Font, font_size: int, color: Color, size: Vector2) -> Label:
+	var label := Label.new()
+	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	label.text = text
+	label.clip_text = true
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	while font_size > 18 and font.get_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, -1, font_size).x > size.x:
+		font_size -= 2
+	label.add_theme_font_override("font", font)
+	label.add_theme_font_size_override("font_size", font_size)
+	label.add_theme_color_override("font_color", color)
+	label.size = size
+	return label
+
+
+# --- The ending ----------------------------------------------------------------------------------
+
+func _ending() -> void:
+	var again := PaperButton.new()
+	again.text = "CEREMONY_AGAIN"
+	again.position = Vector2(500, 900)
+	again.size = Vector2(400, 88)
+	var quit := PaperButton.new()
+	quit.text = "TITLE_QUIT"
+	quit.position = Vector2(1020, 900)
+	quit.size = Vector2(400, 88)
+	for button in [again, quit]:
+		add_child(button)
+	again.enter(0.2)
+	quit.enter(0.4)
+	again.pressed.connect(_leave.bind("res://src/setup/setup.tscn", [again, quit], true))
+	quit.pressed.connect(_leave.bind("res://src/title/title.tscn", [again, quit], false))
+
+
+# The music fades, the match is cleared, and the curtain closes as it did on the board before the
+# scene changes under it. The title's own curtain is closed and opens, so the loop reads as a circle.
+func _leave(path: String, buttons: Array, paper: bool) -> void:
+	for button: PaperButton in buttons:
+		button.disabled = true
+		button.leave()
+	Sound.play_music("")
+	Sound.play_ambience("")
+	Match.reset()
+	Sound.play("fly", -3.0)
+	await _curtain.move(1.0, 1.3, 0.0).finished
+	await _wait(0.6)
+	if paper:
+		Scenes.change_to(path)
+	else:
+		get_tree().change_scene_to_file(path)
 
 
 func _toss_later(slot: Dictionary, target: Vector2, delay: float) -> void:
@@ -489,6 +634,7 @@ func _panel(ranked: Array[Dictionary]) -> void:
 		print("Board: ", slot.row.rank, ". ", slot.row.player.name, " x", slot.row.trophies,
 				" (shown ", slot.count, ")")
 	panel.z_index = 5
+	_board = panel
 	var rise := panel.create_tween().set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 	rise.tween_property(panel, "position", at, 0.9).set_delay(0.3)
 
@@ -516,6 +662,10 @@ func _start_test_match() -> void:
 			continue
 		player.coins = [4, 7, 7, 1, 0, 3, 2, 5][i]
 		player.duels_won = [2, 0, 2, 1, 0, 0, 1, 0][i]
+		player.deaths = [0, 1, 0, 1, 0, 0, 0, 0][i] # a tie
+		player.duels_started = [0, 0, 0, 4, 0, 0, 0, 0][i]
+		player.challenged = [0, 1, 0, 0, 0, 0, 0, 0][i] # a single holder, a count of 1
+		player.spike_blood = [0, 0, 5, 0, 0, 0, 0, 0][i]
 	if not quiet:
 		Match.finish(Match.players[2 % count])
 		Match.finish(Match.players[0])
