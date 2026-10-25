@@ -1,0 +1,1001 @@
+﻿ID,Category,Question (EN),Soru (TR),Answer
+1,Landmarks & Architecture,"How tall is the Eiffel Tower in Paris, including its tip/antenna, in meters?",Paris'teki Eyfel Kulesi'nin tepesindeki anten dahil toplam yüksekliği kaç metredir?,330
+2,Landmarks & Architecture,How tall is the Burj Khalifa in Dubai in meters?,Dubai'deki Burç Halife'nin yüksekliği kaç metredir?,828
+3,Landmarks & Architecture,"How tall is the Empire State Building in New York, including its spire/antenna, in meters?",New York'taki Empire State Binası'nın tepesindeki anten dahil toplam yüksekliği kaç metredir?,443
+4,Landmarks & Architecture,How tall is the Statue of Liberty from the ground/base to the tip of the torch in meters?,Özgürlük Heykeli'nin kaidesinden meşalesinin ucuna kadar olan toplam yüksekliği kaç metredir?,93
+5,Landmarks & Architecture,How tall is the Leaning Tower of Pisa in Italy in meters?,İtalya'daki Pisa Kulesi'nin yüksekliği kaç metredir?,56
+6,Landmarks & Architecture,How tall is the Great Pyramid of Giza today in meters?,Giza'daki Büyük Piramit'in (Keops Piramidi) bugünkü yüksekliği kaç metredir?,139
+7,Landmarks & Architecture,How tall is Big Ben's Elizabeth Tower in London in meters?,Londra'daki Big Ben saat kulesinin (Elizabeth Kulesi) yüksekliği kaç metredir?,96
+8,Landmarks & Architecture,"How tall is the Christ the Redeemer statue in Rio de Janeiro, including its pedestal, in meters?",Rio de Janeiro'daki Kurtarıcı İsa Heykeli'nin kaidesi dahil yüksekliği kaç metredir?,38
+9,Landmarks & Architecture,How tall is the Colosseum in Rome in meters?,Roma'daki Kolezyum'un dış cephe yüksekliği kaç metredir?,48
+10,Landmarks & Architecture,"How tall is the Taj Mahal in Agra, India in meters?",Hindistan'ın Agra kentindeki Tac Mahal'in toplam yüksekliği kaç metredir?,73
+11,Geography & Nature,What is the official elevation of Mount Everest above sea level in meters?,Everest Dağı'nın deniz seviyesinden resmi yüksekliği kaç metredir?,8849
+12,Geography & Nature,What is the elevation of Mount Kilimanjaro in Tanzania in meters?,Tanzanya'daki Kilimanjaro Dağı'nın yüksekliği kaç metredir?,5895
+13,Geography & Nature,"What is the elevation of Mont Blanc, the highest peak in the Alps, in meters?",Alpler'in en yüksek zirvesi olan Mont Blanc'ın yüksekliği kaç metredir?,4808
+14,Geography & Nature,What is the elevation of Mount Fuji in Japan in meters?,Japonya'daki Fuji Dağı'nın yüksekliği kaç metredir?,3776
+15,Geography & Nature,"What is the elevation of Mount Ararat (Ağrı Dağı), the highest peak in Turkey, in meters?",Türkiye'nin en yüksek zirvesi olan Ağrı Dağı'nın yüksekliği kaç metredir?,5137
+16,Geography & Nature,"What is the elevation of Aconcagua, the highest mountain in the Americas, in meters?",Amerika kıtasının en yüksek dağı olan Aconcagua'nın yüksekliği kaç metredir?,6961
+17,Geography & Nature,"What is the elevation of K2, the second-highest mountain on Earth, in meters?",Dünyanın en yüksek ikinci dağı olan K2'nin yüksekliği kaç metredir?,8611
+18,Geography & Nature,"What is the elevation of Mount Olympus, the highest mountain in Greece, in meters?",Yunanistan'ın en yüksek dağı olan Olimpos Dağı'nın zirve yüksekliği kaç metredir?,2917
+19,Geography & Nature,"What is the elevation of Mount Elbrus, the highest peak in Europe, in meters?",Avrupa'nın en yüksek zirvesi olan Elbruz Dağı'nın yüksekliği kaç metredir?,5642
+20,Geography & Nature,What is the elevation of Mount Vesuvius in Italy in meters?,İtalya'daki Vezüv Yanardağı'nın yüksekliği kaç metredir?,1281
+21,Geography & Nature,Approximately how long is the Nile River in kilometers?,Nil Nehri'nin yaklaşık uzunluğu kaç kilometredir?,6650
+22,Geography & Nature,Approximately how long is the Amazon River in kilometers?,Amazon Nehri'nin yaklaşık uzunluğu kaç kilometredir?,6400
+23,Geography & Nature,Approximately how long is the Yangtze River in China in kilometers?,Çin'deki Yangtze Nehri'nin yaklaşık uzunluğu kaç kilometredir?,6300
+24,Geography & Nature,Approximately how long is the Danube River in Europe in kilometers?,Avrupa'daki Tuna Nehri'nin yaklaşık uzunluğu kaç kilometredir?,2850
+25,Geography & Nature,Approximately how long is the Rhine River in Europe in kilometers?,Avrupa'daki Ren Nehri'nin yaklaşık uzunluğu kaç kilometredir?,1230
+26,Geography & Nature,"Approximately how long is the Volga River, the longest river in Europe, in kilometers?",Avrupa'nın en uzun nehri olan Volga Nehri'nin yaklaşık uzunluğu kaç kilometredir?,3530
+27,Geography & Nature,What is the maximum depth of the Mariana Trench (Challenger Deep) in meters?,Mariana Çukuru'nun (Challenger Çukuru) bilinen en derin noktası yaklaşık kaç metredir?,10994
+28,Geography & Nature,"What is the maximum depth of Lake Baikal in Russia, the deepest lake in the world, in meters?",Dünyanın en derin gölü olan Rusya'daki Baykal Gölü'nün en derin noktası kaç metredir?,1642
+29,Geography & Nature,What is the surface elevation of the Dead Sea shore below sea level in meters?,Lut Gölü kıyısının deniz seviyesinin altındaki derinliği kaç metredir?,430
+30,Geography & Nature,What is the average depth of the world's oceans in meters?,Dünya okyanuslarının ortalama derinliği yaklaşık kaç metredir?,3682
+31,Geography & Geopolitics,How many member states are there in the United Nations (UN)?,Birleşmiş Milletler'e (BM) üye kaç devlet vardır?,193
+32,Geography & Geopolitics,How many countries are member states of the European Union (EU)?,Avrupa Birliği'ne (AB) üye kaç ülke vardır?,27
+33,Geography & Geopolitics,How many member countries are there in NATO as of 2024?,2024 itibarıyla NATO'ya üye kaç ülke bulunmaktadır?,32
+34,Geography & Geopolitics,How many countries does Russia share a land border with?,Rusya'nın kara sınırı paylaştığı kaç komşu ülke vardır?,14
+35,Geography & Geopolitics,How many countries does China share a land border with?,Çin'in kara sınırı paylaştığı kaç komşu ülke vardır?,14
+36,Geography & Geopolitics,How many landlocked countries are there in South America?,Güney Amerika'da denize kıyısı olmayan (kara ile çevrili) kaç ülke vardır?,2
+37,Geography & Geopolitics,How many sovereign countries are recognized entirely within the continent of South America?,Güney Amerika kıtasında kaç bağımsız egemen devlet bulunmaktadır?,12
+38,Geography & Geopolitics,How many countries are recognized in Africa by the African Union?,Afrika Birliği üyesi kaç bağımsız ülke vardır?,55
+39,Geography & Geopolitics,How many time zones does Russia span?,Rusya toprakları kaç farklı saat dilimini kapsar?,11
+40,Geography & Geopolitics,How many states are in the United States of America?,Amerika Birleşik Devletleri kaç eyaletten oluşur?,50
+41,Geography & Cities,What is the driving distance from Paris to London via the Channel Tunnel in kilometers?,Eurotunnel üzerinden Paris ile Londra arasındaki yaklaşık sürüş mesafesi kaç kilometredir?,460
+42,Geography & Cities,What is the straight-line distance between New York City and Los Angeles in kilometers?,New York ile Los Angeles arasındaki kuş uçuşu mesafe yaklaşık kaç kilometredir?,3940
+43,Geography & Cities,What is the straight-line distance between London and Tokyo in kilometers?,Londra ile Tokyo arasındaki kuş uçuşu mesafe yaklaşık kaç kilometredir?,9560
+44,Geography & Cities,What is the straight-line distance between Istanbul and Berlin in kilometers?,İstanbul ile Berlin arasındaki kuş uçuşu mesafe yaklaşık kaç kilometredir?,1740
+45,Geography & Cities,How many stations does the London Underground (the Tube) have in total?,Londra Metrosu'nda (The Tube) toplam kaç istasyon bulunmaktadır?,272
+46,Geography & Cities,How many stations does the Paris Métro have?,Paris Metrosu'nda toplam kaç istasyon bulunmaktadır?,308
+47,Geography & Cities,How many stations are there in the New York City Subway system?,New York Metrosu'nda toplam kaç istasyon bulunmaktadır?,472
+48,Geography & Cities,How many bridges span the Grand Canal in Venice?,Venedik'teki Büyük Kanal (Canal Grande) üzerinde kaç köprü bulunmaktadır?,4
+49,Geography & Cities,How many administrative arrondissements (districts) divide the city of Paris?,Paris şehri kaç idari bölgeye (arrondissement) ayrılmıştır?,20
+50,Geography & Cities,How many boroughs make up New York City?,New York şehri kaç ana idari bölgeden (borough) oluşur?,5
+51,Landmarks & Architecture,What is the total length of the Golden Gate Bridge in San Francisco in meters?,San Francisco'daki Golden Gate Köprüsü'nün toplam uzunluğu kaç metredir?,2737
+52,Landmarks & Architecture,How tall are the towers of the Golden Gate Bridge above the water in meters?,Golden Gate Köprüsü'nün kulelerinin su seviyesinden yüksekliği kaç metredir?,227
+53,Landmarks & Architecture,What is the length of the Channel Tunnel connecting the UK and France in kilometers?,İngiltere ile Fransa'yı bağlayan Manş Tüneli'nin toplam uzunluğu kaç kilometredir?,50
+54,Landmarks & Architecture,How many steps are there to the top of the Eiffel Tower (accessed by public staircase up to 2nd floor + maintenance)?,Eyfel Kulesi'nin zemininden 2. katına kadar halka açık merdiven basamağı sayısı kaçtır?,674
+55,Landmarks & Architecture,How many rooms are in the Palace of Versailles in France?,Fransa'daki Versay Sarayı'nda toplam yaklaşık kaç oda bulunmaktadır?,2300
+56,Landmarks & Architecture,How many rooms are in Buckingham Palace in London?,Londra'daki Buckingham Sarayı'nda kaç oda bulunmaktadır?,775
+57,Landmarks & Architecture,How many rooms are in the Apostolic Palace in the Vatican City?,Vatikan'daki Apostolik Saray'da yaklaşık kaç oda bulunmaktadır?,1400
+58,Landmarks & Architecture,How many columns support the Parthenon in Athens on its outer peristyle?,Atina'daki Partenon tapınağının dış çevresinde kaç sütun bulunmaktadır?,46
+59,Landmarks & Architecture,"How tall is the Gateway Arch in St. Louis, Missouri in meters?",ABD'nin St. Louis şehrindeki Gateway Arch anıtının yüksekliği kaç metredir?,192
+60,Landmarks & Architecture,How tall is the CN Tower in Toronto in meters?,Kanada'nın Toronto kentindeki CN Kulesi'nin yüksekliği kaç metredir?,553
+61,History & Archaeology,In what year did the volcanic eruption of Mount Vesuvius destroy Pompeii?,Vezüv Yanardağı'nın patlaması sonucu Pompeii antik kenti hangi yılda (MS) yok oldu?,79
+62,History & Archaeology,In what year was the historic site of Machu Picchu in Peru rediscovered by Hiram Bingham?,Peru'daki Machu Picchu antik kenti Hiram Bingham tarafından hangi yılda yeniden keşfedilmiştir?,1911
+63,History & Archaeology,In what year was the tomb of Egyptian Pharaoh Tutankhamun discovered by Howard Carter?,Mısır Firavunu Tutankamon'un mezarı Howard Carter tarafından hangi yılda keşfedilmiştir?,1922
+64,History & Archaeology,In what year were the Dead Sea Scrolls discovered in the Qumran Caves?,Ölü Deniz Parşömenleri Kumran Mağaraları'nda hangi yılda keşfedilmeye başlanmıştır?,1947
+65,History & Archaeology,Approximately how long is the main wall and all branches of the Great Wall of China in kilometers?,Çin Seddi'nin tüm kollarıyla birlikte toplam uzunluğu yaklaşık kaç kilometredir?,21196
+66,History & Archaeology,How many monumental stone statues (Moai) exist on Easter Island (Rapa Nui)?,Paskalya Adası'ndaki (Rapa Nui) devasa taş Moai heykellerinin toplam sayısı yaklaşık kaçtır?,887
+67,History & Archaeology,In what year was Stonehenge believed to have been initially erected (approximate BCE year)?,Stonehenge'in ilk inşa aşamasının başladığı tahmin edilen yaklaşık yıl (MÖ) nedir?,3000
+68,History & Archaeology,How many arches make up the remaining Pont du Gard Roman aqueduct bridge in France?,Fransa'daki ünlü Roma su kemeri Pont du Gard'ın üç katında toplam kaç kemer bulunmaktadır?,52
+69,History & Archaeology,How many terracotta warrior soldiers were buried in the mausoleum of Emperor Qin Shi Huang?,Çin İmparatoru Çin Şi Huang'ın mezarındaki Terracotta (Toprak Askerler) heykel sayısı yaklaşık kaçtır?,8000
+70,History & Archaeology,In what year did construction begin on the Sagrada Família in Barcelona?,Barselona'daki Sagrada Família bazilikasının inşaatı hangi yılda başlamıştır?,1882
+71,Geography & Nature,"What is the area of Greenland, the largest island in the world, in thousands of square kilometers?",Dünyanın en büyük adası olan Grönland'ın yüzölçümü yaklaşık kaç bin kilometrekaredir?,2166
+72,Geography & Nature,Approximately what is the area of the Sahara Desert in millions of square kilometers?,Büyük Sahra Çölü'nün toplam yüzölçümü yaklaşık kaç milyon kilometrekaredir?,9.2
+73,Geography & Nature,What is the highest temperature ever officially recorded on Earth in Death Valley in degrees Celsius?,Dünyada resmi olarak Ölüm Vadisi'nde ölçülen en yüksek hava sıcaklığı kaç santigrat derecedir?,56.7
+74,Geography & Nature,What is the lowest natural temperature ever recorded on Earth at Vostok Station in Antarctica in negative degrees Celsius?,Antarktika'daki Vostok İstasyonu'nda ölçülen tarihteki en düşük doğal sıcaklık eksi kaç santigrat derecedir?,89.2
+75,Geography & Nature,How many inhabited islands make up the nation of the Maldives?,Maldivler'i oluşturan adalardan kaç tanesinde kalıcı yerleşim vardır?,187
+76,Geography & Nature,How many islands make up the Hawaiian archipelago (major and minor recognized islands)?,Hawaii takımadaları toplam kaç ada ve atolden oluşur?,137
+77,Geography & Nature,How many islands make up the nation of Indonesia?,Endonezya takımadaları toplam kaç adadan oluşmaktadır?,17508
+78,Geography & Nature,How many islands make up the nation of the Philippines?,Filipinler devleti yaklaşık kaç adadan oluşur?,7641
+79,Geography & Nature,How many islands make up the nation of Japan?,Japonya resmi olarak toplam kaç adadan oluşur?,14125
+80,Geography & Nature,What is the average thickness of the Antarctic ice sheet in meters?,Antarktika buzul örtüsünün ortalama kalınlığı kaç metredir?,2160
+81,History,In what year did the Battle of Waterloo take place?,Napolyon'un yenildiği Waterloo Muharebesi hangi yılda gerçekleşmiştir?,1815
+82,History,In what year did the Battle of Hastings take place?,İngiltere tarihini değiştiren Hastings Muharebesi hangi yılda yapılmıştır?,1066
+83,History,In what year did the American Civil War begin?,Amerikan İç Savaşı hangi yılda başlamıştır?,1861
+84,History,In what year did the American Civil War end?,Amerikan İç Savaşı hangi yılda sona ermiştir?,1865
+85,History,In what year was the Battle of Gettysburg fought?,Amerikan İç Savaşı'nın dönüm noktası olan Gettysburg Muharebesi hangi yılda gerçekleşmiştir?,1863
+86,History,In what year did World War I begin?,Birinci Dünya Savaşı hangi yılda başlamıştır?,1914
+87,History,In what year did World War I officially end?,Birinci Dünya Savaşı hangi yılda resmen sona ermiştir?,1918
+88,History,In what year did World War II begin?,İkinci Dünya Savaşı hangi yılda başlamıştır?,1939
+89,History,In what year did World War II end?,İkinci Dünya Savaşı hangi yılda sona ermiştir?,1945
+90,History,In what year did the D-Day Normandy landings take place?,İkinci Dünya Savaşı'nda D-Day Normandiya Çıkarması hangi yılda yapılmıştır?,1944
+91,History,In what year did the French Revolution begin with the storming of the Bastille?,Fransız İhtilali Bastille Baskını ile hangi yılda başlamıştır?,1789
+92,History,In what year was the United States Declaration of Independence adopted?,Amerika Birleşik Devletleri Bağımsızlık Bildirgesi hangi yılda kabul edilmiştir?,1776
+93,History,In what year did the Russian Bolshevik Revolution take place?,Rus Bolşevik İhtilali hangi yılda gerçekleşmiştir?,1917
+94,History,In what year did the Berlin Wall fall?,Berlin Duvarı hangi yılda yıkılmıştır?,1989
+95,History,In what year was the Berlin Wall originally erected?,Berlin Duvarı ilk olarak hangi yılda inşa edilmiştir?,1961
+96,History,In what year did the Soviet Union officially dissolve?,Sovyetler Birliği (SSCB) hangi yılda resmen dağılmıştır?,1991
+97,History,In what year did the Republic of Turkey officially get proclaimed?,Türkiye Cumhuriyeti hangi yılda resmen ilan edilmiştir?,1923
+98,History,In what year did Christopher Columbus first arrive in the Americas?,Kristof Kolomb Amerika kıtasına ilk kez hangi yılda ulaşmıştır?,1492
+99,History,In what year did the Titanic sink after hitting an iceberg?,Titanik transatlantiği bir buzdağına çarparak hangi yılda batmıştır?,1912
+100,History,In what year did the Chernobyl nuclear disaster occur?,Çernobil nükleer santral faciası hangi yılda meydana gelmiştir?,1986
+101,Space & Astronomy,In what year did Yuri Gagarin become the first human in space?,Yuri Gagarin hangi yılda uzaya çıkan ilk insan olmuştur?,1961
+102,Space & Astronomy,In what year did Apollo 11 land the first humans on the Moon?,Apollo 11 astronotları hangi yılda Ay'a ilk kez ayak basmıştır?,1969
+103,Space & Astronomy,"In what year was the first artificial satellite, Sputnik 1, launched?",İlk yapay uydu Sputnik 1 hangi yılda fırlatılmıştır?,1957
+104,Space & Astronomy,In what year was the Hubble Space Telescope launched into orbit?,Hubble Uzay Teleskobu hangi yılda yörüngeye fırlatılmıştır?,1990
+105,Space & Astronomy,In what year was the James Webb Space Telescope (JWST) launched?,James Webb Uzay Teleskobu hangi yılda fırlatılmıştır?,2021
+106,Space & Astronomy,How many astronauts in total walked on the Moon during the Apollo missions?,Apollo görevleri boyunca toplam kaç astronot Ay yüzeyinde yürümüştür?,12
+107,Space & Astronomy,How many crewed Moon landing missions were successfully completed in the Apollo program?,Apollo programında kaç insanlı Ay iniş görevi başarıyla tamamlanmıştır?,6
+108,Space & Astronomy,What is the approximate orbital altitude of the International Space Station (ISS) above Earth in kilometers?,Uluslararası Uzay İstasyonu'nun (ISS) Dünya'dan yaklaşık yörünge yüksekliği kaç kilometredir?,408
+109,Space & Astronomy,Approximately how many minutes does it take for the ISS to complete one full orbit around Earth?,ISS'in Dünya çevresindeki bir tam yörünge turu yaklaşık kaç dakika sürer?,93
+110,Space & Astronomy,What is the orbital speed of the International Space Station in kilometers per hour?,Uluslararası Uzay İstasyonu'nun yörüngedeki hızı yaklaşık saatte kaç kilometredir?,27600
+111,Space & Astronomy,Approximately how many millions of kilometers is the average distance from the Earth to the Sun (1 AU)?,Dünya ile Güneş arasındaki ortalama mesafe (1 AB) yaklaşık kaç milyon kilometredir?,150
+112,Space & Astronomy,What is the average distance from the Earth to the Moon in thousands of kilometers?,Dünya ile Ay arasındaki ortalama mesafe yaklaşık kaç bin kilometredir?,384
+113,Space & Astronomy,How many minutes does it take light from the Sun to reach Earth (rounded to one decimal place)?,Güneş ışığının Dünya'ya ulaşması yaklaşık kaç dakika sürer?,8.3
+114,Space & Astronomy,What is the diameter of the Earth at the equator in kilometers?,Dünya'nın ekvatordaki çapı yaklaşık kaç kilometredir?,12742
+115,Space & Astronomy,What is the diameter of the Moon in kilometers?,Ay'ın çapı yaklaşık kaç kilometredir?,3474
+116,Space & Astronomy,What is the diameter of the Sun in thousands of kilometers?,Güneş'in çapı yaklaşık kaç bin kilometredir?,1392
+117,Space & Astronomy,How many planets are officially recognized in our Solar System by the IAU?,Uluslararası Astronomi Birliği'ne göre Güneş Sistemimizde resmi olarak kaç gezegen vardır?,8
+118,Space & Astronomy,In what year was Pluto reclassified from a planet to a dwarf planet?,Plüton hangi yılda gezegen statüsünden cüce gezegen statüsüne düşürülmüştür?,2006
+119,Space & Astronomy,How many recognized moons does Mars have?,Mars gezegeninin bilinen kaç doğal uydusu vardır?,2
+120,Space & Astronomy,"How many days does it take the Moon to complete one orbit around Earth (sidereal period, rounded to one decimal place)?",Ay'ın Dünya çevresindeki bir tam turu (yıldızıl dönme periyodu) yaklaşık kaç gündür?,27.3
+121,Space & Astronomy,"What is the surface temperature of Venus, the hottest planet in the Solar System, in degrees Celsius?",Güneş Sistemi'nin en sıcak gezegeni olan Venüs'ün ortalama yüzey sıcaklığı yaklaşık kaç santigrat derecedir?,464
+122,Space & Astronomy,How many Earth days does it take for Mercury to complete one orbit around the Sun?,Merkür'ün Güneş çevresindeki bir tam yörünge turu kaç Dünya günü sürer?,88
+123,Space & Astronomy,How many Earth years does it take for Jupiter to complete one orbit around the Sun (rounded to one decimal place)?,Jüpiter'in Güneş çevresindeki bir tam yörünge turu yaklaşık kaç Dünya yılı sürer?,11.9
+124,Space & Astronomy,How many Earth years does it take for Saturn to complete one orbit around the Sun (rounded to whole number)?,Satürn'ün Güneş çevresindeki bir tam yörünge turu yaklaşık kaç Dünya yılı sürer?,29
+125,Space & Astronomy,How many Earth years does it take for Neptune to complete one orbit around the Sun?,Neptün'ün Güneş çevresindeki bir tam yörünge turu yaklaşık kaç Dünya yılı sürer?,165
+126,Space & Astronomy,How many known confirmed moons does Jupiter have as recognized by the IAU?,Jüpiter'in Uluslararası Astronomi Birliği tarafından onaylanmış kaç uydusu vardır?,95
+127,Space & Astronomy,How many known confirmed moons does Saturn have as recognized by the IAU?,Satürn'ün bilinen ve onaylanmış kaç uydusu bulunmaktadır?,146
+128,Space & Astronomy,"Approximately how many light-years away from Earth is Proxima Centauri, the closest star to the Sun (to one decimal place)?",Güneş'e en yakın yıldız olan Proxima Centauri Dünya'dan yaklaşık kaç ışık yılı uzaklıktadır?,4.2
+129,Space & Astronomy,Approximately how many billions of years old is our Solar System (to one decimal place)?,Güneş Sistemimiz yaklaşık kaç milyar yaşındadır?,4.6
+130,Space & Astronomy,Approximately how many billions of years old is the Universe according to modern cosmology (to one decimal place)?,Modern kozmolojiye göre evrenimiz yaklaşık kaç milyar yaşındadır?,13.8
+131,Science & Physics,What is the speed of light in a vacuum in thousands of kilometers per second (rounded to nearest whole number)?,Işığın boşluktaki hızı saniyede yaklaşık kaç bin kilometredir?,300
+132,Science & Physics,What is the speed of sound in dry air at 20 degrees Celsius in meters per second?,20 santigrat derece kuru havada sesin yayılma hızı saniyede kaç metredir?,343
+133,Science & Physics,What is the acceleration due to gravity on Earth's surface in meters per second squared (to two decimal places)?,Dünya yüzeyindeki yerçekimi ivmesi saniyede kaç metre bölü saniye karedir?,9.81
+134,Science & Physics,What is absolute zero temperature in degrees Celsius (to two decimal places)?,Mutlak sıfır sıcaklığı eksi kaç santigrat derecedir?,-273.15
+135,Science & Physics,At what temperature does water boil at standard atmospheric sea level in degrees Celsius?,Deniz seviyesinde standart atmosfer basıncında su kaç santigrat derecede kaynar?,100
+136,Science & Physics,At what temperature does pure water freeze at standard atmospheric sea level in degrees Celsius?,Standart atmosfer basıncında saf su kaç santigrat derecede donar?,0
+137,Science & Physics,What is the normal human body core temperature in degrees Celsius (to one decimal place)?,Normal bir insanın ortalama vücut sıcaklığı kaç santigrat derecedir?,37.0
+138,Science & Physics,What percentage of the Earth's atmosphere is composed of Nitrogen gas (rounded to nearest whole percentage)?,Dünya atmosferinin yaklaşık yüzde kaçı Azot (Nitrojen) gazından oluşur?,78
+139,Science & Physics,What percentage of the Earth's atmosphere is composed of Oxygen gas (rounded to nearest whole percentage)?,Dünya atmosferinin yaklaşık yüzde kaçı Oksijen gazından oluşur?,21
+140,Science & Physics,What is the atomic number of Carbon on the periodic table?,Periyodik tabloda Karbon elementinin atom numarası kaçtır?,6
+141,Science & Chemistry,What is the atomic number of Gold (Au) on the periodic table?,Periyodik tabloda Altın (Au) elementinin atom numarası kaçtır?,79
+142,Science & Chemistry,What is the atomic number of Silver (Ag) on the periodic table?,Periyodik tabloda Gümüş (Ag) elementinin atom numarası kaçtır?,47
+143,Science & Chemistry,What is the atomic number of Iron (Fe) on the periodic table?,Periyodik tabloda Demir (Fe) elementinin atom numarası kaçtır?,26
+144,Science & Chemistry,What is the atomic number of Uranium (U) on the periodic table?,Periyodik tabloda Uranyum (U) elementinin atom numarası kaçtır?,92
+145,Science & Chemistry,How many elements are currently in the periodic table?,Güncel periyodik tabloda toplam kaç element bulunmaktadır?,118
+146,Science & Chemistry,What is the melting point of gold in degrees Celsius (rounded to nearest whole degree)?,Saf altının erime noktası yaklaşık kaç santigrat derecedir?,1064
+147,Science & Chemistry,What is the melting point of iron in degrees Celsius (rounded to nearest whole degree)?,Saf demirin erime noktası yaklaşık kaç santigrat derecedir?,1538
+148,Science & Chemistry,"What is the melting point of mercury, a liquid metal at room temperature, in negative degrees Celsius (rounded to nearest whole number)?",Oda sıcaklığında sıvı olan civanın erime/donma noktası eksi kaç santigrat derecedir?,-39
+149,Science & Chemistry,What is the neutral pH value of pure water at 25 degrees Celsius?,25 santigrat derecede saf suyun nötr pH değeri kaçtır?,7
+150,Science & Chemistry,How many protons are in a nucleus of a helium atom?,Bir Helyum atomunun çekirdeğinde kaç proton bulunur?,2
+151,Biology & Anatomy,How many bones are there in the adult human skeleton?,Yetişkin bir insan iskeletinde kaç kemik bulunur?,206
+152,Biology & Anatomy,How many bones does a human baby have at birth?,Yeni doğmuş bir insan bebeğinde yaklaşık kaç kemik bulunur?,270
+153,Biology & Anatomy,"How many teeth does a typical adult human have, including wisdom teeth?",Yirmilik dişler dahil tipik bir yetişkin insanda kaç diş bulunur?,32
+154,Biology & Anatomy,How many primary (milk/baby) teeth does a child have?,Bir çocuğun süt dişleri dökülmeden önce toplam kaç adettir?,20
+155,Biology & Anatomy,How many chambers are there in the human heart?,İnsan kalbinde kaç odacık bulunur?,4
+156,Biology & Anatomy,How many pairs of ribs does a normal human have?,Normal bir insanda kaç çift kaburga kemiği bulunur?,12
+157,Biology & Anatomy,How many chromosomes are in a normal human body cell?,Sağlıklı bir insanın vücut hücresinde kaç kromozom bulunur?,46
+158,Biology & Anatomy,How many pairs of chromosomes are in a normal human cell?,Sağlıklı bir insanın vücut hücresinde kaç çift kromozom bulunur?,23
+159,Biology & Anatomy,Approximately how many liters of blood are in the average adult human body (rounded to nearest whole liter)?,Ortalama bir yetişkin insan vücudunda yaklaşık kaç litre kan bulunur?,5
+160,Biology & Anatomy,Approximately what percentage of the adult human body weight is water?,Yetişkin bir insan vücut ağırlığının ortalama yüzde kaçı sudur?,60
+161,Animals & Nature,"What is the maximum recorded swimming speed of a sailfish, the fastest fish in the ocean, in kilometers per hour?",Okyanusun en hızlı balığı olan yelken balığının ulaştığı maksimum yüzme hızı saatte kaç kilometredir?,110
+162,Animals & Nature,What is the maximum running speed of a cheetah in kilometers per hour?,Bir çitanın koşarken ulaşabildiği maksimum hız saatte yaklaşık kaç kilometredir?,120
+163,Animals & Nature,"What is the diving speed of a peregrine falcon, the fastest animal in the world, in kilometers per hour?",Dünyanın en hızlı hayvanı olan gökdoğanın avına dalış yaparken ulaştığı hız saatte kaç kilometredir?,389
+164,Animals & Nature,"What is the maximum length of a blue whale, the largest animal on Earth, in meters?",Dünyanın en büyük hayvanı olan mavi balinanın bilinen maksimum boyu kaç metredir?,30
+165,Animals & Nature,What is the maximum weight of an adult blue whale in metric tons?,Yetişkin bir mavi balinanın ağırlığı maksimum kaç tona ulaşabilir?,190
+166,Animals & Nature,How tall can an adult male giraffe reach in meters (to one decimal place)?,Yetişkin bir erkek zürafanın boyu yaklaşık kaç metreye ulaşabilir?,5.8
+167,Animals & Nature,What is the average weight of an adult African bush elephant in metric tons (rounded to whole number)?,Yetişkin bir Afrika savan filinin ortalama ağırlığı kaç tondur?,6
+168,Animals & Nature,How many legs does an octopus have?,Bir ahtapotun kaç kolu/bacağı vardır?,8
+169,Animals & Nature,How many hearts does an octopus have?,Bir ahtapotun kaç kalbi vardır?,3
+170,Animals & Nature,How many legs does a spider have?,Bir örümceğin kaç bacağı vardır?,8
+171,Animals & Nature,What is the gestation period of an African elephant in months?,Bir Afrika filinin gebelik süresi kaç aydır?,22
+172,Animals & Nature,What is the average gestation period of a domestic dog in days?,Evcil bir köpeğin ortalama gebelik süresi kaç gündür?,63
+173,Animals & Nature,What is the average gestation period of a domestic cat in days?,Evcil bir kedinin ortalama gebelik süresi kaç gündür?,65
+174,Animals & Nature,What is the incubation period of a domestic chicken egg in days?,Bir tavuk yumurtasının kuluçka süresi kaç gündür?,21
+175,Animals & Nature,What is the estimated maximum lifespan of a Greenland shark in years?,Grönland köpekbalığının tahmin edilen maksimum yaşam süresi kaç yıldır?,400
+176,Animals & Nature,How many years can a giant Galápagos tortoise live in captivity (record age)?,Dev Galapagos kaplumbağaları esaret altında kaç yıla kadar yaşayabilir (kayıtlara geçen yaş)?,175
+177,Animals & Nature,How many chambers are there in a cow's stomach?,Bir ineğin midesi kaç bölümlüdür?,4
+178,Animals & Nature,"How many cervical (neck) vertebrae does a giraffe have, the same number as a human?",Bir zürafanın boynunda (insanlarda olduğu gibi) kaç omur kemiği bulunur?,7
+179,Animals & Nature,How many toes does a domestic cat typically have in total across all four paws?,Evcil bir kedinin dört patisinde toplamda standart olarak kaç parmak bulunur?,18
+180,Animals & Nature,How many pairs of wings does a common housefly have?,Sıradan bir karasineğin kaç çift kanadı vardır?,1
+181,Inventions & Tech,In what year did the Wright brothers make their historic first powered airplane flight?,Wright kardeşler tarihteki ilk motorlu uçak uçuşunu hangi yılda gerçekleştirmiştir?,1903
+182,Inventions & Tech,In what year did Alexander Graham Bell patent the telephone?,Alexander Graham Bell telefonu hangi yılda patentlemiştir?,1876
+183,Inventions & Tech,In what year did Thomas Edison invent the first commercially viable incandescent light bulb?,Thomas Edison ticari olarak uygulanabilir ilk akkor ampulü hangi yılda icat etmiştir?,1879
+184,Inventions & Tech,In what year did Johannes Gutenberg introduce movable type printing to Europe?,Johannes Gutenberg Avrupa'da hareketli harflerle matbaa baskısını hangi yılda geliştirmiştir?,1440
+185,Inventions & Tech,In what year was the World Wide Web invented by Tim Berners-Lee?,Tim Berners-Lee World Wide Web'i (WWW) hangi yılda icat etmiştir?,1989
+186,Inventions & Tech,In what year was the first Apple iPhone released to the public?,Apple ilk iPhone modelini hangi yılda piyasaya sürmüştür?,2007
+187,Inventions & Tech,In what year was Google founded by Larry Page and Sergey Brin?,"Google, Larry Page ve Sergey Brin tarafından hangi yılda kurulmuştur?",1998
+188,Inventions & Tech,In what year was Wikipedia launched?,Wikipedia internet ansiklopedisi hangi yılda yayına başlamıştır?,2001
+189,Inventions & Tech,"In what year was the first commercially successful video game console, the Atari 2600, released?",Video oyun konsollarının öncüsü Atari 2600 hangi yılda piyasaya sürülmüştür?,1977
+190,Inventions & Tech,In what year did the Sony PlayStation 1 launch in Japan?,Sony'nin ilk PlayStation oyun konsolu Japonya'da hangi yılda piyasaya sürülmüştür?,1994
+191,Transport & Aviation,What was the cruising speed of the supersonic airliner Concorde in kilometers per hour?,Süpersonik yolcu uçağı Concorde'un seyir hızı saatte yaklaşık kaç kilometredir?,2160
+192,Transport & Aviation,In what year did the Concorde make its final commercial flight?,Concorde süpersonik uçağı son ticari uçuşunu hangi yılda yapmıştır?,2003
+193,Transport & Aviation,How many passengers can the Airbus A380 accommodate in a typical three-class seating configuration?,Airbus A380 tipi yolcu uçağı tipik üç sınıflı bir düzende yaklaşık kaç yolcu taşır?,525
+194,Transport & Aviation,What is the wingspan of the Airbus A380 in meters (to nearest whole meter)?,Airbus A380 uçağının kanat açıklığı kaç metredir?,80
+195,Transport & Aviation,What is the maximum cruising speed of a standard Boeing 747-400 in kilometers per hour?,Standart bir Boeing 747-400 yolcu uçağının maksimum seyir hızı saatte yaklaşık kaç kilometredir?,920
+196,Transport & Aviation,What is the record top speed achieved by the French TGV train in kilometers per hour (rounded to whole number)?,Fransız hızlı treni TGV'nin kırdığı dünya hız rekoru saatte kaç kilometredir?,575
+197,Transport & Aviation,"What is the length of the world's longest road tunnel, the Lærdal Tunnel in Norway, in kilometers (to one decimal place)?",Dünyanın en uzun karayolu tüneli olan Norveç'teki Lærdal Tüneli kaç kilometredir?,24.5
+198,Transport & Aviation,"What is the length of the Gotthard Base Tunnel in Switzerland, the world's longest railway tunnel, in kilometers?",Dünyanın en uzun demiryolu tüneli olan İsviçre'deki Gotthard Taban Tüneli'nin uzunluğu kaç kilometredir?,57
+199,Transport & Aviation,How many locks are there in total on the original Panama Canal system?,Panama Kanalı'nın orijinal sisteminde toplam kaç gemi havuzu (kilit kapağı sistemi) bulunur?,12
+200,Transport & Aviation,In what year was the Suez Canal in Egypt officially opened to navigation?,Mısır'daki Süveyş Kanalı hangi yılda deniz trafiğine resmen açılmıştır?,1869
+201,Cinema & Film,In what year were the very first Academy Awards (Oscars) presented?,İlk Akademi Ödülleri (Oscar) töreni hangi yılda düzenlenmiştir?,1929
+202,Cinema & Film,"What is the record number of Oscars won by a single movie (tied by Ben-Hur, Titanic, and The Lord of the Rings: The Return of the King)?","Tek bir sinema filminin kazandığı en fazla Oscar ödülü rekoru (Ben-Hur, Titanic ve LOTR: Kralın Dönüşü) kaçtır?",11
+203,Cinema & Film,How many Oscars did Walt Disney win personally during his lifetime (record for any individual)?,Walt Disney hayatı boyunca şahsen kaç Oscar ödülü kazanarak tarihe geçmiştir?,22
+204,Cinema & Film,How many Academy Award nominations has Meryl Streep received in acting categories as of 2024 (all-time record)?,Meryl Streep oyunculuk dalında toplam kaç kez Oscar'a aday gösterilmiştir?,21
+205,Cinema & Film,How many Oscars did Katharine Hepburn win for Best Actress (all-time acting record)?,Katharine Hepburn En İyi Kadın Oyuncu dalında kaç kez Oscar kazanmıştır?,4
+206,Cinema & Film,How many Oscars did Daniel Day-Lewis win for Best Actor (record for Best Actor)?,Daniel Day-Lewis En İyi Erkek Oyuncu dalında kaç Oscar kazanmıştır?,3
+207,Cinema & Film,"In what year was the first full-length animated feature film, Disney's 'Snow White and the Seven Dwarfs', released?",Tarihin ilk uzun metrajlı animasyon filmi olan Disney'in 'Pamuk Prenses ve Yedi Cüceler' filmi hangi yılda gösterime girdi?,1937
+208,Cinema & Film,In what year was the original 'Star Wars' movie (Episode IV: A New Hope) released in theaters?,İlk 'Yıldız Savaşları' (Star Wars: Yeni Bir Umut) filmi sinemalarda hangi yılda vizyona girdi?,1977
+209,Cinema & Film,In what year was the first 'The Godfather' movie directed by Francis Ford Coppola released?,Francis Ford Coppola'nın yönettiği ilk 'Baba' (The Godfather) filmi hangi yılda vizyona girmiştir?,1972
+210,Cinema & Film,In what year was Steven Spielberg's iconic movie 'Jurassic Park' released?,Steven Spielberg'in efsane filmi 'Jurassic Park' hangi yılda vizyona girdi?,1993
+211,Cinema & Film,Approximately how many millions of dollars did James Cameron's 'Avatar' (2009) gross worldwide to become the highest-grossing film of all time (rounded to nearest 10 million)?,James Cameron'ın tüm zamanların en çok gişe yapan filmi 'Avatar' (2009) dünya çapında yaklaşık kaç milyon dolar hasılat elde etmiştir?,2920
+212,Cinema & Film,Approximately how many millions of dollars did 'Avengers: Endgame' (2019) gross worldwide (rounded to nearest 10 million)?,'Avengers: Endgame' (2019) filmi dünya çapında yaklaşık kaç milyon dolar gişe hasılatı yapmıştır?,2790
+213,Cinema & Film,Approximately how many millions of dollars did 'Titanic' (1997) gross worldwide in its initial and re-release runs (rounded to nearest 10 million)?,'Titanic' (1997) filmi vizyon ve yeniden gösterimlerle dünya çapında toplam yaklaşık kaç milyon dolar hasılat elde etmiştir?,2260
+214,Cinema & Film,What was the official runtime of 'The Lord of the Rings: The Return of the King' theatrical release in minutes?,'Yüzüklerin Efendisi: Kralın Dönüşü' filminin sinema versiyonunun süresi kaç dakikadır?,201
+215,Cinema & Film,What was the runtime of the theatrical cut of James Cameron's 'Titanic' (1997) in minutes?,James Cameron'ın 'Titanic' (1997) filminin süresi kaç dakikadır?,195
+216,Cinema & Film,What was the runtime of Christopher Nolan's 'Oppenheimer' (2023) in minutes?,Christopher Nolan'ın 'Oppenheimer' (2023) filminin süresi kaç dakikadır?,180
+217,Cinema & Film,What was the runtime of Stanley Kubrick's '2001: A Space Odyssey' in minutes?,Stanley Kubrick'in '2001: Bir Uzay Destanı' filminin süresi kaç dakikadır?,149
+218,Cinema & Film,How many feature films make up the 'Harry Potter' main film series?,'Harry Potter' ana film serisi toplam kaç sinema filminden oluşur?,8
+219,Cinema & Film,How many movies make up the main 'Star Wars' Skywalker Saga?,Ana 'Star Wars' (Skywalker Efsanesi) serisi kaç filmden oluşmaktadır?,9
+220,Cinema & Film,How many official Eon Productions James Bond films were released up to 'No Time to Die' (2021) inclusive?,'No Time to Die' (2021) dahil resmi Eon Productions yapımı toplam kaç James Bond filmi çekilmiştir?,25
+221,Television & Series,How many seasons of the sitcom 'Friends' were produced?,'Friends' dizisi toplam kaç sezon sürmüştür?,10
+222,Television & Series,How many total episodes of 'Friends' were aired?,'Friends' dizisinin toplamda kaç bölümü yayınlanmıştır?,236
+223,Television & Series,How many seasons of 'Game of Thrones' were produced by HBO?,HBO'nun fenomen dizisi 'Game of Thrones' kaç sezon sürmüştür?,8
+224,Television & Series,How many total episodes of 'Game of Thrones' were produced?,'Game of Thrones' dizisi toplam kaç bölümden oluşur?,73
+225,Television & Series,How many total episodes are there in the critically acclaimed series 'Breaking Bad'?,Büyük beğeni toplayan 'Breaking Bad' dizisi toplam kaç bölüm sürmüştür?,62
+226,Television & Series,How many seasons did 'Breaking Bad' run for?,'Breaking Bad' dizisi toplam kaç sezon sürmüştür?,5
+227,Television & Series,How many seasons did 'The Sopranos' run for on HBO?,HBO yapımı efsane dizi 'The Sopranos' toplam kaç sezon sürmüştür?,6
+228,Television & Series,How many total episodes of 'The Sopranos' were aired?,'The Sopranos' dizisi toplam kaç bölümden oluşur?,86
+229,Television & Series,In what year did the animated sitcom 'The Simpsons' first debut as a full series on television?,'Simpsonlar' (The Simpsons) bağımsız bir televizyon dizisi olarak ilk kez hangi yılda yayınlanmaya başlamıştır?,1989
+230,Television & Series,How many seasons of 'The Office' (US version) were produced?,'The Office' dizisinin Amerikan versiyonu toplam kaç sezon sürmüştür?,9
+231,Cinema & Film,In what year was Charlie Chaplin born?,Sinemanın öncülerinden Charlie Chaplin hangi yılda doğmuştur?,1889
+232,Cinema & Film,In what year was Marilyn Monroe born?,Hollywood ikonu Marilyn Monroe hangi yılda doğmuştur?,1926
+233,Cinema & Film,At what age did Marilyn Monroe die in 1962?,Marilyn Monroe 1962 yılında hayatını kaybettiğinde kaç yaşındaydı?,36
+234,Cinema & Film,In what year was Marlon Brando born?,Efsanevi aktör Marlon Brando hangi yılda doğmuştur?,1924
+235,Cinema & Film,In what year was Alfred Hitchcock born?,Gerilim sinemasının ustası Alfred Hitchcock hangi yılda doğmuştur?,1899
+236,Cinema & Film,How many feature films did Alfred Hitchcock direct in his career?,Alfred Hitchcock kariyeri boyunca yaklaşık kaç uzun metrajlı sinema filmi yönetmiştir?,53
+237,Cinema & Film,In what year was Stanley Kubrick's horror masterpiece 'The Shining' released?,Stanley Kubrick'in korku klasiği 'The Shining' (Cinnet) filmi hangi yılda vizyona girmiştir?,1980
+238,Cinema & Film,In what year was Quentin Tarantino's breakthrough film 'Pulp Fiction' released?,Quentin Tarantino'nun çığır açan filmi 'Pulp Fiction' (Ucuz Roman) hangi yılda vizyona girdi?,1994
+239,Cinema & Film,In what year was the classic movie 'Casablanca' released?,Klasik sinemanın başyapıtlarından 'Kazablanka' filmi hangi yılda vizyona girmiştir?,1942
+240,Cinema & Film,In what year was 'The Matrix' released in theaters?,Kült bilim kurgu filmi 'The Matrix' hangi yılda vizyona girmiştir?,1999
+241,Music & Pop,How many studio albums did The Beatles release in the United Kingdom?,The Beatles grubu Birleşik Krallık'ta toplam kaç resmi stüdyo albümü çıkarmıştır?,12
+242,Music & Pop,In what year did The Beatles release their landmark album 'Sgt. Pepper's Lonely Hearts Club Band'?,The Beatles efsanevi albümü 'Sgt. Pepper's Lonely Hearts Club Band'i hangi yılda yayınlamıştır?,1967
+243,Music & Pop,In what year did The Beatles officially break up?,The Beatles grubu hangi yılda resmen dağılmıştır?,1970
+244,Music & Pop,In what year was John Lennon tragically assassinated in New York City?,John Lennon New York'ta hangi yılda trajik bir suikast sonucu öldürülmüştür?,1980
+245,Music & Pop,In what year was Michael Jackson's best-selling album 'Thriller' released?,Michael Jackson'ın rekorlar kıran albümü 'Thriller' hangi yılda piyasaya çıkmıştır?,1982
+246,Music & Pop,Approximately how many millions of certified copies has Michael Jackson's 'Thriller' sold worldwide (widely cited estimate)?,Michael Jackson'ın 'Thriller' albümü dünya genelinde tahminen kaç milyon satmıştır?,70
+247,Music & Pop,In what year did Elvis Presley pass away at Graceland?,Rock'n Roll Kralı Elvis Presley hangi yılda Graceland malikanesinde vefat etmiştir?,1977
+248,Music & Pop,At what age did Elvis Presley die?,Elvis Presley hayatını kaybettiğinde kaç yaşındaydı?,42
+249,Music & Pop,"In what year did Freddie Mercury, lead singer of Queen, pass away?",Queen grubunun efsanevi solisti Freddie Mercury hangi yılda vefat etmiştir?,1991
+250,Music & Pop,In what year was the historic Live Aid concert held at Wembley and JFK Stadium?,Tarihe geçen Live Aid yardım konseri hangi yılda düzenlenmiştir?,1985
+251,Music & Classical,In what year was Wolfgang Amadeus Mozart born in Salzburg?,Wolfgang Amadeus Mozart Salzburg'da hangi yılda doğmuştur?,1756
+252,Music & Classical,At what age did Wolfgang Amadeus Mozart die in Vienna?,Wolfgang Amadeus Mozart Viyana'da vefat ettiğinde kaç yaşındaydı?,35
+253,Music & Classical,In what year was Ludwig van Beethoven born in Bonn?,Ludwig van Beethoven Bonn kentinde hangi yılda doğmuştur?,1770
+254,Music & Classical,How many symphonies did Ludwig van Beethoven complete?,Ludwig van Beethoven toplam kaç senfoni bestelemiştir?,9
+255,Music & Classical,In what year was Beethoven's Symphony No. 9 (Choral) premiered in Vienna?,Beethoven'ın 9. Senfonisi Viyana'da ilk kez hangi yılda seslendirilmiştir?,1824
+256,Music & Classical,How many numbered symphonies did Wolfgang Amadeus Mozart compose?,Wolfgang Amadeus Mozart numaralandırılmış toplam kaç senfoni bestelemiştir?,41
+257,Music & Classical,In what year was Johann Sebastian Bach born?,Johann Sebastian Bach hangi yılda doğmuştur?,1685
+258,Music & Classical,In what year did Frédéric Chopin pass away in Paris?,Frédéric Chopin Paris'te hangi yılda vefat etmiştir?,1849
+259,Music & Classical,How many piano concertos did Ludwig van Beethoven compose?,Ludwig van Beethoven piyano ve orkestra için kaç konçerto bestelemiştir?,5
+260,Music & Classical,How many keys are there on a standard modern acoustic piano?,Standart bir modern akustik piyanoda toplam kaç tuş bulunur?,88
+261,Art & Masters,In what year was Leonardo da Vinci born?,Rönesans dehası Leonardo da Vinci hangi yılda doğmuştur?,1452
+262,Art & Masters,In what year did Leonardo da Vinci die in France?,Leonardo da Vinci Fransa'da hangi yılda vefat etmiştir?,1519
+263,Art & Masters,What is the width of the Mona Lisa painting in centimeters?,Leonardo da Vinci'nin 'Mona Lisa' tablosunun genişliği kaç santimetredir?,53
+264,Art & Masters,What is the height of the Mona Lisa painting in centimeters?,'Mona Lisa' tablosunun yüksekliği kaç santimetredir?,77
+265,Art & Masters,In what year was the Mona Lisa stolen from the Louvre Museum in Paris?,'Mona Lisa' tablosu Paris'teki Louvre Müzesi'nden hangi yılda çalınmıştı?,1911
+266,Art & Masters,In what year was Michelangelo Buonarroti born?,Michelangelo Buonarroti hangi yılda doğmuştur?,1475
+267,Art & Masters,What is the height of Michelangelo's statue of David in meters (to two decimal places)?,Michelangelo'nun ünlü 'Davut' heykelinin mermer boyu kaidesiz kaç metredir?,5.17
+268,Art & Masters,How many years did it take Michelangelo to paint the Sistine Chapel ceiling (1508 to 1512)?,Michelangelo'nun Sistina Şapeli tavanını boyaması kaç yıl sürmüştür?,4
+269,Art & Masters,In what year was Vincent van Gogh born?,Ünlü ressam Vincent van Gogh hangi yılda doğmuştur?,1853
+270,Art & Masters,In what year did Vincent van Gogh paint 'The Starry Night'?,Vincent van Gogh ünlü 'Yıldızlı Gece' tablosunu hangi yılda yapmıştır?,1889
+271,Art & Masters,"In what year was Pablo Picasso born in Málaga, Spain?",Pablo Picasso İspanya'nın Málaga kentinde hangi yılda doğmuştur?,1881
+272,Art & Masters,In what year did Pablo Picasso paint his anti-war masterpiece 'Guernica'?,Pablo Picasso savaş karşıtı başyapıtı 'Guernica'yı hangi yılda resmetmiştir?,1937
+273,Art & Masters,At what age did Pablo Picasso die in 1973?,Pablo Picasso 1973 yılında vefat ettiğinde kaç yaşındaydı?,91
+274,Art & Masters,"In what year was Salvador Dalí born in Figueres, Spain?",Sürrealist ressam Salvador Dalí hangi yılda doğmuştur?,1904
+275,Art & Masters,In what year did Salvador Dalí paint 'The Persistence of Memory' (the melting clocks)?,Salvador Dalí eriyen saatleriyle meşhur 'Belleğin Azmi' tablosunu hangi yılda yapmıştır?,1931
+276,Art & Masters,"In what year was Claude Monet's painting 'Impression, Sunrise' exhibited, giving impressionism its name?",Claude Monet'nin Empresyonizm akımına adını veren 'İzlenim: Gün Doğumu' tablosu hangi yılda sergilenmiştir?,1874
+277,Art & Masters,In what year was Rembrandt van Rijn born in the Netherlands?,Hollandalı usta ressam Rembrandt hangi yılda doğmuştur?,1606
+278,Art & Masters,In what year was Johannes Vermeer's 'Girl with a Pearl Earring' painted (widely accepted year)?,Johannes Vermeer'in 'İnci Küpeli Kız' tablosunun yapıldığı kabul edilen yıl nedir?,1665
+279,Art & Masters,In what year was Mexican painter Frida Kahlo born?,Meksikalı ünlü ressam Frida Kahlo hangi yılda doğmuştur?,1907
+280,Art & Masters,In what year was pop art pioneer Andy Warhol born?,Pop art akımının öncüsü Andy Warhol hangi yılda doğmuştur?,1928
+281,Literature & Books,In what year was William Shakespeare born in Stratford-upon-Avon?,William Shakespeare Stratford-upon-Avon'da hangi yılda doğmuştur?,1564
+282,Literature & Books,In what year did William Shakespeare pass away?,William Shakespeare hangi yılda vefat etmiştir?,1616
+283,Literature & Books,How many plays are traditionally attributed to William Shakespeare in the First Folio canon?,William Shakespeare külliyatında geleneksel olarak kabul edilen kaç tiyatro oyunu vardır?,37
+284,Literature & Books,How many sonnets did William Shakespeare publish in his 1609 collection?,William Shakespeare 1609 tarihli derlemesinde kaç sone yayınlamıştır?,154
+285,Literature & Books,In what year was Part One of Miguel de Cervantes' 'Don Quixote' first published?,Miguel de Cervantes'in 'Don Kişot' eserinin ilk cildi hangi yılda basılmıştır?,1605
+286,Literature & Books,In what year was Mary Shelley's novel 'Frankenstein' first published?,Mary Shelley'nin 'Frankenstein' romanı ilk kez hangi yılda yayınlanmıştır?,1818
+287,Literature & Books,In what year was Herman Melville's novel 'Moby-Dick' published?,Herman Melville'in klasiği 'Moby Dick' hangi yılda yayınlanmıştır?,1851
+288,Literature & Books,In what year was Leo Tolstoy's 'War and Peace' first published in full book form?,Lev Tolstoy'un 'Savaş ve Barış' romanı tam kitap olarak ilk kez hangi yılda basılmıştır?,1869
+289,Literature & Books,In what year was George Orwell's dystopian novel '1984' published?,George Orwell'in distopik romanı '1984' ilk olarak hangi yılda basılmıştır?,1949
+290,Literature & Books,In what year was J.R.R. Tolkien's 'The Hobbit' first published?,J.R.R. Tolkien'in 'Hobbit' kitabı ilk kez hangi yılda yayınlanmıştır?,1937
+291,Literature & Books,"In what year was J.K. Rowling's first book, 'Harry Potter and the Philosopher's Stone', published in the UK?",J.K. Rowling'in ilk kitabı 'Harry Potter ve Felsefe Taşı' İngiltere'de hangi yılda basılmıştır?,1997
+292,Literature & Books,How many volumes comprise Marcel Proust's monumental novel 'In Search of Lost Time'?,Marcel Proust'un 'Kayıp Zamanın İzinde' adlı anıtsal eseri kaç ciltten oluşur?,7
+293,Literature & Books,In what year was Dante Alighieri's 'Divine Comedy' completed (widely accepted year)?,Dante Alighieri'nin 'İlahi Komedya' eserini tamamladığı kabul edilen yıl nedir?,1320
+294,Literature & Books,In what year was Charles Dickens born?,İngiliz edebiyatının devi Charles Dickens hangi yılda doğmuştur?,1812
+295,Literature & Books,In what year was Ernest Hemingway awarded the Nobel Prize in Literature?,Ernest Hemingway hangi yılda Nobel Edebiyat Ödülü'ne layık görülmüştür?,1954
+296,Literature & Books,How many cantos make up Dante's 'Divine Comedy' in total?,Dante'nin 'İlahi Komedya'sı toplam kaç kantodan (bölümden) oluşur?,100
+297,Literature & Books,In what year was Franz Kafka born in Prague?,Franz Kafka Prag'da hangi yılda doğmuştur?,1883
+298,Literature & Books,In what year was Gabriel García Márquez's 'One Hundred Years of Solitude' published?,Gabriel García Márquez'in 'Yüzyıllık Yalnızlık' romanı ilk kez hangi yılda yayınlanmıştır?,1967
+299,Literature & Books,In what year was Fyodor Dostoevsky's 'Crime and Punishment' published?,Fyodor Dostoyevski'nin 'Suç ve Ceza' romanı ilk kez hangi yılda basılmıştır?,1866
+300,Literature & Books,In what year was the first Nobel Prize in Literature awarded?,İlk Nobel Edebiyat Ödülü hangi yılda verilmiştir?,1901
+301,Sports & Football,In what year was the first FIFA World Cup held in Uruguay?,İlk FIFA Dünya Kupası Uruguay'da hangi yılda düzenlenmiştir?,1930
+302,Sports & Football,How many times has Brazil won the men's FIFA World Cup (all-time record)?,Brezilya erkek milli futbol takımı FIFA Dünya Kupası'nı kaç kez kazanmıştır?,5
+303,Sports & Football,How many times has Germany won the men's FIFA World Cup?,Almanya erkek milli futbol takımı Dünya Kupası'nı kaç kez kazanmıştır?,4
+304,Sports & Football,How many times has Italy won the men's FIFA World Cup?,İtalya erkek milli futbol takımı Dünya Kupası'nı kaç kez kazanmıştır?,4
+305,Sports & Football,How many times has Argentina won the men's FIFA World Cup (after their 2022 win)?,2022 zaferiyle birlikte Arjantin Dünya Kupası'nı toplam kaç kez kazanmıştır?,3
+306,Sports & Football,"What is the record for the most goals scored by a single player in a single World Cup tournament (Just Fontaine, 1958)?","Tek bir Dünya Kupası turnuvasında en çok gol atan oyuncu rekoru (Just Fontaine, 1958) kaçtır?",13
+307,Sports & Football,What is the all-time record for total goals scored in World Cup tournament history by an individual player (Miroslav Klose)?,FIFA Dünya Kupası finalleri tarihinde bir futbolcunun attığı toplam en çok gol rekoru (Miroslav Klose) kaçtır?,16
+308,Sports & Football,How many teams participated in the final tournament of the 2022 FIFA World Cup in Qatar?,2022 Katar Dünya Kupası finallerinde kaç milli takım mücadele etmiştir?,32
+309,Sports & Football,How many teams will compete in the expanded 2026 FIFA World Cup tournament?,2026 FIFA Dünya Kupası'nda toplam kaç milli takım mücadele edecektir?,48
+310,Sports & Football,How many FIFA World Cup trophies did Pelé win during his playing career (record)?,Futbol efsanesi Pelé kariyerinde kaç kez Dünya Kupası şampiyonluğu yaşamıştır?,3
+311,Sports & Football,What is the standard length of a regulation football (soccer) match in minutes (excluding extra time)?,Standart bir futbol maçının normal süresi kaç dakikadır?,90
+312,Sports & Football,What is the standard width of a football goal between the inner edges of the posts in meters (to two decimal places)?,Standart bir futbol kalesinin iki direği arasındaki mesafe kaç metredir?,7.32
+313,Sports & Football,What is the height of a standard football crossbar from the ground in meters (to two decimal places)?,Standart bir futbol kalesinin üst direğinin yerden yüksekliği kaç metredir?,2.44
+314,Sports & Football,What is the distance of the penalty spot from the goal line in meters (to nearest whole meter)?,Futbolda penaltı noktasının kale çizgisine olan mesafesi kaç metredir?,11
+315,Sports & Football,How many players are on the pitch for one team at the start of a regulation football match?,Bir futbol maçında bir takım sahada kaç oyuncu ile yer alır?,11
+316,Sports & Football,How many European Cup / UEFA Champions League titles has Real Madrid won (as of 2024)?,Real Madrid 2024 yılı itibarıyla UEFA Şampiyonlar Ligi'ni (ve Şampiyon Kulüpler Kupası) toplam kaç kez kazanmıştır?,15
+317,Sports & Football,How many times has Lionel Messi won the Ballon d'Or award (all-time record)?,Lionel Messi kariyeri boyunca kaç kez Ballon d'Or (Altın Top) ödülünü kazanmıştır?,8
+318,Sports & Football,How many times has Cristiano Ronaldo won the Ballon d'Or award?,Cristiano Ronaldo kariyeri boyunca kaç kez Ballon d'Or ödülünü kazanmıştır?,5
+319,Sports & Football,What is the circumference of a standard size 5 football in centimeters (to nearest whole number)?,Standart 5 numara bir futbol topunun çevresi yaklaşık kaç santimetredir?,69
+320,Sports & Football,What is the official weight of a standard size 5 football at match start in grams (standard upper limit)?,Standart 5 numara bir futbol topunun maç başlangıcındaki azami ağırlığı kaç gramdır?,450
+321,Sports & Olympics,In what year were the first modern Olympic Games held in Athens?,İlk modern Olimpiyat Oyunları Atina'da hangi yılda düzenlenmiştir?,1896
+322,Sports & Olympics,How many gold medals did swimmer Michael Phelps win in his Olympic career (all-time record)?,Yüzücü Michael Phelps kariyerinde toplam kaç Olimpiyat altın madalyası kazanmıştır?,23
+323,Sports & Olympics,"What is the total number of Olympic medals (gold, silver, bronze) won by Michael Phelps?","Michael Phelps'in kazandığı toplam Olimpiyat madalyası (altın, gümüş, bronz) sayısı kaçtır?",28
+324,Sports & Olympics,How many gold medals did Usain Bolt win across his Olympic career?,Usain Bolt Olimpiyat kariyerinde toplam kaç altın madalya kazanmıştır?,8
+325,Sports & Olympics,What is Usain Bolt's world record time for the men's 100 meters sprint in seconds (to two decimal places)?,Usain Bolt'un erkekler 100 metre dünya rekoru derecesi kaç saniyedir?,9.58
+326,Sports & Olympics,What is Usain Bolt's world record time for the men's 200 meters sprint in seconds (to two decimal places)?,Usain Bolt'un erkekler 200 metre dünya rekoru derecesi kaç saniyedir?,19.19
+327,Sports & Olympics,In what year did Usain Bolt set his 100m world record of 9.58 seconds in Berlin?,Usain Bolt 9.58 saniyelik 100 metre dünya rekorunu Berlin'de hangi yılda kırmıştır?,2009
+328,Sports & Olympics,How many rings are in the Olympic symbol?,Olimpiyat halkaları sembolünde kaç halka bulunmaktadır?,5
+329,Sports & Olympics,What is the exact distance of an official marathon race in kilometers (to three decimal places)?,Resmi bir maraton koşusunun standart mesafesi kaç kilometredir?,42.195
+330,Sports & Olympics,How many events make up the track and field decathlon for men?,Erkekler dekatlon (komple atletizm) yarışması kaç branştan oluşur?,10
+331,Sports & Basketball,In what year was the National Basketball Association (NBA) founded?,Amerikan Basketbol Ligi (NBA) hangi yılda kurulmuştur?,1946
+332,Sports & Basketball,How tall is an official NBA basketball hoop from the gym floor in meters (to two decimal places)?,Standart bir basketbol potasının çemberinin yerden yüksekliği kaç metredir?,3.05
+333,Sports & Basketball,What is the diameter of an official basketball rim/hoop in centimeters (to nearest whole cm)?,Standart bir basketbol çemberinin iç çapı kaç santimetredir?,46
+334,Sports & Basketball,What is the duration of an NBA game in minutes (regulation time without overtime)?,Bir NBA basketbol maçının normal süresi (uzatmalar hariç) toplam kaç dakikadır?,48
+335,Sports & Basketball,What is the duration of a FIBA / EuroLeague basketball game in minutes (regulation time)?,Bir FIBA veya EuroLeague basketbol maçının normal süresi kaç dakikadır?,40
+336,Sports & Basketball,What is the shot clock duration in seconds for an NBA offensive possession?,NBA maçlarında bir hücum süresi (hücum saati) kaç saniyedir?,24
+337,Sports & Basketball,How many NBA championship rings did Michael Jordan win with the Chicago Bulls?,Michael Jordan Chicago Bulls takımıyla kaç NBA şampiyonluğu kazanmıştır?,6
+338,Sports & Basketball,How many points did Wilt Chamberlain score in a single NBA game in 1962 (all-time record)?,Wilt Chamberlain 1962'de tek bir NBA maçında kaç sayı atarak tarihe geçmiştir?,100
+339,Sports & Basketball,How many players are on the court for one basketball team during play?,Basketbol maçında bir takım sahada kaç oyuncu ile yer alır?,5
+340,Sports & Basketball,How many fouls cause an individual player to foul out of an NBA game?,Bir NBA maçında bir oyuncunun oyundan ihraç edilmesi (faul hakkını doldurması) için kaç kişisel faul yapması gerekir?,6
+341,Sports & Tennis,How many Grand Slam men's singles titles has Novak Djokovic won as of 2024 (record)?,Novak Djokovic erkekler teklerde kaç Grand Slam şampiyonluğu kazanmıştır?,24
+342,Sports & Tennis,How many Grand Slam men's singles titles did Rafael Nadal win in his career?,Rafael Nadal kariyeri boyunca kaç Grand Slam tekler şampiyonluğu kazanmıştır?,22
+343,Sports & Tennis,How many Grand Slam men's singles titles did Roger Federer win in his career?,Roger Federer kariyeri boyunca kaç Grand Slam tekler şampiyonluğu kazanmıştır?,20
+344,Sports & Tennis,How many French Open (Roland Garros) men's singles titles did Rafael Nadal win (all-time record)?,Rafael Nadal Fransa Açık'ı (Roland Garros) kaç kez kazanarak rekor kırmıştır?,14
+345,Sports & Tennis,How many Wimbledon men's singles titles did Roger Federer win?,Roger Federer Wimbledon tek erkekler şampiyonluğunu kaç kez kazanmıştır?,8
+346,Sports & Tennis,How many Grand Slam singles titles did Serena Williams win in the Open Era?,Serena Williams Açık Dönem'de kaç Grand Slam tekler şampiyonluğu kazanmıştır?,23
+347,Sports & Tennis,What is the height of a tennis net at the center in centimeters (rounded to nearest whole cm)?,Bir tenis filesinin tam orta noktadaki yüksekliği kaç santimetredir?,91
+348,Sports & Tennis,How many games must a player win with a margin of two to win a standard set in tennis (without tiebreak)?,Teniste bir seti kazanmak için standart olarak en az kaç oyun kazanmak gerekir?,6
+349,Sports & Tennis,In what year was the Wimbledon Championships first held?,Wimbledon Tenis Turnuvası ilk kez hangi yılda düzenlenmiştir?,1877
+350,Sports & Tennis,What is the fastest recorded tennis serve in men's professional tennis in kilometers per hour (Sam Groth)?,Erkekler profesyonel tenisinde servis hız rekoru (Sam Groth) saatte yaklaşık kaç kilometredir?,263
+351,Sports & Formula 1,In what year was the first Formula 1 World Drivers' Championship held?,İlk Formula 1 Dünya Şampiyonası hangi yılda düzenlenmiştir?,1950
+352,Sports & Formula 1,What is the record number of Formula 1 World Drivers' Championships won by a driver (tied by Schumacher & Hamilton)?,Bir Formula 1 pilotunun kazandığı en fazla dünya şampiyonluğu rekoru (Schumacher ve Hamilton) kaçtır?,7
+353,Sports & Formula 1,How many Grand Prix victories has Lewis Hamilton achieved in his Formula 1 career (as of 2024)?,Lewis Hamilton 2024 itibarıyla Formula 1 kariyerinde kaç yarış (Grand Prix) kazanmıştır?,105
+354,Sports & Formula 1,How many Grand Prix victories did Michael Schumacher achieve in his F1 career?,Michael Schumacher Formula 1 kariyerinde kaç Grand Prix zaferi elde etmiştir?,91
+355,Sports & Formula 1,How many races did Max Verstappen win in his record-breaking 2023 F1 season?,Max Verstappen rekor kırdığı 2023 Formula 1 sezonunda kaç yarış kazanmıştır?,19
+356,Sports & Formula 1,What is the length of the Circuit de Monaco in kilometers (to three decimal places)?,Monako Grand Prix pistinin (Circuit de Monaco) bir tur uzunluğu kaç kilometredir?,3.337
+357,Sports & Formula 1,"What is the length of the Spa-Francorchamps circuit in Belgium, the longest on the F1 calendar, in kilometers (to three decimal places)?",F1 takviminin en uzun pisti olan Belçika'daki Spa-Francorchamps'ın tur uzunluğu kaç kilometredir?,7.004
+358,Sports & Formula 1,What is the minimum race distance of a standard Formula 1 Grand Prix (except Monaco) in kilometers?,Monako hariç standart bir Formula 1 yarışının asgari toplam mesafesi kaç kilometredir?,305
+359,Sports & Formula 1,"What is the top speed ever recorded by a Formula 1 car in an official Grand Prix session in kilometers per hour (Valtteri Bottas, Baku 2016)?","Bir F1 aracının resmi bir Grand Prix hafta sonunda ulaştığı en yüksek hız (Bottas, Bakü 2016) saatte kaç kilometredir?",378
+360,Sports & Formula 1,How many teams compete on the Formula 1 grid in the 2024 season?,2024 Formula 1 sezonunda şampiyonada kaç takım yarışmaktadır?,10
+361,Sports & Combat,In what year was the 'Rumble in the Jungle' between Muhammad Ali and George Foreman held?,Muhammed Ali ile George Foreman arasındaki tarihi 'Rumble in the Jungle' maçı hangi yılda yapılmıştır?,1974
+362,Sports & Combat,In what year was the 'Thrilla in Manila' between Muhammad Ali and Joe Frazier held?,Muhammed Ali ile Joe Frazier arasındaki efsanevi 'Thrilla in Manila' maçı hangi yılda yapılmıştır?,1975
+363,Sports & Combat,How many professional fights did Floyd Mayweather Jr. win without a single defeat in his career?,Floyd Mayweather Jr. kariyerinde hiç yenilgi almadan kaç profesyonel maç kazanmıştır?,50
+364,Sports & Combat,How many professional bouts did Mike Tyson win by knockout in his career?,Mike Tyson profesyonel kariyerinde kaç maçı nakavtla kazanmıştır?,44
+365,Sports & Combat,At what age did Mike Tyson become the youngest heavyweight world champion in boxing history?,Mike Tyson tarihin en genç ağır sıklet dünya şampiyonu olduğunda kaç yaşındaydı?,20
+366,Sports & Combat,What is the duration of a standard professional boxing round in minutes?,Standart bir profesyonel boks raundu kaç dakika sürer?,3
+367,Sports & Combat,What is the duration of the rest period between rounds in professional boxing in seconds?,Profesyonel boksta rauntlar arasındaki dinlenme süresi kaç saniyedir?,60
+368,Sports & Combat,What is the maximum number of rounds scheduled in a modern world championship boxing match?,Modern dünya şampiyonluğu boks maçları en fazla kaç raunt üzerinden planlanır?,12
+369,Sports & Combat,How many weight classes are traditionally recognized in men's Olympic boxing?,Erkekler Olimpiyat boksunda kaç sıklet bulunmaktadır?,7
+370,Sports & Combat,In what year did Muhammad Ali (then Cassius Clay) win his Olympic gold medal in Rome?,Muhammed Ali (o dönem Cassius Clay) Roma Olimpiyatları'nda hangi yılda altın madalya kazandı?,1960
+371,Sports & Others,How many holes are played in a standard regulation round of golf?,Standart bir golf sahasında kaç delik bulunur?,18
+372,Sports & Others,How many major championships has Tiger Woods won in his golf career?,Tiger Woods golf kariyerinde kaç 'Major' turnuva şampiyonluğu kazanmıştır?,15
+373,Sports & Others,What is the record for the most men's major golf championships won by an individual (Jack Nicklaus)?,Tarihte en çok Major golf turnuvası kazanan Jack Nicklaus'un rekor şampiyonluk sayısı kaçtır?,18
+374,Sports & Others,What is the diameter of a standard golf hole in centimeters (rounded to one decimal place)?,Bir golf deliğinin çapı kaç santimetredir?,10.8
+375,Sports & Others,How many players are on the field for one team in a cricket match?,Bir kriket maçında sahada bir takımdan kaç oyuncu yer alır?,11
+376,Sports & Others,What is the distance between the two wickets on a cricket pitch in meters (to two decimal places)?,Kriket sahasında iki kale (wicket) arasındaki mesafe kaç metredir?,20.12
+377,Sports & Others,How many innings are played in a standard Major League Baseball (MLB) game?,Standart bir Amerikan Beyzbol Ligi (MLB) maçı kaç devreden (inning) oluşur?,9
+378,Sports & Others,How many players are on the defensive field for a baseball team?,Beyzbolda savunmadaki bir takım sahada kaç oyuncu bulundurur?,9
+379,Sports & Others,Approximately how many kilometers is the total route of the Tour de France (typical modern edition)?,Fransa Bisiklet Turu'nun (Tour de France) ortalama toplam uzunluğu yaklaşık kaç kilometredir?,3400
+380,Sports & Others,In what year was the first Tour de France bicycle race held?,İlk Fransa Bisiklet Turu (Tour de France) hangi yılda düzenlenmiştir?,1903
+381,Sports & Winter,How many periods are played in a regulation ice hockey match?,Buz hokeyi maçında kaç periyot oynanır?,3
+382,Sports & Winter,How many minutes is each period in a regulation ice hockey game?,Buz hokeyinde her periyot kaç dakika sürer?,20
+383,Sports & Winter,How many players (skaters plus goaltender) are on the ice for one hockey team during regular play?,Bir buz hokeyi maçında normal oyunda bir takımdan buz üzerinde kaç oyuncu (kaleci dahil) bulunur?,6
+384,Sports & Winter,What is the weight of an official NHL hockey puck in grams (standard upper limit)?,Standart bir NHL buz hokeyi diskinin (puck) ağırlığı kaç gramdır?,170
+385,Sports & Winter,"In what year were the first Winter Olympic Games held in Chamonix, France?",İlk Kış Olimpiyat Oyunları Fransa'nın Chamonix kentinde hangi yılda düzenlenmiştir?,1924
+386,Sports & Winter,How many stones are thrown by each team in an end of curling?,Curling sporunda bir devrede (end) her takım kaç taş atar?,8
+387,Sports & Winter,What is the weight of a standard curling stone in kilograms (to nearest whole kg)?,Standart bir curling taşının ağırlığı yaklaşık kaç kilogramdır?,20
+388,Sports & Winter,How many kilometers is the longest cross-country ski race in the Winter Olympics (men's marathon event)?,Kış Olimpiyatları'nda erkekler en uzun kayaklı koşu (maraton) mesafesi kaç kilometredir?,50
+389,Sports & Winter,In what year was the famous 'Miracle on Ice' where the US Olympic hockey team beat the USSR?,ABD buz hokeyi takımının SSCB'yi yendiği ünlü 'Buzdaki Mucize' hangi yılda gerçekleşti?,1980
+390,Sports & Winter,How many pins are there in standard ten-pin bowling?,Standart bir bovling hattında devrilmesi gereken kaç labut (pin) vardır?,10
+391,Sports & Swimming,What is the length of an Olympic standard swimming pool in meters?,Olimpiyat standartlarındaki bir yüzme havuzunun boyu kaç metredir?,50
+392,Sports & Swimming,What is the standard width of an Olympic swimming pool in meters?,Olimpiyat standartlarındaki bir yüzme havuzunun eni kaç metredir?,25
+393,Sports & Swimming,How many lanes are used for competitors in an Olympic swimming final?,Olimpiyat yüzme finallerinde yarışmacılar için kaç kulvar kullanılır?,8
+394,Sports & Swimming,What is the minimum recommended depth of an Olympic competition pool in meters?,Olimpiyat yarışma yüzme havuzlarının tavsiye edilen asgari derinliği kaç metredir?,2
+395,Sports & Swimming,How many players are in the water for one water polo team during play?,Su topu maçında bir takımdan suyun içinde kaç oyuncu yer alır?,7
+396,Sports & Swimming,How many players are on the court for one volleyball team during a match?,Voleybol maçında bir takımdan sahada kaç oyuncu bulunur?,6
+397,Sports & Swimming,"How many points are needed to win a standard set in indoor volleyball (sets 1 to 4, with a 2-point lead)?",Salonda voleybolda ilk 4 sette bir seti kazanmak için en az kaç sayı almak gerekir?,25
+398,Sports & Swimming,What is the height of a men's volleyball net from the center of the court in meters (to two decimal places)?,Erkekler voleybolunda filenin orta noktadaki yüksekliği kaç metredir?,2.43
+399,Sports & Swimming,What is the height of a women's volleyball net from the center of the court in meters (to two decimal places)?,Kadınlar voleybolunda filenin orta noktadaki yüksekliği kaç metredir?,2.24
+400,Sports & Swimming,What is the maximum number of touches allowed per side in volleyball before returning the ball?,Voleybolda topu rakip sahaya göndermeden önce bir takımın yapabileceği en fazla dokunuş sayısı kaçtır?,3
+401,Food & Consumption,"Approximately how many eggs are consumed daily in Greece (in millions, to one decimal place)?",Yunanistan'da günde yaklaşık kaç milyon adet yumurta tüketilmektedir?,4.5
+402,Food & Consumption,Approximately how many kilograms of pasta does the average person in Italy consume per year?,İtalya'da kişi başına yılda ortalama kaç kilogram makarna tüketilir?,23
+403,Food & Consumption,Approximately how many kilograms of cheese does the average person in France consume per year (rounded to nearest kg)?,Fransa'da kişi başına yılda ortalama kaç kilogram peynir tüketilir?,26
+404,Food & Consumption,"Approximately how many kilograms of tea per person per year does Turkey consume, making it the highest in the world (rounded to one decimal place)?",Dünyada kişi başı çay tüketiminde birinci olan Türkiye'de yılda kişi başı yaklaşık kaç kilogram çay tüketilir?,3.2
+405,Food & Consumption,"Approximately how many kilograms of coffee per person per year does Finland consume, the highest in the world?",Dünyada kişi başına en çok kahve tüketen Finlandiya'da yılda kişi başı ortalama kaç kilogram kahve tüketilir?,12
+406,Food & Consumption,Approximately how many kilograms of chocolate does the average person in Switzerland eat per year (rounded to nearest whole kg)?,İsviçre'de kişi başına yılda ortalama kaç kilogram çikolata tüketilir?,10
+407,Food & Consumption,Approximately how many kilograms of rice does an average person consume annually in Japan?,Japonya'da kişi başına yılda ortalama kaç kilogram pirinç tüketilir?,51
+408,Food & Consumption,Approximately how many kilograms of meat (all types) does the average American consume annually (rounded to nearest 5 kg)?,ABD'de kişi başına yılda ortalama kaç kilogram et tüketilir?,125
+409,Food & Consumption,Approximately how many kilograms of potatoes does the average person in Ireland consume per year?,İrlanda'da kişi başına yılda ortalama kaç kilogram patates tüketilir?,85
+410,Food & Consumption,"Approximately how many liters of beer per capita does the Czech Republic consume per year, the highest in the world (rounded to nearest whole liter)?",Dünyada kişi başı en çok bira tüketen Çekya'da yılda kişi başına kaç litre bira tüketilir?,143
+411,Food & Fast Food,Approximately how many millions of pizzas are sold every day in the United States?,Amerika Birleşik Devletleri'nde her gün yaklaşık kaç milyon adet pizza satılmaktadır?,13
+412,Food & Fast Food,In what year was the first McDonald's fast food restaurant opened by the McDonald brothers in California?,İlk McDonald's restoranı McDonald kardeşler tarafından Kaliforniya'da hangi yılda açılmıştır?,1940
+413,Food & Fast Food,"In what year was Ray Kroc's first franchised McDonald's restaurant opened in Des Plaines, Illinois?",Ray Kroc'un ilk McDonald's franchise şubesi Illinois'te hangi yılda açılmıştır?,1955
+414,Food & Fast Food,In what year was the Big Mac burger introduced across the US by McDonald's?,McDonald's'ın ünlü Big Mac hamburgeri ABD çapında ilk kez hangi yılda satışa sunulmuştur?,1968
+415,Food & Fast Food,How many calories are in a standard McDonald's Big Mac burger in the United States (approximate standard value)?,Standart bir McDonald's Big Mac hamburgeri yaklaşık kaç kaloridir (kcal)?,550
+416,Food & Fast Food,"In what year was Starbucks founded in Seattle, Washington?",Starbucks kahve zinciri Seattle'da hangi yılda kurulmuştur?,1971
+417,Food & Fast Food,How many herbs and spices make up Colonel Sanders' secret KFC recipe?,KFC'nin Albay Sanders tarafından geliştirilen gizli tavuk tarifinde kaç çeşit ot ve baharat bulunur?,11
+418,Food & Fast Food,How many slices are traditionally in a standard large 35-centimeter pizza?,Geleneksel büyük boy (35 cm) bir pizza standart olarak kaç dilime kesilir?,8
+419,Food & Fast Food,Approximately how many restaurants does the Subway sandwich chain operate worldwide (in thousands)?,Subway sandviç zincirinin dünya genelinde yaklaşık kaç bin restoranı vardır?,37
+420,Food & Fast Food,In what year was Coca-Cola invented by pharmacist John Pemberton?,Coca-Cola eczacı John Pemberton tarafından hangi yılda icat edilmiştir?,1886
+421,Beverages & Drinks,How many milliliters are in a standard shot of single Italian espresso?,Standart tek shot bir İtalyan espressosu kaç mililitredir?,30
+422,Beverages & Drinks,How many milligrams of caffeine are typically in an average 240 ml cup of brewed coffee (approximate)?,Ortalama bir kupa (yaklaşık 240 ml) demlenmiş filtre kahvede yaklaşık kaç miligram kafein bulunur?,95
+423,Beverages & Drinks,What is the optimal water brewing temperature for drip coffee in degrees Celsius (standard SCA recommendation)?,Filtre kahve demlemek için tavsiye edilen ideal su sıcaklığı kaç santigrat derecedir?,93
+424,Beverages & Drinks,At what temperature in degrees Celsius should fine green tea ideally be brewed to avoid bitterness?,Yeşil çayın acılaşmaması için ideal demleme su sıcaklığı yaklaşık kaç santigrat derecedir?,80
+425,Beverages & Drinks,How many milliliters are in a standard wine bottle?,Standart bir şarap şişesi kaç mililitredir?,750
+426,Beverages & Drinks,How many milliliters of wine are in a Magnum bottle (equivalent to two standard bottles)?,İki standart şişeye denk gelen bir Magnum şarap şişesi kaç mililitredir?,1500
+427,Beverages & Drinks,What percentage of alcohol by volume (ABV) is standard for dry London gin?,Standart bir sek cinin (dry gin) alkol oranı hacmen yüzde kaçtır?,40
+428,Beverages & Drinks,What percentage of alcohol by volume (ABV) is typical for standard German Pilsner beer?,Geleneksel bir Alman Pilsner birasının ortalama alkol oranı hacmen yüzde kaçtır?,4.9
+429,Beverages & Drinks,What percentage of alcohol by volume (ABV) is standard for Russian vodka?,Standart bir Rus votkasının alkol oranı hacmen yüzde kaçtır?,40
+430,Beverages & Drinks,What is the sugar content in grams in a standard 330 ml can of regular Coca-Cola?,Standart 330 ml kutu klasik Coca-Cola'da kaç gram şeker bulunur?,35
+431,Beverages & Drinks,Approximately how many atmospheric bars of pressure are inside a bottle of Champagne?,Bir Şampanya şişesinin içerisindeki basınç yaklaşık kaç bardır (atmosfer basıncı)?,6
+432,Beverages & Drinks,"In what year did the Paris Wine Tasting (Judgment of Paris) take place, revolutionizing world wine reputation?",Fransız şaraplarını geride bırakan tarihi Paris Şarap Tadımı (Judgment of Paris) hangi yılda yapıldı?,1976
+433,Beverages & Drinks,How many kilograms of grapes are typically needed to produce one 750 ml bottle of wine (to one decimal place)?,Bir şişe (750 ml) şarap üretmek için yaklaşık kaç kilogram üzüm gerekir?,1.2
+434,Beverages & Drinks,In what year was Dom Pérignon vintage Champagne officially launched commercially by Moët & Chandon?,Moët & Chandon ilk Dom Pérignon rekoltesini ticari olarak hangi yılda piyasaya sunmuştur?,1936
+435,Beverages & Drinks,How many months must a Vintage Champagne age in the cellar by French law before release?,Fransız yasalarına göre 'Vintage' (yıllanmış) bir Şampanyanın mahzende en az kaç ay olgunlaşması gerekir?,36
+436,Beverages & Drinks,How many months must a Non-Vintage Champagne age on its lees before release?,Klasik (yıllanmamış) bir Şampanyanın şişesinde en az kaç ay dinlendirilmesi zorunludur?,15
+437,Beverages & Drinks,How many liters does a standard French oak wine barrel (barrique bordelaise) hold?,Geleneksel bir Bordo meşe şarap fıçısı (barrique) kaç litre sıvı alır?,225
+438,Beverages & Drinks,What is the ideal cellar storage temperature for aging wine in degrees Celsius?,Şarapları yıllandırmak için ideal mahzen sıcaklığı yaklaşık kaç santigrat derecedir?,13
+439,Beverages & Drinks,How many regions in France are classified as AOC for wine (approximate count)?,Fransa'da tescilli kaç farklı AOC şarap bölgesi vardır?,360
+440,Beverages & Drinks,What is the typical alcohol percentage by volume (ABV) of red Bordeaux wine (approximate standard)?,Geleneksel bir Bordo kırmızı şarabının alkol oranı yaklaşık yüzde kaçtır?,13.5
+441,Culinary & Cooking,At what internal temperature in degrees Celsius is whole poultry considered safely cooked according to food standards?,Gıda standartlarına göre bütün tavuk etinin güvenli pişmiş sayılması için iç sıcaklığı kaç santigrat dereceye ulaşmalıdır?,74
+442,Culinary & Cooking,At what internal temperature in degrees Celsius is a medium-rare beef steak cooked (to nearest whole degree)?,Orta-az pişmiş (medium-rare) bir dana bifteğin merkez iç sıcaklığı kaç santigrat derecedir?,55
+443,Culinary & Cooking,At what internal temperature in degrees Celsius is a well-done steak cooked?,İyi pişmiş (well-done) bir bifteğin merkez sıcaklığı en az kaç santigrat dereceye ulaşmalıdır?,71
+444,Culinary & Cooking,At what temperature in degrees Celsius does table sugar (sucrose) melt and begin to caramelize?,Sofra şekeri (sakaroz) kaç santigrat derecede eriyerek karamelleşmeye başlar?,160
+445,Culinary & Cooking,At what temperature in degrees Celsius does water boil at the top of Mount Everest (approximate)?,Everest Dağı'nın zirvesinde su yaklaşık kaç santigrat derecede kaynar?,68
+446,Culinary & Cooking,How many grams does a standard large chicken egg weigh (including shell)?,Standart 'L' boy (büyük) bir tavuk yumurtasının kabuklu ağırlığı ortalama kaç gramdır?,60
+447,Culinary & Cooking,Approximately what percentage of a whole chicken egg's weight is the egg white (albumen)?,Bir tavuk yumurtasının ağırlığının yaklaşık yüzde kaçını yumurta akı oluşturur?,60
+448,Culinary & Cooking,Approximately what percentage of a whole chicken egg's weight is the yolk?,Bir tavuk yumurtasının ağırlığının yaklaşık yüzde kaçını yumurta sarısı oluşturur?,30
+449,Culinary & Cooking,How many milliliters are in one standard metric tablespoon?,Bir standart metrik yemek kaşığı kaç mililitre sıvı alır?,15
+450,Culinary & Cooking,How many milliliters are in one standard metric teaspoon?,Bir standart metrik çay/tatlı kaşığı kaç mililitre sıvı alır?,5
+451,Food & Dairy,How many liters of milk are typically needed to produce one kilogram of hard cheese like Cheddar or Parmesan?,Bir kilogram sert peynir (Cheddar veya Parmesan) üretmek için yaklaşık kaç litre süt gerekir?,10
+452,Food & Dairy,What is the minimum aging period in months for authentic Parmigiano Reggiano cheese?,Hakiki Parmigiano Reggiano (Gravyer/Parmesan) peynirinin minimum olgunlaşma süresi kaç aydır?,12
+453,Food & Dairy,What is the average weight of a whole wheel of Parmigiano Reggiano cheese in kilograms?,Bütün bir tekerlek Parmigiano Reggiano peynirinin ortalama ağırlığı kaç kilogramdır?,40
+454,Food & Dairy,What is the typical minimum fat percentage of traditional dairy butter by law in the European Union?,Avrupa Birliği yasalarına göre geleneksel tereyağının süt yağı oranı en az yüzde kaç olmalıdır?,82
+455,Food & Dairy,Approximately how many distinct registered varieties of cheese are produced in France?,Fransa'da üretilen tescilli farklı peynir çeşidi sayısı yaklaşık kaçtır?,1200
+456,Food & Dairy,What percentage of milk is composed of water (approximate whole cow milk)?,Tam yağlı inek sütünün yaklaşık yüzde kaçı sudur?,87
+457,Food & Dairy,At what temperature in degrees Celsius is high-temperature short-time (HTST) pasteurization of milk conducted?,Standart pastörize süt uygulamasında süt en az kaç santigrat derecede ısıtılır?,72
+458,Food & Dairy,How many seconds is milk held at 72°C during standard HTST pasteurization?,Standart HTST pastörizasyonunda süt 72°C sıcaklıkta kaç saniye tutulur?,15
+459,Food & Dairy,At what temperature in degrees Celsius is ultra-high-temperature (UHT) milk processed?,UHT (uzun ömürlü) süt işleminde süt yaklaşık kaç santigrat dereceye kadar ısıtılır?,138
+460,Food & Dairy,In what year was the process of pasteurization discovered and patented by Louis Pasteur?,Pastörizasyon yöntemi Louis Pasteur tarafından hangi yılda keşfedilip tescillenmiştir?,1865
+461,Agriculture & Produce,Approximately what percentage of a fresh watermelon is water?,Taze bir karpuzun yaklaşık yüzde kaçı sudur?,92
+462,Agriculture & Produce,Approximately what percentage of a fresh cucumber is water?,Taze bir salatalığın yaklaşık yüzde kaçı sudur?,96
+463,Agriculture & Produce,How many seeds does an average strawberry have on its outer surface?,Ortalama bir çileğin dış yüzeyinde yaklaşık kaç tohum (aken) bulunur?,200
+464,Agriculture & Produce,Approximately how many kilograms of apples does the average apple tree produce in a good harvest year?,Yetişkin ve verimli bir elma ağacı iyi bir sezonda ortalama kaç kilogram elma verir?,200
+465,Agriculture & Produce,What is the record weight of the world's heaviest pumpkin ever grown in kilograms (rounded to nearest whole kg)?,Dünyanın en ağır balkabağı rekoru yaklaşık kaç kilogramdır?,1226
+466,Agriculture & Produce,In what century were tomatoes first introduced to Europe from South America (enter century number)?,Domates Güney Amerika'dan Avrupa'ya ilk kez kaçıncı yüzyılda getirilmiştir?,16
+467,Agriculture & Produce,How many segments are there typically in a standard commercial garlic bulb?,Standart bir sarımsak başı genellikle kaç dişten oluşur?,10
+468,Agriculture & Produce,Approximately how many days does it take for a radish seed to grow to harvest maturity?,Bir turp tohumunun ekildikten sonra hasat olgunluğuna ulaşması ortalama kaç gün sürer?,25
+469,Agriculture & Produce,How many kilograms of wheat grain are produced globally each year in millions of metric tons (approximate modern average)?,Dünya genelinde her yıl yaklaşık kaç milyon metrik ton buğday üretilmektedir?,785
+470,Agriculture & Produce,Approximately what percentage of the world's vanilla is produced by the island of Madagascar?,Dünya vanilya üretiminin yaklaşık yüzde kaçı Madagaskar adasından karşılanır?,80
+471,Spices & Luxury Food,How many saffron crocus flowers are required to produce just 1 kilogram of saffron spice (in thousands)?,Sadece 1 kilogram safran baharatı elde etmek için yaklaşık kaç bin safran çiçeği gerekir?,150
+472,Spices & Luxury Food,How many stigmas are inside a single saffron crocus flower?,Tek bir safran çiçeğinin içinde kaç adet kırmızı tepecik (safran lifi) bulunur?,3
+473,Spices & Luxury Food,What is the Scoville Heat Unit (SHU) rating of a standard Jalapeño pepper on average?,Standart bir Jalapeno biberinin ortalama Scoville acılık derecesi (SHU) kaçtır?,5000
+474,Spices & Luxury Food,What is the Scoville Heat Unit (SHU) rating of pure capsaicin in millions?,Saf kapsaisinin Scoville acılık derecesi kaç milyondur?,16
+475,Spices & Luxury Food,What is the Scoville rating of the Carolina Reaper pepper in millions of SHU (to two decimal places)?,Carolina Reaper biberinin ortalama acılık derecesi kaç milyon Scoville'dir?,2.2
+476,Spices & Luxury Food,How many kilograms of cocoa beans are needed to make 1 kilogram of pure chocolate (approximate standard)?,Bir kilogram saf çikolata üretmek için yaklaşık kaç adet kakao çekirdeği gerekir?,800
+477,Spices & Luxury Food,How many years does an olive tree typically take after planting to bear its first harvestable fruit?,Yeni dikilen bir zeytin ağacının ilk hasat edilebilir ürününü vermesi ortalama kaç yıl sürer?,5
+478,Spices & Luxury Food,"How many years old is the ancient olive tree of Vouves in Crete, one of the oldest in the world (approximate)?",Girit adasındaki Vouves antik zeytin ağacının yaklaşık kaç yaşında olduğu tahmin edilmektedir?,3000
+479,Spices & Luxury Food,What is the world record price paid at auction for an Italian white Alba truffle in thousands of US dollars (approximate)?,İtalya'nın Alba kentinde bulunan bir beyaz trüf mantarı için açık artırmada ödenen rekor fiyat kaç bin dolardır?,330
+480,Spices & Luxury Food,How many years can a Sturgeon live before producing the finest Beluga caviar?,En kaliteli Beluga havyarını üreten bir Mersin balığının yumurtlama olgunluğuna erişmesi yaklaşık kaç yıl sürer?,20
+481,Baking & Desserts,How many folds (laminations) are traditionally made in classical French puff pastry (mille-feuille layers)?,Klasik Fransız milföy (mille-feuille) hamurunda katlama tekniğiyle teorik olarak kaç yağ-hamur katmanı oluşturulur?,729
+482,Baking & Desserts,In what year was the chocolate chip cookie invented by Ruth Wakefield at the Toll House Inn?,Damla çikolatalı kurabiye Ruth Wakefield tarafından hangi yılda icat edilmiştir?,1938
+483,Baking & Desserts,What is the standard ratio of chocolate to heavy cream by weight in a classic firm chocolate truffle ganache?,Klasik bir çikolatalı trüf ganajında çikolatanın kremaya ağırlıkça oranı standart olarak nedir (2'ye 1 için 2 yazınız)?,2
+484,Baking & Desserts,What is the standard baking temperature for French macarons in degrees Celsius?,Fransız makaronlarının pişirildiği standart fırın sıcaklığı yaklaşık kaç santigrat derecedir?,150
+485,Baking & Desserts,In what century was the classic Italian dessert Tiramisu invented (enter century number)?,İtalyan tatlısı Tiramisu ilk kez kaçıncı yüzyılda ortaya çıkmıştır?,20
+486,Baking & Desserts,In what year was Nutella hazelnut spread first created by Ferrero in Italy?,Nutella fındık kreması İtalya'da Ferrero tarafından hangi yılda ilk kez üretilmiştir?,1964
+487,Baking & Desserts,What percentage of cocoa solids must a dark chocolate contain at minimum to be labeled dark chocolate in the EU?,Avrupa Birliği'nde bir çikolatanın bitter çikolata sayılması için en az yüzde kaç kakao kuru maddesi içermesi gerekir?,35
+488,Baking & Desserts,What percentage of milk chocolate is milk solids at minimum in the EU?,Avrupa Birliği standartlarına göre sütlü çikolatada en az yüzde kaç süt kuru maddesi bulunmalıdır?,14
+489,Baking & Desserts,How many calories are in 1 gram of pure dietary fat?,1 gram saf diyet yağında kaç kalori (kcal) bulunur?,9
+490,Baking & Desserts,How many calories are in 1 gram of pure dietary protein or carbohydrate?,1 gram saf protein veya karbonhidratta kaç kalori (kcal) bulunur?,4
+491,Restaurants & Michelin,In what year was the first Michelin Guide published in France?,İlk Michelin Rehberi Fransa'da hangi yılda yayımlanmıştır?,1900
+492,Restaurants & Michelin,In what year did the Michelin Guide introduce its famous 3-star rating system?,Michelin Rehberi ünlü 3 yıldızlı derecelendirme sistemini hangi yılda başlatmıştır?,1931
+493,Restaurants & Michelin,What is the maximum number of Michelin stars a single restaurant location can be awarded?,Tek bir restoran mekanına Michelin Rehberi tarafından verilebilecek en fazla yıldız sayısı kaçtır?,3
+494,Restaurants & Michelin,How many Michelin stars did legendary French chef Joël Robuchon accumulate across his restaurants (all-time record)?,Efsanevi Fransız şef Joël Robuchon restoranlarıyla toplam kaç Michelin yıldızı kazanarak dünya rekoru kırmıştır?,32
+495,Restaurants & Michelin,"Which city in the world has the most Michelin-starred restaurants, Tokyo, with approximately how many starred restaurants?",Dünyada en çok Michelin yıldızlı restorana sahip şehir olan Tokyo'da yaklaşık kaç yıldızlı restoran bulunur?,183
+496,Restaurants & Michelin,In what year was the legendary restaurant Noma opened in Copenhagen by René Redzepi?,Kopenhag'daki dünyaca ünlü Noma restoranı René Redzepi tarafından hangi yılda açılmıştır?,2003
+497,Restaurants & Michelin,In what year did Ferran Adrià's famous restaurant elBulli in Spain close its doors?,Ferran Adrià'nın İspanya'daki efsanevi restoranı elBulli hangi yılda kapılarını kapatmıştır?,2011
+498,Restaurants & Michelin,"In what year was the world's oldest continuously operating restaurant, Sobrino de Botín, founded in Madrid?",Madrid'de bulunan ve dünyanın sürekli faaliyet gösteren en eski restoranı olan Sobrino de Botín hangi yılda kurulmuştur?,1725
+499,Restaurants & Michelin,In what year did Gordon Ramsay win his first three Michelin stars at his Chelsea restaurant?,Gordon Ramsay Chelsea'deki restoranıyla 3 Michelin yıldızını ilk kez hangi yılda kazanmıştır?,2001
+500,Restaurants & Michelin,How many Michelin stars does chef Gordon Ramsay currently hold across his restaurants (approximate)?,Ünlü şef Gordon Ramsay günümüzde restoranlarında toplam kaç Michelin yıldızına sahiptir?,8
+501,History & Ancient Rome,In what year (BCE) was Julius Caesar assassinated in Rome on the Ides of March?,Jül Sezar Roma'da Mart İdes'inde hangi yılda (MÖ) suikasta uğramıştır?,44
+502,History & Ancient Rome,In what year (BCE) did Julius Caesar famously cross the Rubicon river?,Jül Sezar 'ok yaydan çıktı' diyerek Rubicon nehrini hangi yılda (MÖ) geçmiştir?,49
+503,History & Ancient Rome,In what year (BCE) did the Roman Empire begin when Augustus became the first Roman Emperor?,Augustus'un ilk Roma İmparatoru olmasıyla Roma İmparatorluğu hangi yılda (MÖ) başlamıştır?,27
+504,History & Ancient Rome,In what year did the Western Roman Empire fall when Emperor Romulus Augustulus was deposed?,Batı Roma İmparatorluğu son imparator Romulus Augustulus'un tahttan indirilmesiyle hangi yılda (MS) yıkılmıştır?,476
+505,History & Ancient Rome,In what year did the Great Fire of Rome occur during the reign of Emperor Nero?,İmparator Neron döneminde meydana gelen Büyük Roma Yangını hangi yılda (MS) çıkmıştır?,64
+506,History & Ancient Rome,In what year did Emperor Constantine the Great issue the Edict of Milan legalizing Christianity?,İmparator I. Konstantin Hristiyanlığı serbest bırakan Milano Fermanı'nı hangi yılda (MS) ilan etmiştir?,313
+507,History & Ancient Rome,In what year was the city of Constantinople inaugurated as the new Roman capital by Constantine?,Konstantinopolis şehri I. Konstantin tarafından hangi yılda (MS) yeni Roma başkenti olarak resmen açılmıştır?,330
+508,History & Ancient Rome,How many Roman emperors are traditionally known as the 'Five Good Emperors'?,Roma tarihinde 'Beş İyi İmparator' dönemi olarak bilinen dönemde kaç imparator hüküm sürmüştür?,5
+509,History & Ancient Rome,In what year (BCE) was the legendary founding of Rome by Romulus and Remus dated?,Efsaneye göre Romulus ve Remus tarafından Roma şehrinin kurulduğu kabul edilen yıl (MÖ) nedir?,753
+510,History & Ancient Rome,In what year (BCE) did Hannibal cross the Alps with his army and war elephants to invade Italy?,Kartacalı komutan Hannibal filleriyle Alpleri aşarak İtalya'yı hangi yılda (MÖ) işgal etmiştir?,218
+511,History & Ancient Greece,"In what year (BCE) was Alexander the Great born in Pella, Macedonia?",Büyük İskender Makedonya'nın Pella kentinde hangi yılda (MÖ) doğmuştur?,356
+512,History & Ancient Greece,In what year (BCE) did Alexander the Great die in Babylon?,Büyük İskender Babil'de hangi yılda (MÖ) hayatını kaybetmiştir?,323
+513,History & Ancient Greece,At what age did Alexander the Great die in Babylon?,Büyük İskender öldüğünde kaç yaşındaydı?,32
+514,History & Ancient Greece,In what year (BCE) did the famous Battle of Thermopylae take place (the 300 Spartans)?,300 Spartalının savaştığı meşhur Thermopylae Muharebesi hangi yılda (MÖ) gerçekleşmiştir?,480
+515,History & Ancient Greece,In what year (BCE) was the philosopher Socrates sentenced to death in Athens?,Filozof Sokrates Atina'da hangi yılda (MÖ) idama mahkûm edilmiştir?,399
+516,History & Ancient Greece,In what year (BCE) was the philosopher Aristotle born?,Ünlü filozof Aristoteles hangi yılda (MÖ) doğmuştur?,384
+517,History & Ancient Greece,In what year (BCE) did the Battle of Marathon take place?,Antik Yunan ve Persler arasındaki ünlü Maraton Muharebesi hangi yılda (MÖ) yapılmıştır?,490
+518,History & Ancient Greece,In what year (BCE) did the first recorded Olympic Games take place in Olympia?,Antik Olimpiyat Oyunları'nın kayıtlara geçen ilk düzenlenme yılı (MÖ) nedir?,776
+519,History & Ancient Greece,How many Spartan warriors held the pass at Thermopylae alongside King Leonidas?,Kral Leonidas ile birlikte Thermopylae geçidini savunan Spartalı savaşçı sayısı kaçtır?,300
+520,History & Ancient Greece,In what year (BCE) did the Peloponnesian War begin between Athens and Sparta?,Atina ile Sparta arasındaki Peloponez Savaşı hangi yılda (MÖ) başlamıştır?,431
+521,History & Egypt,"In what year (BCE) did Cleopatra VII, the last active ruler of the Ptolemaic Kingdom of Egypt, die?",Mısır'ın son kraliçesi VII. Kleopatra hangi yılda (MÖ) hayatını kaybetmiştir?,30
+522,History & Egypt,At what age did Cleopatra VII die?,Kraliçe Kleopatra vefat ettiğinde kaç yaşındaydı?,39
+523,History & Egypt,In what year (BCE) did King Tutankhamun die (approximate)?,Mısır Firavunu Tutankamon yaklaşık hangi yılda (MÖ) ölmüştür?,1323
+524,History & Egypt,At what age did King Tutankhamun die (approximate)?,Firavun Tutankamon öldüğünde yaklaşık kaç yaşındaydı?,19
+525,History & Egypt,How many years did Pharaoh Ramesses II (Ramesses the Great) rule Egypt (approximate)?,II. Ramses (Büyük Ramses) Mısır tahtında yaklaşık kaç yıl hüküm sürmüştür?,66
+526,History & Egypt,In what year (BCE) was the Rosetta Stone carved during the Ptolemaic dynasty?,Mısır hiyerogliflerinin çözülmesini sağlayan Rosetta Taşı hangi yılda (MÖ) yazılmıştır?,196
+527,History & Egypt,In what year was the Rosetta Stone discovered by French soldiers in Egypt?,Rosetta Taşı Mısır'da Fransız askerleri tarafından hangi yılda bulunmuştur?,1799
+528,History & Egypt,In what year did Jean-François Champollion announce he had deciphered Egyptian hieroglyphs?,Jean-François Champollion Mısır hiyerogliflerini çözdüğünü hangi yılda açıklamıştır?,1822
+529,History & Egypt,How many laws are inscribed on the Code of Hammurabi stele?,Babil Kralı Hammurabi Kanunları stelinde kaç adet yasa maddesi yer alır?,282
+530,History & Egypt,In what year (BCE) was the Code of Hammurabi established in ancient Babylon (approximate)?,Hammurabi Kanunları yaklaşık hangi yılda (MÖ) oluşturulmuştur?,1750
+531,History & Medieval,In what year was Charlemagne crowned Emperor of the Romans by Pope Leo III?,Şarlman (Büyük Karl) Papa III. Leo tarafından hangi yılda Kutsal Roma İmparatoru ilan edilmiştir?,800
+532,History & Medieval,In what year was the Magna Carta signed by King John of England at Runnymede?,İngiltere Kralı Yurtsuz John tarihi Magna Carta sözleşmesini hangi yılda imzalamıştır?,1215
+533,History & Medieval,In what year did the First Crusade capture Jerusalem?,Birinci Haçlı Seferi orduları Kudüs'ü hangi yılda ele geçirmiştir?,1099
+534,History & Medieval,In what year did Saladin (Salah ad-Din) recapture Jerusalem from the Crusaders?,Selahaddin Eyyubi Kudüs'ü Haçlılardan hangi yılda geri almıştır?,1187
+535,History & Medieval,In what year did the Fourth Crusade capture and sack Constantinople?,Dördüncü Haçlı Seferi şövalyeleri Konstantinopolis'i hangi yılda yağmalamıştır?,1204
+536,History & Medieval,In what year did the Hundred Years' War between England and France begin?,İngiltere ile Fransa arasındaki Yüzyıl Savaşları hangi yılda başlamıştır?,1337
+537,History & Medieval,In what year did the Hundred Years' War officially end?,İngiltere ile Fransa arasındaki Yüzyıl Savaşları hangi yılda sona ermiştir?,1453
+538,History & Medieval,How many actual years did the 'Hundred Years' War' last?,'Yüzyıl Savaşları' gerçekte kaç yıl sürmüştür?,116
+539,History & Medieval,In what year was Joan of Arc burned at the stake in Rouen?,Fransız kahraman Jeanne d'Arc Rouen kentinde hangi yılda yakılarak idam edilmiştir?,1431
+540,History & Medieval,At what age was Joan of Arc executed in 1431?,Jeanne d'Arc idam edildiğinde kaç yaşındaydı?,19
+541,History & Ottoman,In what year did Mehmed the Conqueror (Fatih Sultan Mehmed) capture Constantinople?,Fatih Sultan Mehmed İstanbul'u hangi yılda fethetmiştir?,1453
+542,History & Ottoman,At what age was Sultan Mehmed the Conqueror when he conquered Constantinople in 1453?,Fatih Sultan Mehmed 1453'te İstanbul'u fethettiğinde kaç yaşındaydı?,21
+543,History & Ottoman,In what year was the Ottoman Empire officially founded according to traditional history?,Geleneksel kabul edilen tarihe göre Osmanlı Devleti hangi yılda kurulmuştur?,1299
+544,History & Ottoman,In what year did the Battle of Mohács take place under Suleiman the Magnificent?,Kanuni Sultan Süleyman'ın komutasındaki Mohaç Meydan Muharebesi hangi yılda gerçekleşmiştir?,1526
+545,History & Ottoman,How many years did Sultan Suleiman the Magnificent rule the Ottoman Empire (the longest-reigning Sultan)?,Kanuni Sultan Süleyman Osmanlı tahtında kaç yıl hüküm sürerek en uzun süre tahtta kalan padişah olmuştur?,46
+546,History & Ottoman,In what year did the First Siege of Vienna take place under Suleiman the Magnificent?,I. Viyana Kuşatması Kanuni Sultan Süleyman döneminde hangi yılda yapılmıştır?,1529
+547,History & Ottoman,In what year did the Second Siege of Vienna take place under Kara Mustafa Pasha?,Kara Mustafa Paşa komutasındaki II. Viyana Kuşatması hangi yılda gerçekleşmiştir?,1683
+548,History & Ottoman,In what year did the naval Battle of Lepanto take place?,Osmanlı ve Haçlı donanmaları arasındaki İnebahtı Deniz Muharebesi hangi yılda gerçekleşmiştir?,1571
+549,History & Ottoman,"In what year was the Treaty of Karlowitz signed, marking the first major loss of Ottoman territory in Central Europe?",Osmanlı'nın Orta Avrupa'da büyük toprak kaybettiği Karlofça Antlaşması hangi yılda imzalanmıştır?,1699
+550,History & Ottoman,How many Sultans ruled the Ottoman Empire throughout its entire history?,Osmanlı İmparatorluğu tarihi boyunca tahta toplam kaç padişah çıkmıştır?,36
+551,History & Royalty,"How many years did King Louis XIV of France (the Sun King) reign, the longest recorded of any monarch?",Fransa Kralı XIV. Louis (Güneş Kral) kaç yıl hüküm sürerek tarihin en uzun süre tahtta kalan hükümdarı olmuştur?,72
+552,History & Royalty,How many years did Queen Victoria of the United Kingdom reign?,Birleşik Krallık Kraliçesi Victoria tahtta kaç yıl kalmıştır?,63
+553,History & Royalty,How many years did Queen Elizabeth II of the United Kingdom reign?,Birleşik Krallık Kraliçesi II. Elizabeth tahtta kaç yıl hüküm sürmüştür?,70
+554,History & Royalty,In what year did Queen Elizabeth II pass away at Balmoral Castle?,Kraliçe II. Elizabeth Balmoral Kalesi'nde hangi yılda vefat etmiştir?,2022
+555,History & Royalty,At what age did Queen Elizabeth II die in 2022?,Kraliçe II. Elizabeth 2022 yılında vefat ettiğinde kaç yaşındaydı?,96
+556,History & Royalty,How many wives did King Henry VIII of England have?,İngiltere Kralı VIII. Henry'nin toplam kaç eşi olmuştur?,6
+557,History & Royalty,How many of King Henry VIII's wives were executed by beheading?,İngiltere Kralı VIII. Henry'nin kaç eşi kafası kesilerek idam edilmiştir?,2
+558,History & Royalty,In what year was King Charles I of England executed by beheading during the English Civil War?,İngiltere Kralı I. Charles İç Savaş sırasında hangi yılda kafası kesilerek idam edilmiştir?,1649
+559,History & Royalty,In what year was King Louis XVI of France executed by guillotine during the French Revolution?,Fransa Kralı XVI. Louis Fransız İhtilali sırasında giyotinle hangi yılda idam edilmiştir?,1793
+560,History & Royalty,In what year was Queen Marie Antoinette executed by guillotine?,Fransa Kraliçesi Marie Antoinette hangi yılda giyotinle idam edilmiştir?,1793
+561,History & Asia,"In what year was Genghis Khan, the founder of the Mongol Empire, born (widely accepted year)?",Moğol İmparatorluğu'nun kurucusu Cengiz Han yaklaşık hangi yılda doğmuştur?,1162
+562,History & Asia,In what year did Genghis Khan pass away?,Cengiz Han hangi yılda vefat etmiştir?,1227
+563,History & Asia,"In what year did the Mongol forces of Hulagu Khan capture and sack Baghdad, ending the Abbasid Caliphate?",Hülagü Han komutasındaki Moğol ordusu Bağdat'ı ele geçirip Abbasi Halifeliği'ne hangi yılda son vermiştir?,1258
+564,History & Asia,In what year did Kublai Khan found the Yuan dynasty in China?,Kubilay Han Çin'de Yuan Hanedanlığı'nı hangi yılda kurmuştur?,1271
+565,History & Asia,"In what year did the Ming dynasty fall, being succeeded by the Qing dynasty in China?",Çin'deki Ming Hanedanlığı hangi yılda yıkılarak yerini Çing Hanedanlığı'na bırakmıştır?,1644
+566,History & Asia,"In what year did the Qing dynasty end, concluding over 2,000 years of imperial rule in China?",Çin'de 2000 yılı aşkın imparatorluk dönemini sona erdiren Çing Hanedanlığı hangi yılda çökmüştür?,1912
+567,History & Asia,"At what age did Puyi, the Last Emperor of China, ascend to the imperial throne in 1908?",Çin'in Son İmparatoru Puyi 1908 yılında tahta çıktığında henüz kaç yaşındaydı?,2
+568,History & Asia,In what year did the Meiji Restoration restore direct imperial rule to Japan?,Japonya'da modernleşmeyi başlatan Meiji Restorasyonu hangi yılda ilan edilmiştir?,1868
+569,History & Asia,In what year did the Edo period (Tokugawa Shogunate) begin in Japan?,Japonya'da Tokugawa Şogunluğu (Edo Dönemi) hangi yılda başlamıştır?,1603
+570,History & Asia,How many years did the Tokugawa Shogunate rule Japan before the Meiji Restoration (approximate)?,Tokugawa Şogunluğu Meiji Restorasyonu'ndan önce Japonya'yı yaklaşık kaç yıl yönetmiştir?,265
+571,History & Americas,In what year did Vasco da Gama successfully sail around Africa and reach India by sea?,Vasco da Gama Afrika'yı dolaşarak deniz yoluyla Hindistan'a hangi yılda ulaşmıştır?,1498
+572,History & Americas,In what year did Ferdinand Magellan's expedition set sail from Spain to circumnavigate the globe?,Ferdinand Macellan'ın dünyanın çevresini dolaşan ilk seferi İspanya'dan hangi yılda yola çıkmıştır?,1519
+573,History & Americas,"In what year did Magellan's surviving ship, the Victoria, complete the first circumnavigation of Earth?",Macellan'ın filosundan geriye kalan 'Victoria' gemisi dünyanın çevresindeki ilk turunu hangi yılda tamamlamıştır?,1522
+574,History & Americas,How many ships set sail on Magellan's original global circumnavigation voyage?,Macellan'ın dünya turuna başlayan orijinal filosunda kaç gemi bulunuyordu?,5
+575,History & Americas,How many ships successfully returned to Spain from Magellan's original fleet of five?,Macellan'ın 5 gemilik filosundan dünya turunu tamamlayarak İspanya'ya geri dönmeyi başaran kaç gemi oldu?,1
+576,History & Americas,In what year did Hernán Cortés conquer the Aztec capital of Tenochtitlan?,Hernan Cortes Aztek İmparatorluğu'nun başkenti Tenochtitlan'ı hangi yılda fethetmiştir?,1521
+577,History & Americas,In what year did Francisco Pizarro conquer the Inca Empire?,Francisco Pizarro İnka İmparatorluğu'nu hangi yılda fethetmiştir?,1533
+578,History & Americas,In what year did the Pilgrims land at Plymouth Rock aboard the Mayflower?,Mayflower gemisiyle gelen Hacılar (Pilgrimler) Plymouth'a hangi yılda ayak basmıştır?,1620
+579,History & Americas,How many passengers sailed aboard the Mayflower to America in 1620?,1620 yılında Mayflower gemisiyle Amerika'ya giden toplam yolcu sayısı kaçtır?,102
+580,History & Americas,In what year did the Boston Tea Party take place in Massachusetts?,Amerikan Bağımsızlık Savaşı'nın fitilini ateşleyen Boston Çay Partisi hangi yılda gerçekleşmiştir?,1773
+581,History & USA,In what year did George Washington take the oath of office as the first President of the United States?,George Washington Amerika Birleşik Devletleri'nin ilk başkanı olarak hangi yılda göreve başlamıştır?,1789
+582,History & USA,How many presidents of the United States have been assassinated while in office?,Görev başındayken suikast sonucu öldürülen ABD Başkanı sayısı kaçtır?,4
+583,History & USA,In what year was Abraham Lincoln assassinated by John Wilkes Booth at Ford's Theatre?,Abraham Lincoln Ford's Theatre'da hangi yılda suikasta uğramıştır?,1865
+584,History & USA,"In what year was John F. Kennedy assassinated in Dallas, Texas?",John F. Kennedy Dallas'ta hangi yılda suikast sonucu öldürülmüştür?,1963
+585,History & USA,"In what year did the Louisiana Purchase take place, doubling the territory of the United States?",ABD'nin yüzölçümünü ikiye katlayan Louisiana Satın Alımı hangi yılda gerçekleşmiştir?,1803
+586,History & USA,How many million dollars did the United States pay France for the Louisiana Purchase?,Amerika Birleşik Devletleri Louisiana Satın Alımı için Fransa'ya kaç milyon dolar ödemiştir?,15
+587,History & USA,In what year did the United States purchase Alaska from the Russian Empire?,"ABD, Alaska'yı Rus İmparatorluğu'ndan hangi yılda satın almıştır?",1867
+588,History & USA,How many million dollars did the United States pay Russia for Alaska (to one decimal place)?,"ABD, Alaska için Rusya'ya kaç milyon dolar ödemiştir?",7.2
+589,History & USA,In what year did Richard Nixon resign from the US presidency following the Watergate scandal?,Richard Nixon Watergate skandalı sonrası ABD başkanlığından hangi yılda istifa etmiştir?,1974
+590,History & USA,How many terms was Franklin D. Roosevelt elected to the US presidency (record)?,Franklin D. Roosevelt kaç kez ABD Başkanı seçilerek bir rekora imza atmıştır?,4
+591,History & Cold War,In what year was Mahatma Gandhi assassinated in New Delhi?,Mahatma Gandhi Yeni Delhi'de hangi yılda suikast sonucu öldürülmüştür?,1948
+592,History & Cold War,In what year was Nelson Mandela released from prison in South Africa after 27 years?,Nelson Mandela 27 yıl hapis yattıktan sonra Güney Afrika'da hangi yılda serbest bırakılmıştır?,1990
+593,History & Cold War,How many years did Nelson Mandela serve in prison?,Nelson Mandela hapiste toplam kaç yıl kalmıştır?,27
+594,History & Cold War,In what year was Nelson Mandela elected President of South Africa?,Nelson Mandela hangi yılda Güney Afrika Devlet Başkanı seçilmiştir?,1994
+595,History & Cold War,"In what year was Martin Luther King Jr. assassinated in Memphis, Tennessee?",Martin Luther King Jr. Memphis'te hangi yılda suikast sonucu öldürülmüştür?,1968
+596,History & Cold War,In what year did Martin Luther King Jr. deliver his iconic 'I Have a Dream' speech in Washington?,Martin Luther King Jr. ünlü 'Bir Hayalim Var' (I Have a Dream) konuşmasını hangi yılda yapmıştır?,1963
+597,History & Cold War,In what year did the Cuban Missile Crisis bring the world to the brink of nuclear war?,Dünyayı nükleer savaşın eşiğine getiren Küba Füze Krizi hangi yılda yaşanmıştır?,1962
+598,History & Cold War,How many days did the Cuban Missile Crisis stand-off last in October 1962?,Ekim 1962'deki Küba Füze Krizi gerginliği kaç gün sürmüştür?,13
+599,History & Cold War,In what year did the Korean War begin?,Kore Savaşı hangi yılda başlamıştır?,1950
+600,History & Cold War,In what year did the Korean Armistice Agreement halt active hostilities in the Korean War?,Kore Savaşı'nda aktif çatışmaları durduran ateşkes anlaşması hangi yılda imzalanmıştır?,1953
+601,Video Games & Pop Culture,In what year was the arcade game 'Pac-Man' first released by Namco in Japan?,Efsanevi arcade oyunu 'Pac-Man' Namco tarafından Japonya'da ilk kez hangi yılda piyasaya sürüldü?,1980
+602,Video Games & Pop Culture,In what year was the original 'Super Mario Bros.' released for the NES in Japan?,İlk 'Super Mario Bros.' oyunu NES için Japonya'da hangi yılda piyasaya çıkmıştır?,1985
+603,Video Games & Pop Culture,In what year was the puzzle game 'Tetris' created by Alexey Pajitnov in Moscow?,Bulmaca oyunu 'Tetris' Aleksey Pajitnov tarafından Moskova'da hangi yılda geliştirilmiştir?,1984
+604,Video Games & Pop Culture,In what year was the Nintendo Game Boy handheld console first released?,Nintendo'nun efsanevi el konsolu Game Boy ilk kez hangi yılda satışa sunulmuştur?,1989
+605,Video Games & Pop Culture,In what year was the iconic sandbox game 'Minecraft' first released publicly (alpha version)?,Fenomen oyun 'Minecraft' ilk olarak hangi yılda (alfa sürümüyle) yayınlanmıştır?,2009
+606,Video Games & Pop Culture,Approximately how many millions of copies has 'Minecraft' sold across all platforms (rounded to nearest 10 million)?,'Minecraft' tüm platformlarda toplam yaklaşık kaç milyon kopya satarak tüm zamanların en çok satan oyunu olmuştur?,300
+607,Video Games & Pop Culture,In what year was 'Grand Theft Auto V' (GTA V) originally released by Rockstar Games?,Rockstar Games'in 'Grand Theft Auto V' (GTA V) oyunu ilk olarak hangi yılda piyasaya sürülmüştür?,2013
+608,Video Games & Pop Culture,Approximately how many millions of copies has 'Grand Theft Auto V' sold worldwide (rounded to nearest 10 million)?,'GTA V' dünya çapında toplam yaklaşık kaç milyon adet satmıştır?,190
+609,Video Games & Pop Culture,In what year was the first 'Pokémon Red and Green' released in Japan on Game Boy?,İlk Pokémon oyunları ('Pokémon Red ve Green') Japonya'da hangi yılda çıkmıştır?,1996
+610,Video Games & Pop Culture,How many original Pokémon species were featured in Generation 1 (Kanto region)?,1. Nesil (Kanto bölgesi) Pokémon oyunlarında toplam kaç orijinal Pokémon türü bulunuyordu?,151
+611,Video Games & Pop Culture,In what year was the Sony PlayStation 2 (PS2) console released?,Dünyanın en çok satan konsolu olan Sony PlayStation 2 (PS2) hangi yılda çıkmıştır?,2000
+612,Video Games & Pop Culture,Approximately how many millions of units has the PlayStation 2 console sold worldwide (rounded to nearest whole million)?,PlayStation 2 konsolu dünya çapında yaklaşık kaç milyon adet satılmıştır?,155
+613,Video Games & Pop Culture,In what year was the first Microsoft Xbox console released?,Microsoft'un ilk Xbox konsolu hangi yılda piyasaya sürülmüştür?,2001
+614,Video Games & Pop Culture,In what year was the Nintendo Switch hybrid console launched worldwide?,Nintendo Switch konsolu dünya çapında hangi yılda satışa sunulmuştur?,2017
+615,Video Games & Pop Culture,In what year was the multiplayer battle royale game 'Fortnite' released by Epic Games?,Epic Games tarafından geliştirilen 'Fortnite' hangi yılda yayınlanmıştır?,2017
+616,Video Games & Pop Culture,In what year was the digital PC distribution platform Steam launched by Valve?,Valve'ın dijital oyun dağıtım platformu Steam hangi yılda kurulmuştur?,2003
+617,Video Games & Pop Culture,In what year was the classic strategy game 'Age of Empires II: The Age of Kings' released?,Strateji klasiği 'Age of Empires II' hangi yılda piyasaya çıkmıştır?,1999
+618,Video Games & Pop Culture,In what year was 'World of Warcraft' (WoW) released by Blizzard Entertainment?,Blizzard Entertainment'ın devasa çevrimiçi oyunu 'World of Warcraft' hangi yılda yayınlanmıştır?,2004
+619,Video Games & Pop Culture,In what year was 'The Legend of Zelda: Ocarina of Time' released for the Nintendo 64?,Tüm zamanların en iyi oyunlarından sayılan 'The Legend of Zelda: Ocarina of Time' hangi yılda çıkmıştır?,1998
+620,Video Games & Pop Culture,In what year was 'The Witcher 3: Wild Hunt' released by CD Projekt Red?,CD Projekt Red'in ödüllü RPG oyunu 'The Witcher 3: Wild Hunt' hangi yılda piyasaya sürülmüştür?,2015
+621,Internet & Digital Media,In what year was Facebook founded by Mark Zuckerberg at Harvard?,Mark Zuckerberg Facebook'u Harvard'da hangi yılda kurmuştur?,2004
+622,Internet & Digital Media,In what year was YouTube officially launched by its founders?,Video paylaşım platformu YouTube hangi yılda kurulmuştur?,2005
+623,Internet & Digital Media,In what year was the first video ever uploaded to YouTube ('Me at the zoo')?,YouTube'a yüklenen ilk video olan 'Me at the zoo' hangi yılda yüklenmiştir?,2005
+624,Internet & Digital Media,What was the duration of the first YouTube video ('Me at the zoo') in seconds?,YouTube'un ilk videosu 'Me at the zoo' kaç saniye sürmektedir?,19
+625,Internet & Digital Media,In what year was Twitter (now X) founded by Jack Dorsey and co-founders?,Twitter (şimdiki adıyla X) Jack Dorsey ve arkadaşları tarafından hangi yılda kurulmuştur?,2006
+626,Internet & Digital Media,What was the original character limit for a single tweet on Twitter when it was created?,Twitter'ın kurulduğu dönemdeki orijinal tek tweet karakter sınırı kaçtı?,140
+627,Internet & Digital Media,In what year was Instagram launched on the Apple App Store by Kevin Systrom and Mike Krieger?,Instagram Kevin Systrom ve Mike Krieger tarafından Apple App Store'da hangi yılda yayınlanmıştır?,2010
+628,Internet & Digital Media,How many billion dollars did Facebook pay to acquire Instagram in 2012?,Facebook 2012 yılında Instagram'ı satın almak için kaç milyar dolar ödemiştir?,1
+629,Internet & Digital Media,In what year was the messaging app WhatsApp founded by Jan Koum and Brian Acton?,Anlık mesajlaşma uygulaması WhatsApp hangi yılda kurulmuştur?,2009
+630,Internet & Digital Media,How many billion dollars did Facebook pay to acquire WhatsApp in 2014?,Facebook 2014 yılında WhatsApp'ı satın almak için yaklaşık kaç milyar dolar ödemiştir?,19
+631,Music & Bands,In what year was the rock band Queen formed in London?,Efsanevi rock grubu Queen Londra'da hangi yılda kurulmuştur?,1970
+632,Music & Bands,In what year was Queen's epic rock anthem 'Bohemian Rhapsody' released?,Queen'in efsane şarkısı 'Bohemian Rhapsody' hangi yılda piyasaya sürülmüştür?,1975
+633,Music & Bands,What is the runtime of Queen's 'Bohemian Rhapsody' in seconds (rounded to nearest whole second)?,Queen'in 'Bohemian Rhapsody' parçasının süresi kaç saniyedir (yaklaşık 5 dk 55 sn)?,355
+634,Music & Bands,In what year was the rock band Led Zeppelin formed in London?,Hard rock efsanesi Led Zeppelin hangi yılda kurulmuştur?,1968
+635,Music & Bands,In what year was Led Zeppelin's iconic track 'Stairway to Heaven' released?,Led Zeppelin'in 'Stairway to Heaven' şarkısı hangi yılda yayınlanmıştır?,1971
+636,Music & Bands,In what year was Pink Floyd's landmark album 'The Dark Side of the Moon' released?,Pink Floyd'un çığır açan 'The Dark Side of the Moon' albümü hangi yılda piyasaya çıkmıştır?,1973
+637,Music & Bands,How many weeks did Pink Floyd's 'The Dark Side of the Moon' spend on the Billboard 200 chart (record)?,Pink Floyd'un 'The Dark Side of the Moon' albümü Billboard 200 listesinde toplam kaç hafta kalarak rekor kırmıştır?,980
+638,Music & Bands,In what year was the Australian rock band AC/DC formed by the Young brothers?,Avustralyalı rock grubu AC/DC Young kardeşler tarafından hangi yılda kurulmuştur?,1973
+639,Music & Bands,In what year was AC/DC's smash album 'Back in Black' released?,AC/DC'nin tüm zamanların en çok satan albümlerinden 'Back in Black' hangi yılda çıkmıştır?,1980
+640,Music & Bands,In what year was the Irish rock band U2 formed in Dublin?,İrlandalı rock grubu U2 Dublin'de hangi yılda kurulmuştur?,1976
+641,Music & Bands,In what year was the heavy metal band Metallica formed in Los Angeles?,Heavy metal devi Metallica grubu Los Angeles'ta hangi yılda kurulmuştur?,1981
+642,Music & Bands,In what year was Metallica's self-titled 'The Black Album' released?,Metallica'nın ünlü 'The Black Album' (Siyah Albüm) hangi yılda piyasaya sürülmüştür?,1991
+643,Music & Bands,In what year was Nirvana's breakthrough album 'Nevermind' released?,Nirvana'nın grunge akımını başlatan 'Nevermind' albümü hangi yılda yayınlanmıştır?,1991
+644,Music & Bands,"In what year did Kurt Cobain, lead singer of Nirvana, pass away?",Nirvana'nın solisti Kurt Cobain hangi yılda hayatını kaybetmiştir?,1994
+645,Music & Bands,"At what age did Kurt Cobain die, joining the infamous '27 Club'?",Kurt Cobain vefat ettiğinde kaç yaşındaydı ('27 Kulübü')?,27
+646,Music & Bands,At what age did Jimi Hendrix die in London?,Efsanevi gitarist Jimi Hendrix öldüğünde kaç yaşındaydı?,27
+647,Music & Bands,At what age did Janis Joplin die in 1970?,Janis Joplin 1970 yılında hayatını kaybettiğinde kaç yaşındaydı?,27
+648,Music & Bands,"At what age did Jim Morrison, lead singer of The Doors, die in Paris?",The Doors'un solisti Jim Morrison Paris'te vefat ettiğinde kaç yaşındaydı?,27
+649,Music & Bands,At what age did Amy Winehouse die in 2011?,İngiliz şarkıcı Amy Winehouse 2011'de vefat ettiğinde kaç yaşındaydı?,27
+650,Music & Bands,"In what year was the famous Woodstock music festival held in Bethel, New York?",Tarihi Woodstock müzik festivali New York'ta hangi yılda düzenlenmiştir?,1969
+651,Toys & Board Games,In what year was the Rubik's Cube invented by Ernő Rubik in Hungary?,Rubik Küpü (Sabır Küpü) Macar heykeltıraş Ernő Rubik tarafından hangi yılda icat edilmiştir?,1974
+652,Toys & Board Games,How many small colored square stickers/faces are on a standard 3x3x3 Rubik's Cube?,Standart bir 3x3x3 Rubik Küpünün dış yüzeyinde toplam kaç renkli kare yüzey bulunur?,54
+653,Toys & Board Games,How many individual moving cubelets (pieces) make up a standard 3x3x3 Rubik's Cube (excluding center core)?,Standart bir 3x3x3 Rubik Küpü kaç adet küçük hareketli parçadan (köşe ve kenar) oluşur?,26
+654,Toys & Board Games,"What is the official world record time for solving a 3x3x3 Rubik's Cube in seconds (Max Park, to two decimal places)?",3x3x3 Rubik Küpünü çözme dünya hız rekoru (Max Park) kaç saniyedir?,3.13
+655,Toys & Board Games,In what year was the classic board game 'Monopoly' patented by Charles Darrow and Parker Brothers?,Klasik masa oyunu 'Monopoly' hangi yılda patentlenip satışa sunulmuştur?,1935
+656,Toys & Board Games,How many spaces/squares are on a standard Monopoly board?,Standart bir Monopoly oyun tahtasında toplam kaç kare bulunur?,40
+657,Toys & Board Games,"In what year was the Lego company founded in Billund, Denmark by Ole Kirk Christiansen?",Lego şirketi Danimarka'nın Billund kentinde hangi yılda kurulmuştur?,1932
+658,Toys & Board Games,In what year was the modern Lego plastic interlocking brick patented?,Günümüzde kullanılan kilitli plastik Lego tuğlası hangi yılda patentlenmiştir?,1958
+659,Toys & Board Games,How many studs (bumps) are on top of a standard 2x4 Lego brick?,Standart bir 2x4 Lego tuğlasının üstünde kaç çıkıntı (stud) bulunur?,8
+660,Toys & Board Games,In what year was the Barbie doll introduced by Mattel at the American International Toy Fair?,Barbie bebek Mattel tarafından ilk kez hangi yılda tanıtılmıştır?,1959
+661,Games & Chess,How many total squares are on a standard chessboard?,Standart bir satranç tahtasında toplam kaç kare bulunur?,64
+662,Games & Chess,How many total pieces (both black and white combined) are on a chessboard at the start of a game?,Bir satranç maçının başlangıcında tahtada toplam kaç taş (beyaz ve siyah birlikte) bulunur?,32
+663,Games & Chess,How many pawns does each player start with in chess?,Satrançta her oyuncu oyuna kaç piyonla başlar?,8
+664,Games & Chess,In what year did the IBM supercomputer Deep Blue defeat World Chess Champion Garry Kasparov in a match?,IBM'in süper bilgisayarı Deep Blue Dünya Satranç Şampiyonu Garry Kasparov'u hangi yılda mağlup etmiştir?,1997
+665,Games & Chess,In what year was the World Chess Federation (FIDE) founded in Paris?,Dünya Satranç Federasyonu (FIDE) Paris'te hangi yılda kurulmuştur?,1924
+666,Games & Chess,How many cards are in a standard deck of playing cards (excluding jokers)?,Standart bir iskambil destesinde (jokerler hariç) kaç kart bulunur?,52
+667,Games & Chess,How many numbered tiles are in a standard set of Double-Six dominoes?,Standart bir 'Double-Six' domino setinde toplam kaç taş bulunur?,28
+668,Games & Chess,How many checkers/pieces does each player have at the start of a standard game of backgammon?,Standart bir tavla oyununa başlarken her oyuncunun kaç pulu vardır?,15
+669,Games & Chess,How many points (triangles) are there on a standard backgammon board?,Standart bir tavla tahtasında toplam kaç hane (üçgen dilim) bulunur?,24
+670,Games & Chess,How many letter tiles are in an official English Scrabble game set?,Standart bir İngilizce Scrabble kutu oyununda toplam kaç harf taşı bulunur?,100
+671,Brands & Business,In what year was the sports brand Nike founded (originally as Blue Ribbon Sports)?,Nike spor giyim markası (ilk adıyla Blue Ribbon Sports) hangi yılda kurulmuştur?,1964
+672,Brands & Business,In what year was Nike's famous 'Swoosh' logo designed and adopted?,Nike'ın dünyaca ünlü 'Swoosh' logosu hangi yılda tasarlanıp benimsenmiştir?,1971
+673,Brands & Business,How many US dollars did student Carolyn Davidson receive for designing the Nike Swoosh logo in 1971?,Öğrenci Carolyn Davidson 1971'de Nike'ın ünlü logosunu çizdiğinde Mattel/Nike'tan kaç dolar almıştır?,35
+674,Brands & Business,In what year was the German sports brand Adidas founded by Adolf Dassler?,Alman spor giyim markası Adidas Adolf Dassler tarafından hangi yılda resmen kurulmuştur?,1949
+675,Brands & Business,In what year was the luxury car brand Ferrari founded by Enzo Ferrari?,Lüks spor otomobil üreticisi Ferrari Enzo Ferrari tarafından hangi yılda kurulmuştur?,1939
+676,Brands & Business,In what year was the Swedish furniture giant IKEA founded by Ingvar Kamprad?,İsveçli mobilya devi IKEA Ingvar Kamprad tarafından hangi yılda kurulmuştur?,1943
+677,Brands & Business,At what age did Ingvar Kamprad found IKEA in 1943?,Ingvar Kamprad 1943'te IKEA'yı kurduğunda kaç yaşındaydı?,17
+678,Brands & Business,In what year was the luxury fashion house Chanel founded by Coco Chanel in Paris?,Lüks moda evi Chanel Paris'te Coco Chanel tarafından hangi yılda kurulmuştur?,1910
+679,Brands & Business,In what year was the classic perfume Chanel No. 5 introduced to the market?,Efsanevi parfüm Chanel No. 5 hangi yılda piyasaya sunulmuştur?,1921
+680,Brands & Business,In what year was the luxury brand Louis Vuitton founded in Paris?,Lüks moda markası Louis Vuitton Paris'te hangi yılda kurulmuştur?,1854
+681,Comics & Animation,In what year did Superman make his comic book debut in Action Comics #1?,Süpermen ilk kez hangi yılda Action Comics 1. sayısıyla çizgi roman dünyasına girdi?,1938
+682,Comics & Animation,In what year did Batman make his comic book debut in Detective Comics #27?,Batman ilk kez hangi yılda Detective Comics 27. sayısında tanıtıldı?,1939
+683,Comics & Animation,In what year did Spider-Man make his first comic appearance in Amazing Fantasy #15?,Örümcek Adam ilk kez hangi yılda Amazing Fantasy 15. sayısında ortaya çıktı?,1962
+684,Comics & Animation,In what year did Mickey Mouse make his synchronized sound screen debut in 'Steamboat Willie'?,Miki Fare senkronize sesli ilk animasyon olan 'Steamboat Willie' ile hangi yılda seyirciyle buluştu?,1928
+685,Comics & Animation,In what year was the animated television show 'Tom and Jerry' first created by Hanna-Barbera?,Hanna-Barbera ikilisi efsanevi çizgi film 'Tom ve Jerry'yi hangi yılda yaratmıştır?,1940
+686,Comics & Animation,"In what year was the first computer-animated feature film, Pixar's 'Toy Story', released?",Pixar'ın tarihteki ilk tamamen bilgisayar animasyonu uzun metraj filmi 'Oyuncak Hikayesi' (Toy Story) hangi yılda vizyona girdi?,1995
+687,Comics & Animation,What was the runtime of Pixar's 'Toy Story' (1995) in minutes?,Pixar'ın 'Toy Story' (1995) filminin süresi kaç dakikadır?,81
+688,Comics & Animation,In what year was the anime movie 'Spirited Away' directed by Hayao Miyazaki released?,Hayao Miyazaki'nin yönettiği Oscar ödüllü anime klasiği 'Ruhların Kaçışı' (Spirited Away) hangi yılda vizyona girdi?,2001
+689,Comics & Animation,In what year did the manga and anime franchise 'Dragon Ball' first begin serialization?,Efsanevi manga serisi 'Dragon Ball' ilk kez hangi yılda yayımlanmaya başladı?,1984
+690,Comics & Animation,How many Dragon Balls must be gathered to summon the dragon Shenron?,Ejderha Shenron'u çağırmak için kaç adet Ejder Topu (Dragon Ball) toplamak gerekir?,7
+691,Theme Parks & World,"In what year was the original Disneyland park opened in Anaheim, California?",Kaliforniya Anaheim'daki ilk orijinal Disneyland parkı hangi yılda açılmıştır?,1955
+692,Theme Parks & World,"In what year was Walt Disney World opened in Orlando, Florida?",Florida Orlando'daki Walt Disney World eğlence kompleksi hangi yılda açılmıştır?,1971
+693,Theme Parks & World,How many theme parks make up the Walt Disney World Resort in Florida (excluding water parks)?,Florida'daki Walt Disney World Resort bünyesinde (su parkları hariç) kaç ana tema parkı vardır?,4
+694,Theme Parks & World,In what year was Disneyland Paris (originally Euro Disney) opened to the public?,Paris'teki Disneyland (Euro Disney) hangi yılda ziyaretçilere kapılarını açmıştır?,1992
+695,Theme Parks & World,"What is the height of Kingda Ka in New Jersey, one of the tallest roller coasters in the world, in meters (to nearest whole meter)?",Dünyanın en yüksek hız trenlerinden (roller coaster) biri olan Kingda Ka'nın yüksekliği kaç metredir?,139
+696,Theme Parks & World,"What is the maximum top speed of Formula Rossa in Abu Dhabi, the world's fastest roller coaster, in kilometers per hour?",Dünyanın en hızlı hız treni olan Abu Dabi'deki Formula Rossa'nın ulaştığı maksimum hız saatte kaç kilometredir?,240
+697,Theme Parks & World,In what year did the Ferris Wheel make its world premiere at the Chicago World's Fair?,Dönme dolap ilk kez hangi yılda Chicago Dünya Fuarı'nda tanıtılmıştır?,1893
+698,Theme Parks & World,What is the diameter of the London Eye observation wheel in meters?,Londra'daki ünlü dönme dolap London Eye'ın tekerlek çapı kaç metredir?,120
+699,Theme Parks & World,How many passenger capsules are on the London Eye observation wheel?,London Eye dönme dolabında kaç adet yolcu kapsülü bulunmaktadır?,32
+700,Theme Parks & World,How many minutes does one complete revolution of the London Eye take?,London Eye'ın bir tam tur dönüşü yaklaşık kaç dakika sürer?,30
+701,Human Body & Medicine,What is the approximate total length of all blood vessels in an adult human body in thousands of kilometers?,Yetişkin bir insan vücudundaki tüm kan damarlarının toplam uzunluğu yaklaşık kaç bin kilometredir?,100
+702,Human Body & Medicine,How many times does the average adult human heart beat per minute at rest (standard normal average)?,Dinlenme halindeki ortalama bir yetişkinin kalbi dakikada yaklaşık kaç kez atar?,72
+703,Human Body & Medicine,Approximately how many liters of blood does the adult human heart pump per day (in thousands of liters)?,Yetişkin bir insan kalbi günde yaklaşık kaç bin litre kan pompalar?,7.5
+704,Human Body & Medicine,What is the average weight of an adult human brain in grams (to nearest 50g)?,Yetişkin bir insan beyninin ortalama ağırlığı kaç gramdır?,1400
+705,Human Body & Medicine,Approximately how many billions of neurons are in the human brain?,İnsan beyninde yaklaşık kaç milyar nöron (sinir hücresi) bulunur?,86
+706,Human Body & Medicine,"What is the average weight of an adult human liver, the largest internal organ, in kilograms (to one decimal place)?",Vücudun en büyük iç organı olan yetişkin karaciğerinin ortalama ağırlığı kaç kilogramdır?,1.5
+707,Human Body & Medicine,What is the surface area of adult human skin in square meters (approximate standard average)?,Yetişkin bir insanın deri (cilt) yüzey alanı ortalama kaç metrekaredir?,2
+708,Human Body & Medicine,Approximately how long is the human adult small intestine in meters?,Yetişkin bir insanda ince bağırsağın boyu ortalama kaç metredir?,6
+709,Human Body & Medicine,Approximately how long is the human adult large intestine (colon) in meters (to one decimal place)?,Yetişkin bir insanda kalın bağırsağın boyu ortalama kaç metredir?,1.5
+710,Human Body & Medicine,How many lobes make up the human right lung?,İnsanda sağ akciğer kaç loptan oluşur?,3
+711,Human Body & Medicine,How many lobes make up the human left lung?,İnsanda sol akciğer kaç loptan oluşur?,2
+712,Human Body & Medicine,How many cranial nerves are there in the human body (in pairs)?,İnsan vücudunda kaç çift kafa siniri (kraniyal sinir) bulunur?,12
+713,Human Body & Medicine,What is the average breathing rate for a resting adult human in breaths per minute?,Dinlenme halindeki sağlıklı bir yetişkin dakikada ortalama kaç nefes alır?,16
+714,Human Body & Medicine,What is the normal resting blood pressure systolic value in mmHg for a healthy young adult?,Sağlıklı bir genç yetişkinin normal dinlenme sistolik (büyük) tansiyon değeri kaç mmHg'dir?,120
+715,Human Body & Medicine,What is the normal resting blood pressure diastolic value in mmHg for a healthy young adult?,Sağlıklı bir genç yetişkinin normal dinlenme diyastolik (küçük) tansiyon değeri kaç mmHg'dir?,80
+716,Human Body & Medicine,How many taste buds are typically found on an adult human tongue (in thousands)?,Yetişkin bir insan dilinde ortalama kaç bin tat tomurcuğu bulunur?,10
+717,Human Body & Medicine,Approximately how many hairs are on the average human scalp (in thousands)?,Ortalama bir insanın kafa derisinde yaklaşık kaç bin adet saç teli bulunur?,100
+718,Human Body & Medicine,At what average rate does human head hair grow in centimeters per month (to one decimal place)?,İnsan saçları ayda ortalama kaç santimetre uzar?,1.2
+719,Human Body & Medicine,How many muscles are in the human body (approximate widely cited count)?,İnsan vücudunda yaklaşık kaç kas bulunur?,650
+720,Human Body & Medicine,"What is the length of the human femur (thigh bone), the longest bone in the body, in centimeters for an average adult?",Vücudun en uzun kemiği olan uyluk kemiğinin (femur) ortalama bir yetişkindeki boyu kaç santimetredir?,48
+721,History & Medicine,"In what year did Alexander Fleming discover penicillin at St Mary's Hospital, London?",Alexander Fleming Londra'da penisilini hangi yılda keşfetmiştir?,1928
+722,History & Medicine,In what year did Edward Jenner administer the first successful smallpox vaccine?,Edward Jenner ilk başarılı çiçek aşısını hangi yılda uygulamıştır?,1796
+723,History & Medicine,In what year did Jonas Salk announce the successful creation of the polio vaccine?,Jonas Salk başarılı bir çocuk felci (polio) aşısı geliştirdiğini hangi yılda duyurmuştur?,1953
+724,History & Medicine,In what year was the first human heart transplant performed by Dr. Christiaan Barnard in South Africa?,Dünyada ilk insan kalbi nakli Dr. Christiaan Barnard tarafından Güney Afrika'da hangi yılda yapıldı?,1967
+725,History & Medicine,"How many days did the recipient of the first human heart transplant, Louis Washkansky, survive post-surgery?",İlk kalp nakli yapılan hasta Louis Washkansky ameliyattan sonra kaç gün yaşamıştır?,18
+726,History & Medicine,In what year did Wilhelm Röntgen discover X-rays?,Wilhelm Röntgen X-ışınlarını hangi yılda keşfetmiştir?,1895
+727,History & Medicine,In what year did James Watson and Francis Crick deduce the double-helix structure of DNA?,James Watson ve Francis Crick DNA'nın çift sarmallı yapısını hangi yılda keşfetmiştir?,1953
+728,History & Medicine,In what year was insulin first successfully used on a human patient to treat diabetes?,İnsülin diyabet tedavisinde ilk kez bir insan hastaya hangi yılda başarıyla uygulanmıştır?,1922
+729,History & Medicine,In what year was smallpox officially declared eradicated worldwide by the World Health Organization?,Çiçek hastalığı Dünya Sağlık Örgütü tarafından hangi yılda yeryüzünden tamamen silinmiş ilan edildi?,1980
+730,History & Medicine,In what year was the first 'test-tube baby' (Louise Brown) born via IVF in the UK?,Tüp bebek (IVF) yöntemiyle doğan ilk bebek olan Louise Brown İngiltere'de hangi yılda doğmuştur?,1978
+731,Health & Diseases,What is the normal human body blood glucose level when fasting in milligrams per deciliter (mg/dL standard upper limit)?,Açlık kan şekeri için sağlıklı kabul edilen normal üst sınır kaç mg/dL'dir?,99
+732,Health & Diseases,How many blood groups are in the ABO blood typing system?,ABO kan grubu sisteminde kaç farklı ana kan grubu vardır?,4
+733,Health & Diseases,In what year did the Black Death bubonic plague first arrive in Europe?,Kara Veba salgını Avrupa kıtasına ilk kez hangi yılda ulaşmıştır?,1347
+734,Health & Diseases,Approximately what percentage of Europe's population was wiped out by the Black Death in the 14th century?,14. yüzyıldaki Kara Veba salgınında Avrupa nüfusunun yaklaşık yüzde kaçı hayatını kaybetmiştir?,50
+735,Health & Diseases,In what year did the Spanish Flu pandemic break out across the globe?,İspanyol Gribi pandemisi dünya çapında hangi yılda patlak vermiştir?,1918
+736,Health & Diseases,Approximately how many millions of people are estimated to have died from the Spanish Flu pandemic (widely cited lower bound)?,İspanyol Gribi pandemisinde dünya genelinde en az kaç milyon insanın öldüğü tahmin edilmektedir?,50
+737,Health & Diseases,In what year was the Human Immunodeficiency Virus (HIV) confirmed as the cause of AIDS?,HIV virüsünün AIDS hastalığının nedeni olduğu hangi yılda kesinleşmiştir?,1983
+738,Health & Diseases,In what year was the World Health Organization (WHO) founded by the United Nations?,Dünya Sağlık Örgütü (WHO) hangi yılda kurulmuştur?,1948
+739,Health & Diseases,How many liters of air does an average person breathe each day (in thousands of liters)?,Ortalama bir insan günde yaklaşık kaç bin litre hava solur?,11
+740,Health & Diseases,What percentage of the human genome is shared between any two unrelated humans (standard estimate)?,Akraba olmayan herhangi iki insanın DNA dizilimleri yüzde kaç oranında birebir aynıdır?,99.9
+741,Human Records,"What is the official world record age of the oldest verified person in history, Jeanne Calment, in years?",Kayıtlara geçmiş en uzun yaşayan insan Jeanne Calment öldüğünde kaç yaşındaydı?,122
+742,Human Records,"In what year did Jeanne Calment pass away in Arles, France?",En yaşlı insan rekorunun sahibi Jeanne Calment hangi yılda vefat etmiştir?,1997
+743,Human Records,"What was the height of Robert Wadlow, the tallest confirmed man in history, in meters (to two decimal places)?",Tarihin en uzun boylu insanı kabul edilen Robert Wadlow'un boyu kaç metreydi?,2.72
+744,Human Records,At what age did Robert Wadlow pass away?,Tarihin en uzun insanı Robert Wadlow hayatını kaybettiğinde kaç yaşındaydı?,22
+745,Human Records,"What is the height of Sultan Kösen, the tallest living man in the world, in meters (to two decimal places)?",Yaşayan en uzun insan unvanına sahip Sultan Kösen'in boyu kaç metredir?,2.51
+746,Human Records,"What is the record for the longest time a human has held their breath underwater in minutes (static apnea with pure oxygen, rounded to nearest whole minute)?",Saf oksijen soluyarak su altında nefes tutma dünya rekoru yaklaşık kaç dakikadır?,24
+747,Human Records,How many days did Randy Gardner stay awake in 1964 to set the world record for sleep deprivation?,Randy Gardner 1964'te uyumama rekorunu kırarken aralıksız kaç gün uyanık kalmıştır?,11
+748,Human Records,What is the maximum recorded human heart rate in beats per minute during extreme ventricular tachycardia (widely accepted upper threshold)?,Tıbbi olarak aşırı taşikardide kaydedilen kalp atım hızı dakikada kaç vuruşa kadar çıkabilir?,300
+749,Human Records,What is the world record speed achieved on foot by a human sprinter (Usain Bolt peak speed) in kilometers per hour (to one decimal place)?,Bir insanın koşarken ulaştığı tepe hız rekoru (Usain Bolt) saatte kaç kilometredir?,44.7
+750,Human Records,"What is the lowest recorded body temperature survived by an accidental hypothermia patient in degrees Celsius (Anna Bågenholm, to one decimal place)?",Kazara donarak aşırı hipotermi geçiren bir insanın hayatta kaldığı en düşük vücut ısısı kaç santigrat derecedir?,13.7
+751,Microbiology & Biology,Approximately how many human cells make up an adult body (in trillions)?,Yetişkin bir insan vücudu yaklaşık kaç trilyon hücreden oluşur?,37
+752,Microbiology & Biology,Approximately how many bacterial cells live in the human microbiome in trillions?,İnsan mikrobiyotasında (özellikle bağırsaklarda) yaklaşık kaç trilyon bakteri hücresi yaşar?,38
+753,Microbiology & Biology,How many base pairs of DNA make up the human haploid genome in billions (to one decimal place)?,İnsan genomunda (haploid) yaklaşık kaç milyar baz çifti bulunur?,3.2
+754,Microbiology & Biology,Approximately how many protein-coding genes are in the human genome (in thousands)?,İnsan genomunda protein kodlayan yaklaşık kaç bin gen bulunmaktadır?,20
+755,Microbiology & Biology,What is the typical diameter of a human red blood cell in micrometers (microns)?,Bir insan alyuvarının (eritrosit) ortalama çapı kaç mikrometredir?,7
+756,Microbiology & Biology,What is the average lifespan of a human red blood cell in days?,Bir insan kırmızı kan hücresinin (alyuvar) ortalama ömrü kaç gündür?,120
+757,Microbiology & Biology,What is the typical diameter of the SARS-CoV-2 coronavirus particle in nanometers?,SARS-CoV-2 koronavirüs parçacığının ortalama çapı kaç nanometredir?,100
+758,Microbiology & Biology,How many years did the international Human Genome Project take from 1990 to completion in 2003?,İnsan Genom Projesi 1990'dan 2003'e kadar kaç yıl sürmüştür?,13
+759,Microbiology & Biology,What is the average speed of a human nerve impulse conduction in meters per second (myelinated motor fibers)?,İnsanda miyelinli sinir liflerinde sinir iletim hızı saniyede yaklaşık kaç metredir?,120
+760,Microbiology & Biology,How many liters of saliva does an average adult human produce per day (to one decimal place)?,Yetişkin bir insan günde ortalama kaç litre tükürük salgılar?,1.5
+761,Nature & Botany,"What is the height of 'Hyperion', the tallest living tree on Earth (a coast redwood), in meters (to nearest whole meter)?",Dünyanın yaşayan en uzun ağacı olan 'Hyperion' sahil sekoyasının boyu kaç metredir?,116
+762,Nature & Botany,"Approximately how old is 'General Sherman', the largest tree by volume on Earth, in years?",Hacimce dünyanın en büyük ağacı olan 'General Sherman' yaklaşık kaç yaşındadır?,2200
+763,Nature & Botany,"Approximately how old is 'Methuselah', an ancient Great Basin bristlecone pine in California, in years?",Kaliforniya'daki antik çam ağacı 'Methuselah' yaklaşık kaç yaşındadır?,4850
+764,Nature & Botany,What is the maximum growth rate of bamboo per day in centimeters (the fastest-growing plant)?,Dünyanın en hızlı büyüyen bitkisi olan bambu günde kaç santimetreye kadar uzayabilir?,91
+765,Nature & Botany,"What is the diameter of the largest single flower in the world, Rafflesia arnoldii, in meters (to nearest whole meter)?",Dünyanın en büyük tek çiçeği olan Rafflesia arnoldii'nin çapı kaç metredir?,1
+766,Nature & Botany,What is the weight of a single Rafflesia arnoldii flower in kilograms (approximate standard)?,Rafflesia arnoldii çiçeğinin ağırlığı yaklaşık kaç kilograma ulaşabilir?,10
+767,Nature & Botany,Approximately what percentage of the Earth's land surface is covered by forests?,Dünya kara yüzeyinin yaklaşık yüzde kaçı ormanlarla kaplıdır?,31
+768,Nature & Botany,"Approximately how many billions of trees are estimated to exist on Earth (in trillions, to one decimal place)?",Dünyada tahminen kaç trilyon ağaç bulunmaktadır?,3.0
+769,Nature & Botany,Approximately what percentage of the world's oxygen is produced by marine phytoplankton and photosynthetic algae?,Dünya atmosferindeki oksijenin yaklaşık yüzde kaçı deniz fitoplanktonları ve algler tarafından üretilir?,50
+770,Nature & Botany,How many years can a baobab tree live (maximum estimated age)?,Bir baobab ağacının azami ömrü yaklaşık kaç yıla ulaşabilir?,2500
+771,Geology & Earth,"What is the Mohs hardness rating of Talc, the softest mineral?",Mohs sertlik cetvelinde en yumuşak mineral olan Talk'ın sertlik derecesi kaçtır?,1
+772,Geology & Earth,"What is the Mohs hardness rating of Diamond, the hardest natural mineral?",Mohs sertlik skalasında bilinen en sert doğal mineral olan Elmas'ın sertlik derecesi kaçtır?,10
+773,Geology & Earth,What is the Mohs hardness of quartz?,Yaygın bir mineral olan kuvarsın Mohs sertlik derecesi kaçtır?,7
+774,Geology & Earth,What is the Mohs hardness of gypsum?,Mohs sertlik cetvelinde jips (alçı taşı) mineralinin sertliği kaçtır?,2
+775,Geology & Earth,Approximately how many kilometers deep is the Earth's crust on average under continents?,Kıtaların altında yer kabuğunun ortalama kalınlığı kaç kilometredir?,35
+776,Geology & Earth,What is the radius of the Earth from center to equator in kilometers (to nearest whole km)?,Dünya'nın merkezinden ekvatoruna olan yarıçapı kaç kilometredir?,6378
+777,Geology & Earth,What is the estimated temperature at the Earth's inner core in degrees Celsius (approximate standard)?,Dünya'nın iç çekirdeğindeki tahmini sıcaklık kaç santigrat derecedir?,5200
+778,Geology & Earth,How many major tectonic plates cover the surface of the Earth?,Dünya yüzeyini kaplayan kaç büyük ana tektonik levha vardır?,7
+779,Geology & Earth,"What was the magnitude of the 1960 Valdivia earthquake in Chile, the most powerful earthquake ever recorded?",Tarihte kaydedilen en şiddetli deprem olan 1960 Valdivia (Şili) depreminin büyüklüğü kaçtı?,9.5
+780,Geology & Earth,What was the magnitude of the catastrophic 2004 Indian Ocean earthquake that triggered the Boxing Day tsunami (to one decimal place)?,Büyük tsunamiye yol açan 2004 Hint Okyanusu depreminin büyüklüğü kaçtı?,9.1
+781,Atmosphere & Weather,"What is the standard sea-level atmospheric pressure in hectopascals (hPa / millibars, to two decimal places)?",Deniz seviyesindeki standart atmosfer basıncı kaç hektopaskaldır (hPa)?,1013.25
+782,Atmosphere & Weather,"What is the highest recorded surface wind speed not related to a tornado, recorded on Barrow Island, Australia, in kilometers per hour?",Avustralya Barrow Adası'nda kasırga sırasında ölçülen en yüksek rüzgar hızı saatte kaç kilometredir?,407
+783,Atmosphere & Weather,At what wind speed in kilometers per hour does a tropical storm officially become classified as a Category 1 hurricane (minimum speed)?,Bir tropikal fırtınanın Kategori 1 kasırga sayılması için rüzgar hızının saatte en az kaç kilometreye ulaşması gerekir?,119
+784,Atmosphere & Weather,At what wind speed in kilometers per hour is a storm classified as a Category 5 hurricane (minimum sustained speed)?,Kategori 5 bir kasırga için gereken asgari rüzgar hızı saatte kaç kilometredir?,252
+785,Atmosphere & Weather,"What is the average annual rainfall in millimeters in Mawsynram, India, the wettest place on Earth (to nearest 100mm)?",Dünyanın en çok yağış alan yeri olan Hindistan'daki Mawsynram köyünün yıllık ortalama yağış miktarı kaç milimetredir?,11872
+786,Atmosphere & Weather,How many years has the Atacama Desert in Chile gone without significant rainfall in certain sectors (historic drought period)?,Şili'deki Atacama Çölü'nün bazı bölgelerinde yağmur yağmadan geçen en uzun dönem kaç yıldır?,400
+787,Atmosphere & Weather,What is the approximate temperature of a lightning bolt channel in degrees Celsius?,Bir yıldırım kanalının sıcaklığı yaklaşık kaç santigrat dereceye ulaşabilir?,30000
+788,Atmosphere & Weather,What is the average altitude of the troposphere boundary (tropopause) at the equator in kilometers?,Ekvatorda troposfer tabakasının üst sınırı (tropopoz) deniz seviyesinden ortalama kaç kilometre yüksekliktedir?,17
+789,Atmosphere & Weather,At what altitude in kilometers does space officially begin according to the FAI Kármán line?,Uluslararası Havacılık Federasyonu'na göre uzayın resmi başlangıç sınırı (Karman Hattı) yerden kaç kilometre yüksekliktedir?,100
+790,Atmosphere & Weather,"What is the concentration of carbon dioxide in the Earth's atmosphere in parts per million (ppm, approximate modern reading)?",Dünya atmosferindeki karbondioksit konsantrasyonu yaklaşık kaç ppm'dir (milyonda bir parçacık)?,420
+791,Oceans & Polar,Approximately what percentage of the Earth's surface is covered by oceans and seas?,Dünya yüzeyinin yaklaşık yüzde kaçı denizler ve okyanuslarla kaplıdır?,71
+792,Oceans & Polar,Approximately what percentage of the Earth's total water is saline ocean water?,Dünyadaki toplam su miktarının yaklaşık yüzde kaçı okyanuslardaki tuzlu sudur?,97
+793,Oceans & Polar,Approximately what percentage of the world's fresh water is frozen in the Antarctic ice sheet?,Dünyadaki tatlı su rezervlerinin yaklaşık yüzde kaçı Antarktika buzul örtüsünde donmuş haldedir?,70
+794,Oceans & Polar,What is the salinity of typical open ocean seawater in grams of salt per kilogram of water (parts per thousand)?,Okyanus suyunun ortalama tuzluluk oranı binde (promil) kaçtır?,35
+795,Oceans & Polar,What is the freezing point of average ocean seawater in negative degrees Celsius (to one decimal place)?,Ortalama okyanus suyunun donma noktası eksi kaç santigrat derecedir?,-1.8
+796,Oceans & Polar,What is the maximum depth of the Arctic Ocean in meters (to nearest 50m)?,Kuzey Buz Okyanusu'nun (Arktik) bilinen en derin noktası kaç metredir?,5450
+797,Oceans & Polar,What is the length of the Mid-Atlantic Ridge underwater mountain range in thousands of kilometers?,Atlas Okyanusu'nun ortasındaki su altı sıradağları olan Orta Atlantik Sırtı'nın uzunluğu yaklaşık kaç bin kilometredir?,16
+798,Oceans & Polar,How many years ago did the Last Glacial Maximum (peak of the last Ice Age) occur (in thousands of years)?,Son Buzul Çağı'nın zirve yaptığı dönem günümüzden yaklaşık kaç bin yıl önceydi?,20
+799,Oceans & Polar,How many meters would global sea levels rise if the entire Greenland ice sheet melted completely (to nearest whole meter)?,Grönland buzul örtüsünün tamamı erirse küresel deniz seviyesi yaklaşık kaç metre yükselir?,7
+800,Oceans & Polar,How many meters would global sea levels rise if the entire Antarctic ice sheet melted completely (approximate)?,Antarktika buzulunun tamamı erirse küresel deniz seviyesi yaklaşık kaç metre yükselir?,58
+801,Animals & Predators,What is the average weight of an adult male African lion in kilograms?,Yetişkin bir erkek Afrika aslanının ortalama ağırlığı kaç kilogramdır?,190
+802,Animals & Predators,"What is the weight of an adult male Siberian (Amur) tiger, the largest cat species, in kilograms (standard upper average)?",En büyük kedi türü olan yetişkin bir erkek Sibirya kaplanının ağırlığı kaç kilograma ulaşabilir?,300
+803,Animals & Predators,What is the bite force of a jaguar in Newtons (to nearest hundred)?,Bir jaguarın çene ısırma kuvveti yaklaşık kaç Newton'dur?,1300
+804,Animals & Predators,What is the top running speed of a lion in short bursts in kilometers per hour?,Bir aslanın kısa mesafeli av kovalamacasındaki maksimum koşu hızı saatte kaç kilometredir?,80
+805,Animals & Predators,What is the maximum running speed of a grey wolf in kilometers per hour?,Bir gri kurdun ulaşabildiği maksimum koşu hızı saatte kaç kilometredir?,60
+806,Animals & Predators,What is the weight of an adult male polar bear in kilograms (typical large adult)?,Yetişkin bir erkek kutup ayısının ağırlığı yaklaşık kaç kilogramdır?,450
+807,Animals & Predators,What is the maximum recorded weight of an exceptionally large polar bear in kilograms (record specimen)?,Kayıtlara geçen en ağır kutup ayısı yaklaşık kaç kilogram ağırlığındaydı?,1002
+808,Animals & Predators,What is the top speed of a grizzly bear in kilometers per hour?,Bir boz ayının (grizzly) koşarken ulaşabildiği hız saatte kaç kilometredir?,56
+809,Animals & Predators,What is the average lifespan of a wild African lion in years?,Vahşi doğada bir Afrika aslanının ortalama yaşam süresi kaç yıldır?,14
+810,Animals & Predators,What is the top running speed of an African wild dog in kilometers per hour?,Afrika yaban köpeğinin koşarken ulaşabildiği maksimum hız saatte kaç kilometredir?,70
+811,Marine Life,"What is the weight of an adult blue whale's tongue in metric tons (approximate, equivalent to an elephant)?",Bir mavi balinanın dilinin ağırlığı yaklaşık kaç tondur (bir fil ağırlığında)?,2.7
+812,Marine Life,What is the weight of a blue whale's heart in kilograms?,Bir mavi balinanın kalbi yaklaşık kaç kilogram ağırlığındadır?,180
+813,Marine Life,What is the maximum recorded diving depth of a sperm whale in meters (approximate)?,Bir ispermeçet balinasının daldığı kaydedilen maksimum derinlik kaç metredir?,2250
+814,Marine Life,How many minutes can a sperm whale stay submerged on a single breath?,Bir ispermeçet balinası tek bir nefesle su altında en fazla kaç dakika kalabilir?,90
+815,Marine Life,What is the length of an adult killer whale (orca) in meters (typical male)?,Yetişkin bir erkek katil balinanın (orka) boyu ortalama kaç metredir?,8
+816,Marine Life,What is the maximum swimming speed of a killer whale in kilometers per hour?,Bir katil balinanın (orka) suda ulaşabildiği maksimum yüzme hızı saatte kaç kilometredir?,56
+817,Marine Life,"What is the maximum length of a whale shark, the largest living fish, in meters (approximate)?",Yaşayan en büyük balık olan balina köpekbalığının boyu yaklaşık kaç metreye ulaşabilir?,18
+818,Marine Life,What is the maximum length of a giant squid in meters (including feeding tentacles)?,Dev mürekkep balığının dokunaçları dahil toplam uzunluğu yaklaşık kaç metredir?,13
+819,Marine Life,What is the diameter of a giant squid's eye in centimeters (the largest eye in the animal kingdom)?,Hayvanlar aleminin en büyük gözüne sahip dev mürekkep balığının göz çapı kaç santimetredir?,27
+820,Marine Life,What is the weight of a colossal squid in kilograms (estimated record weight)?,Devasa kalamarın (colossal squid) ağırlığı yaklaşık kaç kilograma ulaşabilir?,495
+821,Marine Life & Reptiles,What is the maximum recorded length of a great white shark in meters (to one decimal place)?,Kayıtlara geçen en büyük büyük beyaz köpekbalığının boyu kaç metredir?,6.1
+822,Marine Life & Reptiles,How many rows of teeth does a shark typically have lined up in its jaws at any given time?,Bir köpekbalığının çenesinde aynı anda kaç sıra diş dizilimi bulunur?,5
+823,Marine Life & Reptiles,How many teeth can a shark lose and replace throughout its lifetime (in thousands)?,Bir köpekbalığı yaşamı boyunca döküp yenilediği diş sayısı yaklaşık kaç bindir?,30
+824,Marine Life & Reptiles,"What is the length of an adult saltwater crocodile, the largest living reptile, in meters (large specimen)?",Yaşayan en büyük sürüngen olan tuzlu su timsahının boyu yaklaşık kaç metreye ulaşabilir?,6
+825,Marine Life & Reptiles,What is the weight of an exceptionally large saltwater crocodile in kilograms (to nearest 100 kg)?,Büyük bir tuzlu su timsahının ağırlığı yaklaşık kaç kilograma ulaşabilir?,1000
+826,Marine Life & Reptiles,What is the bite force of a large saltwater crocodile in Newtons (to nearest thousand)?,Büyük bir tuzlu su timsahının çene ısırma kuvveti yaklaşık kaç Newton'dur?,16000
+827,Marine Life & Reptiles,"What is the length of an adult Komodo dragon, the largest lizard on Earth, in meters?",Dünyanın en büyük kertenkelesi olan Komodo ejderinin boyu kaç metreye ulaşabilir?,3
+828,Marine Life & Reptiles,What is the weight of an adult male Komodo dragon in kilograms (typical large specimen)?,Yetişkin bir erkek Komodo ejderinin ağırlığı yaklaşık kaç kilogramdır?,90
+829,Marine Life & Reptiles,"What is the maximum confirmed length of a green anaconda, the heaviest snake, in meters (to one decimal place)?",Yeşil anakondanın doğrulanmış maksimum uzunluğu kaç metredir?,5.2
+830,Marine Life & Reptiles,"What is the length of a reticulated python, the longest snake in the world, in meters (confirmed record, to one decimal place)?",Dünyanın en uzun yılanı olan ağlı pitonun doğrulanmış boyu kaç metredir?,6.9
+831,Birds & Flight,"What is the wingspan of the wandering albatross, the largest wingspan of any living bird, in meters (to one decimal place)?",Yaşayan kuşlar arasında en büyük kanat açıklığına sahip gezgin albatrosun kanat açıklığı kaç metredir?,3.5
+832,Birds & Flight,"What is the height of an adult common ostrich, the tallest and heaviest bird, in meters (to one decimal place)?",Dünyanın en büyük ve en ağır kuşu olan devekuşunun boyu yaklaşık kaç metredir?,2.7
+833,Birds & Flight,What is the weight of an adult male ostrich in kilograms (approximate)?,Yetişkin bir erkek devekuşunun ağırlığı yaklaşık kaç kilogramdır?,130
+834,Birds & Flight,What is the maximum running speed of an ostrich in kilometers per hour?,Bir devekuşunun koşarken ulaşabildiği maksimum hız saatte kaç kilometredir?,70
+835,Birds & Flight,How many grams does an ostrich egg weigh on average?,Bir devekuşu yumurtası ortalama kaç gram ağırlığındadır?,1400
+836,Birds & Flight,An ostrich egg is equivalent in volume to how many domestic chicken eggs?,Bir devekuşu yumurtasının hacmi yaklaşık kaç adet tavuk yumurtasına eşittir?,24
+837,Birds & Flight,How many times per second does a hummingbird flap its wings during normal hovering flight (approximate)?,Bir sinek kuşu (kolibri) havada sabit dururken saniyede yaklaşık kaç kez kanat çırpar?,50
+838,Birds & Flight,What is the heart rate of a flying hummingbird in beats per minute (approximate)?,Uçan bir sinek kuşunun kalbi dakikada yaklaşık kaç kez atar?,1200
+839,Birds & Flight,"What is the weight of the bee hummingbird, the smallest bird in the world, in grams (to one decimal place)?",Dünyanın en küçük kuşu olan arı sinek kuşunun ağırlığı kaç gramdır?,1.9
+840,Birds & Flight,What is the cruising altitude record of the Rüppell's vulture in meters (highest flying bird)?,Tarihte bir yolcu uçağıyla çarpışarak kaydedilen en yüksek kuş uçuşu rekoru (Rüppell akbabası) kaç metredir?,11300
+841,Insects & Invertebrates,How many legs does an adult insect have?,Yetişkin bir böceğin kaç bacağı vardır?,6
+842,Insects & Invertebrates,"How many body segments (head, thorax, abdomen) make up an insect's anatomy?",Bir böceğin vücudu kaç ana bölüme ayrılır?,3
+843,Insects & Invertebrates,How many eyes (compound plus simple ocelli) does a honey bee have in total?,Bir bal arısının toplam kaç gözü (bileşik ve basit gözler) vardır?,5
+844,Insects & Invertebrates,How many kilometers per hour can a honey bee fly when carrying nectar?,Bir bal arısının nektar taşırken uçuş hızı saatte yaklaşık kaç kilometredir?,24
+845,Insects & Invertebrates,How many times per second does a honey bee beat its wings in flight (approximate)?,Bir bal arısı uçarken kanatlarını saniyede yaklaşık kaç kez çırpar?,230
+846,Insects & Invertebrates,How many individual bees can live in a single thriving honey bee colony/hive during peak summer (in thousands)?,Yaz aylarında güçlü bir bal arısı kovanında yaklaşık kaç bin arı yaşar?,60
+847,Insects & Invertebrates,How many eggs can a honey bee queen lay per day during peak season (approximate)?,Bir ana arı (kraliçe arı) en verimli döneminde günde yaklaşık kaç yumurta bırakabilir?,2000
+848,Insects & Invertebrates,How many kilograms of flower nectar must bees collect to produce 1 kilogram of honey (approximate)?,1 kilogram bal üretmek için arıların yaklaşık kaç kilogram çiçek nektarı toplaması gerekir?,4
+849,Insects & Invertebrates,How many times its own body weight can a dung beetle pull (record for animal strength)?,Kendi ağırlığına oranla dünyanın en güçlü hayvanı olan bok böceği vücut ağırlığının kaç katını çekebilir?,1141
+850,Insects & Invertebrates,How many legs does a centipede have per body segment in pairs?,Bir çıyanın her bir vücut halkasında kaç çift bacak bulunur?,1
+851,Mammals & Primates,What is the gestation period of a red kangaroo in days?,Kızıl kangurunun gebelik süresi kaç gündür?,33
+852,Mammals & Primates,What is the weight of a newborn red kangaroo at birth in grams (approximate)?,Yeni doğmuş bir kızıl kanguru yavrusu doğduğunda yaklaşık kaç gramdır?,1
+853,Mammals & Primates,What is the hopping speed of a red kangaroo in kilometers per hour?,Bir kızıl kangurunun zıplayarak ulaştığı sürat saatte yaklaşık kaç kilometredir?,56
+854,Mammals & Primates,How many hours a day does a giant panda spend eating bamboo?,Dev bir panda gününün yaklaşık kaç saatini bambu yiyerek geçirir?,12
+855,Mammals & Primates,How many kilograms of bamboo does an adult giant panda consume per day (approximate)?,Yetişkin bir dev panda günde ortalama kaç kilogram bambu tüketir?,12
+856,Mammals & Primates,How many hours a day does a wild koala spend sleeping and resting?,Vahşi bir koala günün ortalama kaç saatini uyuyarak ve dinlenerek geçirir?,20
+857,Mammals & Primates,What percentage of DNA do chimpanzees share with humans (approximate)?,Şempanzeler insanların DNA'sının yaklaşık yüzde kaçını paylaşırlar?,98.7
+858,Mammals & Primates,What is the weight of an adult male mountain gorilla in kilograms (average)?,Yetişkin bir erkek dağ gorilinin ortalama ağırlığı kaç kilogramdır?,160
+859,Mammals & Primates,What is the arm span of an adult male gorilla in meters (to one decimal place)?,Yetişkin bir erkek gorilin kol açıklığı kaç metreye ulaşabilir?,2.6
+860,Mammals & Primates,How many recognized species of primates exist on Earth today (approximate)?,Günümüzde dünyada bilinen yaklaşık kaç farklı primat türü yaşamaktadır?,500
+861,Canines & Pets,How many teeth does an adult domestic dog have?,Yetişkin bir evcil köpekte kaç diş bulunur?,42
+862,Canines & Pets,How many scent receptors do dogs have in their noses in millions (approximate standard for bloodhound)?,Bir koku takip köpeğinin (bloodhound) burnunda yaklaşık kaç milyon koku reseptörü bulunur?,300
+863,Canines & Pets,How many scent receptors do humans have in their noses in millions (for comparison)?,"Karşılaştırma için, bir insanın burnunda yaklaşık kaç milyon koku reseptörü vardır?",6
+864,Canines & Pets,What is the normal resting body temperature of a healthy domestic dog in degrees Celsius (to one decimal place)?,Sağlıklı bir evcil köpeğin normal vücut sıcaklığı kaç santigrat derecedir?,38.5
+865,Canines & Pets,"How many recognized dog breeds are recognized by the Fédération Cynologique Internationale (FCI, approximate)?",Dünya Köpek Federasyonu (FCI) tarafından tanınan kaç tescilli köpek ırkı vardır?,360
+866,Canines & Pets,What is the maximum running speed of a greyhound dog in kilometers per hour?,Bir tazının (greyhound) koşarken ulaşabildiği maksimum hız saatte kaç kilometredir?,72
+867,Canines & Pets,"What is the weight of an English Mastiff, one of the heaviest dog breeds, in kilograms (large adult male)?",Dünyanın en ağır köpek ırklarından İngiliz Mastiff'in yetişkin bir erkeği yaklaşık kaç kilogramdır?,100
+868,Canines & Pets,"What was the age in years of 'Bobi', the oldest verified dog on record?",Kayıtlara geçen en yaşlı köpek olan 'Bobi' öldüğünde kaç yaşındaydı?,31
+869,Canines & Pets,How many years can a typical small dog breed live on average?,Küçük boy bir evcil köpek ırkının ortalama yaşam süresi kaç yıldır?,15
+870,Canines & Pets,How many muscles control each of a dog's ears?,Bir köpeğin her bir kulağını hareket ettiren kaç kas bulunur?,18
+871,Felines & Pets,How many teeth does an adult domestic cat have?,Yetişkin bir evcil kedide kaç diş bulunur?,30
+872,Felines & Pets,How many bones are in the skeleton of a domestic cat (approximate standard)?,Evcil bir kedinin iskeletinde yaklaşık kaç kemik bulunur?,230
+873,Felines & Pets,What is the normal resting body temperature of a healthy domestic cat in degrees Celsius (to one decimal place)?,Sağlıklı bir evcil kedinin normal vücut sıcaklığı kaç santigrat derecedir?,38.6
+874,Felines & Pets,How many muscles control each of a domestic cat's ears?,Evcil bir kedinin her bir kulağını yönlendiren kaç kas vardır?,32
+875,Felines & Pets,What is the top sprinting speed of a domestic cat in kilometers per hour?,Evcil bir kedinin koşarken ulaşabildiği en yüksek hız saatte yaklaşık kaç kilometredir?,48
+876,Felines & Pets,How many hours per day does an average domestic cat spend sleeping?,Evcil bir kedi günün ortalama kaç saatini uyuyarak geçirir?,15
+877,Felines & Pets,"What was the record age of 'Creme Puff', the oldest verified cat in history, in years?",Tarihte doğrulanmış en yaşlı kedi olan 'Creme Puff' öldüğünde kaç yaşındaydı?,38
+878,Felines & Pets,"How many claws does a normal domestic cat have in total (5 on each front paw, 4 on each rear paw)?",Normal bir evcil kedinin dört patisinde toplam kaç pençesi (tırnağı) vardır?,18
+879,Felines & Pets,How many degrees can a cat rotate each of its ears independently?,Bir kedi her bir kulağını birbirinden bağımsız olarak kaç derece döndürebilir?,180
+880,Felines & Pets,At how many hertz does a domestic cat typically purr on average?,Evcil bir kedinin mırıltısının (purr) frekansı ortalama kaç hertzdir?,25
+881,Farm Animals,How many teeth does an adult male horse typically have?,Yetişkin bir erkek atta tipik olarak kaç diş bulunur?,40
+882,Farm Animals,What is the top recorded speed of a galloping Thoroughbred racehorse in kilometers per hour?,Yarış atı safkan bir İngiliz atının dörtnala koşarken ulaştığı rekor hız saatte kaç kilometredir?,70
+883,Farm Animals,What is the gestation period of a domestic horse in months?,Evcil bir atın (kısrağın) gebelik süresi kaç aydır?,11
+884,Farm Animals,What is the gestation period of a domestic dairy cow in days (approximate)?,Evcil bir süt ineğinin gebelik süresi yaklaşık kaç gündür?,283
+885,Farm Animals,How many liters of milk does a high-producing Holstein dairy cow yield per day on average?,Yüksek verimli bir Holstein süt ineği günde ortalama kaç litre süt verir?,30
+886,Farm Animals,What is the average weight of an adult Holstein dairy cow in kilograms?,Yetişkin bir Holstein süt ineğinin ortalama ağırlığı kaç kilogramdır?,680
+887,Farm Animals,"What is the gestation period of a domestic pig in days (standard formula: 3 months, 3 weeks, 3 days)?","Evcil bir domuzun gebelik süresi kaç gündür (3 ay, 3 hafta, 3 gün kuralı)?",114
+888,Farm Animals,What is the gestation period of a domestic sheep in days (approximate)?,Evcil bir koyunun gebelik süresi ortalama kaç gündür?,147
+889,Farm Animals,How many kilograms of wool can a single Merino sheep produce in one year (record high fleece)?,Bir Merinos koyunu tek bir yılda kaç kilograma kadar kaliteli yün üretebilir?,18
+890,Farm Animals,What is the average lifespan of a domestic horse in years?,Evcil bir atın ortalama yaşam süresi kaç yıldır?,28
+891,Extreme Wildlife,At what depth in meters does total darkness begin in the ocean (the aphotic bathypelagic zone)?,Okyanuslarda güneş ışığının tamamen bittiği ve mutlak karanlığın başladığı derinlik kaç metredir?,1000
+892,Extreme Wildlife,What atmospheric pressure in bars is exerted at the bottom of the Mariana Trench (approximate)?,Mariana Çukuru'nun dibinde suyun uyguladığı basınç yaklaşık kaç bardır (atmosfer)?,1086
+893,Extreme Wildlife,"How many years can a tardigrade (water bear) survive in cryptobiosis (dormant state, laboratory proven)?",Bir su ayısı (tardigrad) laboratuvarda kanıtlanmış olarak susuz ve dondurulmuş halde kaç yıl hayatta kalabilir?,30
+894,Extreme Wildlife,At what low temperature in negative degrees Celsius can tardigrades survive for short periods?,Tardigradlar kısa süreler için mutlak sıfıra yakın eksi kaç santigrat dereceye kadar dayanabilir?,272
+895,Extreme Wildlife,What is the maximum water temperature in degrees Celsius found at hydrothermal deep-sea black smokers?,Okyanus tabanındaki hidrotermal bacalardan fışkıran suyun sıcaklığı kaç santigrat dereceye kadar ulaşabilir?,400
+896,Extreme Wildlife,What is the depth in meters where the Titanic shipwreck lies on the Atlantic seabed?,Titanik gemi enkazı Atlas Okyanusu'nda kaç metre derinlikte yatmaktadır?,3800
+897,Extreme Wildlife,How many tentacles does a nautilus possess (up to what number)?,Antik bir deniz canlısı olan nautilus'un (sedefli helezon) kaç adet dokunacı olabilir?,90
+898,Extreme Wildlife,How many chambers does a mature nautilus shell have on average?,Yetişkin bir nautilus kabuğu ortalama kaç bölmeden (odacıktan) oluşur?,30
+899,Extreme Wildlife,"What is the lifespan of an ocean quahog clam (Ming the clam, the oldest non-colonial animal) in years?",Ming adı verilen okyanus midyesinin kabuk halkalarından hesaplanan rekor yaşı kaçtı?,507
+900,Extreme Wildlife,In what year was 'Ming the clam' dredged from the Icelandic seabed by researchers?,Ming adlı rekor yaştaki midye İzlanda açıklarında hangi yılda bulunmuştur?,2006
+901,Aviation & Records,"What was the maximum takeoff weight of the Antonov An-225 Mriya, the heaviest aircraft ever built, in metric tons?",Tarihte üretilmiş en ağır kargo uçağı olan Antonov An-225 Mriya'nın azami kalkış ağırlığı kaç tondu?,640
+902,Aviation & Records,What was the wingspan of the Antonov An-225 Mriya in meters (to nearest whole meter)?,Antonov An-225 Mriya'nın kanat açıklığı kaç metredir?,88
+903,Aviation & Records,How many jet engines powered the Antonov An-225 Mriya?,Antonov An-225 Mriya kargo uçağında kaç adet jet motoru bulunmaktaydı?,6
+904,Aviation & Records,What is the maximum nonstop flight range of a Boeing 777-200LR in thousands of kilometers (to one decimal place)?,Boeing 777-200LR modelinin azami kesintisiz uçuş menzili yaklaşık kaç bin kilometredir?,15.8
+905,Aviation & Records,"What is the cruising altitude of a typical commercial jet airliner in thousands of meters (e.g. 11 for 11,000 m)?",Tipik bir ticari yolcu uçağının standart seyir irtifası yaklaşık kaç bin metredir?,11
+906,Aviation & Records,"What is the length of the longest commercial airport runway in the world (Qamdo Bamda Airport, Tibet) in meters?",Tibet'teki Qamdo Bamda Havalimanı'nın dünyanın en uzun ticari pistinin uzunluğu kaç metredir?,5500
+907,Aviation & Records,"What is the elevation of Daocheng Yading Airport in Sichuan, the highest civilian airport in the world, in meters above sea level?",Dünyanın en yüksek sivil havalimanı olan Daocheng Yading Havalimanı'nın rakımı deniz seviyesinden kaç metredir?,4411
+908,Aviation & Records,How many floors/stories are in the Burj Khalifa tower in Dubai?,Dubai'deki Burç Halife gökdeleninde kaç kat bulunmaktadır?,163
+909,Aviation & Records,How many passenger elevators/lifts operate inside the Burj Khalifa?,Burç Halife binasında toplam kaç adet asansör hizmet vermektedir?,57
+910,Aviation & Records,"What is the top speed of the Shanghai Maglev train, the fastest commercial maglev, in kilometers per hour?",Şanghay Maglev manyetik treninin ticari operasyondaki maksimum hızı saatte kaç kilometredir?,431
+911,Transport & Infrastructure,"What is the length of the largest cruise ship in the world, 'Icon of the Seas', in meters?",Dünyanın en büyük yolcu gemisi olan 'Icon of the Seas'in boyu kaç metredir?,365
+912,Transport & Infrastructure,How many guests/passengers can the cruise ship 'Icon of the Seas' accommodate at maximum capacity?,Icon of the Seas yolcu gemisi azami kapasitede kaç yolcu ağırlayabilir?,7600
+913,Transport & Infrastructure,What was the length of the RMS Titanic in meters (to nearest whole meter)?,RMS Titanik gemisinin toplam uzunluğu kaç metreydi?,269
+914,Transport & Infrastructure,What was the gross register tonnage of the RMS Titanic in thousands of tons (rounded to whole number)?,Titanik gemisinin gros tonajı yaklaşık kaç bin tondu?,46
+915,Transport & Infrastructure,How many lifeboats were carried aboard the RMS Titanic on its maiden voyage?,Titanik ilk ve son seferine çıktığında gemide kaç adet cankurtaran filikası vardı?,20
+916,Transport & Infrastructure,"What is the length of the Danyang–Kunshan Grand Bridge in China, the world's longest bridge, in kilometers (to nearest whole km)?",Dünyanın en uzun köprüsü olan Çin'deki Danyang-Kunshan Büyük Köprüsü'nün uzunluğu kaç kilometredir?,165
+917,Transport & Infrastructure,"What is the length of the main span of the 1915 Çanakkale Bridge in Turkey, the longest suspension bridge span in the world, in meters?",Dünyanın en uzun asma köprü orta açıklığına sahip 1915 Çanakkale Köprüsü'nün orta açıklığı kaç metredir?,2023
+918,Transport & Infrastructure,What is the length of the Akashi Kaikyo Bridge central suspension span in Japan in meters?,Japonya'daki Akashi Kaikyo asma köprüsünün orta açıklık uzunluğu kaç metredir?,1991
+919,Transport & Infrastructure,What is the height of the Millau Viaduct cable-stayed bridge in France from base to mast tip in meters?,Fransa'daki Millau Viyadüğü'nün tabandan direk ucuna kadar olan toplam yüksekliği kaç metredir?,343
+920,Transport & Infrastructure,What is the capacity of the Three Gorges Dam reservoir in China in billions of cubic meters (approximate)?,Çin'deki Üç Boğaz Barajı gölünün toplam su depolama kapasitesi yaklaşık kaç milyar metreküptür?,39
+921,Demographics & Cities,"What is the approximate population of the world in billions of people (as of 2024, to one decimal place)?",2024 yılı itibarıyla dünya nüfusu yaklaşık kaç milyardır?,8.1
+922,Demographics & Cities,In what year did the world's population officially surpass 8 billion people according to the UN?,Birleşmiş Milletler verilerine göre dünya nüfusu hangi yılda resmen 8 milyarı aşmıştır?,2022
+923,Demographics & Cities,In what year did the world's population reach 1 billion people (approximate historical milestone)?,Dünya nüfusu tarihte ilk kez yaklaşık hangi yılda 1 milyara ulaşmıştır?,1804
+924,Demographics & Cities,"What is the population of the Greater Tokyo metropolitan area, the most populous urban agglomeration, in millions (approximate)?",Dünyanın en kalabalık metropol alanı olan Büyük Tokyo bölgesinin nüfusu yaklaşık kaç milyondur?,37
+925,Demographics & Cities,What is the population of the Istanbul metropolitan municipality in millions (to one decimal place)?,İstanbul'un resmi nüfusu yaklaşık kaç milyondur?,15.7
+926,Demographics & Cities,"What is the population of the Vatican City, the least populous sovereign state in the world (approximate registered residents)?",Dünyanın en az nüfuslu bağımsız devleti olan Vatikan'ın yerleşik nüfusu yaklaşık kaçtır?,800
+927,Demographics & Cities,What is the land area of the Vatican City in square kilometers (to two decimal places)?,Vatikan Devleti'nin yüzölçümü kaç kilometrekaredir?,0.49
+928,Demographics & Cities,What is the land area of the Principality of Monaco in square kilometers (to one decimal place)?,Monako Prensliği'nin toplam yüzölçümü yaklaşık kaç kilometrekaredir?,2.1
+929,Demographics & Cities,"What is the population density of Monaco in thousands of people per square kilometer (the highest in the world, approximate)?",Dünyanın nüfus yoğunluğu en yüksek ülkesi olan Monako'da kilometrekareye yaklaşık kaç bin kişi düşer?,19
+930,Demographics & Cities,"What is the life expectancy at birth in Japan, one of the world's highest, in years (approximate standard)?",Japonya'da doğumda beklenen ortalama yaşam süresi kaç yıldır?,84
+931,Economy & Finance,In what year was the physical cash Euro currency introduced into circulation?,Euro madeni paraları ve banknotları hangi yılda resmi olarak tedavüle girmiştir?,2002
+932,Economy & Finance,In what year was the Euro introduced as an accounting currency for electronic transfers?,Euro elektronik transferler ve muhasebe para birimi olarak hangi yılda kabul edilmiştir?,1999
+933,Economy & Finance,How many European Union countries currently use the Euro as their official currency (Eurozone member count as of 2024)?,2024 yılı itibarıyla Avrupa Birliği'nin kaç üye ülkesi resmi para birimi olarak Euro'yu kullanmaktadır?,20
+934,Economy & Finance,"In what year was the Bretton Woods conference held, establishing the IMF and World Bank?",IMF ve Dünya Bankası'nın temellerinin atıldığı Bretton Woods Konferansı hangi yılda toplanmıştır?,1944
+935,Economy & Finance,In what year did the United States officially end the gold standard for convertibility of the dollar (Nixon Shock)?,ABD dolarının altına dönüştürülebilirliğine (altın standardı) Richard Nixon hangi yılda son vermiştir?,1971
+936,Economy & Finance,How many shares make up the Dow Jones Industrial Average index?,Dow Jones Sanayi Endeksi kaç şirketin hisse senedinden oluşur?,30
+937,Economy & Finance,How many companies make up the S&P 500 stock index?,S&P 500 borsa endeksinde kaç büyük şirketin hisseleri yer alır?,500
+938,Economy & Finance,In what year did the Wall Street Crash (Black Tuesday) trigger the Great Depression?,Büyük Buhran'ı başlatan Wall Street Kara Salı borsa çöküşü hangi yılda yaşanmıştır?,1929
+939,Economy & Finance,"In what year did the investment bank Lehman Brothers file for bankruptcy, sparking the 2008 financial crisis?",Lehman Brothers yatırım bankası hangi yılda iflas ederek 2008 küresel mali krizini tetiklemiştir?,2008
+940,Economy & Finance,What is the weight of a standard 'Good Delivery' gold bullion bar held by central banks in kilograms (approximate)?,Merkez bankalarının rezervlerinde tutulan standart bir külçe altının ağırlığı yaklaşık kaç kilogramdır?,12.4
+941,Astronomy & Universe,What is the distance to the Andromeda Galaxy from Earth in millions of light-years (to one decimal place)?,Samanyolu'na en yakın büyük sarmal gökada olan Andromeda Gökadası Dünya'dan kaç milyon ışık yılı uzaktadır?,2.5
+942,Astronomy & Universe,What is the diameter of the Milky Way galaxy in thousands of light-years (standard estimate)?,Samanyolu Galaksisi'nin disk çapı yaklaşık kaç bin ışık yılıdır?,100
+943,Astronomy & Universe,How many astronomical units (AU) is Pluto from the Sun at its average orbital distance (rounded to nearest whole AU)?,Plüton'un Güneş'e olan ortalama yörünge uzaklığı yaklaşık kaç Astronomik Birimdir (AB)?,39
+944,Astronomy & Universe,How many Earth years does it take for the Sun to complete one orbit around the Milky Way galactic center (in millions of years)?,Güneş Sistemi'nin Samanyolu Galaksisi merkezi etrafındaki bir tam turu (Kozmik Yıl) yaklaşık kaç milyon yıl sürer?,230
+945,Astronomy & Universe,What is the surface temperature of the Sun in degrees Celsius (approximate photosphere temperature)?,Güneş'in yüzey sıcaklığı (fotosfer) yaklaşık kaç santigrat derecedir?,5500
+946,Astronomy & Universe,What is the core temperature of the Sun in millions of degrees Celsius?,Güneş'in çekirdek sıcaklığı yaklaşık kaç milyon santigrat derecedir?,15
+947,Astronomy & Universe,How many recognized constellations are officially cataloged by the International Astronomical Union (IAU)?,Uluslararası Astronomi Birliği (IAU) tarafından gökyüzünde resmi olarak tanınan kaç takımyıldız vardır?,88
+948,Astronomy & Universe,How many constellations make up the traditional zodiac along the ecliptic path?,Geleneksel astrolojik burçlar kuşağını (Zodyak) oluşturan takımyıldız sayısı kaçtır?,12
+949,Astronomy & Universe,In what year did the Voyager 1 space probe launch from Earth?,Yıldızlararası uzaya çıkan Voyager 1 uzay aracı Dünya'dan hangi yılda fırlatılmıştır?,1977
+950,Astronomy & Universe,In what year did Voyager 1 officially become the first human-made object to enter interstellar space?,Voyager 1 hangi yılda yıldızlararası uzaya giren ilk insan yapımı araç olmuştur?,2012
+951,History & Disasters,"In what year did the German airship Hindenburg catch fire and burn in Lakehurst, New Jersey?",Hindenburg zeplini New Jersey'de hangi yılda yanarak facia ile sonuçlanmıştır?,1937
+952,History & Disasters,How many seconds did it take for the Hindenburg airship to be completely consumed by fire?,Hindenburg zeplininin alev alıp tamamen kül olması kaç saniye sürmüştür?,34
+953,History & Disasters,In what year did the space shuttle Challenger disaster occur shortly after liftoff?,Challenger uzay mekiği fırlatıldıktan kısa bir süre sonra hangi yılda infilak etmiştir?,1986
+954,History & Disasters,How many seconds into its flight did the space shuttle Challenger break apart?,Challenger uzay mekiği kalkıştan kaç saniye sonra parçalanmıştır?,73
+955,History & Disasters,How many crew members lost their lives in the space shuttle Challenger disaster?,Challenger uzay mekiği faciasında kaç astronot hayatını kaybetmiştir?,7
+956,History & Disasters,In what year did the space shuttle Columbia disintegrate upon atmospheric reentry?,Columbia uzay mekiği Dünya atmosferine giriş sırasında hangi yılda parçalanmıştır?,2003
+957,History & Disasters,How many crew members lost their lives in the space shuttle Columbia disaster?,Columbia uzay mekiği faciasında kaç astronot hayatını kaybetmiştir?,7
+958,History & Disasters,In what year did the Deepwater Horizon oil rig explode in the Gulf of Mexico?,Meksika Körfezi'ndeki Deepwater Horizon petrol platformu hangi yılda patlamıştır?,2010
+959,History & Disasters,How many days did oil flow into the Gulf of Mexico before the Deepwater Horizon well was finally capped?,Deepwater Horizon kuyusu kapatılana kadar petrol denize kaç gün boyunca akmıştır?,87
+960,History & Disasters,In what year did the Fukushima Daiichi nuclear disaster occur in Japan following a tsunami?,Japonya'da tsunaminin ardından Fukuşima nükleer santral kazası hangi yılda meydana gelmiştir?,2011
+961,Science & Nobel,"In what year was the will of Alfred Nobel signed, creating the Nobel Prizes?",Alfred Nobel'in Nobel Ödülleri'ni tesis eden vasiyeti hangi yılda imzalanmıştır?,1895
+962,Science & Nobel,In what year did Marie Curie win her first Nobel Prize (in Physics)?,Marie Curie ilk Nobel Ödülü'nü (Fizik dalında) hangi yılda kazanmıştır?,1903
+963,Science & Nobel,In what year did Marie Curie win her second Nobel Prize (in Chemistry)?,Marie Curie ikinci Nobel Ödülü'nü (Kimya dalında) hangi yılda kazanmıştır?,1911
+964,Science & Nobel,"How many people in history have won two Nobel Prizes in different scientific fields (Marie Curie is unique here, but total individuals with 2 Nobels is 4)?",Tarihte iki farklı bilim dalında Nobel kazanan kaç kişi vardır?,1
+965,Science & Nobel,In what year was Albert Einstein awarded the Nobel Prize in Physics (awarded for 1921)?,Albert Einstein Nobel Fizik Ödülü'nü hangi yılda kazanmıştır (1921 ödülü)?,1921
+966,Science & Nobel,At what age did Malala Yousafzai become the youngest Nobel laureate in history (Peace Prize in 2014)?,Malala Yusufzay 2014'te Nobel Barış Ödülü'nü kazanan en genç kişi olduğunda kaç yaşındaydı?,17
+967,Science & Nobel,How many Nobel prize categories are presented each year (including the Sveriges Riksbank Prize in Economic Sciences)?,Ekonomi dahil olmak üzere her yıl toplam kaç kategoride Nobel Ödülü verilmektedir?,6
+968,Science & Nobel,In what year was the first Nobel Peace Prize awarded to Henry Dunant and Frédéric Passy?,Kızılhaç'ın kurucusu Henry Dunant'ın aldığı ilk Nobel Barış Ödülü hangi yılda verilmiştir?,1901
+969,Science & Nobel,In what year did Isaac Newton publish his groundbreaking work 'Philosophiæ Naturalis Principia Mathematica'?,Isaac Newton evrensel kütle çekimini açıkladığı 'Principia' adlı başyapıtını hangi yılda yayınlamıştır?,1687
+970,Science & Nobel,In what year did Charles Darwin publish 'On the Origin of Species'?,Charles Darwin 'Türlerin Kökeni' adlı evrim teorisi kitabını hangi yılda yayımlamıştır?,1859
+971,Languages & Linguistics,Approximately how many distinct spoken languages exist in the world today according to Ethnologue (to nearest hundred)?,Dünyada günümüzde aktif olarak konuşulan kaç farklı dil bulunmaktadır?,7100
+972,Languages & Linguistics,"Which country has the highest linguistic diversity in the world, Papua New Guinea, with approximately how many languages spoken?",Dünyanın dil çeşitliliği en yüksek ülkesi Papua Yeni Gine'de yaklaşık kaç farklı yerel dil konuşulmaktadır?,840
+973,Languages & Linguistics,How many letters are in the standard modern English alphabet?,Standart modern İngiliz alfabesinde kaç harf vardır?,26
+974,Languages & Linguistics,How many letters are in the modern Turkish alphabet?,Modern Türkçe alfabede kaç harf bulunmaktadır?,29
+975,Languages & Linguistics,How many letters are in the standard modern Russian Cyrillic alphabet?,Modern Rus Kiril alfabesinde kaç harf bulunur?,33
+976,Languages & Linguistics,How many letters are in the modern Greek alphabet?,Modern Yunan alfabesinde kaç harf bulunur?,24
+977,Languages & Linguistics,How many letters are in the standard modern Arabic alphabet?,Standart modern Arap alfabesinde kaç harf bulunur?,28
+978,Languages & Linguistics,How many letters are in the Hebrew alphabet?,İbrani alfabesinde kaç harf bulunur?,22
+979,Languages & Linguistics,How many official working languages are recognized by the United Nations (UN)?,Birleşmiş Milletler'in (BM) kaç resmi çalışma dili vardır?,6
+980,Languages & Linguistics,"Approximately how many millions of native speakers does Mandarin Chinese have (widely cited, to nearest 10 million)?",Çince Mandarin dilini ana dili olarak konuşan yaklaşık kaç milyon insan vardır?,920
+981,Landmarks & Monuments,In what year was the Sydney Opera House officially opened by Queen Elizabeth II?,Sidney Opera Binası Kraliçe II. Elizabeth tarafından hangi yılda resmen açılmıştır?,1973
+982,Landmarks & Monuments,"How many ceramic roof tiles cover the sail shells of the Sydney Opera House (in millions, to two decimal places)?",Sidney Opera Binası'nın yelken çatılarını kaplayan seramik karo sayısı kaç milyondur?,1.05
+983,Landmarks & Monuments,What is the height of the Washington Monument obelisk in meters (to two decimal places)?,Washington Anıtı dikilitaşının yüksekliği kaç metredir?,169.29
+984,Landmarks & Monuments,In what year was the construction of the Empire State Building completed in New York?,New York'taki Empire State Binası'nın inşaatı hangi yılda tamamlanmıştır?,1931
+985,Landmarks & Monuments,How many days did it take to construct the Empire State Building (record fast skyscraper construction)?,Empire State Binası rekor bir hızla kaç günde inşa edilmiştir?,410
+986,Landmarks & Monuments,How many steps are there in the Empire State Building from street level to the 102nd floor observatory?,Empire State Binası'nın zemininden 102. kattaki gözlem terasına kadar kaç merdiven basamağı vardır?,1860
+987,Landmarks & Monuments,What is the height of the Arc de Triomphe in Paris in meters (to nearest whole meter)?,Paris'teki Zafer Takı'nın (Arc de Triomphe) yüksekliği kaç metredir?,50
+988,Landmarks & Monuments,What is the height of the dome of St. Peter's Basilica in the Vatican from the floor to the top of the cross in meters?,Vatikan'daki Aziz Petrus Bazilikası kubbesinin zeminden haçın ucuna kadar olan yüksekliği kaç metredir?,136
+989,Landmarks & Monuments,How many columns are there inside the Basilica Cistern (Yerebatan Sarnıcı) in Istanbul?,İstanbul'daki Yerebatan Sarnıcı'nın içinde kaç mermer sütun bulunmaktadır?,336
+990,Landmarks & Monuments,In what year was the historic Galata Tower in Istanbul built in its present stone form by the Genoese?,İstanbul'daki Galata Kulesi Cenevizliler tarafından bugünkü taş haliyle hangi yılda inşa edilmiştir?,1348
+991,Exploration & Records,In what year did Roald Amundsen become the first person to reach the South Pole?,Roald Amundsen Güney Kutbu'na ulaşan ilk insan unvanını hangi yılda kazanmıştır?,1911
+992,Exploration & Records,In what year did Sir Edmund Hillary and Tenzing Norgay make the first confirmed summit of Mount Everest?,Edmund Hillary ve Tenzing Norgay Everest Dağı'nın zirvesine ilk kez hangi yılda tırmanmıştır?,1953
+993,Exploration & Records,In what year did Jacques Piccard and Don Walsh make the first crewed descent to the bottom of the Mariana Trench in the bathyscaphe Trieste?,Jacques Piccard ve Don Walsh Trieste batiskafı ile Mariana Çukuru'nun dibine ilk insanlı dalışı hangi yılda gerçekleştirmiştir?,1960
+994,Exploration & Records,In what year did filmmaker James Cameron complete the first solo dive to the Challenger Deep in the Deepsea Challenger?,Yönetmen James Cameron Mariana Çukuru'na tek başına ilk dalışı hangi yılda yapmıştır?,2012
+995,Exploration & Records,How many countries does the equator pass through directly?,Ekvator çizgisi doğrudan kaç bağımsız ülkenin topraklarından geçer?,13
+996,Exploration & Records,"How many countries in the world have only one single land border with another country (e.g. Canada, Portugal, UK, etc.)?",Dünyada sadece tek bir komşusuyla kara sınırı paylaşan kaç ülke vardır?,16
+997,Exploration & Records,"How many sovereign countries in the world are completely surrounded by another single country (enclaved: Lesotho, San Marino, Vatican City)?",Dünyada tamamen tek bir başka ülke tarafından kuşatılmış (anklav) kaç bağımsız devlet vardır?,3
+998,Exploration & Records,What is the longest continuous passenger train journey in the world on the Trans-Siberian Railway (Moscow to Vladivostok) in kilometers?,Moskova ile Vladivostok arasındaki Trans-Sibirya Demiryolu'nun kesintisiz rota uzunluğu kaç kilometredir?,9289
+999,Exploration & Records,How many days does the direct Trans-Siberian train journey from Moscow to Vladivostok take (approximate)?,Moskova'dan Vladivostok'a Trans-Sibirya tren yolculuğu yaklaşık kaç gün sürer?,7
+1000,Exploration & Records,What is the circumference of the Earth at the Equator in kilometers (to nearest whole km)?,Dünya'nın Ekvator çizgisindeki çevre uzunluğu yaklaşık kaç kilometredir?,40075

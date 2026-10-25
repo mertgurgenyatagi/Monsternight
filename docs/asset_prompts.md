@@ -1,8 +1,8 @@
 # Asset prompts
 
-A Gemini prompt for each of the 94 images in [assets.md](assets.md), except the paper texture, which Claude made with a script. Fonts and sounds aren't included. Every path below is inside `assets/art/`.
+A Gemini prompt for each of the 98 images in [assets.md](assets.md), except the paper texture, which Claude made with a script. Fonts and sounds aren't included. Every path below is inside `assets/art/`.
 
-**Status:** the first playable's 83 images are made, approved by the user, and processed. The raws are in `images_raw/` as `.jfif` files (JPEG), and `tools/images/process_images.py` turns them into `assets/art/`. The final game adds 10, marked "New in part 26": the sumo and tug of war icons, and the Minigames section at the end.
+**Status:** the first playable's 83 images are made, approved by the user, and processed. The raws are in `images_raw/` as `.jfif` files (JPEG), and `tools/images/process_images.py` turns them into `assets/art/`. The final game adds 10, marked "New in part 26": the sumo and tug of war icons, and the Minigames section at the end. Microplan 15 adds 4 category icons (the section before the itch.io images); the Minigames section's images stop being used once part 45 removes the four old games.
 
 The prompts are in the order to make them, not the order of assets.md. Some prompts need an earlier image attached so that a set matches: the icons follow the coin, the monsters follow Dracula, each portrait follows its body, the scenery strips follow the village's, and the minigame pieces follow the icons.
 
@@ -1493,6 +1493,74 @@ Match the paper style and colors of the ribbon in the attached icon. Draw a brig
 Style: flat construction-paper cutout, like the South Park movie's paper animation. Built from a few layered pieces of colored paper with slightly uneven hand-cut edges and a faint paper-fiber texture. Few colors, each one flat. Playful and spooky, colorful rather than bleak, not realistic. No shine, glow, gradients, outlines or 3D effects.
 
 Composition: One ribbon only, centered, filling most of the frame with a little empty space around it. Nothing else in the frame: no rope. Plain, flat, pure white background (#FFFFFF), and no white anywhere on the subject. No shadow, no border or outline around the shape, and no text, letters or numbers.
+
+Output: a square image.
+```
+
+**Processing:** remove white, 128 × 128.
+
+## Category icons: `icons/`
+
+New in Microplan 15 (part 45), for the four Shot in the Dark spaces. They replace the pong, sumo, head soccer and tug of war icons on the board. The category names and their question tags are in [microplan.md](microplan.md#question-data-format).
+
+### `icons/atlas.png`
+
+The Atlas: geography. **Attach:** your image for `icons/coin.png`.
+
+```text
+Match the paper style of the attached coin. Draw a small world globe as a flat paper-cutout game icon, seen from the front: a round ball of teal paper with a few simple, blobby continents cut from green paper, tilted slightly on its axis, held in a curved arm of violet paper that ends in a small round violet base.
+
+Style: flat construction-paper cutout, like the South Park movie's paper animation. Built from a few layered pieces of colored paper with slightly uneven hand-cut edges and a faint paper-fiber texture. Few colors, each one flat. Playful and spooky, colorful rather than bleak, not realistic. No shine, glow, gradients, outlines or 3D effects.
+
+Composition: The globe, its arm and its base only, centered, filling most of the frame with a little empty space around it. Nothing else in the frame. Plain, flat, pure white background (#FFFFFF), and no white anywhere on the subject. No shadow, no border or outline around the shape, and no text, letters or numbers.
+
+Output: a square image.
+```
+
+**Processing:** remove white, 128 × 128.
+
+### `icons/archive.png`
+
+The Archive: history. **Attach:** your image for `icons/coin.png`.
+
+```text
+Match the paper style of the attached coin. Draw an old scroll as a flat paper-cutout game icon, seen from the front: a sheet of warm tan parchment paper, rolled up into a thick curl at the top and at the bottom, with a gap of flat parchment between the two curls, and a round blob of dark red wax stuck on the flat part like a seal, with a short red ribbon hanging from it. The parchment's edges are uneven and a little torn.
+
+Style: flat construction-paper cutout, like the South Park movie's paper animation. Built from a few layered pieces of colored paper with slightly uneven hand-cut edges and a faint paper-fiber texture. Few colors, each one flat. Playful and spooky, colorful rather than bleak, not realistic. No shine, glow, gradients, outlines or 3D effects.
+
+Composition: The scroll and its seal only, centered, filling most of the frame with a little empty space around it. Nothing else in the frame. Plain, flat, pure white background (#FFFFFF), and no white anywhere on the subject. No shadow, no border or outline around the shape, and no text, letters or numbers.
+
+Output: a square image.
+```
+
+**Processing:** remove white, 128 × 128.
+
+### `icons/lab.png`
+
+The Lab: science and nature. **Attach:** your image for `icons/coin.png`.
+
+```text
+Match the paper style of the attached coin. Draw a round-bottomed laboratory flask as a flat paper-cutout game icon, seen from the front: a pale sky-blue flask with a long neck, a small tan cork in its mouth, filled two-thirds full with bright green liquid cut from green paper, with three round bubbles of lighter green rising from the liquid, one of them floating above the flask's neck.
+
+Style: flat construction-paper cutout, like the South Park movie's paper animation. Built from a few layered pieces of colored paper with slightly uneven hand-cut edges and a faint paper-fiber texture. Few colors, each one flat. Playful and spooky, colorful rather than bleak, not realistic. No shine, glow, gradients, outlines or 3D effects.
+
+Composition: The flask, its liquid and its bubbles only, centered, filling most of the frame with a little empty space around it. Nothing else in the frame. Plain, flat, pure white background (#FFFFFF), and no white anywhere on the subject. No shadow, no border or outline around the shape, and no text, letters or numbers.
+
+Output: a square image.
+```
+
+**Processing:** remove white, 128 × 128.
+
+### `icons/stage.png`
+
+The Stage: culture and entertainment. **Attach:** your image for `icons/coin.png`.
+
+```text
+Match the paper style of the attached coin. Draw two theatre masks as a flat paper-cutout game icon, seen from the front, overlapping: a smiling pumpkin-orange mask in front, and a frowning violet mask behind it, tilted a little to the right. Each mask has two almond-shaped eye holes and a simple curved mouth cut out, and a short yellow ribbon trails from the violet one.
+
+Style: flat construction-paper cutout, like the South Park movie's paper animation. Built from a few layered pieces of colored paper with slightly uneven hand-cut edges and a faint paper-fiber texture. Few colors, each one flat. Playful and spooky, colorful rather than bleak, not realistic. No shine, glow, gradients, outlines or 3D effects.
+
+Composition: The two masks only, centered, filling most of the frame with a little empty space around it. Nothing else in the frame. Plain, flat, pure white background (#FFFFFF), and no white anywhere on the subject. No shadow, no border or outline around the shape, and no text, letters or numbers.
 
 Output: a square image.
 ```

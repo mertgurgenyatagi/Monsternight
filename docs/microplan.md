@@ -1,9 +1,9 @@
 # Microplan
 
-The [final game](roadmap.md#2-final-game), built in parts after the first playable's 24. The numbers go on from there. `/microplan` plans three parts at a time in detail, and a rough roadmap to the end (see `.claude/skills/microplan/SKILL.md`). It runs in its own session, after part 42, 45 and so on.
+The [final game](roadmap.md#2-final-game), built in parts after the first playable's 24. `/microplan` plans parts in detail and keeps a rough roadmap to the end (see `.claude/skills/microplan/SKILL.md`). It runs in its own session.
 
-- **The brief:** the user's direction for the final game is [final_game_brief.md](questionnaire_answers/final_game_brief.md), saved word for word. The design docs ([game_rules.md](game_rules.md), [board.md](board.md), [characters.md](characters.md), [minigames.md](minigames.md), [screens.md](screens.md), [tech.md](tech.md)) say what the final game is. Questionnaires ended at 18; the rest is Claude's call.
-- **The code map:** the first playable's Part notes ("Built so far" in [microplan_first_playable.md](microplan_first_playable.md#part-notes)) describe the code as it stands, and "The code since part 24" below adds what parts 25 to 39 changed. Read the section your part touches instead of rereading the code.
+- **The brief:** the user's direction for the final game is [final_game_brief.md](questionnaire_answers/final_game_brief.md), saved word for word. The design docs ([game_rules.md](game_rules.md), [board.md](board.md), [characters.md](characters.md), [minigames.md](minigames.md), [screens.md](screens.md), [tech.md](tech.md)) say what the game is. Questionnaires ended at 18; the rest is Claude's call.
+- **The code map:** the first playable's notes ([microplan_first_playable.md](microplan_first_playable.md#part-notes)) plus "Part notes" at the end of this file. Read the section your part touches instead of rereading the code.
 
 ## Building a part
 
@@ -13,145 +13,239 @@ A part is done when:
 
 1. It runs in Godot with no errors or warnings.
 2. Everything in its Polish list is in: animated, with its sounds, nothing glossed over.
-3. Claude has checked it by running the game, not just by reading the code.
-4. No screenshots are saved any more (the user dropped that rule on 2026-10-24 during part 41). A screenshot is only for debugging.
-5. Its Part notes are written. The branch is committed, pushed and merged into `development`, and `development` is pushed. Then check out `development`, so the next session starts there. The part session never waits for the user: it does the whole cycle, and the user reviews afterwards and asks for changes in a later session. This needs no git approval (see README, Handover 3).
-6. The session disconnects from the Godot MCP, so the next one gets its port (see README, Handover 5).
-7. The Godot editor is closed (after the MCP server is ended), because an open editor gets in the way of the overnight automation's screen watching. A Microplan session closes it too.
-8. The session's last message ends with `q7Zk#x2` as a line of its own, which the overnight automation looks for (see README, Handover 6). A Microplan session ends the same way.
+3. Claude has checked it by running the game, not just by reading the code. **Keep the testing small** (the user is low on tokens): one headless script for the rules, one short bot run, and a Playwright pair of tabs only where the part says so.
+4. No screenshots are saved. A screenshot is only for debugging.
+5. Its Part notes are written (short). The branch is committed, pushed and merged into `development`, and `development` is pushed and checked out. The part session never waits for the user. This needs no git approval (README, Handover 3).
+6. The session disconnects from the Godot MCP (README, Handover 5), and closes the Godot editor after that.
+7. The session's last message ends with `q7Zk#x2` as a line of its own (README, Handover 6) -- except part 51, which ends the process.
 
-If a part turns out too big, split it (41a, 41b) instead of rushing it.
+If a part turns out too big, split it (46a, 46b) instead of rushing it.
+
+## Microplan 15: the pivot (2026-10-25)
+
+The user played the 1.0.0 build and sent thirteen points. The big one: **the four minigames are thrown out** (real-time games over a free relay do not work) and replaced by one, **Shot in the Dark**. Where each point lands:
+
+| Point | Part |
+|---|---|
+| 1 Shot in the Dark replaces the minigames | 45 (local), 46 (online) |
+| 2 Too long: two dice | 47 (dice, turn counts), 49 (pace) |
+| 3 Music: list every moment | the list below; wiring in 50 |
+| 4 Online control indicators differ per side | 46 (one symmetric layout) |
+| 5 Click a HUD portrait for a powers popup | 48 |
+| 6 Back button from the stake step to the opponent step | 47 |
+| 7 Numeric countdown instead of the candle | 48 |
+| 8 Things get in the way of other things | 49 |
+| 9 Everything faster | 49 |
+| 10 Zero-sum stakes | 47 |
+| 11 Powers that don't play nice: change them | 45 (Hyde), 47 (the rest) |
+| 12 Little testing | every part |
+| 13 Assets: the user retrieves them, Claude writes prompts | done: [asset_prompts.md](asset_prompts.md#category-icons-icons) has 4 icons; no new sounds are needed |
+
+**Decided with the user:** the Blood stake is a drain (the loser loses 1 blood and the winner gains 1, up to their cap), so it is unavailable unless both players are below their cap (Frankenstein as challenger only needs to be able to win it). Swap stays as it is: the challenger wins it or nothing happens; it is always available.
+
+**Claude's calls:** two dice are added together; the Wolf Man gets +1 per die (+2); Mr. Hyde's guess counts as 20% closer when he starts the duel; a swap duel needs 2 wins before 1 loss (was 3; Dorian still needs 1) because every round is a 20-second question; the decision timers shrink in part 49; local play passes the keyboard.
+
+## Question data format
+
+The user's file is [`sitd_questions/`](../sitd_questions/): `sitd_1000_questions.json` (the source of truth; the `.csv` and `.md` are the same data). **1000 questions**, ids 1 to 1000, each `{id, category, question_en, question_tr, answer}`. The answer is a number: 929 integers, 69 decimals (like -273.15), 3 negatives, from -273.15 to 40075. There are no unit fields: the unit is in the question ("in meters"). There are 75 fine categories (10 to 30 questions each), no repeats in English.
+
+**The four board categories** (a board space shows one, and the question comes from its group; the part keeps the table in one data file, `data/question_groups.json`, and a fine category that is not listed goes to the Stage with a warning):
+
+| Space (icon) | Name | Fine categories (the JSON's `category`) | Questions |
+|---|---|---|---|
+| `atlas` | The Atlas | Landmarks & Architecture, Geography & Nature, Geography & Geopolitics, Geography & Cities, Transport & Aviation, Demographics & Cities, Oceans & Polar, Exploration & Records, Geology & Earth, Atmosphere & Weather, Transport & Infrastructure, Aviation & Records, Landmarks & Monuments, Theme Parks & World, Space & Astronomy, Astronomy & Universe | 210 |
+| `archive` | The Archive | History, History & (Archaeology, Ancient Rome, Ancient Greece, Egypt, Medieval, Ottoman, Royalty, Asia, Americas, USA, Cold War, Disasters, Medicine), Art & Masters, Literature & Books, Languages & Linguistics, Science & Nobel, Inventions & Tech, Brands & Business, Economy & Finance | 240 |
+| `lab` | The Lab | Science & Physics, Science & Chemistry, Biology & Anatomy, Animals & Nature, Human Body & Medicine, Health & Diseases, Human Records, Microbiology & Biology, Nature & Botany, Animals & Predators, Marine Life (both), Birds & Flight, Insects & Invertebrates, Mammals & Primates, Canines & Pets, Felines & Pets, Farm Animals, Extreme Wildlife, Agriculture & Produce | 220 |
+| `stage` | The Stage | everything else: Cinema, TV, Music, Video Games, Comics, Toys, Games & Chess, Internet, every Sports and every Food category | 330 |
+
+A match never asks the same id twice (`Match.asked`); a group that runs dry starts over.
+
+## Music moments
+
+Every place where music would fit. The files are made by the user. "New" marks what the old list in [assets.md](assets.md#music-assetsaudiomusic) did not have.
+
+**Loops (11 old + 2 new):**
+1. Title, setup, lobby and room (`title`)
+2. Monster select (`select`)
+3. Board, leader in the village (`board_village`)
+4. Board, leader at the graveyard or church (`board_graveyard`)
+5. Board, leader in the forest (`board_forest`)
+6. Board, leader in the swamp (`board_swamp`)
+7. Board, leader at the castle (`board_castle`)
+8. Duel intro: the VS card (`duel`)
+9. Trophy ceremony (`ceremony`)
+10. **New:** choosing an opponent and a stake (`challenge`)
+11. **New:** Shot in the Dark, the 20 seconds of thinking (`shot`)
+
+**Stings (2 old + 7 new):**
+12. Last turn begins (`sting_final_turn`)
+13. A player reaches the castle gate (`sting_finish`)
+14. **New:** the match starts, as the turn order is rolled (`sting_start`)
+15. **New:** the answers are revealed, under the drumroll (`sting_reveal`)
+16. **New:** a duel is won (`sting_win`)
+17. **New:** a tie, a new question (`sting_draw`)
+18. **New:** a player dies and goes back to the start (`sting_death`)
+19. **New:** a trophy is handed out at the ceremony (`sting_trophy`)
+20. **New:** the champion is crowned at the end of the ceremony (`sting_champion`)
+
+No music: the pause menu and settings (the board's music just ducks), the loading and catch-up curtain, the "Rejoin" and error banners. Ambience loops stay as they are.
 
 ## Parts
 
-Three parts: the minigames over the network, then the online robustness (drops, reloads, a leaving host), then the deploy. Everything is still built and tested against the local `wrangler dev` relay and two or three Playwright tabs; only the last of the three touches the user's Cloudflare account, and it is written so that it never blocks (see part 42).
+Seven parts, 45 to 51. They are small on purpose, and none of them needs the relay to be deployed. **Do not microplan after 45 or 48** (the README's multiple-of-3 rule would trigger it): the plan is already made. Part 51 ends the process.
 
-**The online model (as built in parts 38 and 39):** lockstep. Every copy runs the same code on the same seeded `Match`; only choices come from the host through `Online.decide(kind, player, seconds, auto, valid, settle)` and `Online.submit(value)`, numbered by a counter that agrees on every copy. The host broadcasts `decided {seq, kind, value, auto}`. Minigames are the one place where choices are not single values, so part 40 adds a second channel: a stream of input and a stream of snapshots.
+### Part 45: Shot in the Dark, local
 
-**Shared by the minigames (as built in parts 33 to 37):**
-- Every game is a `Minigame` subclass in `src/minigames/`, drawn in the frame's 1920 x 1080 space around `Minigame.TABLE_CENTER`, reading keys only through `MinigameInput` (`pressed`/`just_pressed(side, key)`, `direction(side)`, a `source` Callable and `absent` sides), ending with `finish(side)` or `finish(Minigame.DRAW)`, and applying `edge` invisibly. Registered in `Minigames.GAMES`. The challenger is side 0, on the left. `step(delta)` is public for headless drivers. Games: `PongGame`, `TugGame`, `SumoGame` (with `CirclePhysics`), `SoccerGame`.
-- **Test habit:** a headless driver sets `MinigameInput.source` to a scripted function, steps the game with fixed time and asserts the winner. `simulate_key` events did not move the heads in part 37, so physical keys are proven only by a person at a keyboard (part 43).
-
-### Part 40: Online III, the minigames over the network
-
-**Goal:** an online minigame space plays the real minigame: the two duelists play it on their own keyboards, the host decides the winner, and every other player watches the same game live. "Fate decides" is gone.
+**Goal:** a minigame space on the board plays Shot in the Dark on one screen: a question appears, both players type a number in secret, the answers are revealed, the closest wins. The four old games are gone.
 
 **Builds:**
-- **One simulation, corrected by the host.** Every copy runs the same game with `step(delta)` on a fixed 60 Hz accumulator (not the frame's delta), so copies stay close. The host's copy is the truth. Seed: the host sends `mini_start {kind, left, right, challenger_side, edge, seed, start_at}` through `Online` (a `decide`-style call, kind `minigame`, so the counter agrees); the game's own randomness (Pong's serve angle, the soccer re-serve) takes `seed`.
-- **Input:** a duelist's copy sends `mini_input {tick, keys}` to the host whenever its key bitmask changes (not every frame), and the host re-broadcasts it with the tick it applies from (current tick + 3, about 50 ms later, noted). Every copy feeds the same input stream into `MinigameInput.source` for that side, so the games' code is untouched. The local player's own keys apply to their own side immediately too (a small prediction); the host's snapshot corrects any drift.
-- **Snapshots:** `Minigame` gets `get_state() -> Dictionary` and `set_state(d)`, and each of the four games implements them (positions, velocities, markers, timers, the rng state; pure numbers so they go through JSON). The host broadcasts `mini_state {tick, state}` 10 times a second; clients `set_state` it, and blend visible positions over 0.1 s instead of snapping where the error is small (under about 20 px). The Pong ball, Soccer ball and Sumo pieces are the sensitive ones.
-- **The end:** only the host calls `finish`; it broadcasts `mini_end {winner}` and every copy runs the frame's win beat from it. A `DRAW` replays the round the same way on every copy. If a duelist's peer drops (`Net.peer_left`) or sends nothing for 3 s after the countdown, `MinigameInput.absent` marks the side and the game plays on with that side idle (no forfeit shortcut: it keeps the rules honest and short).
-- **The frame:** `MinigameFrame` runs the same on spectators: VS strips, the keycaps only for the two duelists (others see "Name vs Name"), the 3-2-1 on `start_at`, the banner from `mini_end`. The board waits for `mini_end` before the next turn step. Swap duels (best of N rounds) work round by round the same way.
-- **Fate decides** stays only as a fallback if the room has a peer that sent no `mini_ready` within 5 s of the start (an old tab); noted, then removed if it never fires.
+- **Data.** Copy `sitd_questions/sitd_1000_questions.json` to `data/questions.json` (res://) and write `data/question_groups.json` (the table above). `Questions` (static, `src/minigames/questions.gd`): `load_all`, `pick(group, exclude_ids, rng) -> Dictionary`, `text(q)` (Turkish or English by `Settings`), group of a fine category. Add `tools/questions/check_questions.py` (ids unique, answers numeric, both languages present, every fine category mapped, counts per group) and run it once.
+- **The game.** `ShotGame` (`src/minigames/shot_game.gd`, code-built, drawn in the frame's 1920 x 1080 space on a paper card): the category tag with its icon, the question in the display font (wrapped, up to 175 characters), the **countdown** (a big number for now; part 48 gives the real `Countdown`), a number box on each side (the challenger on the left, as before, the opponent on the right), a paper keypad (0-9, minus, decimal mark, backspace, Lock in) and the keyboard: digits and numpad, `-`, `.` or `,` for the decimal (both accepted), Backspace, Enter locks. Digits are grouped with a thin space for reading (8 848). A locked box can't change. 20 seconds, or the moment both have locked.
+- **The score.** `ShotGame.judge(a, b, answer, hyde_side) -> int` (side 0, side 1, or `Minigame.DRAW`): the smaller `|guess - answer|` wins; **Hyde, when he is the challenger, has his distance multiplied by 0.8**; no answer loses to an answer; two blanks or an exact tie is a draw. A draw shows "A tie! New question" and asks another (no limit for a duel; a swap duel round counts only when someone wins; after 3 draws in a row the challenger loses, so a duel cannot hang).
+- **Local play (pass the keyboard).** The challenger types first behind a cover card ("Name: look, the others look away" with an "I'm ready" button), locks, then the cover passes to the opponent, who also gets 20 seconds; then the reveal. Same layout as online (part 46).
+- **The reveal.** The drumroll, then the true answer slams into the middle as a paper card (`card_slam`), the two guesses flip over (`flip`) and count up to their number, "off by N" tags appear under them, the winner's card lifts with a green ribbon and the portrait hops, the loser droops. Click skips it. About 3.5 s.
+- **The frame.** `MinigameFrame.play(challenger, opponent, stake, kind)` keeps its signature and result (`{winner, loser, rounds}`), so `Duel`, `Challenge` and the board are untouched. The VS strips stay, the 3-2-1 and the keycap controls go. Swap duels run rounds with a new question each; the tally already exists (`DuelTally`).
+- **The board.** `BoardRoller.MINIGAMES` become four free letters for the four groups (the quick kinds keep theirs); `Space` draws the group icons (`icons/atlas`, `archive`, `lab`, `stage`; add them to `make_outlines.py`'s `ICONS`, which bakes the rims); the old icons stop being used. The space's tooltip or name tag, if any, uses the group name (both languages).
+- **Mr. Hyde.** His power becomes "his guess counts as 20% closer when he starts the duel" in `characters.md`, `Monsters` and the Turkish strings. The 10% edges in the old games go away with them.
+- **Removed:** `pong_game`, `tug_game`, `sumo_game`, `soccer_game`, `circle_physics`, `stub_game`, `mini_link`, `minigame_input`, `Minigames.GAMES`, the `Minigame` physics base (what `ShotGame` does not need), `tools/tests/minigame_net_test*`, the unused images (`assets/art/minigames/*`, `icons/pong|sumo|tug_of_war|head_soccer`) and sounds (`paddle_hit`, `bounce`, `kick`, `jump`, `sumo_bump`, `rope_pull`, `rope_tug`, `whistle`). The raws stay in `images_raw/` and `audio_raw/`. **Online duels:** until part 46, an online duel lets the host flip a fair coin (`coin_flip`), so the build still runs.
+- **Docs:** rewrite `minigames.md` (Shot in the Dark, the four spaces, the swap duel, draws), and fix `game_rules.md` (the board spaces), `characters.md` (Hyde), `board.md` and `assets.md` where they name the old games.
 
-**Polish:**
-- A small ping dot in a corner of the frame (green under 80 ms, yellow, red) for the duelists; a "Waiting for Name..." paper banner if the host's snapshots stop for 1.5 s, with the `leave` sound when a duelist drops.
-- Spectators get a "Watching" tag and the portraits of the duelists cheer on a goal, a point or a fall (the same hop and droop the frame already has).
-- Corrections never teleport: positions glide, and a puff of paper bits hides only a big jump.
-- The countdown tick stays in step on every copy: the three beats start at `start_at`, not at each copy's own arrival.
+**Polish:** the number boxes grow a little when a digit is typed (a small squash), a pencil-scribble feel for the digits (`ui_click`), `ready` on Lock in with the box getting a paper stamp, the card slides in on a bounce and the question words pop in line by line (about 0.4 s total), the countdown number turns red and shakes in the last 5 s with `timer_low` ticks and `timer_out` at 0, an invalid key (a second minus, a second decimal mark) shakes the box with `ui_denied`, the cover card slides across with `flip`.
 
-**Assets:** none new.
+**Assets:** the 4 category icons (prompts in `asset_prompts.md`; `python tools/images/process_images.py . atlas archive lab stage`). If the user has not delivered them yet, use `coin`-tinted stand-ins and say so in the notes; no part waits for them. Existing sounds only.
 
-**Check:**
-- Headless: `get_state`/`set_state` round-trip through JSON for each game; two copies of each game fed the same scripted input and the same seed end in the same winner; a copy corrected from a snapshot after 2 s of divergent input lands within a few pixels of the host; the host ignores `mini_input` from a spectator and `mini_end` from a non-host.
-- Playwright: three tabs (host, a joiner, a spectator) against `wrangler dev`, a forced minigame space (`-- --space e` or a debug flag; add one if missing) of each kind, scripted keys on the duelists through `?bot=` style hooks since `simulate_key` is unreliable; all three end with the same winner and show the same banner. Check the ping dot and the "Waiting" banner by pausing a tab.
-- Screenshots: a spectator's view of a game, a duelist's view with keycaps, the ping dot or waiting banner.
+**Check:** the checker script; a headless test of `judge` (closest, Hyde 0.8, blank, tie, negative and decimal answers), of the typing rules (minus, decimal mark, comma, length cap) and of `Questions.pick` (no repeats, group fallback); one plain run with `-- --bot` and a forced landing to see a full duel through to the board.
 
-**Risks:** the feel under latency (Head Soccer and Sumo will rubber-band at 100 ms; keep the correction soft). A tab in the background throttles (spike finding): its game freezes and the host's snapshots then yank it; an online tab must stay in front, and the banner says so if snapshots arrive late. If too big, split: 40a input and snapshots for Pong and Tug (the simple two), 40b Sumo and Soccer and the spectator polish.
+**Risks:** the thin-space grouping and the decimal comma in Turkish; a long question must fit the card (wrap, then shrink the font to fit). The cover card is the only privacy: a camera over the shoulder is the players' problem.
 
-### Part 41: Online IV, drops, reloads and a leaving host (split: 41a and 41b are built, see the notes at the end)
+### Part 46: Shot in the Dark, online
 
-**Goal:** a match survives a player's connection dropping, a tab being reloaded, and the host leaving; the ceremony's Play again returns everyone to the lobby.
+**Goal:** the same duel over the relay: the two duelists type in secret on their own computers, everyone else watches, and no real-time stream is needed. Both sides of the duel see the identical layout (point 4).
 
 **Builds:**
-- **Host migration.** The relay marks the longest-connected remaining socket as the new host when the host leaves (`{t:"host", id}` to everyone). Because every copy has the same `Match` and the same decision counter, the new host just continues: it takes over the timers for the open decision (restarting the countdown with its remaining seconds), and `Online.is_host` flips. A decision that the old host had already broadcast but a copy missed is covered by the log below. A host change shows a "Name is the host now" banner.
-- **The decision log.** `Online` keeps every `decided` and `mini_end` in an ordered list on every copy (small: a few hundred entries a match). It is the thing that makes rejoining possible.
-- **Rejoin.** A reloaded or reconnected player sends `rejoin {name}`; the relay gives them a fresh socket id in the same room. The host (matched by name, the player's `Net.id_by_name` entry re-pointed) sends `resume {seed, names, log}`. The rejoiner starts the same match and replays the log in **catch-up mode**: `Online` answers each `decide` instantly from the log, and the board skips glides, dice and pops (a `Board.fast` flag the animation code honours by setting durations to 0 and muting sounds, noted). When the log runs out the copy is live and takes its place. Names are the identity, and the room code plus the name is kept in `sessionStorage` (web) so a reload offers "Rejoin" on the title. A name still held by a live socket is refused.
-- **Dropped players.** A dropped player's turn is played by the timers (already so) and the HUD card greys with a "Reconnecting" mark; after 3 auto turns in a row with no sign of life they are marked "Away" and their turns take the short timers (die 1 s, path 2 s, challenge 3 s, monster 3 s) so the others are not kept waiting. A rejoin clears it. A match never ends early because of a drop (3 players stay 3 players).
-- **Play again online.** The ceremony's Play again button, on the host, broadcasts `lobby_again`; everyone returns to the room view with the same seats and the same ready state cleared, and the host can Start again, even to a different size if people left. A non-host sees "Waiting for the host".
-- **Leaving.** A Leave button on the pause menu goes to the title; for the others it is a dropped player.
+- **Messages.** The question: `Online.decide("question")`, the host picks the id (it avoids `Match.asked`) and every copy shows it in its own language. A duelist's lock goes only to the host (`shot_lock {r, value}`); the host tells everyone `shot_status {side, locked}` so the others see a tick on the box and never the number. When both are locked, or the host's clock reaches 20 s plus a 1 s grace, the host sends `shot_reveal {a, b}` (a missing answer is `null`) and **every copy runs the same reveal and `judge`** (no separate `mini_end`). The countdown on each copy is only for show.
+- **Symmetry.** One layout for everybody: challenger left, opponent right, same sizes and positions. Your own box has a "You" tag and the keypad; the others see no keypad and a "writing..." mark that turns into a stamp at the lock. Spectators and the opponent see the same picture except the tag. A headless check compares the two copies' node positions.
+- **Log and rejoin.** `Online._log` gets an entry `{k:"s", id, a, b}` (replacing `{k:"m"}`); a rejoiner replays logged duels instantly and a duel in progress shows as a spectator until the reveal.
+- **Drops and migration.** A dropped or "Away" duelist has no answer (the host reveals as soon as the present one has locked, after a 3 s grace); a duelist whose copy lost the host keeps their typed value and re-sends it to a new host; the new host restarts the clock with what is left.
+- **Cleanup.** `Online.decide("minigame")`, the coin fallback, `MiniLink` leftovers and the `mini` debug flag go; `--bot` types a random plausible number after 3 to 8 s; `?mini=` becomes `?group=atlas|archive|lab|stage` to force a category.
+- **Docs:** `tech.md` (the online model: no streams, a few messages per duel, which is what the relay can carry), `screens.md` (the duel).
 
-**Polish:**
-- Join and leave sounds on the HUD cards when someone drops or comes back, with the card's portrait greying and returning with the same stone shader as Medusa's stone does not (a distinct dim, noted).
-- The catch-up replay is hidden behind the curtain with a "Catching up..." line and a thin paper progress bar; the curtain opens on the live turn.
-- Banners (cut paper, Turkish too) for: reconnecting, host changed, rejoined, away, room closed.
+**Polish:** the spectators' boxes show the tick with `ready` as each locks, the "waiting for Name" line appears when one has locked and the other has not (the same banner style), a duelist who is typing sees a live remaining-seconds number, reveal identical on all copies with the same sounds.
 
-**Assets:** none new (reuse `join`, `leave`, `ready`).
+**Assets:** none.
 
-**Check:**
-- Headless: the log replays to the same `Match` hash as the live copy for 3 seeds, including powers; host migration picks the oldest socket; `Away` after 3 autos and cleared by a rejoin; the relay's host rule tested with Node sockets.
-- Playwright: a 3-player match; reload a joiner mid-turn and mid-minigame, and it catches up and ends with the same result; close the host's tab mid-match and the match finishes on the other two with the same results; Play again returns all to the room.
-- Screenshots: the "Reconnecting" card, the catch-up curtain, the host-changed banner.
+**Check:** extend `online_test.gd` (lock to the host only, `shot_status` never contains a value, reveal from the host only, a spectator's lock ignored, a non-host's reveal ignored, the log round-trip, a draw replays with a new question). One Playwright run with three tabs and `?bot=1&turns=3&group=lab`: all copies show the same question, answers and winner; reload one tab mid-question.
 
-**Risks:** the biggest risk is the fast mode: every animation path must obey `Board.fast`, and one that does not will show up as a hang or a mismatch. Rejoining mid-minigame is the hardest case: the simplest acceptable answer is that the rejoiner sits out the current minigame (spectates from the next snapshot) and catches up on the winner. Split if needed: 41a host migration, Away and Play again; 41b the log and rejoin.
+**Risks:** the host's copy knows both answers if the host is a duelist (it is not hidden from their own client; accepted, noted in `tech.md`).
 
-### Part 42: The deploy and the itch.io page
+### Part 47: Rules: two dice, zero-sum stakes, Back, powers
 
-**Goal:** the game runs online for real: the relay on Cloudflare, the web build on an itch.io page, a copy-link that works between two machines. Written so that no step blocks the overnight run.
+**Goal:** a match is about half as long; stakes never create or destroy value; Back works; the powers fit the new game.
 
 **Builds:**
-- **The relay deploy.** `tools/relay/` gets a `deploy.md` and an npm script (`npm run deploy` = `wrangler deploy`), the production `wrangler.toml` (the Durable Object migration, `compatibility_date`), and `Net`'s default relay URL becomes the deployed `wss://` address (still overridable by `?relay=`). A rate limit on room creation per IP and a room idle timeout (the Durable Object closes itself and frees storage 10 minutes after the last socket leaves) keep it inside the free plan. If `wrangler whoami` shows the user is logged in, the part deploys and measures; if not, the part does everything else, writes the exact two commands the user must run (`npx wrangler login`, `npm run deploy`) and the URL to paste into one constant, and leaves the default on `ws://127.0.0.1:8787` until that is done. The part session must not stop to ask.
-- **The itch.io build.** `tools/release/build_release.py` gets a `--web` mode that produces the zip itch.io wants (`index.html` at the top, the 74 MB checked against itch's limits: files under 200 MB, no more than 1000), the page's embed size 1920 x 1080 with "fullscreen button" on, and a short `release/itch_page.md` with the title, one-liner, description, tags (party game, local multiplayer, online multiplayer, Halloween, paper), controls, and the screenshot list (taken from `screenshots/`). Tell the user the upload (`butler push` or the web upload) is theirs.
-- **Latency and limits.** With the real relay (if deployed) measure the round trip from this machine; otherwise from the local one; write the result and the free-plan numbers (requests per day, Durable Object duration) with the estimate for a night of friends playing into `docs/tech.md`.
-- **Join by link on the page.** The page is inside an itch.io iframe, whose address is not the shareable one: `?room=` must be read from the iframe's own URL, and Copy link must give the page's address with `?room=`. Check how itch passes query strings (it does not by default) and, if it does not, make the link a short `https://<user>.itch.io/<game>#room=CODE` fragment and read the hash instead (`JavaScriptBridge` reads `window.top.location` if allowed, else `document.referrer`; test and note which works).
-- **Housekeeping.** Strip the debug hooks from release builds only (`--bot`, `--turns` stay in debug; the build rule is `OS.has_feature("release")`), confirm the MCP autoloads are not in the export, and put a version string on the title's corner.
+- **Two dice.** `Die` shows two dice side by side (the existing `die_1..6` images, two instances); a click on either rolls both; the roll is the sum (2 to 12), then the Wolf Man's +2 pops beside them ("+1 per die"). `Online`'s `roll` decision carries both dice (`[d1, d2]`), the auto roll picks both, and a path walk uses the sum. `docs/game_rules.md` says "two dice".
+- **Turns.** `Match.TURNS_BY_LOBBY` becomes 3: 11, 4: 10, 5: 9, 6: 8, 7: 8, 8: 7 (the board lengths stay: with an average roll of 7 a player needs about 9 turns for 65 spaces). Part 51 tunes them.
+- **Zero-sum stakes** (`Match.stakes`, `duel_result`):
+  - Gold: both need at least 1 coin (today only the opponent is checked: a penniless challenger who lost paid nothing, which is the bug the user saw). The loser pays 1 to the winner.
+  - Blood: the loser loses 1 and the winner gains 1 (`result.gain`, with a green "+1" `DeltaPop`). Available only if both players are below their blood cap (Cthulhu's cap is 4), the two Death rules hold (Death at 1 blood is neither payer nor taker), and the old death-match rule holds for both sides (a player with 1 blood can only be staked if they have 0 coins). **Blood duels will be rare, because blood sits at its cap most of the time; the church matters more. Tell the user in the summary.**
+  - Frankenstein as challenger: he is exempt when he loses (nothing is paid, the winner gains nothing), so only the conditions for his winning are checked.
+  - Swap: unchanged, always available.
+  - `Match.stakes` returns the stakes and, for the greyed cards, the reason is not shown (as today).
+- **Back.** The stake step gets a "Back" button (always, beside the cards; "Walk away" stays and shows only when swap is the only stake against every opponent). Back returns to the opponent step with the same running timer; online it is a stake decision whose value is `Challenge.BACK`, so every copy goes back together.
+- **Swap duel length:** the challenger needs 2 wins before 1 loss (`Duel.roll_rounds`/`swap_wins`); Dorian still 1.
+- **Powers, reviewed against two dice and the new stakes:** the Wolf Man +2 (above), Mr. Hyde (part 45), Dorian (above); Dracula, Medusa, Death, Cthulhu and Frankenstein stay (their text in `characters.md` gets the drain and two-dice wording). If a power still misbehaves while testing, change it and note it.
+- **Docs:** `game_rules.md`, `characters.md`, `minigames.md` (stakes table).
 
-**Polish:**
-- A short loading line on the web canvas ("Loading the dark...") with the paper-style progress bar the web shell (`custom_html_shell` in the export preset) draws before Godot starts, with the game's background colour.
-- The offline banner, "Can't reach the room. Check your connection." when the relay is unreachable, uses the existing banner.
-- The title shows "Online" and "Same screen" as two clear buttons for the first time a player lands from the itch page.
+**Polish:** both dice tumble with `die_roll`, land one after the other (`die_land` twice, 0.15 s apart) and the total pops big; a rolled double (the same face) gives a small extra hop of the piece; the Back button slides the cards away and back with `flip`; the drain's blood drop flies from the loser's portrait to the winner's.
 
-**Assets:** a 630 x 500 cover image and a 315 x 250 thumbnail are needed for the itch.io page: the user makes images by hand, so the part writes the prompts into `docs/asset_prompts.md` in the existing style and uses a screenshot as the stand-in.
+**Assets:** none (the die images exist).
 
-**Check:**
-- The built zip opens from a local `python -m http.server` in Playwright and reaches the lobby; with the relay running, two tabs on it play a turn.
-- If deployed: two tabs on the real relay, the measured round trip, and the link copied from one opened in the other.
-- Screenshots: the loading screen, the title on the web, the lobby on the web.
+**Check:** a headless test over all stake cases (coins 0/1 on each side, blood at cap and below, Death at 1, Cthulhu, Frankenstein either side, death-match) asserting that coins and blood are conserved except in the Frankenstein-loses case; the dice sum range; one short bot match.
 
-**Risks:** the itch.io iframe may block clipboard writes (`JavaScriptBridge` falls back to showing the link selectable in a text field) and the autoplay audio rule needs the click already there. The Cloudflare free plan caps requests and Durable Object time: a room of 8 for an hour should stay far below it, but measure.
+### Part 48: Powers popup and the numeric countdown
+
+**Goal:** clicking a monster at the top shows what it can do; every timer is a number, not a candle.
+
+**Builds:**
+- **`PowerCard`** (`src/board/power_card.gd`): clicking a HUD portrait opens a paper card beside it with the monster's name, its power in a long form (both languages; Hyde's new text), the player's name, blood and coins, and any status (stone: "misses the next turn", "Reconnecting", "Away", "Finished"). Click the portrait again, click elsewhere or press Esc to close; only one is open; it does not stop the game or block clicks on the board (the click that closes it still goes through); online timers keep running. It opens on the board only (not in monster select, which already writes the power).
+- **`Countdown`** (`src/ui/countdown.gd`): replaces `Candle` everywhere (die, path choice, opponent and stake, monster select, Shot in the Dark): a paper tag with the seconds left as a number in the display font, `start(seconds)`, `stop()`, `timed_out`. It pops in like the candle, turns red and shakes at 5 s and below with `timer_low` per second, and `timer_out` at 0. Non-choosers see the same number (as the candle was for show). Delete `candle.gd`, `flame.gd`, `candle_test.gd`, `candle.png`, `flame.png` (the raws stay).
+- **Docs:** `screens.md` (the HUD click, the countdown), `art_and_audio.md` where it mentions the candle.
+
+**Polish:** the card pops in with `PaperMotion.pop_in` and a paper tab pointing at its portrait, the portrait lifts a little while its card is open, the number pulses once on each second in the last five, and the tag shrinks away on `stop`.
+
+**Assets:** none.
+
+**Check:** `execute_game_script` clicks a portrait and asserts one card exists with the right text, a second click closes it; a timer runs to 0 in a bot match and makes the automatic choice; no references to `Candle` remain (a grep).
+
+### Part 49: Faster, and things getting in the way
+
+**Goal:** a turn with no choices takes a few seconds, and nothing covers anything it should not.
+
+**Builds:**
+- **Pace.** Collect every duration in one place: a `Pace` constant class (`Pace.t(seconds)` scales by `Pace.FACTOR`, about 0.65) used by `PaperMotion`, the board's glide and hop, the camera, the pops, the banners, the curtain, the VS card, the reveal, the ceremony's beats. Targets: a turn with no choice and an empty landing at most 5 s; a duel from the landing to the first question at most 5 s; the reveal to the board at most 4 s. **Decision timers:** roll 4 s, path 7 s, opponent and stake 15 s together, monster 20 s, Shot in the Dark 20 s (the user's number), away players' timers unchanged. The 12x catch-up (`Engine.time_scale`) must still work. Measure with timestamps printed from a `-- --bot --turns 3` run, before and after, and keep the numbers in the notes.
+- **Overlaps.** An audit of everything that appears over the board, with one rule table in code (`Layers`: z-index and a screen slot for each): the HUD strip at the top is never covered; the notice banners (host changed, "X is back", errors, power names) go through one queue instead of stacking; `PowerPop` and `DeltaPop` on one piece stagger by 0.25 s; pieces that share a space fan out; the die and countdown never sit under the signpost or the banners; the opponent/stake cards, the Back and Walk away buttons and the HUD do not overlap at 8 players; the power card (part 48) stays on screen; full-screen controls that do nothing set `mouse_filter` to ignore so they stop eating clicks. A probe script `tools/tests/overlap_probe.gd` lists, in about ten states (die, fork, challenge at 3 and 8 players, a duel, a death, Medusa and Dracula together, a notice with a pop), the visible items whose rectangles intersect a "no-go" pair, and prints them; fix what it prints. At most six debug screenshots, none saved to the repo.
+- The user gave no specifics for "things get in the way": if the user names cases later, add them to the probe.
+
+**Polish:** nothing new; the point is that existing motion becomes snappier with its easing kept.
+
+**Assets:** none.
+
+**Check:** the timing numbers before and after; the probe printing nothing; one bot match.
+
+**Risks:** faster tweens can cut a sound off or outrun a `await`; every `await tween.finished` stays, only durations change.
+
+### Part 50: Music
+
+**Goal:** every moment in the music list has its hook; whichever files exist play, the rest are silence.
+
+**Builds:**
+- Wire the loops and stings in the list: `challenge` while choosing an opponent and stake (replacing the old board track for those seconds), `shot` under the 20 s question (the `duel` track still plays under the VS card), the new stings through `Sound.sting(name, duck_seconds)` at the match start, the reveal, a duel win, a tie, a death and each trophy and the champion. The board track resumes with a crossfade after each. A missing file is silence (already so), and nothing waits for a sting that does not exist.
+- `Sound`: loops set `loop = true` on their stream when loaded; the music ducks when settings or the power card is open (a short ramp, -8 dB); a hidden browser tab pauses the music.
+- `tools/sounds/process_music.py`: turns `music_raw/` (WAV or MP3) into `assets/audio/music/*.ogg`: loudness to the same level for all, OGG at a size that keeps the web zip small (about 1.5 MB per 2-minute loop), and a check that the board tracks share a length. `music_raw/` gets a `.gdignore`. Document it in the README.
+- Update `docs/assets.md` (the music table becomes the list above, with file names) and `art_and_audio.md` ("minigames have no music" is replaced by the Shot in the Dark loop).
+
+**Polish:** crossfade lengths per transition (1.5 s between board tracks, 0.4 s into a sting), and the sting ducking so the board track does not clash.
+
+**Assets:** the user's music files, whenever they exist. No sounds.
+
+**Check:** headless: `Sound.play_music` with missing and present files does not error; one plain run printing the track names in order through a bot match (the board already prints "Music: ...").
+
+### Part 51: Tuning and release 1.1.0
+
+**Goal:** the pivot is finished, documented and built.
+
+**Builds:**
+- One full bot match (4 players, `--turns` default) locally and the 2-tab online run once to the ceremony, with a rejoin in the middle. Fix what breaks.
+- Tune from the numbers: turn counts per lobby size, the timers, Hyde's 0.8, the Wolf Man's +2, how often blood duels happen (if they never happen, relax the rule by letting the winner at the cap still drain, and tell the user), the Pace factor.
+- Turkish by eye: list the new strings in the notes (categories, the reveal, "Back", the power texts, "A tie!").
+- Docs sweep: `game_rules.md`, `minigames.md`, `characters.md`, `screens.md`, `board.md`, `tech.md`, `roadmap.md` and the README say the same thing; remove "four games" everywhere; this file's Part notes are cut down to the code map.
+- Version 1.1.0, `build_release.py --web`, the zip loads in Playwright with no console errors, and its size is noted. The Cloudflare deploy and itch.io upload stay the user's (`tools/relay/deploy.md`).
+- **The process ends here:** the README says so, and the session writes no final line.
 
 ## Roadmap
 
-Very rough. The next Microplan (after part 42) rewrites it. It now ends at 44. The end moved from 43 to 44 because part 41 (drops and rejoin) and the deploy were too much for one part; they are now 41 and 42, the playtests are 43 and the release is 44.
+45 Shot in the Dark, local. 46 Shot in the Dark, online. 47 Two dice, zero-sum stakes, Back, powers. 48 Powers popup and the countdown. 49 Faster, and the overlaps. 50 Music. 51 Tuning and the 1.1.0 release.
 
-25 to 39: done (the questionnaires, assets, the camera, the lobby-size rules, the board per size, the powers, the online spike, the minigame frame, Pong, Tug of War, Sumo, Head Soccer, the `Net` layer and the lobby, the board over the network).
-40. Online III: the minigames over the network (input stream, host snapshots, spectators).
-41. Online IV: drops, reload and rejoin, a leaving host, Play again online.
-42. Done (see the last note), except the user's deploy steps.
-43. Playtests with friends, tuning (the minigame feel, the brief's turn table checked with the powers, keys on a real keyboard), the Turkish strings by eye, and the bug bash.
-44. The release on itch.io.
+**Why it ends at 51:** the user asked for 6 to 8 parts. The work is seven separable pieces; 51 is a multiple of 3, so the README's rule would microplan once more after it, which it should not (51 says the process is over). The old numbering of the first release (parts 25 to 44) is closed: 25 to 44 are done.
 
 ## Part notes
 
-Each part session adds a few lines when it finishes: what got built, what changed from the plan, surprises, and anything left over or buggy. The next Microplan reads these instead of the code.
+Short. The next Microplan reads these instead of the code.
 
-### The code since part 24 (parts 25 to 41a)
+### The code since part 24 (kept)
 
-- **Design and assets (parts 25, 26):** four minigames (Pong, Sumo, Head Soccer, Tug of War), no minigame music, no time limit, Mr. Hyde's edge only when he challenges; online play is Claude's call (`tech.md`). Images in `assets/art/minigames/`: `pong_table`, `paddle`, `sumo_ring`, `goal` (faces right), `ball`, `boot`, `rope`, `ribbon`. Sounds in `assets/audio/sfx/`: `whistle`, `paddle_hit`, `bounce`, `kick`, `jump`, `sumo_bump`, `rope_pull`, `power`, `stone`, `stone_crack`, `join`, `leave`, `ready`, `start`. The Gemini key has no image quota; the user makes images by hand.
-- **Camera (part 27):** `BoardCamera.ZOOM := 0.88` (1.0 undoes it). Clickable things are scaled by `1 / ZOOM`. **Known blemish:** `scenery.gd`'s `_ground_fill` leaves faint root streaks; a taller ground image would fix it. The user's verdict on the zoom was never recorded, so assume it stays.
-- **Rules (part 28):** `Match.MIN_PLAYERS` 3, `TURNS_BY_LOBBY`, static `Match.turns`. `results()` gives `by.finish` 1 to the first finisher only. `Challenge` returns `{opponent, stake: Challenge.WALK}` for a walk away. A headless `-s` script can't see autoloads in `_init`; use `_process`.
-- **Board (part 29):** `BoardRoller` rolls `kinds` per stretch; `Match.start(names, seed)` seeds `Match.board_rng` (`-- --seed N` replays); `Board._enter_tree` calls `BoardPath.configure(size, kinds)`. Kinds: `p` pong, `u` sumo, `e` head_soccer, `w` tug_of_war, plus the old quick ones. `BoardPath.next(id)`, `routes()`.
-- **Powers (parts 30, 31):** `Match.roll_bonus`, `max_blood`/`min_blood`, `blood_is_safe`, `duel_result`, `Duel.swap_wins`/`roll_rounds`. `PowerPop.show_over(parent, at, text, scale)`; `Hud.portrait_node(player)`. `Board._play_turns` is the turn loop: glide, die, walk, `land` or `finish`, `Match.next_player()`. `BoardPath.nearby(id)`; `Match.drain`, `petrify`, `take_cracked()`; `BoardPiece.set_stone`, `HudPortrait.set_stone`. Not seen by eye: the Turkish power lines and pops.
-- **Minigame frame (part 33):** `Minigame` base (`setup`, `controls()`, `begin()`, `finish(side)`, `Minigame.DRAW` = -1, `color_of`), `MinigameInput` (static seam, left WASD+Q E R, right arrows+K L ;), `Minigames.for_kind`, `MinigameFrame.play(challenger, opponent, stake, kind)` returns `{winner, loser, rounds}`; static `settled`, `edge_for`. Table 1480 x 640 around `TABLE_CENTER`. A full-screen STOP control blocks board clicks while the frame is up. Keyboards may ghost with two sets at once.
-- **Games (parts 34 to 37):** Pong (paddles 640 px/s, serve 700, +10% per hit to 1250), Tug of War (a press moves the marker 0.07, creep 0.12/s, simultaneous presses cancel), Sumo (ring radius 290, pieces 52, `CirclePhysics.collide` and `bounce_in_ring`), Head Soccer (left/right run, up jumps, down kicks; ball held 0.4 s, re-served after 5 s at rest; `CirclePhysics.bounce_off_box`). Hyde's edge: paddle and head speed 1.1x, pull 1.1x, sumo mass 1.1x. Untuned and unproven with real keys: the feel of all four (part 43). The soccer heads are small next to the table.
-- **Test habit:** headless drivers for rules, plain runs with a temporary uncommitted script for screenshots and `Engine.get_frames_per_second()`; never `--write-movie`.
-- **Online I (part 38):** `Net` (autoload, `src/net/net.gd`): one `WebSocketPeer`, `open_room(code, existing)`, `leave`, `send(to, kind, payload)`, `broadcast`, signals `connected`, `refused("full"|"missing"|"closed")`, `disconnected`, `peer_joined`, `peer_left`, `received(from, kind, payload)`; one retry after a drop. Statics `new_code`, `clean_code`, `encode`, `decode`, `relay_url`, `room_from_link`, `link_for`, `copy_text`; `Net.id_by_name`. Relay is `?relay=` or `-- --relay`, default `ws://127.0.0.1:8787`. `tools/relay/` (Cloudflare Worker, SQLite Durable Object `Room`): `hello` carries `host` (first socket in an empty room), a ninth socket gets `{t:"full"}`, `?join=1` into an empty room gets `{t:"missing"}`; socket ids are never reused. Lobby: `src/lobby/lobby.tscn` (code-built), `LobbyState` (3 to 8 ready, names cleaned and unique), host broadcasts `lobby`, joiners send `profile`, Start broadcasts `start {names, ids, seed}`. The spike's lessons: a background tab throttles to 130 to 600 ms, so tabs must stay in front and timers must not depend on them; web export is `tools/release/build_release.py --stage`, then `--import`, then `--export-release Web` (13 s, `.pck` 34 MB, `.wasm` 39.5 MB, about 44 MB gzipped); templates are in `%APPDATA%\Godot\export_templates\4.7.2.stable`. Playwright: the game is one canvas, so click by coordinates (viewport 960 x 540, half of 1920 x 1080); `bringToFront` before typing.
-- **Online II (part 39):** `Online` (autoload, `src/net/online.gd`), lockstep (see "The online model" above). Kinds: `roll`, `branch`, `opponent`, `stake` (share the 20 s), `monster`, `fate` (minigame coin, replaced in part 40). `Online.is_mine`, `submit`; the host adds 1 s of grace for a remote player; early answers wait in `_submits`/`_results`. Non-choosers see a `TurnNote`; `POP_AUTO` pops on an automatic roll. The candle is the countdown on every copy (the timer ring was not built). Debug flags: `-- --turns N` or `?turns=N`, `-- --bot` or `?bot=1` (answers its own decisions 0.8 s after they open). Tests: `tools/tests/online_test.gd` (headless `Godot -s`, 13 checks) and three Playwright tabs through a whole 2-turn match with identical results. Playwright notes: cycle `bringToFront` every second, `globalThis` does not persist between calls (use `page.context().pages()`), keep calls under about 90 s. **Left over:** the state-hash compare between copies, the timer ring, the Turkish strings by eye, the `TurnNote` clear fix not re-seen, the ceremony's Play again is local-only (part 41).
-- **Online III (part 40):** `MiniLink` (`src/minigames/mini_link.gd`, a child of the game's stage) runs one online round: it steps the game itself at the physics rate (60 Hz, fixed, so no accumulator was needed), feeds `MinigameInput.source` from a per-side key bitmask, and draws the ping dot, the "Watching" tag and the "Waiting for ..." banner. Messages (all carry the round's seed `r`): `mini_input` (duelist to host, on a change and every 0.5 s as keepalive and ping), `mini_keys` (host to all, applied `LEAD` = 3 ticks ahead), `mini_ack`, `mini_state` (host, 10 Hz, the game's `get_state`), `mini_end`, `mini_absent`. The frame asks `Online.decide("minigame")` for the seed each round (kind `fate` is gone), seeds `Minigame.rng` (Pong's serve) and waits on `link.wait_end()`. Each game has `get_state`/`set_state`/`blend_keys`/`blend_pairs`/`snap_distance`; a non-host copy has `remote_judge` (it stops its own game but only the host's `mini_end` counts). Copies carry a snapshot forward by half the ping, glide 0.5 of the way, or snap past `snap_distance` (40 px). A duelist's own keys apply at once and read both key layouts. Debug: `-- --mini KIND` / `?mini=KIND` makes every landing that minigame, `Net.debug_value`; with `--bot` the duelists press random keys. Tests: `tools/tests/minigame_net_test.tscn` (a scene, since the games need the autoloads; 24 checks) and three Playwright tabs on the local relay, a whole 1-turn match with Pong in each duel: all three copies ended with the same winners, the spectator saw "Watching" and the names. **Changed from the plan:** no `start_at` (each copy counts 3-2-1 from when it hears the decision; snapshots fix the offset), no "Fate decides" fallback, no paper puff on a snap, the 3 s silence rule is a keepalive timeout on the host. **Not tested:** Sumo, Soccer and Tug over the real wire (only headless), the ping dot colours and the Waiting banner (not seen), rubber-banding at real latency, a swap duel of several rounds online.
+- **Camera (27):** `BoardCamera.ZOOM := 0.88`. Clickable things are scaled by `1 / ZOOM`. Blemish: `scenery.gd`'s `_ground_fill` leaves faint root streaks.
+- **Rules (28):** `Match.MIN_PLAYERS` 3, `TURNS_BY_LOBBY`, static `Match.turns`. `results()` gives `by.finish` 1 to the first finisher only. `Challenge` returns `{opponent, stake: Challenge.WALK}` for a walk away. A headless `-s` script can't see autoloads in `_init`; use `_process`.
+- **Board (29):** `BoardRoller` rolls `kinds` per stretch; `Match.start(names, seed)` seeds `Match.board_rng` (`-- --seed N` replays); `Board._enter_tree` calls `BoardPath.configure(size, kinds)`. `BoardPath.next(id)`, `routes()`, `nearby(id)`.
+- **Powers (30, 31):** `Match.roll_bonus`, `max_blood`/`min_blood`, `blood_is_safe`, `duel_result`, `Duel.swap_wins`/`roll_rounds`. `PowerPop.show_over`; `Hud.portrait_node(player)`; `DeltaPop`, `PowerBeam`. `Board._play_turns` is the turn loop: glide, die, walk, `land` or `finish`, `Match.next_player()`. `Match.drain`, `petrify`, `take_cracked()`; `BoardPiece.set_stone`, `HudPortrait.set_stone`, `set_presence`.
+- **Minigame frame (33):** `MinigameFrame.play(challenger, opponent, stake, kind)` returns `{winner, loser, rounds}`; static `settled`, `edge_for` (the edge goes away in 45). A full-screen STOP control blocks board clicks while the frame is up. The four physics games and `MiniLink` (parts 34 to 40) are removed in part 45.
+- **Online I (38):** `Net` (autoload): one `WebSocketPeer`, `open_room`, `leave`, `send`, `broadcast`, signals `connected`, `refused`, `disconnected`, `peer_joined`, `peer_left`, `host_changed`, `received`. Statics `new_code`, `encode`, `decode`, `relay_url`, `room_from_link`, `link_for`, `copy_text`; `Net.id_by_name`; `Net.debug_value`. Relay is `?relay=` or `-- --relay`, default `ws://127.0.0.1:8787`. `tools/relay/` (Cloudflare Worker, SQLite Durable Object `Room`). Lobby: `lobby.tscn` (code-built), `LobbyState`; Start broadcasts `start {names, ids, seed}`. A background browser tab throttles to 130 to 600 ms, so tabs stay in front. Playwright: the game is one canvas, click by coordinates (viewport 960 x 540); `bringToFront` before typing; serve the export with `Cache-Control: no-store`.
+- **Online II (39):** `Online` (autoload), lockstep: every copy runs the same `Match`; only choices come from the host through `Online.decide(kind, player, seconds, auto, valid, settle)` and `Online.submit(value)`, numbered by a counter. Kinds: `roll`, `branch`, `opponent`, `stake`, `monster`, `minigame` (the seed; part 46 changes it). `Online.is_mine`; the host adds 1 s of grace for a remote player. Debug flags: `-- --turns N` / `?turns=N`, `-- --bot` / `?bot=1`. Tests: `tools/tests/online_test.gd` (headless `Godot -s`, 27 checks).
+- **Online IV (41a, 41b):** host migration (relay `{t:"host", id}`, `Online.host_id`), `Online.status(name)` `"dropped"`/`"away"` (3 automatic choices in a row; `SHORT_SECONDS` timers), `presence_changed`, Play again (`lobby_again`, `Online.back_to_room`), Leave. The decision log `Online._log`, rejoin from `sessionStorage` (`rejoin`/`rejoined`/`resume`), catch-up behind `CatchUpCurtain` at `Engine.time_scale = 12` with the Master bus muted. Not done: a rejoin during the ceremony fails.
+- **Release (42, 44):** `web/shell.html`, `build_release.py --web [--debug]`, relay guards (tests in `tools/relay/`), `Net.PRODUCTION_RELAY` and `Net.PAGE_URL` (empty until the user deploys; the working tree has an uncommitted comment edit in `net.gd` that is the user's), `Net.debug_value` is empty in release builds. Version 1.0.0, 44.5 MB zip. No Windows build.
 
 ## Log
 
-- **2026-10-24, sweeping changes 2:** the user's list of eight fixes plus a request for smoother lines. Head Soccer: `ARENA` 1700 x 680 (own table), the right head mirrored (portraits face right), no stall re-serve (`_rest`, `STALL_TIME` and the `rest` state key are gone), no ball squash, the ball spins only while rolling. Monster select: names always visible (Frankenstein on two lines), `MonsterPiece.selected`, power line and greyed `PaperButton` Confirm in `Pregame`; a disabled `PaperButton` greys out. `DeltaPop`, `PowerBeam`, `Board._delta/_beam`. `tools/sounds/make_rope_tug.py` makes `rope_tug.ogg`. Harness lesson: a texture only `load`ed inside `_draw` draws white until something else has used it.
-
-- **2026-10-23 to 24, Microplans 1 to 8:** the first playable, parts 1 to 24. See [microplan_first_playable.md](microplan_first_playable.md#log).
-- **2026-10-24, Microplan 9:** the start of the final game, from the user's brief. Planned parts 25 to 27: the questionnaires, asset retrieval, and the camera tweak. Sketched the roadmap to part 44.
-- **2026-10-24, Microplan 10:** planned parts 28 to 30: the lobby-size rules, the board for each lobby size, and the passive powers. The roadmap ends at 43 because Run n Dodge is out (part 25).
-- **2026-10-24, Microplan 11:** planned parts 31 to 33: Dracula and Medusa, the online spike, and the minigame frame. The spike runs against a local `wrangler dev` relay so the overnight automation is not blocked.
-- **2026-10-24, Microplan 12:** planned parts 34 to 36: Pong, Tug of War and Sumo. Mr. Hyde's edge is a hidden 10% in each game.
-- **2026-10-24, Microplan 13:** planned parts 37 to 39: Head Soccer, the network layer and lobby, and the board over the network. The Cloudflare deploy moved to part 41.
-- **2026-10-24, Microplan 14:** planned parts 40 to 42: the minigames over the network (input stream plus host snapshots), drops/rejoin/host migration/Play again, and the deploy with the itch.io build. The roadmap now ends at 44, one later: part 41's reconnection work and the deploy were too much for one part, so the old 41 became 41 and 42, playtests are 43, the release is 44. Part 39 built lockstep instead of an event stream, which makes host migration and rejoin cheap (every copy already has the same state and a decision log is enough), and that shaped part 41. The deploy is written so it never waits for the user's Cloudflare login.
-
-- **Online IV, first half (part 41a):** the relay keeps `host` in its Durable Object storage and, when the host's socket goes, sends `{t:"host", id}` (the lowest id left) right after `{t:"leave"}`; `Net.host_changed(id)` sets `is_host`. `Online` follows it (`host_id`), re-sends an answer that went to the old host (`_open.value`), and a copy promoted while waiting on a decision times it itself (what is left of its seconds, at least `TAKEOVER_MIN` 2 s). `Online.status(name)` is `"dropped"` (their peer left) or `"away"` (3 automatic choices in a row, counted the same on every copy from the `decided` results; minigame seeds and 0-second decisions do not count); the host gives either one the `SHORT_SECONDS` timers (roll 1, path 2, opponent/stake/monster 3, no grace). `presence_changed(name, state)` makes the board dim the HUD portrait (`HudPortrait.set_presence`, a dim with "Reconnecting" or "Away", not Medusa's grey), play `leave`/`join` and show a `_notice` banner; a new host gets "X is the host now". `MiniLink` takes over judging when the host leaves mid-round (`Minigame.verdict` remembers a result the old host never announced). The ceremony's Play again online: the host sends `lobby_again`, everyone goes to the lobby with the connection kept (`Online.back_to_room`), which rebuilds the seats from `Net.peers` (a default "Player N" name is not carried over); non-hosts see "Waiting for the host", and the button wakes up if they become the host. Settings has a Leave button online (`Online.leave_match`). Tests: `tools/tests/online_test.gd` (+8 checks), `tools/tests/relay_host_test.mjs` (the relay's host rule with Node sockets, against `npm run dev`), and three Playwright tabs: the host's tab closed during the monster picks, the other two finished the whole match (same results on both), then Play again from the new host brought both back to the room. **Not done (41b):** the decision log, rejoin after a reload (`rejoin`/`resume`, `Board.fast` catch-up, the curtain), "Rejoined" and "room closed" banners, the sessionStorage Rejoin on the title. A decision the old host had broadcast but only some copies heard can still make copies disagree (the log fixes it). Playwright lesson: `python -m http.server` lets Chromium cache `index.pck`, so a rebuilt export looked unchanged; serve with `Cache-Control: no-store` (`$TEMP/serve.py` in the part's session).
-- **Online IV, second half (part 41b):** `Online` keeps a log on every copy (`_log`: every `decided` as `{k:"d", seq, kind, value, auto}` and every minigame verdict as `{k:"m", winner}` through `Online.log_mini`). A reloaded tab keeps `mn_room` and `mn_name` in `sessionStorage` (written by `Online.begin`, cleared by `stop`/`leave_match`/a failed rejoin), and the title shows a **Rejoin** button (`Online.saved_seat`, `start_rejoin`). The rejoiner opens the room and broadcasts `rejoin {name}`; the host (only if the old socket is gone, else the rejoiner asks again every 2.5 s, 4 tries, then `rejoin_failed` and a red "Can't rejoin that room" banner) re-points `id_by_name`, broadcasts `rejoined {name, id}` (everyone re-points, clears dropped/away, "X is back" banner) and sends `resume {names, ids, seed, host, log, dropped}`. `names` are the lobby's order (`Online.match_names`; `Match.start` shuffles its own order from them), `Online.match_seed` the seed. The rejoiner starts the same `Match`, and `catching_up` answers each `decide` from the log. **Fast mode is not a `Board.fast` flag:** it is `Engine.time_scale = 12` with the Master bus muted, so every tween and timer obeys without being touched; presence signals are held back and replayed at the end. `CatchUpCurtain` (`src/net/catch_up_curtain.gd`) hides it ("Catching up..." and a paper bar). It ends when the log has no entry for the next decision, or, in `MinigameFrame`, when `Online.take_mini()` has no verdict left: that round was on when the rejoiner arrived, so it plays or watches live (the rejoiner of a duelist's seat took the "Watching" view in the test). Logged rounds skip the game entirely. `room_lost` (socket gone for good) gives a "The room closed" banner. Tests: `online_test.gd` (+6 checks, 27 in all) and three Playwright tabs with `?bot=1&turns=4&mini=pong`: a joiner reloaded mid-pick and mid-Pong came back through Rejoin, caught up behind the curtain, and its board matched the others (turn, blood, pieces); a stale seat's Rejoin showed the red banner. **Not done:** the match to the end was not compared after a rejoin, a rejoin during the ceremony just fails, the Rejoin button stays on the title after a failure until reload, no "Rejoined" banner on the rejoiner itself (the curtain opening is the sign), the `rejoin_no` message was dropped (the host just stays silent). Bots only answer on the host's copy, so a rejoined bot tab relies on the candle.
-- **The deploy (part 42, wrapped up early on the user's order, no playtests):** `web/shell.html` (loading page "Loading the dark..." with a paper bar), `build_release.py --web [--debug]`, relay guards (idle wipe after `IDLE_SECONDS`, 10 new rooms a minute per address, tests in `tools/tests/relay_*.mjs`), `tools/relay/deploy.md`, `release/itch_page.md`, `Net.PRODUCTION_RELAY` and `Net.PAGE_URL` (both empty until the user deploys and publishes), `Net.debug_value` returns "" in release builds (`bot`, `turns`, `mini`), version 0.9.0 on the title, the title now has Online and Same screen (Quit is hidden on the web), and a `?room=` link goes from the title straight to the lobby. Checked: the web export loads, and three debug tabs went from a copied link to a started match. **Not checked:** that match to its end, the real relay, itch's iframe and `?room=`, the cover images (not made), the loading screen by eye. The MCP did not connect this session.
-- **The release (part 44):** version 1.0.0 in `project.godot`; `build_release.py --web` gives the 44.5 MB zip, loaded in Playwright from a local server with no console errors and the title's v1.0.0. The relay is still not deployed (wrangler not logged in), so the web build's default relay is `ws://127.0.0.1:8787` until the user does `tools/relay/deploy.md` and rebuilds. No Windows build (templates missing). The playtests (43) were skipped.
+- **2026-10-23 to 24, Microplans 1 to 14:** the first playable (parts 1 to 24) and the final game's parts 25 to 44: the questionnaires, assets, camera, lobby-size rules, board per size, powers, the online spike and layer, Pong, Tug of War, Sumo and Head Soccer, the minigames over the network, drops/rejoin/host migration, the deploy and the 1.0.0 release (playtests skipped). See [microplan_first_playable.md](microplan_first_playable.md#log) for the first 24. The old per-part notes, the minigame designs and the plans for 40 to 42 were cut from this file in Microplan 15; git history has them.
+- **2026-10-24, sweeping changes 2:** a list of eight fixes (Head Soccer's arena and heads, monster select showing names and a Confirm button, `DeltaPop`, `PowerBeam`, a softer rope sound). Mostly irrelevant now that the games are removed; `DeltaPop` and `PowerBeam` stay.
+- **2026-10-25, Microplan 15:** the user played 1.0.0 and sent thirteen points (see "Microplan 15: the pivot"). Planned seven parts, 45 to 51, instead of three plus a rough tail, because the user asked for 6 to 8 and the changes are many but small; the README's multiple-of-3 microplan rule is switched off until 51. The roadmap now ends at 51 (the old end, 44, was the release, which is now 51). Decisions: the four minigames and the real-time online streams are removed for Shot in the Dark; two dice; Blood becomes a drain (the user agreed) so it needs both players below their cap; Swap unchanged (the user agreed); Hyde, the Wolf Man and the swap-duel length changed by Claude. The user supplied the 1000-question database (`sitd_questions/`); the plan groups its 75 categories into four board categories. Four icon prompts were added to `asset_prompts.md`; no new sounds; the music list is above. One bug found while planning: `Match.stakes` checked only the opponent's coins for a gold stake.
