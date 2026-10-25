@@ -249,6 +249,10 @@ Short. The next Microplan reads these instead of the code.
 - **Online IV (41a, 41b):** host migration (relay `{t:"host", id}`, `Online.host_id`), `Online.status(name)` `"dropped"`/`"away"` (3 automatic choices in a row; `SHORT_SECONDS` timers), `presence_changed`, Play again (`lobby_again`, `Online.back_to_room`), Leave. The decision log `Online._log`, rejoin from `sessionStorage` (`rejoin`/`rejoined`/`resume`), catch-up behind `CatchUpCurtain` at `Engine.time_scale = 12` with the Master bus muted. Not done: a rejoin during the ceremony fails.
 - **Release (42, 44):** `web/shell.html`, `build_release.py --web [--debug]`, relay guards (tests in `tools/relay/`), `Net.PRODUCTION_RELAY` and `Net.PAGE_URL` (empty until the user deploys; the working tree has an uncommitted comment edit in `net.gd` that is the user's), `Net.debug_value` is empty in release builds. Version 1.0.0, 44.5 MB zip. No Windows build.
 
+### Part 51 (2026-10-25, trimmed)
+
+Parts 49 (pace, overlaps) and 50 (music) were skipped by the user, and so was tuning (turn counts, timers, Hyde 0.8, Wolf Man +2 are as built). Done: docs sweep, version 1.1.0, web build 42.0 MB, loads clean in Playwright, tests pass (rules, shot, card, online). Not run: a full bot match, the two-tab online run to the ceremony. The music loops and stings are still missing (silence).
+
 ## Log
 
 - **2026-10-23 to 24, Microplans 1 to 14:** the first playable (parts 1 to 24) and the final game's parts 25 to 44: the questionnaires, assets, camera, lobby-size rules, board per size, powers, the online spike and layer, Pong, Tug of War, Sumo and Head Soccer, the minigames over the network, drops/rejoin/host migration, the deploy and the 1.0.0 release (playtests skipped). See [microplan_first_playable.md](microplan_first_playable.md#log) for the first 24. The old per-part notes, the minigame designs and the plans for 40 to 42 were cut from this file in Microplan 15; git history has them.

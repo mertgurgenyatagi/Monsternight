@@ -1,6 +1,6 @@
 # Monsternight
 
-A classic-horror online party board game for a group of friends, made in Godot 4.7.2. Players roll dice, race across a paper-cutout board, and duel each other in simple 1v1 minigames.
+A classic-horror online party board game for a group of friends, made in Godot 4.7.2. Players roll dice, race across a paper-cutout board, and duel each other in Shot in the Dark, a 1v1 number-guessing quiz.
 
 ## Building principles
 
@@ -53,7 +53,7 @@ What they mean in practice is in [Art and audio](docs/art_and_audio.md#principle
 - **Part 46 is done:** Shot in the Dark, online (`Online.shot`, `shot_lock`/`shot_status`/`shot_reveal`; every copy shows one layout and runs the same reveal; the coin flip, `log_mini` and `mini` are gone, `?group=` forces a category). Notes in `docs/microplan.md`. Also fixed: `build_release.py` left `data/` out of builds.
 - **Part 47 is done:** two dice (`Die` holds two `DieCube`s; `Online`'s roll carries `{dice: [a, b]}`), fewer turns (11 to 7), zero-sum stakes (blood is drained and gained, `result.gain`), a Back button on the stake step, swap duels need 2 wins, the Wolf Man's +2. Shot in the Dark now has 30 s (the user's change), and the Turkish cover line was fixed. Notes in `docs/microplan.md`.
 - **Part 48 is done:** `PowerCard` (click a HUD portrait on the board: name, full power, blood, coins, status; click again, click elsewhere or Esc closes) and `Countdown` (a paper tag with a number) in place of the candle everywhere but inside Shot in the Dark, which already had its own big number. `Flame` and `flame.png` stay for the torches. Notes in `docs/microplan.md`.
-- **Next: part 49** (faster, and things getting in the way). **Do not microplan after part 49, whatever the multiple-of-3 rule in the automation's prompt says: the plan already covers 46 to 51.** Just implement the next part. Part 51 ends the process: when it is done, this line is replaced by "the process is over: no more parts, no final line".
+- **Parts 49 and 50 were skipped by the user, and no tuning was done. Part 51 is done: version 1.1.0, the release.** Docs swept for Shot in the Dark, `build/monsternight_web.zip` (42.0 MB) built and loads in a browser with no console errors; all headless tests pass. Not done, and only the user can: the Cloudflare deploy, `Net.PRODUCTION_RELAY` / `Net.PAGE_URL`, the itch.io upload (see `tools/relay/deploy.md`, `release/itch_page.md`). **The process is over: no more parts, no final line.**
 
 **Keep the raws.** They're the sources, and the processed files can always be rebuilt from them.
 
@@ -61,7 +61,7 @@ What they mean in practice is in [Art and audio](docs/art_and_audio.md#principle
 
 - [Game rules](docs/game_rules.md): match flow, turns, trophies, blood, coins, timers
 - [Board](docs/board.md): layout, path splits, space mix, length
-- [Minigames](docs/minigames.md): duels, stakes, controls, the minigame list
+- [Minigames](docs/minigames.md): Shot in the Dark, stakes, controls
 - [Characters](docs/characters.md): the 8 monsters, their colors, and how they're picked
 - [Screens](docs/screens.md): lobby, monster select, the board's HUD and clicks, duels, ceremony, settings
 - [Art and audio](docs/art_and_audio.md): principles, visual style, movement, camera, sound
