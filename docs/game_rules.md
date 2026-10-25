@@ -73,7 +73,7 @@ When the match ends, everyone counts their trophies and the leaderboard is ranke
 | Spikes | Lose 1 blood |
 | Thief | Lose 1 coin |
 | Church | Gain 1 blood (up to your cap) |
-| Minigame spaces | Each of the four minigames has its own space. Landing on one starts a duel of that game. See [minigames.md](minigames.md). |
+| Minigame spaces | Four spaces (The Atlas, The Archive, The Lab, The Stage), one for each group of Shot in the Dark questions. Landing on one starts a duel. See [minigames.md](minigames.md). |
 
 - **One of every two spaces is empty** (the user's call, 2026-10-23): nothing happens when a piece lands there.
 - **Half the filled spaces are minigames** (the brief), and the other half are the four quick spaces. See [board.md](board.md#space-mix).

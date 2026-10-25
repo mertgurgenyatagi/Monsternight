@@ -36,7 +36,7 @@ Both swamp paths are 10 spaces long, with the same mix. Since the spaces are shu
 In every part of the road (the brief):
 
 - **Half the spaces are empty.**
-- **Half the filled spaces are minigames,** each one of the four games at random (Q18). The other half are quick spaces.
+- **Half the filled spaces are minigames,** each one of the four question groups at random (Q18, Microplan 15). The other half are quick spaces.
 - On the main road and the swamp paths, the quick spaces are the four kinds in equal numbers. The graveyard's are spikes and thieves, and the church path's are churches and coins, half and half (Claude's call, Q18).
 - Each part of the road is a bag with exact counts, shuffled with no other rule on the order. When a count doesn't split evenly, the odd space goes to a random side.
 

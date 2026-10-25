@@ -21,7 +21,7 @@ ICON_RIM = ((0xff, 0xf4, 0xdc), 4)
 BODY_HEIGHT = 182  # a monster's drawn part, feet to crown
 STAND_SIZE = (66, 20)  # stand.png, as drawn under a piece on the board
 MONSTERS = ["dracula", "medusa", "frankenstein", "death", "hyde", "cthulhu", "wolfman", "dorian"]
-ICONS = ["coin", "spikes", "thief", "church", "pong", "sumo", "tug_of_war", "head_soccer"]
+ICONS = ["coin", "spikes", "thief", "church", "atlas", "archive", "lab", "stage"]
 
 
 def outlined(image, rim):

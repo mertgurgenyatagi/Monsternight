@@ -7,10 +7,10 @@ class_name BoardPath
 const START := "start"
 const FINISH := "finish"
 
-## What each letter of a stretch's kinds stands for. The four minigames are the duel spaces.
+## What each letter of a stretch's kinds stands for. The four Shot in the Dark groups are the duel spaces.
 const KINDS := {
 	".": "empty", "c": "coin", "s": "spikes", "t": "thief", "h": "church",
-	"p": "pong", "u": "sumo", "e": "head_soccer", "w": "tug_of_war",
+	"a": "atlas", "r": "archive", "l": "lab", "g": "stage",
 }
 
 ## The stretches in order. Their kinds are rolled fresh for every match by `BoardRoller` and handed

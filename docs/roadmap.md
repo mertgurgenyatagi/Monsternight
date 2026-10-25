@@ -24,6 +24,6 @@ A local version for testing the board rules. **One person controls every player*
 - **Trophies:** the first finisher gets one, and nobody else gets a finishing trophy. The most-gold and most-duels-won trophies stay.
 - **A challenger may walk away** when swap is the only valid stake.
 - **Powers,** one for each monster (see [characters.md](characters.md#powers)).
-- **Four minigames:** Pong, Sumo, Head Soccer and Tug of War (see [minigames.md](minigames.md#minigame-list)).
+- **One minigame, Shot in the Dark** (a numeric question, closest guess wins), replacing the four real-time games in Microplan 15 (see [minigames.md](minigames.md)).
 - **The camera** zooms out slightly and looks from slightly higher.
 - **Online play in the browser, on itch.io,** through a Cloudflare relay (see [tech.md](tech.md#multiplayer)). The one-computer mode stays.
