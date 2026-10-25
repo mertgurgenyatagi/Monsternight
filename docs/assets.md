@@ -109,7 +109,7 @@ Each location below has a far strip (the distant skyline), a ground strip (the e
 | `spikes.png` | A row of spikes | 128 × 128 |
 | `thief.png` | A sneaky gloved hand, grabbing | 128 × 128 |
 | `church.png` | A little chapel | 128 × 128 |
-| `atlas.png`, `archive.png`, `lab.png`, `stage.png` | The four question categories' icons (the user makes them; until then, hue-shifted coin stand-ins; prompts in [asset_prompts.md](asset_prompts.md#category-icons-icons)) | 128 × 128 |
+| `atlas.png`, `archive.png`, `lab.png`, `stage.png` | The four question categories' icons (made by the user, done; prompts in [asset_prompts.md](asset_prompts.md#category-icons-icons)) | 128 × 128 |
 | `flag.png` | A small pennant. Marks the finish and players who have finished | 128 × 128 |
 
 ### Monsters: `assets/art/monsters/`

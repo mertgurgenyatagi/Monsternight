@@ -25,7 +25,7 @@ A minigame space shows a **category**, and the question comes from its group (`d
 | `lab` | The Lab | Science, the body, animals, plants (220) |
 | `stage` | The Stage | Cinema, TV, music, games, toys, the internet, sport, food (330) |
 
-Their icons are by the user (`docs/asset_prompts.md`, "Category icons"). Until they arrive the game uses hue-shifted coin stand-ins.
+Their icons are by the user (`docs/asset_prompts.md`, "Category icons"), done: atlas, archive, lab and stage.
 
 ## Duels
 

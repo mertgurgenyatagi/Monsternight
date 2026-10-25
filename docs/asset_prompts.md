@@ -2,7 +2,7 @@
 
 A Gemini prompt for each of the 98 images in [assets.md](assets.md), except the paper texture, which Claude made with a script. Fonts and sounds aren't included. Every path below is inside `assets/art/`.
 
-**Status:** the first playable's 83 images are made, approved by the user, and processed. The raws are in `images_raw/` as `.jfif` files (JPEG), and `tools/images/process_images.py` turns them into `assets/art/`. The final game adds 10, marked "New in part 26": the sumo and tug of war icons, and the Minigames section at the end. Microplan 15 adds 4 category icons (the section before the itch.io images); the Minigames section's images stop being used once part 45 removes the four old games.
+**Status:** the first playable's 83 images are made, approved by the user, and processed. The raws are in `images_raw/` as `.jfif` files (JPEG), and `tools/images/process_images.py` turns them into `assets/art/`. The final game adds 10, marked "New in part 26": the sumo and tug of war icons, and the Minigames section at the end. Microplan 15 added 4 category icons (the section before the itch.io images), made and processed; the Minigames section's images stop being used once part 45 removes the four old games.
 
 The prompts are in the order to make them, not the order of assets.md. Some prompts need an earlier image attached so that a set matches: the icons follow the coin, the monsters follow Dracula, each portrait follows its body, the scenery strips follow the village's, and the minigame pieces follow the icons.
 
