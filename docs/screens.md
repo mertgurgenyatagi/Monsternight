@@ -33,7 +33,7 @@ The players' name cards shuffle and settle into the turn order.
 
 ### Always on screen
 
-- A strip of paper portraits along the top, one per player, in turn order. Each shows the player's blood drops and coin count. The active player's portrait is raised, and a player who has finished gets a flag.
+- A strip of paper portraits along the top, one per player, in turn order. Each shows the player's blood drops and coin count. The active player's portrait is raised, and a player who has finished gets a flag. **Clicking a portrait** (when no choice is open) hangs a power card under it: the monster's name, its power in full, the player's name, blood and coins, and a status line (stone, finished, reconnecting, away, or "playing now"). Clicking the portrait again, clicking anywhere else, or Esc closes it; only one card is open at a time, and it never pauses the game or eats the click that closes it.
 - A turn counter in a corner, such as "Turn 5 of 15". The number of turns comes from the lobby's size.
 - Trophy counts and duel wins are **not** shown. They stay secret until the ceremony.
 
@@ -47,7 +47,7 @@ On the board, everything is a mouse click.
 | Pick a path | One of the two arrows at the signpost |
 | Challenge | An opponent's portrait, then a stake card: gold, blood, or swap. Invalid stakes are greyed out. When swap is the only stake left, a "Walk away" button shows beside the cards. |
 
-For every decision, a candle burns down next to the choice. When it goes out, a random valid choice is made.
+For every decision, a paper tag next to the choice counts the seconds down as a number. In the last 5 seconds it turns red, shakes and ticks, and at 0 a random valid choice is made.
 
 ### Dying
 

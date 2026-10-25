@@ -3,20 +3,20 @@ extends Node2D
 ## The challenge a minigame space asks for, drawn on the HUD's layer (so a child of `Hud`, whose
 ## coordinates are the screen's). A paper banner drops in under the strip and the valid portraits
 ## bob: the challenger clicks an opponent. Then three stake cards fan out under that portrait, and a
-## click slaps one down. One 20 s candle burns for both steps together. When it goes out, a valid
+## click slaps one down. One 20 s countdown runs for both steps together. When it runs out, a valid
 ## opponent and then a valid stake are picked at random, with a shake and a beat so it's clear
 ## nobody clicked. A "Back" button sits under the cards and returns to picking an opponent, with the
-## same candle. When no opponent allows anything but a swap, a "Walk away" button sits beside it, and the
+## same countdown. When no opponent allows anything but a swap, a "Walk away" button sits beside it, and the
 ## challenger can end the space with nothing taken.
 
-## The step is decided: by a click (true), or because the candle went out (false).
+## The step is decided: by a click (true), or because the countdown went out (false).
 signal _decided(by_click: bool)
 
 const SECONDS := 20.0
 const BANNER_AT := Vector2(960, 345)
 const BANNER_SIZE := Vector2(560, 66)
-const CANDLE_AT := Vector2(1330, 505) # the candle's base, by the banner's right corner
-const CANDLE_SCALE := 0.4
+const COUNT_AT := Vector2(1330, 440) # the countdown, by the banner's right corner
+const COUNT_SCALE := 0.8
 const CARD_Y := 600.0
 const CARD_STEP := 206.0
 const CARD_SCALE := 0.47 # card.png is 400 x 560
@@ -41,7 +41,7 @@ const DIM := Color(0.5, 0.5, 0.55)
 const INK := Color("2a1a22")
 
 var _hud: Hud
-var _candle: Candle
+var _countdown: Countdown
 var _banner: Node2D
 var _banner_label: Label
 var _opponent := {}
@@ -52,7 +52,7 @@ var _valid: Array[String] = []
 var _cards_open := false
 var _walk_button: PaperButton
 var _back_button: PaperButton
-var _online := false # the host decides; the candle here is only for show
+var _online := false # the host decides; the countdown here is only for show
 var _mine := true # this copy's player is the challenger
 var _acted := false # this copy has already shown the click it made
 var _began := 0 # when the step began, in ticks, for the 20 s both steps share
@@ -79,11 +79,11 @@ func _ready() -> void:
 	_banner_label.add_theme_font_size_override("font_size", 34)
 	_banner_label.add_theme_color_override("font_color", INK)
 	_banner.add_child(_banner_label)
-	_candle = Candle.new()
-	_candle.scale = Vector2.ONE * CANDLE_SCALE
-	_candle.set_meta("rest_scale", _candle.scale)
-	_candle.visible = false
-	add_child(_candle)
+	_countdown = Countdown.new()
+	_countdown.scale = Vector2.ONE * COUNT_SCALE
+	_countdown.set_meta("rest_scale", _countdown.scale)
+	_countdown.visible = false
+	add_child(_countdown)
 
 
 ## Asks `challenger` for an opponent and a stake. Gives `{opponent, stake}` (the opponent's player
@@ -106,14 +106,14 @@ func ask(challenger: Dictionary) -> Dictionary:
 	_banner.rotation = 0.0
 	PaperMotion.drop_in(_banner, 320.0, 0.5)
 	await get_tree().create_timer(0.55, false).timeout
-	_candle.position = CANDLE_AT
-	_candle.rotation = 0.0
-	_candle.set_meta("rest_position", CANDLE_AT)
-	_candle.visible = true
-	PaperMotion.pop_in(_candle)
-	_candle.start(SECONDS)
+	_countdown.position = COUNT_AT
+	_countdown.rotation = 0.0
+	_countdown.set_meta("rest_position", COUNT_AT)
+	_countdown.visible = true
+	PaperMotion.pop_in(_countdown)
+	_countdown.start(SECONDS)
 	if not _online:
-		_candle.timed_out.connect(_on_timed_out)
+		_countdown.timed_out.connect(_on_timed_out)
 
 	var first := true
 	while true:
@@ -140,7 +140,7 @@ func ask(challenger: Dictionary) -> Dictionary:
 		else:
 			_hud.set_pickable(options)
 			_hud.portrait_clicked.connect(_on_portrait)
-			if _timed_out: # the candle went out while the cards were folding away
+			if _timed_out: # the countdown went out while the cards were folding away
 				by_click = false
 			else:
 				by_click = await _decided
@@ -216,10 +216,10 @@ func ask(challenger: Dictionary) -> Dictionary:
 				continue
 		break
 	if not _online:
-		_candle.timed_out.disconnect(_on_timed_out)
-	_candle.stop()
-	await PaperMotion.lift_away(_candle, 500.0, 0.4).finished
-	_candle.visible = false
+		_countdown.timed_out.disconnect(_on_timed_out)
+	_countdown.stop()
+	await PaperMotion.lift_away(_countdown, 500.0, 0.4).finished
+	_countdown.visible = false
 	await get_tree().create_timer(CONFIRM_BEAT, false).timeout
 	var result := {"opponent": _opponent, "stake": _stake}
 	_finish()
@@ -403,7 +403,7 @@ func _others_have_stakes(challenger: Dictionary) -> bool:
 
 
 # Back: the cards flip away, the banner asks for an opponent again and the portraits bob once more.
-# The candle keeps burning where it was.
+# The countdown keeps running where it was.
 func _go_back() -> void:
 	_hud.set_lit(_opponent, false)
 	_buttons_leave()

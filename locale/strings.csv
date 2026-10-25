@@ -159,3 +159,16 @@ SITD_NO_GUESS,no guess,tahmin yok
 SITD_CLOSEST,Closest!,En yakın!
 SITD_YOU,You,Sen
 SITD_WAITING,Waiting for %s,%s bekleniyor
+POWER_LONG_DRACULA,"When he lands, every player nearby with 2 or more blood loses 1 and he gains 1 for each, up to 3.","İndiğinde yakındaki, 2 veya daha fazla kanı olan her oyuncu 1 kan kaybeder ve o her biri için 1 kan kazanır, en fazla 3'e kadar."
+POWER_LONG_MEDUSA,"When she lands, every player nearby turns to stone and misses their next turn. Nobody misses two turns in a row.","İndiğinde yakındaki her oyuncu taşa döner ve bir sonraki turunu kaçırır. Kimse üst üste iki tur kaçırmaz."
+POWER_LONG_FRANKENSTEIN,"Loses nothing when he loses a duel he started, not even blood. The winner gains nothing either.","Başlattığı bir düelloyu kaybedince hiçbir şey kaybetmez, kan bile. Kazanan da bir şey kazanmaz."
+POWER_LONG_DEATH,"His blood never drops below 1. He can't win or lose blood in a Blood duel at 1 blood.","Kanı hiçbir zaman 1'in altına düşmez. 1 kanı varken Kan düellosunda kan kazanıp kaybedemez."
+POWER_LONG_HYDE,"In a duel he starts, his guess counts as 20% closer to the answer.","Başlattığı düellolarda tahmini cevaba %20 daha yakın sayılır."
+POWER_LONG_CTHULHU,"Starts with 4 blood and 1 coin. 4 is his blood cap, and he comes back from death with 4.","4 kan ve 1 altınla başlar. Kan sınırı 4'tür ve ölünce 4 kanla geri döner."
+POWER_LONG_WOLFMAN,"Every roll gets +1 per die, +2 in all, so he moves 4 to 14 spaces.","Her atışa zar başına +1, toplam +2 eklenir; 4 ile 14 kare ilerler."
+POWER_LONG_DORIAN,"In a swap duel he starts, 1 win is enough instead of 2.","Başlattığı takas düellosunda 2 yerine 1 galibiyet yeter."
+CARD_BLOOD,Blood,Kan
+CARD_COINS,Coins,Altın
+CARD_STONE,Misses the next turn,Sonraki turu kaçırır
+CARD_FINISHED,Reached the castle,Kaleye ulaştı
+CARD_ACTIVE,Playing now,Şu an oynuyor

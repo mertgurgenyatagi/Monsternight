@@ -1,17 +1,17 @@
 class_name BranchChoice
 extends Node2D
 ## The choice at a fork. Two paper arrows spring up beside the signpost, the upper one pointing up
-## to the upper path and the lower one down to the lower path, and nothing else. A candle burns for `SECONDS`. A click on an arrow, or the candle going
+## to the upper path and the lower one down to the lower path, and nothing else. A countdown runs for `SECONDS`. A click on an arrow, or the countdown going
 ## out, decides. Hovering an arrow lights the path it leads to and dims the other. It lives in the
 ## board's Lanes layer over the pieces. Only the arrows take clicks.
 
-## The choice is made: by a click on an arrow (true), or because the candle went out (false).
+## The choice is made: by a click on an arrow (true), or because the countdown went out (false).
 signal _decided(by_click: bool)
 
 const ARROW := preload("res://assets/art/board/arrow.png")
 const SECONDS := 10.0
-const CANDLE_SCALE := 0.5 / BoardCamera.ZOOM
-const CANDLE_AT := Vector2(-60, -230) # the candle floats over the pieces, from the fork's token
+const COUNT_SCALE := 0.8 / BoardCamera.ZOOM
+const COUNT_AT := Vector2(-60, -300) # the countdown floats over the pieces, from the fork's token
 const ARROW_AT := [Vector2(260, -470), Vector2(260, -340)] # the upper and the lower arrow's middle
 const ARROW_TURN := [-22.0, 20.0] # degrees
 const ARROW_SCALE := 1.1 / BoardCamera.ZOOM
@@ -19,25 +19,25 @@ const POP_GAP := 0.18
 const CLICK_BEAT := 0.35
 const TIMEOUT_BEAT := 0.55
 
-var _candle: Candle
+var _countdown: Countdown
 var _options: Array[Node2D] = []
 var _areas: Array[Area2D] = []
 var _stretches: Array[String] = []
 var _view: BoardPathView
 var _open := false
 var _choice := -1
-var _online := false # the host decides; the candle here is only for show
+var _online := false # the host decides; the countdown here is only for show
 var _mine := true # this copy's player makes the choice
 var _clicked_here := false
 var _clicked_index := -1
 
 
 func _ready() -> void:
-	_candle = Candle.new()
-	_candle.scale = Vector2.ONE * CANDLE_SCALE
-	_candle.set_meta("rest_scale", _candle.scale)
-	_candle.visible = false
-	add_child(_candle)
+	_countdown = Countdown.new()
+	_countdown.scale = Vector2.ONE * COUNT_SCALE
+	_countdown.set_meta("rest_scale", _countdown.scale)
+	_countdown.visible = false
+	add_child(_countdown)
 
 
 ## Shows the choice at `fork` and waits for it. Gives the id of the space chosen, one of
@@ -51,15 +51,15 @@ func ask(fork: String, view: BoardPathView, player := {}) -> String:
 	for i in following.size():
 		_stretches.append(BoardPath.node(following[i]).stretch)
 		_add_option(i, node.pos)
-	_candle.position = node.pos + CANDLE_AT
-	_candle.rotation = 0.0
-	_candle.set_meta("rest_position", _candle.position)
+	_countdown.position = node.pos + COUNT_AT
+	_countdown.rotation = 0.0
+	_countdown.set_meta("rest_position", _countdown.position)
 	for i in _options.size():
 		PaperMotion.pop_in(_options[i], i * POP_GAP)
 	await get_tree().create_timer(_options.size() * POP_GAP + 0.3, false).timeout
-	_candle.visible = true
-	PaperMotion.pop_in(_candle)
-	_candle.start(SECONDS)
+	_countdown.visible = true
+	PaperMotion.pop_in(_countdown)
+	_countdown.start(SECONDS)
 	_online = Online.active
 	_mine = Online.is_mine(player) if _online else true
 	var by_click: bool
@@ -80,17 +80,17 @@ func ask(fork: String, view: BoardPathView, player := {}) -> String:
 		elif _clicked_here and _choice != _clicked_index:
 			_drop_others(_choice)
 	else:
-		_candle.timed_out.connect(_on_timed_out)
+		_countdown.timed_out.connect(_on_timed_out)
 		_open = true
 		for area in _areas:
 			area.input_pickable = true
 		by_click = await _decided
-		_candle.timed_out.disconnect(_on_timed_out)
+		_countdown.timed_out.disconnect(_on_timed_out)
 	_open = false
 	for area in _areas:
 		area.input_pickable = false
-	_candle.stop()
-	PaperMotion.lift_away(_candle, 500.0, 0.4)
+	_countdown.stop()
+	PaperMotion.lift_away(_countdown, 500.0, 0.4)
 	if by_click:
 		await get_tree().create_timer(CLICK_BEAT, false).timeout
 	else:
@@ -104,7 +104,7 @@ func ask(fork: String, view: BoardPathView, player := {}) -> String:
 		await get_tree().create_timer(0.2, false).timeout
 	await PaperMotion.pop_out(_options[_choice]).finished
 	_view.clear_light()
-	_candle.visible = false
+	_countdown.visible = false
 	for option in _options:
 		option.queue_free()
 	_options.clear()

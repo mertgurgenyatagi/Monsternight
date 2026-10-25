@@ -142,8 +142,7 @@ Each monster needs two files: a full body (`<name>.png`, standing, facing right,
 | `button.png` | A paper tag for buttons. The game stretches it sideways | 400 × 120 |
 | `card.png` | A blank paper playing card, for the stake cards and the VS card | 400 × 560 |
 | `portrait_frame.png` | A paper frame for portraits. The game tints it in the monster's color | 300 × 300 |
-| `candle.png` | A tall candle with no flame. The game shrinks it as a timer runs out | 120 × 400 |
-| `flame.png` | A candle flame. Also used for torches | 64 × 96 |
+| `flame.png` | A flame, for the board's torches | 64 × 96 |
 | `trophy.png` | A paper trophy cup | 256 × 256 |
 | `curtain.png` | The left half of a red theater curtain. The game mirrors it for the right half | 1000 × 1080 |
 | `curtain_top.png` | The curtain's scalloped top border | 1920 × 200 |
@@ -207,7 +206,7 @@ Quiet, seamless loops of 30 to 60 seconds that play under the music.
 | `ui_hover.ogg` | A soft paper rustle when the mouse moves onto something clickable |
 | `ui_click.ogg` | A crisp flick of a paper card |
 | `ui_denied.ogg` | A dull thud, for clicking something that's greyed out |
-| `timer_low.ogg` | A sputtering candle, for the last 3 seconds of a decision |
+| `timer_low.ogg` | A sputtering candle, for each of the last 5 seconds of a decision |
 | `timer_out.ogg` | A candle being snuffed out: time's up |
 | `turn_start.ogg` | A soft chime when a player's turn starts |
 | `die_roll.ogg` | A paper die tumbling |
