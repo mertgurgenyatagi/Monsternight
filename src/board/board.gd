@@ -7,7 +7,7 @@ extends Node2D
 
 ## Every piece has landed on the start.
 signal pieces_landed
-## A turn's die was clicked (true), or the candle went out (false).
+## A turn's die was clicked (true), or the countdown went out (false).
 signal _decided(by_click: bool)
 
 ## Each location's sky, top and bottom: colorful, never bleak.
@@ -21,7 +21,8 @@ const TINTS := {
 const QUICK := ["coin", "spikes", "thief", "church"]
 const BAT_LOCATIONS := ["graveyard", "castle"]
 const INTRO_HOLD := 2.0 # on the castle gate, counted from when the board starts to show
-const INTRO_GLIDE := 7.5
+const INTRO_GLIDE := 7.5 # the longest the intro glide takes
+const INTRO_SPEED := 2100.0 # px a second, so a shorter board's intro is quicker, with the same feel
 const SKIP_GLIDE := 0.9
 const DROP_GAP := 0.45 # between one piece dropping onto the start and the next
 const HOP_PACE := 0.42 # the time an in-between hop takes, against a hop's usual; it flows on into the next
@@ -31,10 +32,10 @@ const CROWD_STEP := 52.0 # across a space, from one piece to the next
 const CROWD_ROW := 4 # pieces in a row, then the next row stands behind
 const CROWD_FRONT := Vector2(0, 16) # the front row's feet, from the token's middle
 const CROWD_BACK := 34.0 # how far each row further back stands higher
-const TURN_SECONDS := 5.0 # the candle for a roll
+const TURN_SECONDS := 5.0 # the countdown for a roll
 const DIE_RISE := 300.0 # from the piece's feet to the die's middle, over its head
-const CANDLE_SCALE := 0.5
-const CANDLE_SIDE := Vector2(126, 70) # from the die's middle to the candle's base
+const COUNT_SCALE := 0.8 / BoardCamera.ZOOM
+const COUNT_SIDE := Vector2(272, -30) # from the die's middle to the countdown's middle
 const SHOW_BEAT := 0.25 # the rolled number stays on show this long
 const TURN_BEAT := 0.15 # after a piece lands, before the camera glides on
 const COIN_ICON := preload("res://assets/art/icons/coin_rim.png")
@@ -43,6 +44,11 @@ const COIN_SIZE := 78.0 # a flying coin at the token, in px; the HUD's counter i
 const COIN_HUD := 30.0
 const BLOOD_SIZE := 60.0
 const BLOOD_HUD := 28.0
+const POP_SCALE := 1.0 / BoardCamera.ZOOM # a pop in the world keeps the size it has on screen
+const BEAM_HEIGHT := 110.0 # from a piece's feet to the middle of its body, where a beam starts
+const POP_ABOVE := 190.0 # from a piece's feet to a pop over it
+const DIE_POP := Vector2(290, -60) # from the die's middle to the "+1" beside it
+const BONUS_BEAT := 0.6 # the "+1" stays on show this long before the die leaves
 const BALL_SCALE := 0.4 # a crumpled piece, against its full size
 const BALL_RISE := 150.0 # the ball lifts this far before it flies
 const FLIGHT_FAST := 1.2 # the flight's time over no distance, and over the whole board
@@ -74,16 +80,29 @@ var _by_monster := {} # monster id -> its BoardPiece
 var _hud: Hud
 var _crowds := {} # path id -> the pieces standing there, in the order they arrived
 var _die: Die
-var _candle: Candle
+var _countdown: Countdown
 var _path_view: BoardPathView
 var _branch: BranchChoice
 var _challenge: Challenge
-var _duel: Duel
+var _frame: MinigameFrame
 var _onlookers: Array[BoardPiece] = [] # the finished pieces, in finish order, standing by the gate
 var _front: Node2D # over the pieces: an icon that springs up stands here, so no piece hides it
 var _settling: Tween # the camera's glide onto a piece that has just stopped
 var _last_turn_shown := false
+var _note: TurnNote # online: whose move it is
+var _rolled: Array = [] # online: the two faces the host rolled for this turn
 var _track_name := "" # the board music now chosen, by where the leader is
+
+
+# The road is built for this match's lobby before any child (the camera, the scenery) reads it.
+func _enter_tree() -> void:
+	var size := clampi(Match.players.size(), Match.MIN_PLAYERS, Match.MAX_PLAYERS)
+	if Match.board_kinds.is_empty():
+		Match.board_kinds = BoardRoller.roll(size, Match.board_rng)
+	BoardPath.configure(size, Match.board_kinds)
+
+
+var _notices: Array[String] = []
 
 
 func _ready() -> void:
@@ -109,18 +128,28 @@ func _ready() -> void:
 	_hud = Hud.new()
 	add_child(_hud)
 	_hud.track_pieces(_by_monster)
+	if Online.active:
+		_note = TurnNote.new()
+		_hud.add_child(_note)
+		Online.presence_changed.connect(_on_presence)
+		Online.rejoined.connect(func(player_name: String) -> void: _notice(tr("BANNER_BACK") % player_name))
+		Online.room_lost.connect(func() -> void: _notice(tr("BANNER_CLOSED")))
+		Net.host_changed.connect(_on_host_changed)
+		for player in Match.players: # a copy that arrives late still shows who is gone
+			if Online.status(player.name) != "":
+				_hud.set_presence(player, Online.status(player.name))
 	_challenge = Challenge.new()
 	_hud.add_child(_challenge)
-	_duel = Duel.new()
-	add_child(_duel)
+	_frame = MinigameFrame.new()
+	add_child(_frame)
 	pieces_landed.connect(_hud.come_in)
 	pieces_landed.connect(_follow_leader)
 	pieces_landed.connect(_play_turns)
 	_die = Die.new()
-	_candle = Candle.new()
-	_candle.scale = Vector2.ONE * CANDLE_SCALE
-	_candle.set_meta("rest_scale", _candle.scale)
-	for node in [_die, _candle]:
+	_countdown = Countdown.new()
+	_countdown.scale = Vector2.ONE * COUNT_SCALE
+	_countdown.set_meta("rest_scale", _countdown.scale)
+	for node in [_die, _countdown]:
 		node.visible = false
 		lanes.add_child(node) # over the pieces, so a crowd never hides them
 	_camera.jump_to(BoardLayout.width())
@@ -129,7 +158,7 @@ func _ready() -> void:
 	_intro = true
 	await get_tree().create_timer(INTRO_HOLD, false).timeout
 	if not _skipped:
-		_glide_home(INTRO_GLIDE)
+		_glide_home(minf(INTRO_GLIDE, BoardLayout.width() / INTRO_SPEED))
 
 
 func _process(_delta: float) -> void:
@@ -158,14 +187,28 @@ func _intro_done() -> void:
 ## space springs to life and the coin or blood flies to or from the player's portrait. Empty spaces
 ## do nothing, at once. Awaiting it waits for the end of the effect.
 func land(player: Dictionary, id: String) -> void:
+	# Dracula's and Medusa's powers fire before the space does.
+	if player.monster == "dracula":
+		await _power_drain(player)
+	elif player.monster == "medusa":
+		await _power_stone(player)
 	var result := Match.land(player)
 	var kind: String = result.kind
+	var forced := Net.debug_value("group") # a test can force every landing to be this question group
+	if forced in Space.DUELS and kind not in Space.DUELS:
+		kind = forced
 	if kind in Space.DUELS:
 		if _settling and _settling.is_running():
 			await _settling.finished
+		_say("ONLINE_CHALLENGE", "ONLINE_CHALLENGE_MINE", player)
 		var choice := await _challenge.ask(player)
+		_say_clear()
+		if not choice.is_empty() and choice.stake == Challenge.WALK:
+			PaperMotion.tilt(piece_for(player), 9.0)
+			await get_tree().create_timer(0.5, false).timeout
+			return
 		if not choice.is_empty():
-			var outcome: Dictionary = await _duel.play(player, choice.opponent, choice.stake)
+			var outcome: Dictionary = await _frame.play(player, choice.opponent, choice.stake, kind)
 			_track_name = "" # the duel's music gives way to the leader's track
 			_follow_leader()
 			await duel_end(outcome.winner, outcome.loser, player, choice.stake)
@@ -182,13 +225,13 @@ func land(player: Dictionary, id: String) -> void:
 	await space.wake().finished
 	match kind:
 		"coin":
-			await _land_coin(player, space)
+			await _land_coin(player, space, result.coins)
 		"spikes":
-			await _land_spikes(player, space, piece)
+			await _land_spikes(player, space, piece, result.blood == 0 and Match.blood_is_safe(player), result.blood)
 		"thief":
-			await _land_thief(player, space, result.coins != 0)
+			await _land_thief(player, space, result.coins)
 		"church":
-			await _land_church(player, space, piece, result.blood != 0)
+			await _land_church(player, space, piece, result.blood)
 	space.rest()
 	if kind == "spikes" and result.blood != 0 and player.blood == 0:
 		await die(player)
@@ -295,10 +338,20 @@ func duel_end(winner: Dictionary, loser: Dictionary, challenger: Dictionary, sta
 	_win_pose(winner)
 	await _lose_pose(loser, result.died)
 	await get_tree().create_timer(DUEL_BEAT, false).timeout
+	if result.free: # Frankenstein's Monster loses nothing as the challenger
+		PowerPop.show_over(_front, piece_for(loser).position - Vector2(0, POP_ABOVE), tr("POP_FREE"), POP_SCALE)
+		await get_tree().create_timer(0.9, false).timeout
 	if result.coins != 0:
+		_delta(loser, -result.coins, "coins")
 		await _duel_coin(winner, loser)
+		_delta(winner, result.coins, "coins")
 	if result.blood != 0:
-		_hud.show_blood(loser)
+		_delta(loser, -result.blood, "blood")
+		if result.gain != 0: # the blood drop flies from the loser's portrait to the winner's
+			await _duel_blood(winner, loser)
+			_delta(winner, result.gain, "blood")
+		else:
+			_hud.show_blood(loser)
 		await get_tree().create_timer(0.9, false).timeout
 	if result.died:
 		if not is_same(loser, challenger):
@@ -328,8 +381,8 @@ func walk(player: Dictionary, steps: int) -> Signal:
 	return piece.walked
 
 
-## A piece that reaches a fork asks its player: the signpost's two arrows spring up with a candle,
-## and the camera eases out so both paths are in view. A click on an arrow, or the candle going out
+## A piece that reaches a fork asks its player: the signpost's two arrows spring up with a countdown,
+## and the camera eases out so both paths are in view. A click on an arrow, or the countdown going out
 ## (a random path), decides. Awaiting the signal gives the chosen id.
 func choose_branch(player: Dictionary, fork: String) -> Signal:
 	var piece := piece_for(player)
@@ -337,7 +390,7 @@ func choose_branch(player: Dictionary, fork: String) -> Signal:
 	return piece.branch_chosen
 
 
-# The turn loop: glide to the active player, offer the die with the candle, roll, walk, land, and
+# The turn loop: glide to the active player, offer the die with the countdown, roll, walk, land, and
 # pass the turn on, until `Match` says the last turn is over.
 func _play_turns() -> void:
 	await get_tree().create_timer(Match.players.size() * Hud.DROP_GAP + 1.2, false).timeout
@@ -347,15 +400,25 @@ func _play_turns() -> void:
 		await _camera.glide_to(piece.global_position.x).finished
 		_hud.set_active(player)
 		Sound.play("turn_start")
+		_say("ONLINE_ROLLING", "ONLINE_ROLL_MINE", player)
 		var by_click := await _offer_die(piece)
-		var value := Match.roll()
+		_say_clear()
+		var dice := Match.roll(_rolled)
+		var bonus := Match.roll_bonus(player)
 		if not by_click:
 			await _die.nudge().finished
-		_lift_candle()
-		await _die.tumble(value)
+			if Online.active:
+				PowerPop.show_over(_front, _die.position + DIE_POP * POP_SCALE, tr("POP_AUTO"), POP_SCALE)
+		_lift_countdown()
+		await _die.tumble(dice)
+		if dice[0] == dice[1]: # a double: the piece hops once more
+			PaperMotion.hop(piece, 40.0)
 		await get_tree().create_timer(SHOW_BEAT, false).timeout
+		if bonus > 0: # the dice keep their real faces; the bonus pops beside them
+			PowerPop.show_over(_front, _die.position + DIE_POP * POP_SCALE, tr("POP_PLUS_TWO"), POP_SCALE)
+			await get_tree().create_timer(BONUS_BEAT, false).timeout
 		_die.leave()
-		await walk(player, value)
+		await walk(player, dice[0] + dice[1] + bonus)
 		if player.space == BoardPath.FINISH:
 			await finish(player)
 			if Match.over():
@@ -371,20 +434,150 @@ func _play_turns() -> void:
 			return
 		if Match.turn != turn:
 			_hud.set_turn(Match.turn)
-			if Match.turn >= Match.TURNS and not _last_turn_shown:
+			if Match.turn >= Match.turns and not _last_turn_shown:
 				await _last_turn()
 			else:
 				await get_tree().create_timer(0.2, false).timeout
 
 
-# Turn `TURNS` begins: a sting, a flash of the sky, the counter pops and a banner drops in with a
-# slight shake. A candle on screen sputters. Only the first time.
+# Online: a player's connection dropped, they went away, or they are back. Their card dims and a
+# short banner says so; the ones who are not on this board (a name that is not a player) are skipped.
+func _on_presence(player_name: String, state: String) -> void:
+	for player in Match.players:
+		if player.name == player_name:
+			_hud.set_presence(player, state)
+			Sound.play("leave" if state != "" else "join")
+			if state != "":
+				_notice(tr("BANNER_DROPPED" if state == "dropped" else "BANNER_AWAY") % player_name)
+
+
+func _on_host_changed(id: int) -> void:
+	for player_name: String in Net.id_by_name:
+		if int(Net.id_by_name[player_name]) == id:
+			_notice(tr("BANNER_HOST") % player_name)
+
+
+# A short banner that waits for the one before it.
+func _notice(text: String) -> void:
+	_notices.append(text)
+	if _notices.size() > 1:
+		return
+	while not _notices.is_empty():
+		await _banner(_notices[0], 1.2)
+		_notices.pop_front()
+
+
+# Online, the note says whose move it is: `others` for everyone else (with the player's name in it),
+# `mine` for the player's own copy.
+func _say(others: String, mine: String, player: Dictionary) -> void:
+	if _note == null:
+		return
+	if Online.is_mine(player):
+		_note.say(tr(mine), true)
+	else:
+		_note.say(tr(others) % player.name)
+
+
+func _say_clear() -> void:
+	if _note:
+		_note.clear()
+
+
+# Dracula landed: "Drain!" pops over him, and from each victim nearby a drop falls off the portrait
+# and flies to his, one after another, while the victims recoil. His own count fills when the last
+# drop is in. `Match.drain` has already moved the blood.
+func _power_drain(player: Dictionary) -> void:
+	var before: int = player.blood
+	var victims := Match.drain(player)
+	if victims.is_empty():
+		return
+	if _settling and _settling.is_running():
+		await _settling.finished
+	var piece := piece_for(player)
+	PowerPop.show_over(_front, piece.position - Vector2(0, POP_ABOVE), tr("POP_DRAIN"), POP_SCALE)
+	PaperMotion.tilt(piece, 6.0)
+	await get_tree().create_timer(0.5, false).timeout
+	var last: Signal
+	for victim in victims:
+		PaperMotion.tilt(piece_for(victim), 9.0)
+		_beam(piece, piece_for(victim), Monsters.color("dracula"))
+		_delta(victim, -1, "blood")
+		var drop := _flyer(BLOOD_ICON, _hud.anchor(victim, "blood"), BLOOD_HUD)
+		Sound.play("fly")
+		_hud.show_blood(victim) # the drop leaves the victim's portrait
+		var flight := PaperMotion.fly_to(drop, _hud.anchor(player, "blood"),
+				Vector2.ONE * BLOOD_HUD / BLOOD_ICON.get_width(), 0.6, 0.0, 70.0)
+		flight.finished.connect(drop.queue_free)
+		last = flight.finished
+		await get_tree().create_timer(0.3, false).timeout
+	await last
+	_hud.show_blood(player)
+	_delta(player, player.blood - before, "blood")
+	await get_tree().create_timer(0.4, false).timeout
+
+
+# What a player just gained or lost, as a tag over their piece.
+func _delta(player: Dictionary, amount: int, kind: String) -> void:
+	if amount == 0:
+		return
+	DeltaPop.show_over(_front, piece_for(player).position - Vector2(0, POP_ABOVE + 80.0), amount, kind, POP_SCALE)
+
+
+# A wedge of the monster's color from one piece to another.
+func _beam(from: BoardPiece, to: BoardPiece, color: Color) -> void:
+	var lift := Vector2(0, -BEAM_HEIGHT)
+	PowerBeam.fire(_front, from.position + lift, to.position + lift, color)
+
+
+# Medusa landed: her gaze tilts her piece, then each victim nearby goes grey with a squash, one after
+# another, "Stone!" over them, and their portraits grey too. `Match.petrify` has already marked them.
+func _power_stone(player: Dictionary) -> void:
+	var turned := Match.petrify(player)
+	if turned.is_empty():
+		return
+	if _settling and _settling.is_running():
+		await _settling.finished
+	var gazer := piece_for(player)
+	PaperMotion.tilt(gazer, 6.0)
+	await get_tree().create_timer(0.3, false).timeout
+	for victim in turned:
+		var piece := piece_for(victim)
+		_beam(gazer, piece, Monsters.color("medusa"))
+		await get_tree().create_timer(0.25, false).timeout
+		Sound.play("stone")
+		_delta(victim, -1, "turn")
+		PowerPop.show_over(_front, piece.position - Vector2(0, POP_ABOVE), tr("POP_STONE"), POP_SCALE)
+		piece.set_stone(true)
+		_hud.set_stone(victim, true)
+		PaperMotion.squash(piece)
+		await get_tree().create_timer(0.35, false).timeout
+	await get_tree().create_timer(0.5, false).timeout
+
+
+# A stone player's turn comes: the camera glides to them, the grey shakes and flakes off with the old
+# colour flashing back, "Crack!" pops, and the turn passes on without the die.
+func _crack(player: Dictionary) -> void:
+	var piece := piece_for(player)
+	await _camera.glide_to(piece.global_position.x, 0.7).finished
+	_hud.set_active(player)
+	Sound.play("stone_crack")
+	PaperMotion.shake(piece)
+	await get_tree().create_timer(0.25, false).timeout
+	piece.set_stone(false)
+	_hud.set_stone(player, false)
+	PaperMotion.squash(piece)
+	PowerPop.show_over(_front, piece.position - Vector2(0, POP_ABOVE), tr("POP_CRACK"), POP_SCALE)
+	await get_tree().create_timer(1.1, false).timeout
+
+
+# Turn `turns` begins: a sting, a flash of the sky, the counter pops and a banner drops in with a
+# slight shake. A countdown on screen sputters. Only the first time.
 func _last_turn() -> void:
 	_last_turn_shown = true
 	Sound.sting("sting_final_turn", 3.0)
 	_sky.flash()
-	if _candle.visible:
-		_candle.gust()
+	if _countdown.visible:
+		PaperMotion.squash(_countdown)
 	await get_tree().create_timer(0.5, false).timeout
 	_hud.last_turn()
 	await _banner(tr("BANNER_LAST_TURN"), 1.6, true)
@@ -452,7 +645,9 @@ func _close_curtain() -> void:
 func _choose(piece: BoardPiece, fork: String) -> void:
 	await get_tree().process_frame # so a caller can await the signal choose_branch returns
 	_camera.glide_to(BoardPath.node(fork).pos.x + FORK_VIEW, 0.6)
-	var chosen := await _branch.ask(fork, _path_view)
+	_say("ONLINE_PATH", "ONLINE_PATH_MINE", piece.player)
+	var chosen := await _branch.ask(fork, _path_view, piece.player)
+	_say_clear()
 	_camera.follow(piece)
 	piece.branch_chosen.emit(chosen)
 
@@ -522,6 +717,17 @@ func _duel_coin(winner: Dictionary, loser: Dictionary) -> void:
 	coin.queue_free()
 	_hud.show_coins(winner)
 	await get_tree().create_timer(0.5, false).timeout
+
+
+func _duel_blood(winner: Dictionary, loser: Dictionary) -> void:
+	var drop := _flyer(BLOOD_ICON, _hud.anchor(loser, "blood"), BLOOD_HUD)
+	Sound.play("fly")
+	_hud.show_blood(loser) # the count ticks down as the drop leaves
+	await PaperMotion.fly_to(drop, _hud.anchor(winner, "blood"),
+			Vector2.ONE * BLOOD_HUD / BLOOD_ICON.get_width(), 0.7, 0.0, 110.0).finished
+	drop.queue_free()
+	_hud.show_blood(winner)
+	await get_tree().create_timer(0.3, false).timeout
 
 
 # The two pieces lift, swap places along crossing arcs and set down. The camera rides with the
@@ -627,7 +833,7 @@ func _follow_leader() -> void:
 
 # A coin springs up from the token, spins like a flipped coin and glints, then flies to the
 # player's coin counter, which ticks up as it arrives.
-func _land_coin(player: Dictionary, space: Space) -> void:
+func _land_coin(player: Dictionary, space: Space, amount := 1) -> void:
 	var coin := _flyer(COIN_ICON, space.icon_top(), COIN_SIZE)
 	var base := coin.scale
 	var rise := coin.create_tween().set_parallel()
@@ -642,17 +848,26 @@ func _land_coin(player: Dictionary, space: Space) -> void:
 			Vector2.ONE * COIN_HUD / COIN_ICON.get_width(), 0.5, 0.0, 70.0).finished
 	coin.queue_free()
 	_hud.show_coins(player)
+	_delta(player, amount, "coins")
 
 
 # The spikes shoot up out of the token and sink back slowly, the piece jolts, and a drop falls
 # off the portrait.
-func _land_spikes(player: Dictionary, space: Space, piece: BoardPiece) -> void:
+func _land_spikes(player: Dictionary, space: Space, piece: BoardPiece, safe := false, amount := 0) -> void:
 	Sound.play("spikes")
 	var spikes := _stand_in(space)
 	PaperMotion.stretch(spikes, 1.6, 0.1)
+	if safe: # Death at 1 blood shrugs them off
+		await get_tree().create_timer(0.15, false).timeout
+		PowerPop.show_over(_front, piece.position - Vector2(0, POP_ABOVE), tr("POP_SAFE"), POP_SCALE)
+		await PaperMotion.tilt(piece, 9.0).finished
+		await PaperMotion.stretch(spikes, 1.0, 0.45, false).finished
+		_put_back(space, spikes)
+		return
 	var jolt := PaperMotion.hop(piece, 38.0)
 	await get_tree().create_timer(0.15, false).timeout
 	_hud.show_blood(player)
+	_delta(player, amount, "blood")
 	await jolt.finished
 	await PaperMotion.shake(piece).finished
 	await PaperMotion.stretch(spikes, 1.0, 0.45, false).finished
@@ -661,7 +876,8 @@ func _land_spikes(player: Dictionary, space: Space, piece: BoardPiece) -> void:
 
 # The hand darts up. With a coin to take, one flies down from the counter into it, and the hand
 # closes on it and ducks back into the token; without, it grabs at the air and sinks back empty.
-func _land_thief(player: Dictionary, space: Space, steals: bool) -> void:
+func _land_thief(player: Dictionary, space: Space, amount: int) -> void:
+	var steals := amount != 0
 	Sound.play("thief")
 	var hand := _stand_in(space)
 	await PaperMotion.stretch(hand, 1.5, 0.12).finished
@@ -669,6 +885,7 @@ func _land_thief(player: Dictionary, space: Space, steals: bool) -> void:
 		var coin := _flyer(COIN_ICON, _hud.anchor(player, "coins"), COIN_HUD)
 		Sound.play("fly")
 		_hud.show_coins(player) # the count ticks down as the coin leaves
+		_delta(player, amount, "coins")
 		await PaperMotion.fly_to(coin, space.icon_top(),
 				Vector2.ONE * COIN_SIZE * 0.7 / COIN_ICON.get_width(), 0.4, 0.0, -40.0).finished
 		coin.queue_free()
@@ -684,7 +901,8 @@ func _land_thief(player: Dictionary, space: Space, steals: bool) -> void:
 
 # The bell rings and the glow flares. A drop rises from the church and flies to the portrait, or,
 # with full blood, rises above the piece and fades.
-func _land_church(player: Dictionary, space: Space, piece: BoardPiece, gains: bool) -> void:
+func _land_church(player: Dictionary, space: Space, piece: BoardPiece, amount: int) -> void:
+	var gains := amount != 0
 	Sound.play("church")
 	space.glow.flare()
 	await get_tree().create_timer(0.25, false).timeout
@@ -698,6 +916,7 @@ func _land_church(player: Dictionary, space: Space, piece: BoardPiece, gains: bo
 				Vector2.ONE * BLOOD_HUD / BLOOD_ICON.get_width(), 0.5, 0.0, 70.0).finished
 		drop.queue_free()
 		_hud.show_blood(player)
+		_delta(player, amount, "blood")
 	else:
 		rise.tween_property(drop, "modulate:a", 0.0, 0.7).set_delay(0.2)
 		await rise.finished
@@ -746,34 +965,50 @@ func _glint(sprite: Sprite2D) -> void:
 	tween.chain().tween_callback(glint.queue_free)
 
 
-# Sets the die and the candle over the piece, and waits for a click on the die (true) or for the
-# candle to go out (false).
+# Sets the die and the countdown over the piece, and waits for a click on the die (true) or for the
+# countdown to go out (false).
 func _offer_die(piece: BoardPiece) -> bool:
 	var rows := ceili(_crowds.get(piece.player.space, []).size() / float(CROWD_ROW))
 	var at: Vector2 = piece.position - Vector2(0, DIE_RISE + CROWD_BACK * maxi(rows - 1, 0))
 	_die.place(at)
-	_candle.rotation = 0.0
-	_candle.position = at + CANDLE_SIDE
-	_candle.set_meta("rest_position", _candle.position)
+	_die.clickable = Online.is_mine(piece.player)
+	_countdown.rotation = 0.0
+	_countdown.position = at + COUNT_SIDE
+	_countdown.set_meta("rest_position", _countdown.position)
 	await _die.offer()
-	_candle.visible = true
-	PaperMotion.pop_in(_candle)
-	_candle.start(TURN_SECONDS)
+	_countdown.visible = true
+	PaperMotion.pop_in(_countdown)
+	_countdown.start(TURN_SECONDS)
+	if Online.active:
+		# The host rolls: the click only asks, and the faces come back with everyone's answer.
+		var player: Dictionary = piece.player
+		var on_ask := Online.submit.bind({})
+		if Online.is_mine(player):
+			_die.clicked.connect(on_ask)
+		var answer := await Online.decide("roll", player, TURN_SECONDS,
+				func() -> Dictionary: return {},
+				func(_v: Variant) -> bool: return true,
+				func(_v: Variant) -> Dictionary: return {"dice": [randi_range(1, 6), randi_range(1, 6)]})
+		if Online.is_mine(player):
+			_die.clicked.disconnect(on_ask)
+		_rolled = answer.value.dice
+		return not answer.auto
+	_rolled = []
 	var on_click := _decided.emit.bind(true)
 	var on_out := _decided.emit.bind(false)
 	_die.clicked.connect(on_click)
-	_candle.timed_out.connect(on_out)
+	_countdown.timed_out.connect(on_out)
 	var by_click: bool = await _decided
 	_die.clicked.disconnect(on_click)
-	_candle.timed_out.disconnect(on_out)
+	_countdown.timed_out.disconnect(on_out)
 	return by_click
 
 
-# The candle is snuffed (if it still burns) and lifts away.
-func _lift_candle() -> void:
-	_candle.stop()
-	await PaperMotion.lift_away(_candle, 500.0, 0.4).finished
-	_candle.visible = false
+# The countdown is stopped (if it still runs) and lifts away.
+func _lift_countdown() -> void:
+	_countdown.stop()
+	await PaperMotion.lift_away(_countdown, 500.0, 0.4).finished
+	_countdown.visible = false
 
 
 func _add_piece(player: Dictionary) -> void:

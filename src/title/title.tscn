@@ -37,27 +37,36 @@ texture = ExtResource("5_logo")
 [node name="Play" type="Button" parent="."]
 layout_mode = 0
 offset_left = 760.0
-offset_top = 640.0
+offset_top = 600.0
 offset_right = 1160.0
-offset_bottom = 744.0
-text = "TITLE_PLAY"
+offset_bottom = 704.0
+text = "TITLE_ONLINE"
+script = ExtResource("6_button")
+
+[node name="SameScreen" type="Button" parent="."]
+layout_mode = 0
+offset_left = 760.0
+offset_top = 710.0
+offset_right = 1160.0
+offset_bottom = 814.0
+text = "TITLE_SAME"
 script = ExtResource("6_button")
 
 [node name="Settings" type="Button" parent="."]
 layout_mode = 0
 offset_left = 760.0
-offset_top = 760.0
+offset_top = 820.0
 offset_right = 1160.0
-offset_bottom = 864.0
+offset_bottom = 924.0
 text = "TITLE_SETTINGS"
 script = ExtResource("6_button")
 
 [node name="Quit" type="Button" parent="."]
 layout_mode = 0
 offset_left = 760.0
-offset_top = 880.0
+offset_top = 930.0
 offset_right = 1160.0
-offset_bottom = 984.0
+offset_bottom = 1034.0
 text = "TITLE_QUIT"
 script = ExtResource("6_button")
 

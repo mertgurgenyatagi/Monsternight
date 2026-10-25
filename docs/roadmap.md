@@ -2,7 +2,7 @@
 
 ## 1. First playable
 
-**Done** (parts 1 to 24, see [microplan.md](microplan.md)).
+**Done** (parts 1 to 24, see [microplan_first_playable.md](microplan_first_playable.md)).
 
 A local version for testing the board rules. **One person controls every player** with the mouse on one computer.
 
@@ -15,10 +15,15 @@ A local version for testing the board rules. **One person controls every player*
 - **Real assets** from the start, no placeholders. See the [asset list](assets.md).
 - No minigames, no abilities, no networking.
 
-## Later
+## 2. Final game
 
-Online play comes last (Q15). The order of the first two isn't fixed.
+**In progress** (parts 25 on, see [microplan.md](microplan.md)). The user's [brief](questionnaire_answers/final_game_brief.md) of 2026-10-24 starts it, questionnaires 16 to 18 settled most of the rest, and Claude made the remaining calls. This is the last phase.
 
-- **Minigames:** Pong and Haxball first, then racing and the FPS. The sword fight comes once its rules are settled.
-- **Character abilities,** designed after the first playable.
-- **Online play, last:** choosing how players connect, the lobby, and playing over the network.
+- **3 to 8 players.** The turn limit and the board's length depend on the lobby's size, from 11 turns and 65 spaces for 3 players down to 7 turns and 46 spaces for 8 (see [game_rules.md](game_rules.md#match) and [board.md](board.md#length)).
+- **The board:** one empty space for every filled one, and one minigame space for every quick one, shuffled fresh every match.
+- **Trophies:** the first finisher gets one, and nobody else gets a finishing trophy. The most-gold and most-duels-won trophies stay.
+- **A challenger may walk away** when swap is the only valid stake.
+- **Powers,** one for each monster (see [characters.md](characters.md#powers)).
+- **One minigame, Shot in the Dark** (a numeric question, closest guess wins), replacing the four real-time games in Microplan 15 (see [minigames.md](minigames.md)).
+- **The camera** zooms out slightly and looks from slightly higher.
+- **Online play in the browser, on itch.io,** through a Cloudflare relay (see [tech.md](tech.md#multiplayer)). The one-computer mode stays.

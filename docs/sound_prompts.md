@@ -1,10 +1,10 @@
 # Sound prompts
 
-An ElevenLabs prompt for each of the 60 non-music sounds in [assets.md](assets.md#sounds): 31 sound effects, 24 monster voices and 5 ambience loops. The 11 music tracks are made separately. Every path below is inside `assets/audio/`.
+An ElevenLabs prompt for each of the 74 non-music sounds in [assets.md](assets.md#sounds): 45 sound effects, 24 monster voices and 5 ambience loops. The 11 music tracks are made separately. Every path below is inside `assets/audio/`.
 
-**Status:** all 60 are made with `tools/sounds/make_sounds.py` and approved by the user. They're in `audio_raw/` as WAV files, and `tools/sounds/process_sounds.py` has processed them into `assets/audio/`. The user reviewed and approved the processed files. The music isn't made yet.
+**Status:** the first playable's 60 are made with `tools/sounds/make_sounds.py` and approved by the user. They're in `audio_raw/` as WAV files, and `tools/sounds/process_sounds.py` has processed them into `assets/audio/`. The user reviewed and approved the processed files. The final game's 14 (the last three sections, part 26) are made the same way. The music isn't made yet.
 
-The prompts are in the order to make them, not the order of assets.md. Matching sets come one after another: the die, the cards, the candle, the coins, the drips, the countdown, and each monster's three voices. The three hops share one prompt, and the thief is made in two parts, so there are 59 prompts for 60 files.
+The prompts are in the order to make them, not the order of assets.md. Matching sets come one after another: the die, the cards, the candle, the coins, the drips, the countdown, and each monster's three voices. The three hops share one prompt, and the thief is made in two parts, so there are 73 prompts for 74 files.
 
 The settings were checked against ElevenLabs' Sound Effects docs in October 2026. If the tool looks different, tell Claude.
 
@@ -827,3 +827,211 @@ Sound: a quiet, seamless background ambience loop at night, wide and distant, at
 ```
 
 **Processing:** 30 s, seamless loop.
+
+## Minigames: `sfx/`
+
+Added for the final game in part 26, like the two sections after it. The ball sounds share their words, and the whistle ends every minigame's round.
+
+### `sfx/whistle.ogg`
+
+**Settings:** duration 1 s, looping off, prompt influence 75%.
+
+```text
+A referee's whistle: one short, sharp, shrill blast.
+
+Style: spooky but lighthearted and theatrical. Crisp, clean, professionally recorded sound.
+
+Sound: a single isolated one-shot, dry and close-miked, starting instantly, on a clean silent background.
+```
+
+**Processing:** 0.6 s, one-shot.
+
+### `sfx/paddle_hit.ogg`
+
+**Settings:** duration 0.5 s, looping off, prompt influence 75%.
+
+```text
+A crumpled paper ball hitting a stiff cardboard paddle: one hollow, papery tock.
+
+Style: spooky but lighthearted and theatrical. Crisp, clean, professionally recorded sound.
+
+Sound: a single isolated one-shot, dry and close-miked, starting instantly, on a clean silent background.
+```
+
+**Processing:** 0.3 s, one-shot.
+
+### `sfx/bounce.ogg`
+
+**Settings:** duration 0.5 s, looping off, prompt influence 75%.
+
+```text
+A light, hollow ball bouncing once off a wooden board: one short, springy tap.
+
+Style: spooky but lighthearted and theatrical. Crisp, clean, professionally recorded sound.
+
+Sound: a single isolated one-shot, dry and close-miked, starting instantly, on a clean silent background.
+```
+
+**Processing:** 0.3 s, one-shot.
+
+### `sfx/kick.ogg`
+
+**Settings:** duration 0.5 s, looping off, prompt influence 75%.
+
+```text
+A boot striking a soft leather football: one dull, punchy thump of leather and air.
+
+Style: spooky but lighthearted and theatrical. Crisp, clean, professionally recorded sound.
+
+Sound: a single isolated one-shot, dry and close-miked, starting instantly, on a clean silent background.
+```
+
+**Processing:** 0.4 s, one-shot.
+
+### `sfx/jump.ogg`
+
+**Settings:** duration 0.5 s, looping off, prompt influence 75%.
+
+```text
+A person pushing off the ground in a quick jump: a short, dry scuff of a shoe and a soft rustle of cloth.
+
+Style: spooky but lighthearted and theatrical. Crisp, clean, professionally recorded sound.
+
+Sound: a single isolated one-shot, dry and close-miked, starting instantly, on a clean silent background.
+```
+
+**Processing:** 0.4 s, one-shot.
+
+### `sfx/sumo_bump.ogg`
+
+**Settings:** duration 0.5 s, looping off, prompt influence 75%.
+
+```text
+Two heavy, padded bodies slamming into each other: one deep, soft, heavy thud.
+
+Style: spooky but lighthearted and theatrical. Crisp, clean, professionally recorded sound.
+
+Sound: a single isolated one-shot, dry and close-miked, starting instantly, on a clean silent background.
+```
+
+**Processing:** 0.5 s, one-shot.
+
+### `sfx/rope_pull.ogg`
+
+**Settings:** duration 0.5 s, looping off, prompt influence 75%.
+
+```text
+A thick hemp rope yanked tight in one quick tug: one short, strained creak of the fibers.
+
+Style: spooky but lighthearted and theatrical. Crisp, clean, professionally recorded sound.
+
+Sound: a single isolated one-shot, dry and close-miked, starting instantly, on a clean silent background.
+```
+
+**Processing:** 0.5 s, one-shot.
+
+## Powers: `sfx/`
+
+`power` plays under every power's word pop. The two stone sounds share their words.
+
+### `sfx/power.ogg`
+
+**Settings:** duration 1 s, looping off, prompt influence 50%.
+
+```text
+A short, eerie theremin swoop, rising quickly, playful and spooky.
+
+Style: spooky but lighthearted and theatrical. Crisp, clean, professionally recorded sound.
+
+Sound: a single isolated one-shot, dry and close-miked, starting instantly, on a clean silent background.
+```
+
+**Processing:** 0.8 s, one-shot.
+
+### `sfx/stone.ogg`
+
+**Settings:** duration 1 s, looping off, prompt influence 75%.
+
+```text
+A thin shell of stone forming over a small figure: one short, dry, gritty crackle as it hardens.
+
+Style: spooky but lighthearted and theatrical. Crisp, clean, professionally recorded sound.
+
+Sound: a single isolated one-shot, dry and close-miked, starting instantly, on a clean silent background.
+```
+
+**Processing:** 0.8 s, one-shot.
+
+### `sfx/stone_crack.ogg`
+
+**Settings:** duration 1 s, looping off, prompt influence 75%.
+
+```text
+A thin shell of stone cracking open and crumbling away: one sharp crack and a trickle of falling chips.
+
+Style: spooky but lighthearted and theatrical. Crisp, clean, professionally recorded sound.
+
+Sound: a single isolated one-shot, dry and close-miked, starting instantly, on a clean silent background.
+```
+
+**Processing:** 1 s, one-shot.
+
+## Lobby: `sfx/`
+
+Join and leave are the same blip rising and falling, and ready is a third. Only the start is a door, and the user chose synthetic sounds for the rest (the knocks were rejected).
+
+### `sfx/join.ogg`
+
+**Settings:** duration 1 s, looping off, prompt influence 60%.
+
+```text
+A short, clean, synthetic two-note blip rising in pitch, like a simple interface notification.
+
+Style: spooky but lighthearted and theatrical. Crisp, clean, professionally recorded sound.
+
+Sound: a single isolated one-shot, dry and close-miked, starting instantly, on a clean silent background.
+```
+
+**Processing:** 0.6 s, one-shot.
+
+### `sfx/leave.ogg`
+
+**Settings:** duration 1 s, looping off, prompt influence 60%.
+
+```text
+A short, clean, synthetic two-note blip falling in pitch, like a simple interface notification.
+
+Style: spooky but lighthearted and theatrical. Crisp, clean, professionally recorded sound.
+
+Sound: a single isolated one-shot, dry and close-miked, starting instantly, on a clean silent background.
+```
+
+**Processing:** 0.6 s, one-shot.
+
+### `sfx/ready.ogg`
+
+**Settings:** duration 0.5 s, looping off, prompt influence 60%.
+
+```text
+A single short, clean, synthetic confirmation blip, like a simple interface tick.
+
+Style: spooky but lighthearted and theatrical. Crisp, clean, professionally recorded sound.
+
+Sound: a single isolated one-shot, dry and close-miked, starting instantly, on a clean silent background.
+```
+
+**Processing:** 0.5 s, one-shot.
+
+### `sfx/start.ogg`
+
+**Settings:** duration 1.5 s, looping off, prompt influence 50%.
+
+```text
+A heavy old wooden door creaking slowly open: one long, low, eerie creak.
+
+Style: spooky but lighthearted and theatrical. Crisp, clean, professionally recorded sound.
+
+Sound: a single isolated one-shot, dry and close-miked, starting instantly, on a clean silent background.
+```
+
+**Processing:** 1.5 s, one-shot.

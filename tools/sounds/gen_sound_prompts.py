@@ -1,4 +1,4 @@
-# Generates docs/sound_prompts.md so the shared blocks stay word for word identical.
+﻿# Generates docs/sound_prompts.md so the shared blocks stay word for word identical.
 import math
 import sys
 
@@ -23,6 +23,9 @@ CARD = "A stiff paper playing card"
 CANDLE = "A small candle flame"
 DROP = "A single fat drop of thick liquid"
 ORGAN = "a church pipe organ"
+BALL = "a light, hollow ball"
+STONE = "A thin shell of stone"
+DOOR = "a heavy old wooden door"
 
 
 def fmt(seconds):
@@ -130,6 +133,30 @@ effects = [
         2.5,
     ),
     effect("stat", "A single bright, playful plink on a bone xylophone, like tapping a skeleton's rib.", 0.5, 50),
+]
+
+# ---------------------------------------------------------------- the final game's effects (part 26)
+minigames = [
+    effect("whistle", "A referee's whistle: one short, sharp, shrill blast.", 0.6),
+    effect("paddle_hit", "A crumpled paper ball hitting a stiff cardboard paddle: one hollow, papery tock.", 0.3),
+    effect("bounce", f"{BALL.capitalize()} bouncing once off a wooden board: one short, springy tap.", 0.3),
+    effect("kick", "A boot striking a soft leather football: one dull, punchy thump of leather and air.", 0.4),
+    effect("jump", "A person pushing off the ground in a quick jump: a short, dry scuff of a shoe and a soft rustle of cloth.", 0.4),
+    effect("sumo_bump", "Two heavy, padded bodies slamming into each other: one deep, soft, heavy thud.", 0.5),
+    effect("rope_pull", "A thick hemp rope yanked tight in one quick tug: one short, strained creak of the fibers.", 0.5),
+]
+
+powers = [
+    effect("power", "A short, eerie theremin swoop, rising quickly, playful and spooky.", 0.8, 50),
+    effect("stone", f"{STONE} forming over a small figure: one short, dry, gritty crackle as it hardens.", 0.8),
+    effect("stone_crack", f"{STONE} cracking open and crumbling away: one sharp crack and a trickle of falling chips.", 1.0),
+]
+
+lobby = [
+    effect("join", "A short, clean, synthetic two-note blip rising in pitch, like a simple interface notification.", 0.6, 60),
+    effect("leave", "A short, clean, synthetic two-note blip falling in pitch, like a simple interface notification.", 0.6, 60),
+    effect("ready", "A single short, clean, synthetic confirmation blip, like a simple interface tick.", 0.5, 60),
+    effect("start", f"{DOOR.capitalize()} creaking slowly open: one long, low, eerie creak.", 1.5, 50),
 ]
 
 # ---------------------------------------------------------------- monster voices
@@ -267,13 +294,22 @@ SECTIONS = [
         "Turn Looping on for all five. 30 seconds is the longest the tool makes, which is the short end of the "
         "30 to 60 seconds in assets.md. Each prompt keeps its rare sounds rare, so the repeat is hard to hear.",
     ),
+    (
+        "Minigames",
+        "sfx",
+        minigames,
+        "Added for the final game in part 26, like the two sections after it. The ball sounds share their words, "
+        "and the whistle ends every minigame's round.",
+    ),
+    ("Powers", "sfx", powers, "`power` plays under every power's word pop. The two stone sounds share their words."),
+    ("Lobby", "sfx", lobby, "Join and leave are the same blip rising and falling, and ready is a third. Only the start is a door, and the user chose synthetic sounds for the rest (the knocks were rejected)."),
 ]
 
 INTRO = """# Sound prompts
 
-An ElevenLabs prompt for each of the {files} non-music sounds in [assets.md](assets.md#sounds): 31 sound effects, 24 monster voices and 5 ambience loops. The 11 music tracks are made separately. Every path below is inside `assets/audio/`.
+An ElevenLabs prompt for each of the {files} non-music sounds in [assets.md](assets.md#sounds): 45 sound effects, 24 monster voices and 5 ambience loops. The 11 music tracks are made separately. Every path below is inside `assets/audio/`.
 
-**Status:** all 60 are made with `tools/sounds/make_sounds.py` and approved by the user. They're in `audio_raw/` as WAV files, and `tools/sounds/process_sounds.py` has processed them into `assets/audio/`. The user reviewed and approved the processed files. The music isn't made yet.
+**Status:** the first playable's 60 are made with `tools/sounds/make_sounds.py` and approved by the user. They're in `audio_raw/` as WAV files, and `tools/sounds/process_sounds.py` has processed them into `assets/audio/`. The user reviewed and approved the processed files. The final game's 14 (the last three sections, part 26) are made the same way. The music isn't made yet.
 
 The prompts are in the order to make them, not the order of assets.md. Matching sets come one after another: the die, the cards, the candle, the coins, the drips, the countdown, and each monster's three voices. The three hops share one prompt, and the thief is made in two parts, so there are {count} prompts for {files} files.
 
@@ -369,7 +405,7 @@ if too_long:
 
 count = len(all_entries)
 files = count + 2 - sum(e["part"] for e in all_entries)  # hop_1 makes hop_2 and hop_3 too
-assert files == 60, files
+assert files == 74, files
 
 intro = (
     INTRO.replace("{files}", str(files))

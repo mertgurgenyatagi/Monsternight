@@ -13,6 +13,9 @@ const ROW_Y := 192.0
 const DROP_SIZE := 28.0 # blood.png is 128
 const DROP_STEP := 27.0
 const DROP_X := -78.0 # the first drop's middle
+const DROP_TIGHT_SIZE := 24.0 # with a fourth drop
+const DROP_TIGHT_STEP := 22.0
+const DROP_TIGHT_X := -84.0
 const COIN_X := 22.0
 const COIN_SIZE := 30.0 # coin.png is 256
 const INK := Color("f4e7c8")
@@ -27,6 +30,8 @@ const GREY_TIME := 0.5
 signal picked
 ## The portrait was clicked while it is pickable but not a valid choice.
 signal denied
+## The portrait was clicked while no choice is open: the HUD shows its power card.
+signal inspected
 
 const DIM := Color(0.5, 0.5, 0.55)
 const BOB := 5.0
@@ -54,6 +59,7 @@ var _area: Area2D
 var _bob: Tween
 var _lit := false
 var _glow: Glow
+var _presence: Label
 
 
 func _init(for_player := {}) -> void:
@@ -92,11 +98,17 @@ func _ready() -> void:
 	_name.add_theme_font_size_override("font_size", _fitting_size())
 	add_child(_name)
 
-	var drop_scale := Vector2.ONE * DROP_SIZE / 128.0
-	for i in Match.MAX_BLOOD:
+	# A fourth drop (Cthulhu's) squeezes in beside the coin, so every drop is a little smaller and closer.
+	var cap := Match.max_blood(player)
+	var tight := cap > Match.MAX_BLOOD
+	var drop_size := DROP_TIGHT_SIZE if tight else DROP_SIZE
+	var drop_step := DROP_TIGHT_STEP if tight else DROP_STEP
+	var drop_x := DROP_TIGHT_X if tight else DROP_X
+	var drop_scale := Vector2.ONE * drop_size / 128.0
+	for i in cap:
 		var drop := Sprite2D.new()
 		drop.texture = preload("res://assets/art/icons/blood.png")
-		drop.position = Vector2(DROP_X + i * DROP_STEP, ROW_Y)
+		drop.position = Vector2(drop_x + i * drop_step, ROW_Y)
 		drop.scale = drop_scale
 		drop.set_meta("rest_scale", drop_scale)
 		drop.self_modulate = Color.WHITE if i < _shown_blood else EMPTY
@@ -125,7 +137,7 @@ func _ready() -> void:
 	shape.shape.size = Vector2(FRAME_SIZE, FRAME_SIZE)
 	shape.position = FRAME_CENTER
 	_area.add_child(shape)
-	_area.input_pickable = false
+	_area.input_pickable = true
 	_area.input_event.connect(_on_input)
 	_area.mouse_entered.connect(_on_mouse_entered)
 	_area.mouse_exited.connect(_on_mouse_exited)
@@ -196,7 +208,6 @@ func set_pickable(mode: String) -> void:
 	if mode == pickable:
 		return
 	pickable = mode
-	_area.input_pickable = mode != ""
 	if _bob and _bob.is_valid():
 		_bob.kill()
 	_set_bob(0.0)
@@ -249,6 +260,38 @@ func set_finished() -> void:
 	tween.tween_property(_name, "modulate", Color(0.7, 0.7, 0.7), GREY_TIME)
 
 
+## Greys the portrait to stone while the player misses a turn (Medusa), or lets the colour back.
+func set_stone(on: bool) -> void:
+	if finished:
+		return
+	var from = _grey.get_shader_parameter("amount")
+	create_tween().tween_method(func(amount: float) -> void:
+			_grey.set_shader_parameter("amount", amount), 0.0 if from == null else float(from),
+			0.95 if on else 0.0, GREY_TIME)
+
+
+## Online: dims the whole portrait with a small word on the frame for a player whose connection is
+## gone ("dropped") or who lets the timers play ("away"); "" brings them back. It is a dim, not
+## Medusa's stone grey.
+func set_presence(state: String) -> void:
+	var dim := {"dropped": Color(0.55, 0.55, 0.75, 0.6), "away": Color(0.78, 0.78, 0.78, 0.8)}
+	create_tween().tween_property(self, "modulate", dim.get(state, Color.WHITE), 0.4)
+	if _presence == null:
+		_presence = Label.new()
+		_presence.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		_presence.size = Vector2(WIDTH, 30)
+		_presence.position = Vector2(-WIDTH / 2, FRAME_CENTER.y + 22)
+		_presence.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		_presence.add_theme_font_override("font", preload("res://assets/fonts/display.ttf"))
+		_presence.add_theme_font_size_override("font_size", 24)
+		_presence.add_theme_color_override("font_color", Color("fbe9d0"))
+		_presence.add_theme_color_override("font_outline_color", OUTLINE)
+		_presence.add_theme_constant_override("outline_size", 8)
+		add_child(_presence)
+	_presence.text = tr({"dropped": "PRESENCE_DROPPED", "away": "PRESENCE_AWAY"}.get(state, "")) if state != "" else ""
+	_presence.visible = state != ""
+
+
 ## Where the blood or coin counter is, on screen.
 func anchor(what: String) -> Vector2:
 	return to_global(_drops[1].position if what == "blood" else _coin.position)
@@ -271,8 +314,10 @@ func _set_bob(amount: float) -> void:
 
 
 func _on_input(_viewport: Node, event: InputEvent, _shape: int) -> void:
-	if pickable != "" and event is InputEventMouseButton and event.pressed 			and event.button_index == MOUSE_BUTTON_LEFT:
-		if pickable == "valid":
+	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+		if pickable == "":
+			inspected.emit()
+		elif pickable == "valid":
 			Sound.play("ui_click")
 			PaperMotion.squash(self)
 			picked.emit()

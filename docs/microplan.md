@@ -1,6 +1,9 @@
 # Microplan
 
-The [first playable](roadmap.md#1-first-playable), built in about 24 parts. `/microplan` plans three parts at a time in detail, and a rough roadmap to the end (see `.claude/skills/microplan/SKILL.md`). It runs in its own session, after part 3, 6, 9 and so on.
+The [final game](roadmap.md#2-final-game), built in parts after the first playable's 24. `/microplan` plans parts in detail and keeps a rough roadmap to the end (see `.claude/skills/microplan/SKILL.md`). It runs in its own session.
+
+- **The brief:** the user's direction for the final game is [final_game_brief.md](questionnaire_answers/final_game_brief.md), saved word for word. The design docs ([game_rules.md](game_rules.md), [board.md](board.md), [characters.md](characters.md), [minigames.md](minigames.md), [screens.md](screens.md), [tech.md](tech.md)) say what the game is. Questionnaires ended at 18; the rest is Claude's call.
+- **The code map:** the first playable's notes ([microplan_first_playable.md](microplan_first_playable.md#part-notes)) plus "Part notes" at the end of this file. Read the section your part touches instead of rereading the code.
 
 ## Building a part
 
@@ -10,219 +13,248 @@ A part is done when:
 
 1. It runs in Godot with no errors or warnings.
 2. Everything in its Polish list is in: animated, with its sounds, nothing glossed over.
-3. Claude has checked it by running the game, not just by reading the code.
-4. Three screenshots of the finished part, taken from the running game, are saved in `screenshots/part_NN/` (like `part_01/`) as `1.png`, `2.png` and `3.png`. Pick the three moments that show the part best.
-5. Its Part notes are written. The branch is committed, pushed and merged into `development`, and `development` is pushed. Then check out `development`, so the next session starts there. The part session never waits for the user: it does the whole cycle, and the user reviews afterwards and asks for changes in a later session. This needs no git approval (see README, Handover 3).
-6. The session disconnects from the Godot MCP, so the next one gets its port (see README, Handover 5).
-7. The Godot editor is closed (after the MCP server is ended), because an open editor gets in the way of the overnight automation's screen watching. A Microplan session closes it too.
-8. The session's last message ends with `q7Zk#x2` as a line of its own, which the overnight automation looks for (see README, Handover 6). A Microplan session ends the same way. If the README says the process is over, the line is left out.
+3. Claude has checked it by running the game, not just by reading the code. **Keep the testing small** (the user is low on tokens): one headless script for the rules, one short bot run, and a Playwright pair of tabs only where the part says so.
+4. No screenshots are saved. A screenshot is only for debugging.
+5. Its Part notes are written (short). The branch is committed, pushed and merged into `development`, and `development` is pushed and checked out. The part session never waits for the user. This needs no git approval (README, Handover 3).
+6. The session disconnects from the Godot MCP (README, Handover 5), and closes the Godot editor after that.
+7. The session's last message ends with `q7Zk#x2` as a line of its own (README, Handover 6) -- except part 51, which ends the process.
 
-If a part turns out too big, split it (7a, 7b) instead of rushing it.
+If a part turns out too big, split it (46a, 46b) instead of rushing it.
+
+## Microplan 15: the pivot (2026-10-25)
+
+The user played the 1.0.0 build and sent thirteen points. The big one: **the four minigames are thrown out** (real-time games over a free relay do not work) and replaced by one, **Shot in the Dark**. Where each point lands:
+
+| Point | Part |
+|---|---|
+| 1 Shot in the Dark replaces the minigames | 45 (local), 46 (online) |
+| 2 Too long: two dice | 47 (dice, turn counts), 49 (pace) |
+| 3 Music: list every moment | the list below; wiring in 50 |
+| 4 Online control indicators differ per side | 46 (one symmetric layout) |
+| 5 Click a HUD portrait for a powers popup | 48 |
+| 6 Back button from the stake step to the opponent step | 47 |
+| 7 Numeric countdown instead of the candle | 48 |
+| 8 Things get in the way of other things | 49 |
+| 9 Everything faster | 49 |
+| 10 Zero-sum stakes | 47 |
+| 11 Powers that don't play nice: change them | 45 (Hyde), 47 (the rest) |
+| 12 Little testing | every part |
+| 13 Assets: the user retrieves them, Claude writes prompts | done: [asset_prompts.md](asset_prompts.md#category-icons-icons) has 4 icons; no new sounds are needed |
+
+**Decided with the user:** the Blood stake is a drain (the loser loses 1 blood and the winner gains 1, up to their cap), so it is unavailable unless both players are below their cap (Frankenstein as challenger only needs to be able to win it). Swap stays as it is: the challenger wins it or nothing happens; it is always available.
+
+**Claude's calls:** two dice are added together; the Wolf Man gets +1 per die (+2); Mr. Hyde's guess counts as 20% closer when he starts the duel; a swap duel needs 2 wins before 1 loss (was 3; Dorian still needs 1) because every round is a 20-second question; the decision timers shrink in part 49; local play passes the keyboard.
+
+## Question data format
+
+The user's file is [`sitd_questions/`](../sitd_questions/): `sitd_1000_questions.json` (the source of truth; the `.csv` and `.md` are the same data). **1000 questions**, ids 1 to 1000, each `{id, category, question_en, question_tr, answer}`. The answer is a number: 929 integers, 69 decimals (like -273.15), 3 negatives, from -273.15 to 40075. There are no unit fields: the unit is in the question ("in meters"). There are 75 fine categories (10 to 30 questions each), no repeats in English.
+
+**The four board categories** (a board space shows one, and the question comes from its group; the part keeps the table in one data file, `data/question_groups.json`, and a fine category that is not listed goes to the Stage with a warning):
+
+| Space (icon) | Name | Fine categories (the JSON's `category`) | Questions |
+|---|---|---|---|
+| `atlas` | The Atlas | Landmarks & Architecture, Geography & Nature, Geography & Geopolitics, Geography & Cities, Transport & Aviation, Demographics & Cities, Oceans & Polar, Exploration & Records, Geology & Earth, Atmosphere & Weather, Transport & Infrastructure, Aviation & Records, Landmarks & Monuments, Theme Parks & World, Space & Astronomy, Astronomy & Universe | 210 |
+| `archive` | The Archive | History, History & (Archaeology, Ancient Rome, Ancient Greece, Egypt, Medieval, Ottoman, Royalty, Asia, Americas, USA, Cold War, Disasters, Medicine), Art & Masters, Literature & Books, Languages & Linguistics, Science & Nobel, Inventions & Tech, Brands & Business, Economy & Finance | 240 |
+| `lab` | The Lab | Science & Physics, Science & Chemistry, Biology & Anatomy, Animals & Nature, Human Body & Medicine, Health & Diseases, Human Records, Microbiology & Biology, Nature & Botany, Animals & Predators, Marine Life (both), Birds & Flight, Insects & Invertebrates, Mammals & Primates, Canines & Pets, Felines & Pets, Farm Animals, Extreme Wildlife, Agriculture & Produce | 220 |
+| `stage` | The Stage | everything else: Cinema, TV, Music, Video Games, Comics, Toys, Games & Chess, Internet, every Sports and every Food category | 330 |
+
+A match never asks the same id twice (`Match.asked`); a group that runs dry starts over.
+
+## Music moments
+
+Every place where music would fit. The files are made by the user. "New" marks what the old list in [assets.md](assets.md#music-assetsaudiomusic) did not have.
+
+**Loops (11 old + 2 new):**
+1. Title, setup, lobby and room (`title`)
+2. Monster select (`select`)
+3. Board, leader in the village (`board_village`)
+4. Board, leader at the graveyard or church (`board_graveyard`)
+5. Board, leader in the forest (`board_forest`)
+6. Board, leader in the swamp (`board_swamp`)
+7. Board, leader at the castle (`board_castle`)
+8. Duel intro: the VS card (`duel`)
+9. Trophy ceremony (`ceremony`)
+10. **New:** choosing an opponent and a stake (`challenge`)
+11. **New:** Shot in the Dark, the 20 seconds of thinking (`shot`)
+
+**Stings (2 old + 7 new):**
+12. Last turn begins (`sting_final_turn`)
+13. A player reaches the castle gate (`sting_finish`)
+14. **New:** the match starts, as the turn order is rolled (`sting_start`)
+15. **New:** the answers are revealed, under the drumroll (`sting_reveal`)
+16. **New:** a duel is won (`sting_win`)
+17. **New:** a tie, a new question (`sting_draw`)
+18. **New:** a player dies and goes back to the start (`sting_death`)
+19. **New:** a trophy is handed out at the ceremony (`sting_trophy`)
+20. **New:** the champion is crowned at the end of the ceremony (`sting_champion`)
+
+No music: the pause menu and settings (the board's music just ducks), the loading and catch-up curtain, the "Rejoin" and error banners. Ambience loops stay as they are.
 
 ## Parts
 
-The last three parts. Parts 22 and 23 are sweeps and tuning, not new features; part 24 closes the first playable. All stay in part 6's **side view**. Because they touch every scene, each ends by running the full loop (title, setup, board, ceremony, stats, setup) once.
+Seven parts, 45 to 51. They are small on purpose, and none of them needs the relay to be deployed. **Do not microplan after 45 or 48** (the README's multiple-of-3 rule would trigger it): the plan is already made. Part 51 ends the process.
 
-### Part 22: Esc settings in a match, Turkish, and the untested leftovers
+### Part 45: Shot in the Dark, local
 
-**Goal:** Esc opens Settings anywhere in a match without stopping it, the game can be played in Turkish, and the things parts 2 and 3 left untested are proven.
-
-**Builds:**
-- **Esc in a match:** `Settings.open()` already works from anywhere. `Board`, `Pregame`, `Ceremony` and the stats open it on Esc (one small shared helper, not copied four times). The match keeps running: no `get_tree().paused`, timers and the candle go on. Esc again, the back button or a click outside closes it. While it is open, board clicks (die, branch arrows, portraits, duel cards) must not leak through to the scene underneath: check each.
-- **Turkish:** `strings.csv` gets a `tr` column for every key (the fonts cover Turkish letters). Settings gets a language toggle if it has none (check `Settings`), saved with the other settings. Long Turkish names and cards must still fit: check the longest in the HUD, the VS card, the stat titles and the ceremony stands. Plurals and "x N" lines go through the format, not code.
-- **Leftovers from parts 2 and 3:** a fullscreen relaunch (the saved mode comes back), closing Settings with Esc, a click outside, and the back button, and dragging both sliders with the mouse (check the bus volume values).
-- **Edge-case sweep:** a 2-player and an 8-player match through the pregame; a player who never rolls (timeouts only) for a whole turn; `Match` after `reset()` once more. Fix small things; bigger ones become a note for part 23 or 24.
-
-**Polish:**
-- **Open and close:** the overlay uses the existing paper motion (`drop_in` / `lift_away`) with `ui_click`; the dim behind it fades, never pops. Identical in every scene.
-- **In-match line:** while Settings is open during a match, a small line "The night goes on" (new string, English and Turkish) sits under the title.
-- **Translations:** no English string may show in Turkish mode. A temporary script lists keys with an empty `tr` cell and any `tr` text identical to the English (to review by eye).
-
-**Assets:** none. **Missing:** all music and `sting_final_turn` (the user makes them).
-
-**Check:**
-- MCP: press Esc on the board mid-roll, click the die behind the overlay (nothing happens), close, the die still works; the same in a duel and the ceremony. One screenshot with Settings open over the board.
-- Turkish: one plain run through the title, setup and a sped-up board with `TURNS` lowered (revert after); a contact sheet of four screens. 25 FPS.
-
-**Risks:** input leaking through the overlay is the likely bug. A language change needs `TranslationServer.set_locale` and a refresh of labels already on screen: check which scenes build their text once.
-
-### Part 23: Full playtests and tuning
-
-**Goal:** the first playable plays well from start to finish with the real numbers, and its pace and fairness are measured rather than guessed.
+**Goal:** a minigame space on the board plays Shot in the Dark on one screen: a question appears, both players type a number in secret, the answers are revealed, the closest wins. The four old games are gone.
 
 **Builds:**
-- **A sped-up bot match** (a temporary script, not committed, random choices through the existing timeouts): 8 players, the real 17 turns. Respect the no-long-runs rule: run in short chunks, or run the turn loop headless with animations skipped by a temporary test flag that is removed afterwards. Collect: how many finish by turn 17 (target about 2), the gold and duel spread, deaths per player, and the real match length at normal speed (estimated from average turn time).
-- **Tuning from the numbers:** only these knobs, each with a one-line reason in the notes: `Match.TURNS`, the space mix in `roll_board.py` (a new seed if the forest's six empty spaces bother the user: ask), the coin and blood amounts, the timers. The user's decisions (57 and 61 spaces, one die, 17 turns, one empty for every filled one) change only if the numbers are clearly off, and then ask first.
-- **Pacing trims:** list the longest dead moments (intro glide 7.5 s, a far death 4.7 s, the duel 9.5 s, the ceremony 40 s) and cut only what is clearly too long, keeping the Polish intact. Per-turn time at 8 players matters most.
+- **Data.** Copy `sitd_questions/sitd_1000_questions.json` to `data/questions.json` (res://) and write `data/question_groups.json` (the table above). `Questions` (static, `src/minigames/questions.gd`): `load_all`, `pick(group, exclude_ids, rng) -> Dictionary`, `text(q)` (Turkish or English by `Settings`), group of a fine category. Add `tools/questions/check_questions.py` (ids unique, answers numeric, both languages present, every fine category mapped, counts per group) and run it once.
+- **The game.** `ShotGame` (`src/minigames/shot_game.gd`, code-built, drawn in the frame's 1920 x 1080 space on a paper card): the category tag with its icon, the question in the display font (wrapped, up to 175 characters), the **countdown** (a big number for now; part 48 gives the real `Countdown`), a number box on each side (the challenger on the left, as before, the opponent on the right), a paper keypad (0-9, minus, decimal mark, backspace, Lock in) and the keyboard: digits and numpad, `-`, `.` or `,` for the decimal (both accepted), Backspace, Enter locks. Digits are grouped with a thin space for reading (8 848). A locked box can't change. 30 seconds (was 20), or the moment both have locked.
+- **The score.** `ShotGame.judge(a, b, answer, hyde_side) -> int` (side 0, side 1, or `Minigame.DRAW`): the smaller `|guess - answer|` wins; **Hyde, when he is the challenger, has his distance multiplied by 0.8**; no answer loses to an answer; two blanks or an exact tie is a draw. A draw shows "A tie! New question" and asks another (no limit for a duel; a swap duel round counts only when someone wins; after 3 draws in a row the challenger loses, so a duel cannot hang).
+- **Local play (pass the keyboard).** The challenger types first behind a cover card ("Name: look, the others look away" with an "I'm ready" button), locks, then the cover passes to the opponent, who also gets 20 seconds; then the reveal. Same layout as online (part 46).
+- **The reveal.** The drumroll, then the true answer slams into the middle as a paper card (`card_slam`), the two guesses flip over (`flip`) and count up to their number, "off by N" tags appear under them, the winner's card lifts with a green ribbon and the portrait hops, the loser droops. Click skips it. About 3.5 s.
+- **The frame.** `MinigameFrame.play(challenger, opponent, stake, kind)` keeps its signature and result (`{winner, loser, rounds}`), so `Duel`, `Challenge` and the board are untouched. The VS strips stay, the 3-2-1 and the keycap controls go. Swap duels run rounds with a new question each; the tally already exists (`DuelTally`).
+- **The board.** `BoardRoller.MINIGAMES` become four free letters for the four groups (the quick kinds keep theirs); `Space` draws the group icons (`icons/atlas`, `archive`, `lab`, `stage`; add them to `make_outlines.py`'s `ICONS`, which bakes the rims); the old icons stop being used. The space's tooltip or name tag, if any, uses the group name (both languages).
+- **Mr. Hyde.** His power becomes "his guess counts as 20% closer when he starts the duel" in `characters.md`, `Monsters` and the Turkish strings. The 10% edges in the old games go away with them.
+- **Removed:** `pong_game`, `tug_game`, `sumo_game`, `soccer_game`, `circle_physics`, `stub_game`, `mini_link`, `minigame_input`, `Minigames.GAMES`, the `Minigame` physics base (what `ShotGame` does not need), `tools/tests/minigame_net_test*`, the unused images (`assets/art/minigames/*`, `icons/pong|sumo|tug_of_war|head_soccer`) and sounds (`paddle_hit`, `bounce`, `kick`, `jump`, `sumo_bump`, `rope_pull`, `rope_tug`, `whistle`). The raws stay in `images_raw/` and `audio_raw/`. **Online duels:** until part 46, an online duel lets the host flip a fair coin (`coin_flip`), so the build still runs.
+- **Docs:** rewrite `minigames.md` (Shot in the Dark, the four spaces, the swap duel, draws), and fix `game_rules.md` (the board spaces), `characters.md` (Hyde), `board.md` and `assets.md` where they name the old games.
 
-**Polish:**
-- **The feel pass:** run the game normally and watch for a pop, a snap or a missed beat in the walk, the die, the duel and the ceremony; fix each with existing `PaperMotion` calls. No new effects.
-- **Frame rate:** read `Engine.get_frames_per_second()` on the heaviest views (8-player HUD, church hill with fog, the duel with the dim, the ceremony). Under 25: look at the cause (Glow polygons and shadow copies first).
-- **Audio balance:** list the loudest and quietest sounds per bus by file peak and fix with `volume_db` in `Sound`, not the files. Untested by ear: the user judges.
+**Polish:** the number boxes grow a little when a digit is typed (a small squash), a pencil-scribble feel for the digits (`ui_click`), `ready` on Lock in with the box getting a paper stamp, the card slides in on a bounce and the question words pop in line by line (about 0.4 s total), the countdown number turns red and shakes in the last 5 s with `timer_low` ticks and `timer_out` at 0, an invalid key (a second minus, a second decimal mark) shakes the box with `ui_denied`, the cover card slides across with `flip`.
 
-**Assets:** none missing besides the music.
+**Assets:** the 4 category icons (prompts in `asset_prompts.md`; `python tools/images/process_images.py . atlas archive lab stage`). If the user has not delivered them yet, use `coin`-tinted stand-ins and say so in the notes; no part waits for them. Existing sounds only.
 
-**Check:** the bot results as a short table in the Part notes; three screenshots of the heaviest views; no errors or warnings in any run.
+**Check:** the checker script; a headless test of `judge` (closest, Hyde 0.8, blank, tie, negative and decimal answers), of the typing rules (minus, decimal mark, comma, length cap) and of `Questions.pick` (no repeats, group fallback); one plain run with `-- --bot` and a forced landing to see a full duel through to the board.
 
-**Risks:** tuning can go on forever. Stop at: about 2 of 8 finishing by turn 17 (1 to 3 is fine), no stat or trophy that nobody ever gets, and 25 FPS everywhere.
+**Risks:** the thin-space grouping and the decimal comma in Turkish; a long question must fit the card (wrap, then shrink the font to fit). The cover card is the only privacy: a camera over the shoulder is the players' problem.
 
-### Part 24: Bug bash and the release build
+### Part 46: Shot in the Dark, online
 
-**Goal:** the first playable is done: nothing in the notes' "Still open" list is a bug, and a release build runs.
+**Goal:** the same duel over the relay: the two duelists type in secret on their own computers, everyone else watches, and no real-time stream is needed. Both sides of the duel see the identical layout (point 4).
 
 **Builds:**
-- **The bug bash:** run what earlier parts logged as "not run": the board-to-setup second match, the quiet card on screen, the ending's buttons, an MCP click on Continue, and 8-player monster select. Then one real playthrough with the MCP's simulated input on a short match (`TURNS` lowered, reverted after), reading `get_editor_errors` and the output log at the end.
-- **Release:** the Godot MCP's autoloads (`MCPRuntimeBridge`, `MCPInputBridge`, `MCPScreenshotBridge`) and the plugin must not ship. Do it through an export preset (exclude `addons/godot_mcp/*`, `screenshots/*`, `images_raw/*`, `audio_raw/*`, `tools/*`, `docs/*`) and a release-only override or a script that strips the three autoload lines, whichever is smaller; the development project keeps the MCP. Export a Windows build and launch it for a few seconds; check it reaches the title with no console errors. Export templates may need installing: ask the user.
-- **Docs:** README Status to the finished state, `docs/roadmap.md` marks the first playable done, `docs/tech.md` gets a short "Building a release" section.
+- **Messages.** The question: `Online.decide("question")`, the host picks the id (it avoids `Match.asked`) and every copy shows it in its own language. A duelist's lock goes only to the host (`shot_lock {r, value}`); the host tells everyone `shot_status {side, locked}` so the others see a tick on the box and never the number. When both are locked, or the host's clock reaches 30 s plus a 1 s grace, the host sends `shot_reveal {a, b}` (a missing answer is `null`) and **every copy runs the same reveal and `judge`** (no separate `mini_end`). The countdown on each copy is only for show.
+- **Symmetry.** One layout for everybody: challenger left, opponent right, same sizes and positions. Your own box has a "You" tag and the keypad; the others see no keypad and a "writing..." mark that turns into a stamp at the lock. Spectators and the opponent see the same picture except the tag. A headless check compares the two copies' node positions.
+- **Log and rejoin.** `Online._log` gets an entry `{k:"s", id, a, b}` (replacing `{k:"m"}`); a rejoiner replays logged duels instantly and a duel in progress shows as a spectator until the reveal.
+- **Drops and migration.** A dropped or "Away" duelist has no answer (the host reveals as soon as the present one has locked, after a 3 s grace); a duelist whose copy lost the host keeps their typed value and re-sends it to a new host; the new host restarts the clock with what is left.
+- **Cleanup.** `Online.decide("minigame")`, the coin fallback, `MiniLink` leftovers and the `mini` debug flag go; `--bot` types a random plausible number after 3 to 8 s; `?mini=` becomes `?group=atlas|archive|lab|stage` to force a category.
+- **Docs:** `tech.md` (the online model: no streams, a few messages per duel, which is what the relay can carry), `screens.md` (the duel).
 
-**Polish:** the window title and icon (check what `project.godot` has), `Sound.quit()` leaving no leaks in the release build, every scene starting with `Sound` and `Settings` state from the saved file.
+**Polish:** the spectators' boxes show the tick with `ready` as each locks, the "waiting for Name" line appears when one has locked and the other has not (the same banner style), a duelist who is typing sees a live remaining-seconds number, reveal identical on all copies with the same sounds.
 
-**Assets:** the icon, if there is none, from the logo already in `assets/art/`. Nothing new made.
+**Assets:** none.
 
-**Check:** the exported build starts and shows the title, setup and a few seconds of board; the MCP autoloads are not in its project; no errors in the output.
+**Check:** extend `online_test.gd` (lock to the host only, `shot_status` never contains a value, reveal from the host only, a spectator's lock ignored, a non-host's reveal ignored, the log round-trip, a draw replays with a new question). One Playwright run with three tabs and `?bot=1&turns=3&group=lab`: all copies show the same question, answers and winner; reload one tab mid-question.
 
-**The end:** part 24 is the last. When it is merged, the README's Status says "The first playable is done; the process is over", so later sessions do nothing and write no `q7Zk#x2` (README, Handover 6). Part 24's own last message still ends with `q7Zk#x2`.
+**Risks:** the host's copy knows both answers if the host is a duelist (it is not hidden from their own client; accepted, noted in `tech.md`).
+
+### Part 47: Rules: two dice, zero-sum stakes, Back, powers
+
+**Goal:** a match is about half as long; stakes never create or destroy value; Back works; the powers fit the new game.
+
+**Builds:**
+- **Two dice.** `Die` shows two dice side by side (the existing `die_1..6` images, two instances); a click on either rolls both; the roll is the sum (2 to 12), then the Wolf Man's +2 pops beside them ("+1 per die"). `Online`'s `roll` decision carries both dice (`[d1, d2]`), the auto roll picks both, and a path walk uses the sum. `docs/game_rules.md` says "two dice".
+- **Turns.** `Match.TURNS_BY_LOBBY` becomes 3: 11, 4: 10, 5: 9, 6: 8, 7: 8, 8: 7 (the board lengths stay: with an average roll of 7 a player needs about 9 turns for 65 spaces). Part 51 tunes them.
+- **Zero-sum stakes** (`Match.stakes`, `duel_result`):
+  - Gold: both need at least 1 coin (today only the opponent is checked: a penniless challenger who lost paid nothing, which is the bug the user saw). The loser pays 1 to the winner.
+  - Blood: the loser loses 1 and the winner gains 1 (`result.gain`, with a green "+1" `DeltaPop`). Available only if both players are below their blood cap (Cthulhu's cap is 4), the two Death rules hold (Death at 1 blood is neither payer nor taker), and the old death-match rule holds for both sides (a player with 1 blood can only be staked if they have 0 coins). **Blood duels will be rare, because blood sits at its cap most of the time; the church matters more. Tell the user in the summary.**
+  - Frankenstein as challenger: he is exempt when he loses (nothing is paid, the winner gains nothing), so only the conditions for his winning are checked.
+  - Swap: unchanged, always available.
+  - `Match.stakes` returns the stakes and, for the greyed cards, the reason is not shown (as today).
+- **Back.** The stake step gets a "Back" button (always, beside the cards; "Walk away" stays and shows only when swap is the only stake against every opponent). Back returns to the opponent step with the same running timer; online it is a stake decision whose value is `Challenge.BACK`, so every copy goes back together.
+- **Swap duel length:** the challenger needs 2 wins before 1 loss (`Duel.roll_rounds`/`swap_wins`); Dorian still 1.
+- **Powers, reviewed against two dice and the new stakes:** the Wolf Man +2 (above), Mr. Hyde (part 45), Dorian (above); Dracula, Medusa, Death, Cthulhu and Frankenstein stay (their text in `characters.md` gets the drain and two-dice wording). If a power still misbehaves while testing, change it and note it.
+- **Docs:** `game_rules.md`, `characters.md`, `minigames.md` (stakes table).
+
+**Polish:** both dice tumble with `die_roll`, land one after the other (`die_land` twice, 0.15 s apart) and the total pops big; a rolled double (the same face) gives a small extra hop of the piece; the Back button slides the cards away and back with `flip`; the drain's blood drop flies from the loser's portrait to the winner's.
+
+**Assets:** none (the die images exist).
+
+**Check:** a headless test over all stake cases (coins 0/1 on each side, blood at cap and below, Death at 1, Cthulhu, Frankenstein either side, death-match) asserting that coins and blood are conserved except in the Frankenstein-loses case; the dice sum range; one short bot match.
+
+**Done (2026-10-25).** `Die` (`src/board/die.gd`) now holds two `DieCube`s (`die_cube.gd`, the old die) and forwards `offer/lock/nudge/tumble([a, b])/leave`; a click on either die rolls both, the second lands 0.15 s after the first, and the total pops above them. `Match.roll(forced: Array) -> Array[int]`; `WOLFMAN_BONUS` is 2; a double hops the piece. `Online`'s roll decision settles to `{"dice": [a, b]}` (JSON floats are cast with `int`). `Match.stakes`/`duel_result` are zero-sum with `result.gain` (blood needs both below their cap; `_blood_ok`), and the board flies the blood drop loser to winner (`Board._duel_blood`). `Challenge.BACK`: a button under the cards, a stake decision online, the candle keeps its time; when this opponent offers nothing but another does, the screen goes back by itself (not after a timeout). "Walk away" shows only when no opponent offers anything but a swap. `TURNS_BY_LOBBY` is 11/10/9/8/8/7; `Duel.SWAP_ROUNDS` is 2. Tests: `tools/tests/rules_test.tscn` (2,304 stake cases and the dice; run with `godot --headless res://tools/tests/rules_test.tscn`), `online_test.gd` updated. A scripted local run (roll, Back, pick, a blood and a gold `duel_end`) printed no errors. **Not tested:** Back over the relay in a browser, the dice look (no screenshots taken). **Changed on the way, by the user:** Shot in the Dark's clock is 30 s (was 20; part 49 keeps 30), and `SITD_COVER` in Turkish is now "ekrana sen bak, diğerleri bakmasın" (the old text said the opposite). **Tell the user:** blood duels will be rare, because blood sits at its cap most of the time.
+
+### Part 48: Powers popup and the numeric countdown
+
+**Goal:** clicking a monster at the top shows what it can do; every timer is a number, not a candle.
+
+**Builds:**
+- **`PowerCard`** (`src/board/power_card.gd`): clicking a HUD portrait opens a paper card beside it with the monster's name, its power in a long form (both languages; Hyde's new text), the player's name, blood and coins, and any status (stone: "misses the next turn", "Reconnecting", "Away", "Finished"). Click the portrait again, click elsewhere or press Esc to close; only one is open; it does not stop the game or block clicks on the board (the click that closes it still goes through); online timers keep running. It opens on the board only (not in monster select, which already writes the power).
+- **`Countdown`** (`src/ui/countdown.gd`): replaces `Candle` everywhere (die, path choice, opponent and stake, monster select, Shot in the Dark): a paper tag with the seconds left as a number in the display font, `start(seconds)`, `stop()`, `timed_out`. It pops in like the candle, turns red and shakes at 5 s and below with `timer_low` per second, and `timer_out` at 0. Non-choosers see the same number (as the candle was for show). Delete `candle.gd`, `flame.gd`, `candle_test.gd`, `candle.png`, `flame.png` (the raws stay).
+- **Docs:** `screens.md` (the HUD click, the countdown), `art_and_audio.md` where it mentions the candle.
+
+**Polish:** the card pops in with `PaperMotion.pop_in` and a paper tab pointing at its portrait, the portrait lifts a little while its card is open, the number pulses once on each second in the last five, and the tag shrinks away on `stop`.
+
+**Assets:** none.
+
+**Check:** `execute_game_script` clicks a portrait and asserts one card exists with the right text, a second click closes it; a timer runs to 0 in a bot match and makes the automatic choice; no references to `Candle` remain (a grep).
+
+**Done (2026-10-25).** `Countdown` (`src/ui/countdown.gd`, origin at the tag's middle; `start`, `stop`, `timed_out`, `time_left`, `running`; red, shake, squash and `timer_low` each second from 5 down; `timer_out` at 0) replaced `Candle` in `Board` (beside the die), `BranchChoice`, `Challenge` and `Pregame`. `candle.gd`, `candle_test.*` and `candle.png` are deleted; **`Flame` and `flame.png` stay**, because the scenery's torches use them (the plan said to delete them). Shot in the Dark keeps its own big number (`ShotGame._tick`), which already does the same things. `PowerCard` (`src/board/power_card.gd`): `Hud._toggle_card` opens it when a portrait emits the new `HudPortrait.inspected` (a click while no choice is open; the portrait's `Area2D` is always pickable now), one at a time, with the portrait lifted; its `_input` closes it on a click outside the card and its portrait (the click is not marked handled), `_unhandled_input` closes it on Esc before Settings sees it. New strings `POWER_LONG_*`, `CARD_*` in `strings.csv`. The card is a snapshot of the state when it opens. Tests: `tools/tests/card_test.tscn` (`godot --headless res://tools/tests/card_test.tscn`, 15 checks). Looked at in a plain run: the card under Medusa's portrait and the tag beside the dice. **Not tested:** the countdown on the fork, challenge and monster-select screens (only moved, not seen), the card over the relay.
+
+### Part 49: Faster, and things getting in the way
+
+**Goal:** a turn with no choices takes a few seconds, and nothing covers anything it should not.
+
+**Builds:**
+- **Pace.** Collect every duration in one place: a `Pace` constant class (`Pace.t(seconds)` scales by `Pace.FACTOR`, about 0.65) used by `PaperMotion`, the board's glide and hop, the camera, the pops, the banners, the curtain, the VS card, the reveal, the ceremony's beats. Targets: a turn with no choice and an empty landing at most 5 s; a duel from the landing to the first question at most 5 s; the reveal to the board at most 4 s. **Decision timers:** roll 4 s, path 7 s, opponent and stake 15 s together, monster 20 s, Shot in the Dark 30 s (the user's number, changed from 20 on 2026-10-25), away players' timers unchanged. The 12x catch-up (`Engine.time_scale`) must still work. Measure with timestamps printed from a `-- --bot --turns 3` run, before and after, and keep the numbers in the notes.
+- **Overlaps.** An audit of everything that appears over the board, with one rule table in code (`Layers`: z-index and a screen slot for each): the HUD strip at the top is never covered; the notice banners (host changed, "X is back", errors, power names) go through one queue instead of stacking; `PowerPop` and `DeltaPop` on one piece stagger by 0.25 s; pieces that share a space fan out; the die and countdown never sit under the signpost or the banners; the opponent/stake cards, the Back and Walk away buttons and the HUD do not overlap at 8 players; the power card (part 48) stays on screen; full-screen controls that do nothing set `mouse_filter` to ignore so they stop eating clicks. A probe script `tools/tests/overlap_probe.gd` lists, in about ten states (die, fork, challenge at 3 and 8 players, a duel, a death, Medusa and Dracula together, a notice with a pop), the visible items whose rectangles intersect a "no-go" pair, and prints them; fix what it prints. At most six debug screenshots, none saved to the repo.
+- The user gave no specifics for "things get in the way": if the user names cases later, add them to the probe.
+
+**Polish:** nothing new; the point is that existing motion becomes snappier with its easing kept.
+
+**Assets:** none.
+
+**Check:** the timing numbers before and after; the probe printing nothing; one bot match.
+
+**Risks:** faster tweens can cut a sound off or outrun a `await`; every `await tween.finished` stays, only durations change.
+
+### Part 50: Music
+
+**Goal:** every moment in the music list has its hook; whichever files exist play, the rest are silence.
+
+**Builds:**
+- Wire the loops and stings in the list: `challenge` while choosing an opponent and stake (replacing the old board track for those seconds), `shot` under the 20 s question (the `duel` track still plays under the VS card), the new stings through `Sound.sting(name, duck_seconds)` at the match start, the reveal, a duel win, a tie, a death and each trophy and the champion. The board track resumes with a crossfade after each. A missing file is silence (already so), and nothing waits for a sting that does not exist.
+- `Sound`: loops set `loop = true` on their stream when loaded; the music ducks when settings or the power card is open (a short ramp, -8 dB); a hidden browser tab pauses the music.
+- `tools/sounds/process_music.py`: turns `music_raw/` (WAV or MP3) into `assets/audio/music/*.ogg`: loudness to the same level for all, OGG at a size that keeps the web zip small (about 1.5 MB per 2-minute loop), and a check that the board tracks share a length. `music_raw/` gets a `.gdignore`. Document it in the README.
+- Update `docs/assets.md` (the music table becomes the list above, with file names) and `art_and_audio.md` ("minigames have no music" is replaced by the Shot in the Dark loop).
+
+**Polish:** crossfade lengths per transition (1.5 s between board tracks, 0.4 s into a sting), and the sting ducking so the board track does not clash.
+
+**Assets:** the user's music files, whenever they exist. No sounds.
+
+**Check:** headless: `Sound.play_music` with missing and present files does not error; one plain run printing the track names in order through a bot match (the board already prints "Music: ...").
+
+### Part 51: Tuning and release 1.1.0
+
+**Goal:** the pivot is finished, documented and built.
+
+**Builds:**
+- One full bot match (4 players, `--turns` default) locally and the 2-tab online run once to the ceremony, with a rejoin in the middle. Fix what breaks.
+- Tune from the numbers: turn counts per lobby size, the timers, Hyde's 0.8, the Wolf Man's +2, how often blood duels happen (if they never happen, relax the rule by letting the winner at the cap still drain, and tell the user), the Pace factor.
+- Turkish by eye: list the new strings in the notes (categories, the reveal, "Back", the power texts, "A tie!").
+- Docs sweep: `game_rules.md`, `minigames.md`, `characters.md`, `screens.md`, `board.md`, `tech.md`, `roadmap.md` and the README say the same thing; remove "four games" everywhere; this file's Part notes are cut down to the code map.
+- Version 1.1.0, `build_release.py --web`, the zip loads in Playwright with no console errors, and its size is noted. The Cloudflare deploy and itch.io upload stay the user's (`tools/relay/deploy.md`).
+- **The process ends here:** the README says so, and the session writes no final line.
 
 ## Roadmap
 
-Parts 1 to 24 are done (see the Log and the part notes). The first playable is finished.
+45 Shot in the Dark, local. 46 Shot in the Dark, online. 47 Two dice, zero-sum stakes, Back, powers. 48 Powers popup and the countdown. 49 Faster, and the overlaps. 50 Music. 51 Tuning and the 1.1.0 release.
 
-22. Esc settings in a match, Turkish, the untested leftovers from parts 2 and 3, and an edge-case sweep.
-23. Full playtests with bots, tuning from the numbers, pacing and frame rate.
-24. The bug bash, the release build without the MCP, and the finished docs. The process is over after it.
+**Why it ends at 51:** the user asked for 6 to 8 parts. The work is seven separable pieces; 51 is a multiple of 3, so the README's rule would microplan once more after it, which it should not (51 says the process is over). The old numbering of the first release (parts 25 to 44) is closed: 25 to 44 are done.
 
 ## Part notes
 
-Each part session adds a few lines when it finishes: what got built, what changed from the plan, surprises, and anything left over or buggy. The next Microplan reads these instead of the code.
+Short. The next Microplan reads these instead of the code.
 
-### Built so far (parts 1 to 24, absorbed by Microplans 3 to 8)
+### The code since part 24 (kept)
 
-- **Board (parts 10, 11, 12):**
-  - The road is 57 spaces through the graveyard and 61 past the church (12, 8 or 12, 12, 10, 15), 15,460 px wide, rolled by `tools/board/roll_board.py` with seed 1031. `Match.TURNS` is 17, the intro glide 7.5 s. `BoardLayout.hill_width()` (2,840) stretches the church hill, and `scenery.gd`'s `_spots(location, first, last, gap)` keeps the props' density.
-  - `Match` has `current`, `active()`, `roll()`, `next_player()`, a `finished` flag on every player, and `land(player)`, which returns `{kind, coins, blood}` with the real changes.
-  - `Die` (`src/board/die.gd`: `place`, `offer`, `nudge`, `tumble`, `leave`, `clicked`) and the turn loop in `Board._play_turns`. The die sits `DIE_RISE` (300 px) over the piece, 34 px higher per extra crowd row; the half-size candle is to its right. A timed-out roll shakes the die for 0.25 s first.
-  - `Board.land(player, id)` is a coroutine: it wakes the space (`Space.wake` / `rest`) and plays the effect (coin, spikes, thief, church) with flyers on the HUD's layer, after waiting for the camera to settle. The spikes and the thief's hand are a stand-in copy in a `Front` node over the pieces. minigame spaces log "Duel here, part 15".
-- **Death and the music (part 13):**
-  - `Match.die(player)` zeroes coins, refills blood, moves the player to the start, counts `deaths` and returns `{coins, blood}` (nothing for a finished player). Every move stamps `arrived`, and `Match.leader()` is the furthest along by the node's x (a finished player is furthest, a tie goes to the earliest `arrived`).
-  - `Board.die(player)` is the coroutine, and `land` awaits it after spikes. Part 17 calls it for a duel death. It runs `Match.die`, then `PaperMotion.crumple(piece, 0.5, false)`, `BoardPiece.fold(true)` (the ball, `crumpled.png`, 96 px), the coins spilling (up to 5) with the HUD count jumping to 0 in one tick, a 150 px rise, the toss to the start's crowd slot, a bounce, `fold(false)` and `unfold`, a `Glow` flare on the start, the blood refilling 0.2 s apart, and a 1.2 s hold. About 4.7 s from a far death.
-  - The flight takes 1.2 s (no distance) to 2.0 s (the whole board). **The camera does not `follow` the ball:** the cap of 2,600 px/s would lose a ball flying 7,500 px/s, so `glide_to` takes the same time with the same sine easing as `PaperMotion.toss`, which keeps the ball in the middle of the screen. At the peak the scenery scrolls about 11,000 px/s.
-  - `Board._follow_leader()` picks `board_<location of the leader>` (graveyard covers the church, swamp covers the boardwalk and the bog) after every walk and death and when the pieces have landed, and logs "Music: ...". The tracks don't exist yet, so it plays silence.
-  - There is no `unfold` sound in `assets/`, so the unfolding plays `respawn` alone.
-- **Splits (part 14):**
-  - `BranchChoice` (`src/board/branch_choice.gd`, in Lanes after `Front`): `ask(fork, path_view)` gives the chosen id. Two `arrow.png` options float in the sky at (+260, -470) and (+260, -340) from the fork's token, not on the road, because the church's first space and icon filled every spot near the signpost. Each has the stretch's name (`STRETCH_*` keys in `strings.csv`) and up to 4 icons of that path, most common first, read from `BoardPath`. The 10 s half-size candle floats over the pieces at (-60, -230).
-  - `BoardPathView.light_path(lit, dimmed)` and `clear_light()` fade the lit path's spaces, dots and strip up and the other's down. `nudge_signpost(fork)` swings the post when a piece lands on it. `Board.choose_branch` keeps its signature; `_choose` glides the camera 330 px past the fork, then `follow`s the piece again.
-  - A timeout shakes both arrows, lights a random one for 0.55 s, then drops the other. Checked: 8 players, 11 forks sped up, both paths taken at both forks, routes still 57, 57, 61, 61; an MCP click beside the arrows did nothing and one on the lower arrow chose it. The 25 FPS bar read 19 in a plain run with the editor open.
+- **Camera (27):** `BoardCamera.ZOOM := 0.88`. Clickable things are scaled by `1 / ZOOM`. Blemish: `scenery.gd`'s `_ground_fill` leaves faint root streaks.
+- **Rules (28):** `Match.MIN_PLAYERS` 3, `TURNS_BY_LOBBY`, static `Match.turns`. `results()` gives `by.finish` 1 to the first finisher only. `Challenge` returns `{opponent, stake: Challenge.WALK}` for a walk away. A headless `-s` script can't see autoloads in `_init`; use `_process`.
+- **Board (29):** `BoardRoller` rolls `kinds` per stretch; `Match.start(names, seed)` seeds `Match.board_rng` (`-- --seed N` replays); `Board._enter_tree` calls `BoardPath.configure(size, kinds)`. `BoardPath.next(id)`, `routes()`, `nearby(id)`.
+- **Powers (30, 31):** `Match.roll_bonus`, `max_blood`/`min_blood`, `blood_is_safe`, `duel_result`, `Duel.swap_wins`/`roll_rounds`. `PowerPop.show_over`; `Hud.portrait_node(player)`; `DeltaPop`, `PowerBeam`. `Board._play_turns` is the turn loop: glide, die, walk, `land` or `finish`, `Match.next_player()`. `Match.drain`, `petrify`, `take_cracked()`; `BoardPiece.set_stone`, `HudPortrait.set_stone`, `set_presence`.
+- **Shot in the Dark (45):** `ShotGame` (`src/minigames/shot_game.gd`, a code-built `Node2D` on a paper card in the frame's 1920 x 1080): `run()` plays one question and gives 0, 1 or `ShotGame.DRAW`; pure statics `judge(a, b, answer, hyde_side)` and `type_key(text, key)`, `value_of(text)` (tests in `tools/tests/shot_test.tscn`, run with `godot --headless res://tools/tests/shot_test.tscn`). Turns: a cover card per side (`SITD_COVER`), then 20 s of typing (keys or the keypad of `PaperButton`s), a stamp on the locked box, then `_reveal` (drumroll, answer slam, flips and count-up, off-by tags, ribbon; a click skips waits). `Questions` (`src/minigames/questions.gd`): `load_all`, `pick(group, asked, rng)`, `text(q)`, `format(v)`/`group_digits(s)` (thin space, decimal comma in Turkish); data in `data/questions.json` and `data/question_groups.json` (every fine category is listed; the checker is `tools/questions/check_questions.py`). `Match.asked` holds the ids asked. `MinigameFrame.play(challenger, opponent, stake, group)` returns `{winner, loser, rounds}`; the game and keypad live in `_front`, above the click blocker; the draw cap is `MAX_DRAWS` 3 in a row; online, each round is `Online.decide("question")` then `ShotGame.run_online` (part 46). Board kinds: letters `a r l g` = `atlas archive lab stage` (`BoardPath.KINDS`, `BoardRoller.MINIGAMES`, `Space.DUELS`); `--mini <group>` forces a landing. **The four category icons are stand-ins** (`coin` with its hue shifted; `make_outlines.py` bakes `*_rim.png`): the user's images replace them through `process_images.py . atlas archive lab stage`. Removed: the four games, `Minigame`, `Minigames`, `MiniLink`, `MinigameInput`, `CirclePhysics`, `StubGame`, the old icons, `assets/art/minigames/`, eight sounds.  Hyde's 0.8 is `ShotGame.HYDE_FACTOR`.
+- **Shot in the Dark online (46):** `Online.decide("question", challenger, 0, auto)` gives the question id (every copy does `Match.asked[id] = true`); `Online.shot(sides, seconds) -> {a, b}` is called by `ShotGame.run_online` on every copy (it takes a sequence number like a decision). Messages: `shot_lock {seq, side, value}` (duelist to host; the host accepts only the seat's own peer, a number, once), `shot_status {seq, side}` (host to all, no number; `Online.shot_status` signal, `Online.shot_marked(side)`), `shot_reveal {seq, a, b}` (host only, null = no answer). Host loop `_host_shot`: ends when both lock, at `seconds + GRACE`, or 3 s (`SHOT_DROP_GRACE`) after every present duelist has locked while one is dropped or away. Log entry `{k:"s", seq, a, b}`; a rejoiner's `_replay` holds `d` and `s` entries by seq (no more `_replay_minis`). Host migration: `_on_host_changed` re-sends this copy's locked numbers (`_shot.mine`); a promoted host restarts the clock with at least `TAKEOVER_MIN`. `ShotGame` online: `_mine` says which sides this computer types for; `_fetch.call()` runs `Online.shot` without awaiting (GDScript forbids an un-awaited coroutine call, `.call()` is the way round it); `_process` drives the display clock and the auto-lock at 0; `--bot` types `answer x 0.5 to 1.5` after 3 to 8 s. `?group=` / `-- --group` replaces `mini`. Tests: `online_test.gd` (now 32 checks). Checked by three browser tabs (`?bot=1&turns=3&group=lab`): every copy printed the same winners over 5 duels, and a tab that was reloaded and clicked Rejoin replayed the logged duels with the same winners and went on live. **Fixed on the way:** `build_release.py`'s staging copy left out `data/`, so a built game had no questions (part 45 missed it). Not tested: a duelist reloading in the middle of a question (it comes back as a live shot, typing again with the clock restarted), host migration mid-question in a real browser (only the headless check), a spectator's keyboard.
+- **Online I (38):** `Net` (autoload): one `WebSocketPeer`, `open_room`, `leave`, `send`, `broadcast`, signals `connected`, `refused`, `disconnected`, `peer_joined`, `peer_left`, `host_changed`, `received`. Statics `new_code`, `encode`, `decode`, `relay_url`, `room_from_link`, `link_for`, `copy_text`; `Net.id_by_name`; `Net.debug_value`. Relay is `?relay=` or `-- --relay`, default `ws://127.0.0.1:8787`. `tools/relay/` (Cloudflare Worker, SQLite Durable Object `Room`). Lobby: `lobby.tscn` (code-built), `LobbyState`; Start broadcasts `start {names, ids, seed}`. A background browser tab throttles to 130 to 600 ms, so tabs stay in front. Playwright: the game is one canvas, click by coordinates (viewport 960 x 540); `bringToFront` before typing; serve the export with `Cache-Control: no-store`.
+- **Online II (39):** `Online` (autoload), lockstep: every copy runs the same `Match`; only choices come from the host through `Online.decide(kind, player, seconds, auto, valid, settle)` and `Online.submit(value)`, numbered by a counter. Kinds: `roll`, `branch`, `opponent`, `stake`, `monster`, `question` (part 46: the id of the Shot in the Dark question). `Online.is_mine`; the host adds 1 s of grace for a remote player. Debug flags: `-- --turns N` / `?turns=N`, `-- --bot` / `?bot=1`. Tests: `tools/tests/online_test.gd` (headless `Godot -s`, 27 checks).
+- **Online IV (41a, 41b):** host migration (relay `{t:"host", id}`, `Online.host_id`), `Online.status(name)` `"dropped"`/`"away"` (3 automatic choices in a row; `SHORT_SECONDS` timers), `presence_changed`, Play again (`lobby_again`, `Online.back_to_room`), Leave. The decision log `Online._log`, rejoin from `sessionStorage` (`rejoin`/`rejoined`/`resume`), catch-up behind `CatchUpCurtain` at `Engine.time_scale = 12` with the Master bus muted. Not done: a rejoin during the ceremony fails.
+- **Release (42, 44):** `web/shell.html`, `build_release.py --web [--debug]`, relay guards (tests in `tools/relay/`), `Net.PRODUCTION_RELAY` and `Net.PAGE_URL` (empty until the user deploys; the working tree has an uncommitted comment edit in `net.gd` that is the user's), `Net.debug_value` is empty in release builds. Version 1.0.0, 44.5 MB zip. No Windows build.
 
-- **Challenge (part 15):**
-  - `Match.opponents(player)` and `Match.stakes(challenger, opponent)` ("gold", "blood", "swap") are the rules. `Challenge` (`src/board/challenge.gd`, a child of `Hud`, screen coordinates) has `ask(challenger)`, giving `{opponent, stake}`, or `{}` with nobody to duel. `Board.land` awaits it for a minigame space and logs "Duel here, part 16: A vs B, stake gold"; with `{}` it gives 1 coin through the coin effect. Part 16 starts from that log line.
-  - `Hud` has `set_pickable(players)`, `clear_pickable()`, `set_lit(player, on)`, `shake(players)`, `portrait_at(player)` and the `portrait_clicked` signal. `HudPortrait` carries an `Area2D` over its frame, with `picked` and `denied` signals.
-  - The banner sits at y 272, the 20 s candle (scale 0.4) right of it, and the cards (scale 0.47) at y 600 under the chosen portrait, clamped 330 px from the screen's sides. Checked: MCP clicks on a greyed portrait and card did nothing, then a valid one chose; 24 sped-up timeout runs with 5 players were all valid (gold, blood and swap all seen); the coin fallback worked. FPS read 15 in a plain run with the editor open.
-  - The confirm beat is 0.6 s after the candle lifts away. There is no VS card yet, so the result is only logged.
-- **The VS card (part 16):**
-  - `Duel` (`src/board/duel.gd`, `CanvasLayer` 30, a child of `Board`) has `play(challenger, opponent, stake)` giving `{winner, loser}`, and `_decide(challenger, opponent, stake)`, the fair `randf()` coin flip that part 18 changes. `Board.land` awaits it after the confirm beat, then resets `_track_name` and calls `_follow_leader()`. It logs "Duel won by X (coin flip)". The dim is a `ColorRect` on its own layer 15, under the HUD (20), so the portraits stay bright. The music is `Sound.play_music("duel")` (the file is missing, so silence).
-  - It runs about 9.5 s: the cards slam (scale 0.9, 310 px each side of x 960, y 470), the VS drops with a 6 px jolt, the stake strip pops in at y 810 and holds 0.9 s, then the cards part to 520 px and shrink to 0.7, 3, 2, 1 pop at the center (0.74 s each), the coin is flicked and spins by squashing its width (12 half turns end on the challenger's color, 11 on the opponent's) and lands 170 px to the winner's side, then the winner's card lifts with a `Glow.flare`, the loser's greys with `grey.gdshader` and tips, and the banner "X wins!" holds 1.6 s. `HudPortrait` has no blink, so the cards only `breathe`.
-  - New strings `DUEL_VS`, `DUEL_CHALLENGER` and `DUEL_WINS`. A Label's `size` springs back to its text's width, so `_label` clips its text (`clip_text`) and sets the size last. Checked: a forced duel on the board with MCP clicks on the opponent's portrait and a stake card (Bob chosen, the VS came after the confirm beat, the turn code carried on), 40 flips gave 18 challenger wins, and the screenshots show the longest name ("Frankenstein's Monster") fits.
-- **Duel results (part 17):**
-  - `Match.duel_result(winner, loser, challenger, stake)` gives `{coins, blood, swapped, died}` and bumps `duels_started` (challenger), `challenged` (opponent) and `duels_won` (winner), which every player carries from `start`. Gold is 1 coin from the loser to the winner (real change, so a loser with 0 coins moves none), blood is 1 off the loser, a swap trades `space` through `move_to` only if the challenger won.
-  - `Board.duel_end(winner, loser, challenger, stake)` is awaited by `land` after `Duel.play`. The winner's pose (`_win_pose`: voice, flare, 15% grow, hop, tilt) and the loser's (`_lose_pose`: voice, crumple, ball, unfold with `respawn`) run together, about 1.6 s. A dying loser only cries out and then goes through `die`, with the camera first gliding to them if they are the opponent. A coin flies counter to counter, a lost drop is the HUD's own (`show_blood`).
-  - The swap (`_swap`) lifts both pieces 110 px, updates both crowds, and tosses them over crossing arcs (the opponent's lower) in the death's flight time, with the camera riding the challenger. The other piece crosses the screen at the middle.
-  - Checked: headless every stake with each side winning, deaths for the opponent and the challenger (HUD-less numbers right), and a real turn loop with a blood duel; contact sheets of the win pose and the swap. Not done: the sped-up 17-turn 8-player run (headless timers were too slow to reach it), and no MCP click run (the runtime bridge timed out on a temporary scene). Gold and blood flights were not screenshotted at the moment of flight.
-- **The handicap and the gate (part 18):**
-  - `Duel._decide` rolls the flips through the static `Duel.roll_rounds(stake)`: gold and blood are one flip, a swap goes on while the challenger wins, until 3 wins or the opponent's first. `play` gives `{winner, loser, rounds}` (true = the challenger took the flip; the last decides). 20,000 runs gave the challenger 12.4% of swaps and 50% of gold and blood.
-  - `DuelTally` (three pips for the challenger, one for the opponent) pops in as the cards part; each flip fills a pip with `ui_click` (pitch 1.5 for the challenger, 0.65 for the opponent). A repeat flip pops the coin out, counts "2, 1" at 0.6 speed, then flips again. I read "a shortened countdown" as two quick numbers.
-  - `Match.finish(player)` gives the place and keeps `finish_order`. `Board.finish(player)` runs after a walk that ends on `BoardPath.FINISH` (the walk already stops at the gate, so an overshoot is lost for free): `GateDoors` (halves of `castle_gate.png` that narrow, over a warm light polygon, a child of the gate sprite, reached through `Scenery.doors()`), a gate flare, `Sound.sting("sting_finish")`, a flag planted on the piece (a child of it), the HUD flag, and a `PlaceTag` ("1st", gold for the first; new strings `PLACE_1` to `PLACE_8`) held 2 s. Then the piece hops to its onlooker slot (330 px right of the gate, 56 px apart, 4 to a row) and `BoardPiece.watch()` flips it to face left and sways and breathes slowly.
-  - `Sound.play` has a `pitch` argument, and `Sound.sting(name, length)` ducks the Music bus by 16 dB through an `AudioEffectAmplify` of its own for `length` seconds; a missing file is silent. **Untested by ear** (the sting is missing).
-  - Checked: three players finishing on their first rolls from `k15`, with the fourth carrying on (`next_player` skipped the finished); the contact sheets of the tally, the gate and the onlookers. Not run: an 8-player sped-up match to turn 17, the roll to the gate from other distances and from the church path (the walk code is the same for all), and no MCP click run. FPS read 18 to 25.
-- **Match end (part 19):**
-  - `Match.over()` (turn `TURNS` played out, or one or no unfinished player) and `next_player` returns false by it. `Match.results()` gives `{player, trophies, finish, gold, duels, rank, by}` best first (`by` is `{finish, gold, duels}`, the trophies of each kind, which part 20's rounds can read), and `Match.stats()` gives `{key, players, value}` for `deaths`, `duels_started`, `challenged` and the new `spike_blood` (added from `start`, counted in `Match.land`'s spikes branch only). Checked headless: a simple win, gold and duel ties, shared ranks, nobody finishing, 7 of 8 finishing, and the stats.
-  - `Board._play_turns` ends through `_end_match()`. `_last_turn()` (sting, `Sky.flash`, `Hud.last_turn` squash, a red shaking `PaperBanner` "Last turn!") runs once when `Match.turn` reaches `TURNS`. `_banner(text, hold, shaky)` is the reusable paper banner (`PaperBanner`, `src/board/paper_banner.gd`) on the HUD layer at y 330. The early end shows "Everyone else is home" after the finisher's gate scene, then the end beat: `Hud.dim()`, `BoardPiece.wait()` for unfinished pieces, the music fades, the camera glides to the gate (2 s) with `_flare_gate()`, "The night is over" for 2 s, the results and stats are printed, and the scene changes to `res://src/ceremony/ceremony.tscn` if it exists, else the title.
-  - `Candle.gust()` exists for the candle's sputter, but no candle is on screen at a turn change, so it never fires. `strings.csv` has only English (no Turkish column exists yet). The sting is missing, so silent. Checked in sped-up runs (3 players, `TURNS` lowered to 2; and 2 players with one finishing at once); `TURNS` is back at 17. Not run: a full 17-turn 8-player match, and no MCP click run.
-- **The trophy ceremony (part 20):**
-  - `Curtain` (`src/ui/curtain.gd`, `set_spread`, `move(spread, duration, delay)`) is the title's curtain lifted out, and the title uses it now. `Board._close_curtain()` drops one on layer 85 after "The night is over" (valance first, 1.3 s, a 0.6 s hold) and changes the scene itself with `change_scene_to_file`, not `Scenes.change_to`, so no paper sheet shows. `Ceremony` starts with its own curtain closed and opens it (`fly` plays as the swish; there is no `paper_swish`).
-  - `Ceremony` (`src/ceremony/ceremony.gd`) reads `Match.results()`. Pieces (`BoardPiece` in a `slot` Node2D with the name and a hidden trophy count) stand in a row at y 800, finishers first by place, then the rest by rank, 175 px from the sides at most and 280 apart at most. Rounds: `duels`, `gold`, `second`, `first` (the first finisher gets two trophy copies, so a count of 2); a kind nobody won is skipped. Each round is the card (`PaperBanner` at y 270), a 3 s drumroll with the spotlight (`Glow.aim`, new) narrowing and the stands trembling 1 to 5 px, 0.3 s of silence, the winners stepping forward and lit (everyone else is dimmed to 0.6 and claps with `tilt`), the trophy popping in with a flare, spinning and flying to each winner's count 0.2 s apart. The count's `x N` shows only after the first trophy lands.
-  - The leaderboard tosses the pieces into rank order, a paper panel rises with `1st Name ×3` rows (ties share a rank), rank 1 gets a flare, a crown trophy, a hop and the `_win` voice, and players with nothing are dimmed with a shrug. The "Continue" button (`CEREMONY_CONTINUE`) goes to the setup screen for now; part 21 puts the stats in between. Run alone, the scene makes a test match (`-- 8` or `-- 4 quiet`).
-  - Layout: the valance covers the top 160 px, so the card and the panel sit under it. Whole ceremony about 40 s. `ceremony.ogg` is missing (silent). Strings are English only (no Turkish column yet).
-  - Checked: 8 and 3 players with ties, the order of the rounds against `Match.results()` (the counts shown equal `trophies`), a real 3-player board with `TURNS` at 2 handing over (back to 17), 25 FPS in a plain run. The quiet match (nobody wins) skipped the rounds and the crown. Not run: an MCP click on the Continue button.
-- **Fun stats and the return (part 21):**
-  - `Match.reset()` clears players, `finish_order`, `turn`, `current`, `_arrivals` and `_turns_done`; the ceremony calls it when leaving, so `Match.names()` is empty and the setup screen opens with blank cards. Checked headless: after a reset `players` is empty, turn 1, and a new `start` gives fresh players (space `start`, `spike_blood` 0, `next_player` true).
-  - After "Continue" the leaderboard lifts away and `Match.stats()` gets one card each (`_stat_card`: the title from `STAT_<KEY>_TITLE`, the holders' portraits that hop, their names, and the count-up in 0.5 s with a rising `ui_click` tick, singular lines through `STAT_<KEY>_ONE`), 2.2 s held, then `lift_away`. With no stats a single "A very quiet night" card shows. Then "Play again" (setup, through the paper sheet) and "Quit" (the title, which has its own closed curtain) leave through the ceremony's curtain closing (1.3 s, 0.6 s hold), with the music and ambience faded out.
-  - Checked in a sped-up plain run (4 players; a death tie, a single holder with a count of 1, a count of 4 and 5): the cards, 25 FPS, and "Play again" changing the scene. Not run: the full board-to-setup second match, the quiet card on screen, the Turkish strings (still English only), and a screenshot of the ending's buttons.
-- **Esc, Turkish and the leftovers (part 22):**
-  - `Settings._unhandled_input` opens the panel on Esc in any scene while `Match.players` is not empty (the one shared helper); the panel closes itself on Esc, the back button or a click outside. Nothing is paused. An outside click is consumed by the panel, so the die, arrows and cards under it never see it. New `Settings.language` (`en` or `tr`, saved in `settings.cfg`, applied by `TranslationServer.set_locale`, English by default); the panel has a Language row (a button that cycles) and, in a match, the line `SETTINGS_IN_MATCH` under the title.
-  - `strings.csv` has a `tr` column for every key (`strings.tr.translation` is in `project.godot`). Only proper names (Medusa, Cthulhu, Dorian Gray) and "VS" equal the English. All text is built where it is shown, so a language change shows on the next screen or card; labels with keys on screen (the panel) update at once. Checked in Turkish: title, setup, the 8-player HUD, the VS card with "Frankenstein'ın Canavarı", the ceremony banners. The stat cards were not looked at in Turkish.
-  - Checked in a plain run: Esc over the board opens it, a click on the die behind it closes it and the die stays offered, then a real click rolls it. A fullscreen relaunch comes back fullscreen. A slider dragged to 0, half and the end gave 0 (muted), 0.507 (-5.9 dB) and 1.0 (0 dB). 2-player and 8-player pregames to a sped-up board ran with timeouts only and no errors. Not run: Esc during a duel and in the ceremony by hand (the same autoload code), and an MCP click (the runtime bridge times out on a temporary scene, and `execute_game_script` can't name autoloads: use `get_node("/root/Match")`).
-- **Playtests and tuning (part 23):**
-  - A temporary rules-only bot simulator (not committed; `Match`, a random walk with random forks, random opponent and stake, the real duel flips, 1,500 matches per size, `Match`'s prints stripped for speed) gave, at the real 17 turns:
+### Part 51 (2026-10-25, trimmed)
 
-    | Players | Finishers (mean) | Nobody finishes | Match length (est.) |
-    |---|---|---|---|
-    | 8 | 2.96 (1: 12%, 2: 26%, 3: 26%, 4: 20%, 5+: 14%) | 2% | about 24 min |
-    | 4 | 1.53 | 15% | about 12 min |
-    | 2 | 0.62 | 38% | about 6 min |
-
-    The 8-player gold and duel spread: the richest has 2.1 coins, the most duels won is 3.8, 0.29 deaths a player. The first finisher gets in on turn 15 on average. The "no stat nobody gets" bar holds: duels, challenged and spike blood are missing in under 1% of matches; deaths in 9% (8 players), 32% (4) and 60% (2), which only shrinks the stat cards.
-  - **No tuning.** The 8-player mean is 2.96, inside the 1 to 3 band, so `TURNS` stays 17 (the user's decision). For the record: 16 turns gives 1.95 and 15 gives 1.04 at 8 players, a steep step because the first players reach the gate around turn 15. The space mix, coin and blood amounts and timers stay too. Small matches finish fewer, which is the same rule over a shorter table. Ask the user if a 4-player match should end later.
-  - **Pacing:** the listed dead moments (intro glide 7.5 s, a far death 4.7 s, the duel 9.5 s, the ceremony 40 s) are each on a beat the user asked for, and a 24 minute 8-player match comes to about 11 s a turn, so nothing was cut. The estimate is mine (glide, die, walk, effect and duel times added up), not a timed run.
-  - **Frame rate:** a plain run on the 8-player HUD, the church hill, the swamp, the castle and the 8-player duel with the dim all held 24.5 to 25.0 (the cap). Nothing to fix.
-  - **Audio balance:** `Sound.TRIM` nudges 22 sound effects and 18 voices by up to 3 dB (60% of the way to the median file's mean level, so a click is not boosted into a bang), mostly the three hops, `die_land`, `respawn` and `countdown` down, and `coin_flip`, `spikes`, `ui_hover` and `card_slam` up, and Cthulhu's voices down and Dracula's up. Files are untouched. Ambience means sit between -38 and -34 dB, 8 to 10 dB under the effects, and were left. **Untested by ear.**
-  - Not done: a feel pass by eye on the walk, die, duel and ceremony (no new pop was seen in the screenshots, but motion was not watched), and no MCP click run.
-- **Bug bash and the release build (part 24):**
-  - A real playthrough with the MCP's clicks and `TURNS` at 2 (reverted): title Play, setup Begin (2 players), the pregame, a timed-out match, the ceremony's Continue button, the stat cards, and the ending's "Play again" button all worked, and `Match` was empty (turn 1) on the setup screen. Then 8 players through setup, the pregame and 8 monster picks (some by MCP click, some by timeout) to the board, where a click on the die rolled it and Medusa landed on a duel space ("Pick an opponent"). `get_editor_errors` had 0 errors and 0 warnings. The quiet card was not seen (a 2-player match had stats), and the Esc-in-a-duel and Esc-in-the-ceremony checks of part 22 were not repeated.
-  - Release: `tools/release/build_release.py` stages `assets/`, `src/`, `locale/`, the bus layout and the project files in a scratch folder, cuts the three MCP autoloads and the editor plugin out of that copy's `project.godot`, imports and exports the preset in the new `export_presets.cfg` (it excludes `addons/godot_mcp`, `screenshots`, the raws, `tools` and `docs`). The window title is the project name and the icon is `moon.png`. **The export itself was not run: the Godot 4.7.2 export templates are not installed** (`%APPDATA%\Godot\export_templates` is empty), and the plan said to ask the user. Checked instead with `--stage`: the stripped copy has no `mcp` text in `project.godot`, imports, and starts headless for 150 frames with no output. To finish: install the templates from the editor, then run the script and launch `build/Monsternight.exe`.
-- **Code** is in `src/`:
-  - Autoloads: `Sound` (`play`, `play_music`, `play_ambience`, and `quit()`, which every way out of the game goes through so no OGG leaks; `play("hop")` never repeats a hop twice in a row), `Scenes` (`change_to`, the paper transition, the texture and the cursor), `Settings` (`Settings.open()` from anywhere), and `Match` (players in turn order, each with `name`, `monster`, `space`, `blood`, `coins` and `finished`; `turn`, `TURNS`, `MAX_BLOOD`; `roll_turn_order`, `pick_monster`, `free_monsters`, `move_to`, and `change_blood` / `change_coins`, which return the real change).
-  - `PaperMotion` holds `drop_in`, `set_down`, `lift_away`, `sway`, `sway_stop`, `pop_in`, `pop_out`, `lift` (it only raises), `squash`, `slide_in`, `move_to`, `flip`, `hop`, `hop_to`, `fly_to`, `tuck`, `breathe`, `tilt`, `shake`, `stretch`, `crumple` (it frees the piece at the end unless `free` is off), `unfold`, `toss` and `bounce`. New motion goes here.
-  - Shadows: `PaperShadow.add(piece)`, which copies a sprite's region.
-  - `Sky` has `tint()` and `flash()`. `bat.gd` flies across whatever is in view and has an `active` switch.
-  - `src/ui/` has `PaperButton`, `PaperSlider`, `PaperToggle`, the `Candle` (`start`, `stop`, `timed_out`, `time_left`; 120 × 400) and `Flame` (`sputter`, `snuff`, `light`).
-  - `src/data/`: `Monsters` is the one place for a monster's look (`name_key`, `color`, `body`, `portrait`, `voice`), and `MonsterFigure` is the body on its stand with shadows, shared by monster select's `MonsterPiece` and the board's `BoardPiece`.
-  - `src/pregame/`: the turn order roll and monster select in one scene, `PlayerCard`, and `MonsterPiece` with `grey.gdshader`.
-  - `src/board/`:
-    - The board scene with the intro glide (`INTRO_GLIDE`, a click skips it) and location tracking. `Board` has `hud()`, `piece_for`, `walk`, the placeholder `choose_branch`, crowds, and the arrival drop, which fires `pieces_landed`; the HUD comes in then.
-    - `BoardLayout` (locations, `lane_y`, `gate_x`, `layer_x`; lanes at `MAIN_Y` 880, `UPPER_Y` 650, `LOWER_Y` 930) and `BoardPath` (`node`, `start`, `finish`, `next`, `is_fork`, `ids`, `stretch`, `routes`, `report`; kinds from the `kinds` strings, `.` is `empty`).
-    - `BoardPathView` (`path_view.gd`: the dark road strip, the dots, signposts, spaces and the flag), `Space`, `Flag` (also on the HUD), `BoardCamera` (`glide_to`, `jump_to`, `follow`, `stop`, `center_x`), `BoardPiece` (sway, `walked` and `branch_chosen`), `scenery.gd` (`DIM`, `FOG`), `strip.gdshader` and `Glow`.
-    - `Hud` (a `CanvasLayer` at layer 20: `come_in`, `set_active`, `set_finished`, `set_turn`, `show_blood`, `show_coins`, `anchor`) and `HudPortrait`.
-- **The board's layers:** Far (scroll 0.5), Mid (0.9), Lanes (1.0) and Fog (1.2). A piece in a scrolled layer goes at `BoardLayout.layer_x(world_x, scroll)`. The path and the y-sorted `Pieces` node are in Lanes, after the scenery.
-- **Sizes:** a token is 165 × 73 px, with 220 px between spaces and three dots in each gap. Icons are about 108 px. Monsters are 182 px tall on a 66 px stand. Crowds stand 4 to a row, 52 px apart, each row behind 34 px higher. The HUD's portraits are 184 px apart and end at about y 215; the turn tag is top-left, 172 × 52 px.
-- **Walking:** each hop is a 0.07 s crouch, a 0.27 s arc, a squash and a 0.12 s beat. `Match.move_to` is called at the end of the walk, then the camera glides onto the piece. `follow` eases in over 0.7 s and is capped at 2,600 px/s.
-- **Outlines** are baked, never shaded: `tools/images/make_outlines.py` makes the token's and stand's dark rims and the icons' and monsters' cream rims (`*_rim.png`). A canvas shader came out darker and without an outline.
-- **Gotchas:**
-  - A Control's `scale` can't be exactly zero (Godot clamps it to 1e-5), so use a flag, never `scale == Vector2.ZERO`.
-  - `--quit-after` runs print a harmless leak of 4 objects at exit, because the window's close request can't be caught there.
-  - Run on its own, the pregame starts a test match of the count after `--` (default 4).
-  - `grey.gdshader` drops a sprite's tint, so a finished portrait's frame is greyed by a blend instead.
-  - The MCP's click coordinates are the window's (1920 × 1080 in the editor's run), not 1280 × 720.
-- **Testing:** the Godot MCP is required (see README). Screenshots come from the viewport in a plain run, never `--write-movie`. A sped-up match (`Engine.time_scale`) with a temporary script is how the turn loop gets checked.
-- **Still open:**
-  - No thunder sound and no music at all yet. `select.ogg` and the board tracks are missing, and the music just fades.
-  - Nobody has listened to the ambience crossfades, the pick voices, the hop sounds, the HUD's sounds, the die's sounds or the quick spaces' sounds, or judged the squashes, the tumble and the effects in motion.
-  - The forest has six empty spaces in a row (seed 1031); `--seed N` rerolls if the user dislikes it. The castle has only torches between its building and the gate.
-  - In monster select, the candle sits over the moon on the right. On the right of an 8-player HUD strip, the moon sits behind a couple of coin counts; the outlines keep them readable.
-  - What parts 2 and 3 left untested is on the roadmap's part 22. The MCP's autoloads must be dropped from the release build, in part 24.
+Parts 49 (pace, overlaps) and 50 (music) were skipped by the user, and so was tuning (turn counts, timers, Hyde 0.8, Wolf Man +2 are as built). Done: docs sweep, version 1.1.0, web build 42.0 MB, loads clean in Playwright, tests pass (rules, shot, card, online). Not run: a full bot match, the two-tab online run to the ceremony. The music loops and stings are still missing (silence).
 
 ## Log
 
-- **2026-10-23, Microplan 1:** planned parts 1 to 3: the foundation and title, settings, and setup. Sketched the roadmap to part 24.
-- **2026-10-23, Microplan 2:** parts 1 to 3 are done (the foundation and title, settings, and setup). Planned parts 4 to 6: the turn order roll and the candle, monster select, and the board's scenery. Roadmap changes:
-  - The turn order roll and monster select now share one pregame scene.
-  - "Ambience follows the camera" moved from the old part 14 into part 6, where the camera and the locations are built. The rest of the old part 14, the music following the leader, is too small for a part of its own, so it joined part 12.
-  - The end moved from 24 to 23.
-- **2026-10-23, Microplan 3:** parts 4 to 6 are done (the turn order roll and the candle, monster select, and the board's scenery). The high-camera design adjustment was tried and reverted, so the side view stands. Planned parts 7 to 9: the board path, monster pieces, and the HUD. The user chose spaces that lie flat on the ground as ovals, with their icons standing up on them. Roadmap changes:
-  - Part 7 also retunes the lane heights, carried over from part 6, and adds the start token and the finish.
-  - Part 8 now does the walking, with a random placeholder at forks that part 13 replaces. `flip` for turning pieces around is dropped from part 8, because nothing in the first playable turns a piece around yet.
-  - Blood, coins and the turn number go into `Match` in part 9, with the HUD that shows them. The HUD also gets the finished flag now, which part 17 only calls.
-  - The end stays at 23.
-- **2026-10-23, Microplan 4:** parts 7 to 9 are done (the board path, monster pieces, and the HUD). The user decided the board: 57 spaces on the graveyard way (61 past the church), one empty space for every filled one, still one die, and 17 turns instead of 12 so that about 2 players still finish. Planned parts 10 to 12: the longer, random board, the die and the turn loop, and the quick spaces. Roadmap changes:
-  - A new part 10 lengthens the board and rolls its kinds once with a script, with exact counts in each bag and no rule on the order. The stretch lengths and the forks stay fixed. Part 22's length tuning moved up into it; the playtests (now part 23) only check it.
-  - The die and the turn loop, the quick spaces, and everything after them move down one. Part 12 leaves a `died` hook, which part 13 fills with the death.
-  - The end moved from 23 to 24, for the new part 10.
-- **2026-10-24, Microplan 5:** parts 10 to 12 are done (the longer random board, the die and the turn loop, and the quick spaces). Planned parts 13 to 15: death and respawn with the music wiring, the splits, and the challenge. Roadmap changes:
-  - None in the order or the end (still 24). Part 13 adds a `deaths` count for part 19's stats and a non-freeing `crumple`, and part 17 reuses its `Board.die` for duel deaths.
-  - The board music is wired in part 13 but can't be heard until the user makes the five board tracks.
-- **2026-10-24, Microplan 6:** parts 13 to 15 are done (death and the music, splits, challenge). Planned parts 16 to 18: the VS card with the countdown and coin flip, the duel results, and the swap handicap with finishing at the gate. Roadmap changes:
-  - The no-opponent fallback left part 18, because part 15 already built it.
-  - The duel counters (`duels_won`, `duels_started`, `challenged`) are kept from part 17, so part 19's stats don't have to hunt for them. The end stays at 24.
-- **2026-10-24, Microplan 7:** parts 16 to 18 are done (the VS card, duel results, the swap handicap and the gate). Planned parts 19 to 21: match end and the stats, the trophy ceremony, and the fun stats with the return to setup. Roadmap changes:
-  - None in the order or the end (still 24). `Match.results()` and `stats()` are built in part 19 so that 20 and 21 only draw. Part 21 adds `Match.reset()`, since the autoload outlives a match.
-- **2026-10-24, Microplan 8:** parts 19 to 21 are done (match end, the trophy ceremony, fun stats and the return). Planned the last three, 22 to 24: Esc settings in a match with Turkish and the untested leftovers, playtests and tuning, and the bug bash with the release build. Roadmap changes:
-  - None in the order; the end stays at 24 and is now fixed. Turkish was planned in earlier parts but never done (`strings.csv` is English only), so part 22 does it in one go. Part 24 ends the process, so the README will say so afterwards.
+- **2026-10-23 to 24, Microplans 1 to 14:** the first playable (parts 1 to 24) and the final game's parts 25 to 44: the questionnaires, assets, camera, lobby-size rules, board per size, powers, the online spike and layer, Pong, Tug of War, Sumo and Head Soccer, the minigames over the network, drops/rejoin/host migration, the deploy and the 1.0.0 release (playtests skipped). See [microplan_first_playable.md](microplan_first_playable.md#log) for the first 24. The old per-part notes, the minigame designs and the plans for 40 to 42 were cut from this file in Microplan 15; git history has them.
+- **2026-10-24, sweeping changes 2:** a list of eight fixes (Head Soccer's arena and heads, monster select showing names and a Confirm button, `DeltaPop`, `PowerBeam`, a softer rope sound). Mostly irrelevant now that the games are removed; `DeltaPop` and `PowerBeam` stay.
+- **2026-10-25, Microplan 15:** the user played 1.0.0 and sent thirteen points (see "Microplan 15: the pivot"). Planned seven parts, 45 to 51, instead of three plus a rough tail, because the user asked for 6 to 8 and the changes are many but small; the README's multiple-of-3 microplan rule is switched off until 51. The roadmap now ends at 51 (the old end, 44, was the release, which is now 51). Decisions: the four minigames and the real-time online streams are removed for Shot in the Dark; two dice; Blood becomes a drain (the user agreed) so it needs both players below their cap; Swap unchanged (the user agreed); Hyde, the Wolf Man and the swap-duel length changed by Claude. The user supplied the 1000-question database (`sitd_questions/`); the plan groups its 75 categories into four board categories. Four icon prompts were added to `asset_prompts.md`; no new sounds; the music list is above. One bug found while planning: `Match.stakes` checked only the opponent's coins for a gold stake.

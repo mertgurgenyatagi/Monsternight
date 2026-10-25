@@ -2,7 +2,7 @@
 
 Every asset the game needs, as a running list. Claude adds to it as the game grows. The user fetches each file and puts it in `assets/`, at the root of the repository, using the folder and file name given here. Claude then wires it in. A file that's in place is done.
 
-This list covers the [first playable](roadmap.md#1-first-playable): 84 images, 2 fonts, and 71 sounds. Minigame assets come later.
+The [first playable](roadmap.md#1-first-playable) needed 84 images, 2 fonts, and 71 sounds. The final game adds 10 images and 14 sounds (part 26): the minigames' pieces, two icons, and the sounds of the minigames, the powers and the lobby. Everything else is reused (see [Reused for the final game](#reused-for-the-final-game)).
 
 ## For every image
 
@@ -109,10 +109,7 @@ Each location below has a far strip (the distant skyline), a ground strip (the e
 | `spikes.png` | A row of spikes | 128 × 128 |
 | `thief.png` | A sneaky gloved hand, grabbing | 128 × 128 |
 | `church.png` | A little chapel | 128 × 128 |
-| `pong.png` | Two paddles and a ball | 128 × 128 |
-| `haxball.png` | A ball between two goalposts | 128 × 128 |
-| `racing.png` | A coffin on wheels | 128 × 128 |
-| `fps.png` | A crosshair | 128 × 128 |
+| `atlas.png`, `archive.png`, `lab.png`, `stage.png` | The four question categories' icons (made by the user, done; prompts in [asset_prompts.md](asset_prompts.md#category-icons-icons)) | 128 × 128 |
 | `flag.png` | A small pennant. Marks the finish and players who have finished | 128 × 128 |
 
 ### Monsters: `assets/art/monsters/`
@@ -145,11 +142,21 @@ Each monster needs two files: a full body (`<name>.png`, standing, facing right,
 | `button.png` | A paper tag for buttons. The game stretches it sideways | 400 × 120 |
 | `card.png` | A blank paper playing card, for the stake cards and the VS card | 400 × 560 |
 | `portrait_frame.png` | A paper frame for portraits. The game tints it in the monster's color | 300 × 300 |
-| `candle.png` | A tall candle with no flame. The game shrinks it as a timer runs out | 120 × 400 |
-| `flame.png` | A candle flame. Also used for torches | 64 × 96 |
+| `flame.png` | A flame, for the board's torches | 64 × 96 |
 | `trophy.png` | A paper trophy cup | 256 × 256 |
 | `curtain.png` | The left half of a red theater curtain. The game mirrors it for the right half | 1000 × 1080 |
 | `curtain_top.png` | The curtain's scalloped top border | 1920 × 200 |
+
+### Reused for the final game
+
+Principle 2: a new image only where nothing old can do the job.
+
+| Need | Reuses |
+|---|---|
+| Medusa's stone | The piece tinted grey. When it cracks off, a few `path_dot.png` scraps, tinted grey, fly off as chips |
+| Dracula's steal | `blood.png`, flying like any blood |
+| The powers' word pops | Text in the display font |
+| The lobby | `panel.png` for the room code card, `button.png` for Copy link and Ready, and the readiness as text |
 
 ### Fonts: `assets/fonts/`
 
@@ -175,7 +182,7 @@ The five board tracks share one tempo and key, so the game can crossfade between
 | `board_forest.ogg` | The leader is in the forest. Busier, with a bouncing bass line | 2 min |
 | `board_swamp.ogg` | The leader is in the swamp. Woozy, with a wobbling theremin | 2 min |
 | `board_castle.ogg` | The leader is at the castle. Full pipe organ, grand and urgent: the climax | 2 min |
-| `duel.ogg` | Duels: the coin flip for now, then every minigame until it has its own track. Fast and tense | 1 min |
+| `duel.ogg` | Duels: the VS card and the countdown (and the coin flip, until each minigame is built). Minigames themselves have no music. Fast and tense | 1 min |
 | `ceremony.ogg` | The trophy ceremony. Triumphant, but still spooky | 1.5 min |
 | `sting_final_turn.ogg` | Plays once as the last turn starts. Not a loop | 3 s |
 | `sting_finish.ogg` | Plays once when a player reaches the castle gate. Not a loop | 3 s |
@@ -199,7 +206,7 @@ Quiet, seamless loops of 30 to 60 seconds that play under the music.
 | `ui_hover.ogg` | A soft paper rustle when the mouse moves onto something clickable |
 | `ui_click.ogg` | A crisp flick of a paper card |
 | `ui_denied.ogg` | A dull thud, for clicking something that's greyed out |
-| `timer_low.ogg` | A sputtering candle, for the last 3 seconds of a decision |
+| `timer_low.ogg` | A sputtering candle, for each of the last 5 seconds of a decision |
 | `timer_out.ogg` | A candle being snuffed out: time's up |
 | `turn_start.ogg` | A soft chime when a player's turn starts |
 | `die_roll.ogg` | A paper die tumbling |
@@ -225,6 +232,20 @@ Quiet, seamless loops of 30 to 60 seconds that play under the music.
 | `drumroll.ogg` | A drumroll before each trophy, about 3 seconds |
 | `trophy.ogg` | A warm organ chord as a trophy is handed out |
 | `stat.ogg` | A playful plink for each fun stat |
+
+**The final game's effects** (part 26), also in `assets/audio/sfx/`:
+
+| File | What it sounds like |
+|---|---|
+| `power.ogg` | An eerie theremin swoop under every power's word pop |
+| `stone.ogg` | Medusa's victims turning to stone |
+| `stone_crack.ogg` | The stone cracking off on their turn |
+| `join.ogg` | Someone joins the lobby: two knocks on a door |
+| `leave.ogg` | Someone leaves or drops: a door closing |
+| `ready.ogg` | Someone clicks Ready: a rubber stamp on paper |
+| `start.ogg` | The host starts the match: a heavy door creaking open |
+
+No new music: minigames have none (Q17), and the lobby plays `title.ogg`.
 
 ### Monster voices: `assets/audio/voices/`
 

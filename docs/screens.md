@@ -4,15 +4,18 @@ What players see and click, from the title screen to the trophy ceremony. The us
 
 ## Title screen
 
-The logo in front of a theater curtain, with Play, Settings, and Quit.
+The logo in front of a theater curtain, with Play, Local, Settings, and Quit (Claude's call).
 
 ## Lobby
 
-- The host opens a lobby. Players join and type a name.
-- Everyone sees who's in, and each player clicks Ready.
-- The host starts the match once everyone is ready. 2 to 8 players.
+The online lobby (Claude's calls, part 25):
 
-Online play comes last (see [roadmap.md](roadmap.md)). Until then, a **setup screen** takes the lobby's place: pick the number of players and type each name.
+- **Play** offers two choices: host a room, or type a room code to join one.
+- The host's room gets a **4-letter code** (like "BATS") and a **Copy link** button. The link opens the game straight into the room. There is no public list of rooms.
+- Players type a name when they join. Everyone sees who's in, and each player clicks Ready.
+- The host starts the match once 3 to 8 players are in and ready. A ninth player is told the room is full.
+
+**Local** opens the **setup screen**, the one-computer mode: pick the number of players (3 to 8) and type each name, and one person clicks for everyone. It stays in the final game (Claude's call, Q18), for testing and for playing on one computer. Until online play is built, it's the only way in.
 
 ## Turn order roll
 
@@ -23,14 +26,15 @@ The players' name cards shuffle and settle into the turn order.
 - The 8 monsters stand in a row, and the player whose pick it is clicks one.
 - Monsters that are already taken are greyed out.
 - Picks go in reverse turn order, 30 seconds each. When time runs out, a random monster is picked.
+- Each monster's card shows its power in one short line (see [characters.md](characters.md#learning-the-powers)).
 - From here on, each player shows in their monster's color (see [characters.md](characters.md)).
 
 ## Board
 
 ### Always on screen
 
-- A strip of paper portraits along the top, one per player, in turn order. Each shows the player's blood drops and coin count. The active player's portrait is raised, and a player who has finished gets a flag.
-- A turn counter in a corner, such as "Turn 5 of 17".
+- A strip of paper portraits along the top, one per player, in turn order. Each shows the player's blood drops and coin count. The active player's portrait is raised, and a player who has finished gets a flag. **Clicking a portrait** (when no choice is open) hangs a power card under it: the monster's name, its power in full, the player's name, blood and coins, and a status line (stone, finished, reconnecting, away, or "playing now"). Clicking the portrait again, clicking anywhere else, or Esc closes it; only one card is open at a time, and it never pauses the game or eats the click that closes it.
+- A turn counter in a corner, such as "Turn 5 of 15". The number of turns comes from the lobby's size.
 - Trophy counts and duel wins are **not** shown. They stay secret until the ceremony.
 
 ### Mouse controls
@@ -41,22 +45,25 @@ On the board, everything is a mouse click.
 |---|---|
 | Roll | The die |
 | Pick a path | One of the two arrows at the signpost |
-| Challenge | An opponent's portrait, then a stake card: gold, blood, or swap. Invalid stakes are greyed out. |
+| Challenge | An opponent's portrait, then a stake card: gold, blood, or swap. Invalid stakes are greyed out. When swap is the only stake left, a "Walk away" button shows beside the cards. |
 
-For every decision, a candle burns down next to the choice. When it goes out, a random valid choice is made.
+For every decision, a paper tag next to the choice counts the seconds down as a number. In the last 5 seconds it turns red, shakes and ticks, and at 0 a random valid choice is made.
 
 ### Dying
 
 The monster crumples into a paper ball, flies back to the start, and unfolds there with full blood.
 
+### Power moments
+
+When a power fires, a small word pops over the piece with a sound (see [characters.md](characters.md#learning-the-powers)). Dracula's stolen blood flies to him like any blood. Medusa's victims turn to grey stone, and on their turn the stone cracks off with a sound and the turn passes on.
+
 ## Duels
 
 1. A paper "VS" card slams down with both monsters' portraits and the stake.
-2. A 3, 2, 1 countdown.
-3. The round. In the first playable, this is a coin flip.
-4. The winner does a short victory pose, the loser crumples like paper, and the coins or blood fly across to the board.
+2. The round: Shot in the Dark (see [minigames.md](minigames.md)). Online, everyone sees one layout: the challenger's box on the left, the opponent's on the right, the question and the countdown. A duelist's own box has a "You" tag and the keypad; everybody else sees no keypad and a "..." in the boxes that turns into a "Locked" stamp as each duelist locks, and "Waiting for Name" while one has locked and the other has not. Then every copy runs the same reveal.
+3. The winner does a short victory pose, the loser crumples like paper, and the coins or blood fly across to the board.
 
-Everyone else watches.
+Everyone else watches. The duel music plays under the VS card, and stops when the round starts.
 
 ## Trophy ceremony
 

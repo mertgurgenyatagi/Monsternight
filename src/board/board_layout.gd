@@ -4,7 +4,8 @@ class_name BoardLayout
 ## (part 7) agree. Move a lane or change a count here, never by hand in the scenery.
 ##
 ## World x runs from 0 at the village end to `width()` at the castle gate. The view is always
-## one 1080-tall screen, so world y is screen y.
+## one 1080-tall screen at the old zoom, so world y is screen y there; the zoom shows a little more
+## above and below.
 
 enum Lane { MAIN, UPPER, LOWER }
 
@@ -26,14 +27,38 @@ const LOCATIONS := [
 	{"id": "castle", "spaces": 15},
 ]
 
+## The spaces of the three plain stretches by the number of players (board.md, Length). They
+## replace the counts in `LOCATIONS`; the splits are the same for every lobby.
+const COUNTS := {
+	3: {"village": 14, "forest": 14, "castle": 17},
+	4: {"village": 12, "forest": 12, "castle": 16},
+	5: {"village": 11, "forest": 11, "castle": 13},
+	6: {"village": 10, "forest": 10, "castle": 11},
+	7: {"village": 9, "forest": 9, "castle": 10},
+	8: {"village": 8, "forest": 8, "castle": 10},
+}
+
 const MAIN_Y := 880.0 # the road
-const UPPER_Y := 650.0 # over the church hill, and the boardwalk
-const LOWER_Y := 930.0 # through the graveyard, and the bog
-const GROUND_Y := 780.0 # the top of the ground strips
-const PROP_BASE_Y := 840.0 # where tall props stand, their feet hidden behind the ground strip
-const HILL_TOP_Y := 565.0 # the top of the hill's plateau, well over the upper lane so its spaces stand on the grass
+const UPPER_Y := 627.0 # over the church hill, and the boardwalk
+const LOWER_Y := 935.0 # through the graveyard, and the bog
+const GROUND_Y := 750.0 # the top of the ground strips
+const PROP_BASE_Y := 810.0 # where tall props stand, their feet hidden behind the ground strip
+const HILL_TOP_Y := 542.0 # the top of the hill's plateau, well over the upper lane so its spaces stand on the grass
 
 static var _locations: Array[Dictionary] = []
+static var _size := 4 # the lobby the board is built for
+
+
+## Builds the layout for a lobby of this many players. Clears the cache, so everything that reads
+## the layout afterwards sees the new board; call it before the scenery and the path are made.
+static func configure(size: int) -> void:
+	_size = clampi(size, 3, 8)
+	_locations.clear()
+
+
+## The spaces of the village, the forest and the castle for a lobby of this size.
+static func counts(size: int) -> Dictionary:
+	return COUNTS[clampi(size, 3, 8)]
 
 
 ## The locations with their world x ranges: id, from, to, and for a split its ramp, the run
@@ -43,6 +68,7 @@ static func locations() -> Array[Dictionary]:
 		var x := 0.0
 		for i in LOCATIONS.size():
 			var location: Dictionary = LOCATIONS[i].duplicate()
+			location.spaces = counts(_size).get(location.id, location.spaces)
 			var span: float = (location.spaces + location.get("pad", 0.0)) * SPACE
 			if location.id == "graveyard":
 				span = hill_width()
@@ -107,6 +133,6 @@ static func lane_y(lane: Lane, x: float) -> float:
 
 ## Where a piece goes inside a parallax layer with this scroll scale, so it's in the middle of
 ## the screen when the camera's centre is at world x. Layers scroll from the camera's top-left
-## corner, which is 960 px left of its centre.
+## corner, which is half the zoomed view left of its centre.
 static func layer_x(x: float, scroll: float) -> float:
-	return 960.0 + scroll * (x - 960.0)
+	return BoardCamera.HALF_WIDTH + scroll * (x - BoardCamera.HALF_WIDTH)

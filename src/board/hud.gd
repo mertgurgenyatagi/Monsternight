@@ -23,6 +23,7 @@ var _track: ProgressTrack
 var _tag_paper: Sprite2D
 var _tag_label: Label
 var _shown_turn := 1
+var _card: PowerCard
 
 
 func _init() -> void:
@@ -40,6 +41,7 @@ func _ready() -> void:
 		add_child(portrait)
 		_portraits[player.monster] = portrait
 		portrait.picked.connect(portrait_clicked.emit.bind(player))
+		portrait.inspected.connect(_toggle_card.bind(player))
 	_make_tag()
 	_track = ProgressTrack.new()
 	_track.position = TRACK_AT
@@ -106,6 +108,21 @@ func set_lit(player: Dictionary, on: bool) -> void:
 	_portraits[player.monster].set_lit(on)
 
 
+## Greys this player's portrait while they are stone, or lets the colour back.
+func set_stone(player: Dictionary, on: bool) -> void:
+	_portraits[player.monster].set_stone(on)
+
+
+## Online: shows a player as dropped, away, or back ("").
+func set_presence(player: Dictionary, state: String) -> void:
+	_portraits[player.monster].set_presence(state)
+
+
+## The player's portrait node.
+func portrait_node(player: Dictionary) -> HudPortrait:
+	return _portraits[player.monster]
+
+
 ## The screen position of a player's portrait frame.
 func portrait_at(player: Dictionary) -> Vector2:
 	return _portraits[player.monster].to_global(HudPortrait.FRAME_CENTER)
@@ -146,6 +163,24 @@ func anchor(player: Dictionary, what: String) -> Vector2:
 	return _portraits[player.monster].anchor(what)
 
 
+## The power card of the clicked portrait opens, or closes if it is that portrait's own. Only one
+## card is open at a time.
+func _toggle_card(player: Dictionary) -> void:
+	var same := is_instance_valid(_card) and is_same(_card.player, player)
+	if is_instance_valid(_card):
+		_card.close()
+	if same:
+		return
+	var portrait: HudPortrait = _portraits[player.monster]
+	_card = PowerCard.new(player, portrait)
+	var x := clampf(portrait.global_position.x, PowerCard.WIDTH / 2.0 + 10.0, 1920.0 - PowerCard.WIDTH / 2.0 - 10.0)
+	_card.position = Vector2(x, PowerCard.TOP_Y)
+	_card.set_meta("rest_position", _card.position)
+	add_child(_card)
+	PaperMotion.lift(portrait, true)
+	_card.closed.connect(func() -> void: PaperMotion.lift(portrait, false))
+
+
 func _make_tag() -> void:
 	_tag = Node2D.new()
 	_tag.position = TAG_POS + TAG_SIZE / 2
@@ -170,7 +205,7 @@ func _make_tag() -> void:
 
 # The tag's text, with the tag blood red on the last turn.
 func _show_turn() -> void:
-	var last := _shown_turn >= Match.TURNS
-	_tag_label.text = TranslationServer.translate("TURN_COUNTER") % [_shown_turn, Match.TURNS]
+	var last := _shown_turn >= Match.turns
+	_tag_label.text = TranslationServer.translate("TURN_COUNTER") % [_shown_turn, Match.turns]
 	_tag_paper.self_modulate = LAST_COLOR if last else Color.WHITE
 	_tag_label.add_theme_color_override("font_color", LAST_INK if last else TAG_INK)

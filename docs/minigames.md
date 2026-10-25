@@ -1,23 +1,44 @@
 # Minigames
 
-## Philosophy
+There is one minigame: **Shot in the Dark** (Microplan 15, 2026-10-25). It replaced Pong, Sumo, Head Soccer and Tug of War, which the user threw out after playing 1.0.0: real-time games over a free relay do not work. The questions are in [`sitd_questions/`](../sitd_questions/) (the user's 1000), served from `data/questions.json`.
 
-Minigames are very simple games people already know, dressed up in the horror theme. Familiar games are fun from the start. "Shitty" is the intended standard: a crude but working version of the genre is the target.
+## Shot in the Dark
 
-They keep the paper cutout look, like Pong played with cardboard paddles and a paper ball on a painted table. See [art_and_audio.md](art_and_audio.md#visual-style).
+A question with a number for an answer ("How tall is the Eiffel Tower, in meters?"). Both players type a guess in secret and lock it in, the answer is revealed, and **the closest guess wins**.
+
+- Each side has **30 seconds**, or until it locks in. A guess typed when the time runs out is locked as it is; no guess loses to any guess.
+- **Typing:** digits, a minus (first only), one decimal mark (`.` or `,` both work), Backspace, Enter to lock. Up to 9 digits. A paper keypad does the same with the mouse. Numbers are shown with a thin space between thousands, and the decimal comma in Turkish.
+- **The score:** the smaller `|guess - answer|` wins. **Mr. Hyde, when he starts the duel, has his distance multiplied by 0.8** ("20% closer"). An exact tie, or two blanks, is a draw.
+- **A draw** asks a new question. A swap duel's round only counts when someone wins. After **3 draws in a row** the challenger loses, so a duel cannot hang.
+- A match never asks the same question twice (`Match.asked`); a group that runs dry starts over.
+- **One screen (pass the keyboard):** the challenger types first behind a cover card ("Name: look, the others look away" and an "I'm ready" button), then the cover passes to the opponent. Online, both type at once on their own computers (part 46).
+- **Online:** the host picks the question; each duelist's number goes only to the host, who reveals both when both have locked or the time (and 1 s of grace) is up. A dropped or away duelist has no guess (the host waits 3 s at most). See [tech.md](tech.md#multiplayer).
+
+### The four spaces
+
+A minigame space shows a **category**, and the question comes from its group (`data/question_groups.json`):
+
+| Space | Name | What it asks about |
+|---|---|---|
+| `atlas` | The Atlas | Places, transport, the sea, space, the Earth (210 questions) |
+| `archive` | The Archive | History, art, books, languages, science, inventions, business (240) |
+| `lab` | The Lab | Science, the body, animals, plants (220) |
+| `stage` | The Stage | Cinema, TV, music, games, toys, the internet, sport, food (330) |
+
+Their icons are by the user (`docs/asset_prompts.md`, "Category icons"), done: atlas, archive, lab and stage.
 
 ## Duels
 
 Every minigame is a **1v1 duel**.
 
-1. A player lands on a minigame space. Each minigame has its own space.
+1. A player lands on a minigame space.
 2. They challenge **any** other player who hasn't finished. The challenged player can't refuse.
-3. They choose the stake (below). Picking the opponent and the stake share one 20-second timer.
-4. The two players play that space's minigame. Everyone else watches. There is no text chat.
+3. They choose the stake (below), or press **Back** under the cards to pick another opponent. Picking the opponent and the stake share one 20-second timer, which keeps running through a Back.
+4. The two players play Shot in the Dark. Everyone else watches. There is no text chat.
 
-A normal duel is **one round**. A round ends at the **first point** and takes about **20 to 30 seconds**. Each game should push toward that first point (the Pong ball speeds up, for example) so rounds stay short.
+If there's nobody to duel, the space acts as a coin space.
 
-If there's nobody to duel, the space acts as a coin space. With the early end (see [game_rules.md](game_rules.md#match)) there's always someone left, so this is only a fallback.
+**Walking away** (the brief): when swap is the only valid stake against every opponent (no one offers gold or blood), the challenger may walk away instead. A "Walk away" button sits beside the stake cards and "Back", and the space then does nothing, like an empty one (Claude's call, Q18).
 
 How a duel opens and closes is in [screens.md](screens.md#duels).
 
@@ -25,50 +46,32 @@ How a duel opens and closes is in [screens.md](screens.md#duels).
 
 | Stake | If the challenger wins | If the challenger loses |
 |---|---|---|
-| Gold | Takes 1 coin from the opponent | Pays 1 coin to the opponent |
-| Blood | Opponent loses 1 blood | Challenger loses 1 blood |
+| Gold | Takes 1 coin from the opponent | Pays 1 coin to the opponent (both need a coin to start) |
+| Blood | Opponent loses 1 blood, the challenger gains 1 | Challenger loses 1 blood, the opponent gains 1 |
 | Swap | Challenger and opponent swap places | Nothing happens |
+
+Every stake is **zero-sum**: what one side loses, the other gains. Nothing is created or destroyed. The swap handicap is 2 wins before 1 loss.
 
 - **Invalid stakes are greyed out** and can't be picked. Every rule applies to both players, the challenger included:
   - **Gold** needs both players to have at least 1 coin.
+  - **Blood** needs both players **below their most blood** (3, or 4 for Cthulhu), because the winner gains the blood the loser loses. Blood duels will be rare, since blood sits at its cap most of the time; the church matters more.
   - **Blood** against a player with 1 blood is a **death match**. It's only allowed if that player has **0 coins**. A challenger with 1 blood counts too.
-  - **Swap** is always allowed.
-- **Swap handicap:** in a swap duel, the challenger has to win **3 rounds** before the opponent wins **1**.
+  - **Blood** is never allowed while Death has 1 blood, on either side (see [characters.md](characters.md#death)).
+  - **Swap** needs two different spaces.
+  - Frankenstein's Monster as the challenger only needs what he needs to win, since he loses nothing.
+- **Swap handicap:** in a swap duel, the challenger has to win **2 rounds** before the opponent wins **1**. Dorian Gray needs only 1.
+- Frankenstein's Monster loses nothing as the challenger, and Mr. Hyde's guess counts as closer when he challenges. See [characters.md](characters.md#powers).
 - Whoever loses their last drop of blood in a duel dies (see [game_rules.md](game_rules.md#blood-health)).
 - Every duel win counts toward the "most minigames won" trophy, including swap duels.
 
 ### Absent players
 
-A player who is AFK or disconnected simply doesn't send any input. The duel plays out anyway, and they'll most likely lose.
+A player who is away or disconnected types nothing, so they have no guess and lose (online). If both are gone, it is a draw and a new question is asked.
 
 ## Controls
 
-- The board is played with the mouse (see [screens.md](screens.md#mouse-controls)). Minigames use the keyboard. No gamepads.
-- Every minigame uses the **arrow keys** to move, plus three keys that do the same job in every game:
+The board is played with the mouse (see [screens.md](screens.md#mouse-controls)). Shot in the Dark uses the keyboard or the paper keypad. No gamepads.
 
-| Key | Job |
-|---|---|
-| A | Action |
-| S | Special |
-| D | Dash |
+## Out
 
-- **The FPS** is the exception: mouse to aim and shoot, WASD to move.
-
-## Minigame list
-
-| Minigame | The first point is | Status |
-|---|---|---|
-| Pong | the first goal | In |
-| Haxball | the first goal | In |
-| Racing game | crossing the finish line first | Wanted |
-| First-person shooter | the first kill | Wanted |
-| Sword-fighting game | a fight to the death (no first point) | Wanted, on hold |
-
-More can be added later. Other candidates that were suggested but not picked: air hockey, Tron light cycles, Snake, Bomberman, a tank battle, sumo, a quickdraw, a Flappy Bird race, tug of war, a typing race, Connect Four, memory, and top-down racing.
-
-Until a minigame is built, a duel on its space is settled by a **coin flip**. That's how every duel works in the [first playable](roadmap.md).
-
-## Open questions
-
-- How does the sword fight to the death play (hit points, blocking, round length)? The user shelved this in Q15.
-- Does each minigame have one arena, or a few picked at random? Asked in Q14, not answered.
+Pong, Sumo, Head Soccer and Tug of War (parts 34 to 37, removed in part 45), Haxball, the racing game, the first-person shooter, the sword fight, and Run n Dodge.

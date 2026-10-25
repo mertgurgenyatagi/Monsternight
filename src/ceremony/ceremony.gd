@@ -2,7 +2,7 @@ class_name Ceremony
 extends Control
 ## The trophy ceremony. The curtain opens on a dark stage with every player's piece in a row, then
 ## the trophies are handed out one kind at a time, least meaningful first (most duels won, most gold,
-## second to finish, first to finish). Each round is a title card, a drumroll, and the winners
+## first to finish). Each round is a title card, a drumroll, and the winners
 ## stepping into the spotlight as the trophy flies into their count. Then the pieces rearrange by
 ## rank under a leaderboard. The counts are secret until a trophy lands on them.
 ##
@@ -62,7 +62,7 @@ func _run() -> void:
 	await _leaderboard()
 
 
-# The four kinds of trophy, in the order they are handed out, with the slots that won each and how
+# The three kinds of trophy, in the order they are handed out, with the slots that won each and how
 # many trophies of the kind each gets. A kind nobody won is left out.
 func _rounds() -> Array[Dictionary]:
 	var kinds: Array[Dictionary] = [
@@ -70,9 +70,7 @@ func _rounds() -> Array[Dictionary]:
 				"won": func(row: Dictionary) -> bool: return row.by.duels > 0},
 		{"key": "gold", "title": "TROPHY_GOLD", "each": 1,
 				"won": func(row: Dictionary) -> bool: return row.by.gold > 0},
-		{"key": "second", "title": "TROPHY_SECOND", "each": 1,
-				"won": func(row: Dictionary) -> bool: return row.finish == 2},
-		{"key": "first", "title": "TROPHY_FIRST", "each": 2,
+		{"key": "first", "title": "TROPHY_FIRST", "each": 1,
 				"won": func(row: Dictionary) -> bool: return row.finish == 1},
 	]
 	var rounds: Array[Dictionary] = []
@@ -515,6 +513,9 @@ func _card_label(text: String, font: Font, font_size: int, color: Color, size: V
 
 # --- The ending ----------------------------------------------------------------------------------
 
+var _going := false
+
+
 func _ending() -> void:
 	var again := PaperButton.new()
 	again.text = "CEREMONY_AGAIN"
@@ -528,8 +529,36 @@ func _ending() -> void:
 		add_child(button)
 	again.enter(0.2)
 	quit.enter(0.4)
+	if Online.active:
+		_online_ending(again, quit)
+		return
 	again.pressed.connect(_leave.bind("res://src/setup/setup.tscn", [again, quit], true))
 	quit.pressed.connect(_leave.bind("res://src/title/title.tscn", [again, quit], false))
+
+
+# Online, only the host can ask for another match: it tells everyone and all go back to the room
+# together. The others see "Waiting for the host" (and the button wakes up if they become the host).
+func _online_ending(again: PaperButton, quit: PaperButton) -> void:
+	var buttons := [again, quit]
+	var go := func() -> void:
+		if _going:
+			return
+		_going = true
+		Online.back_to_room = Net.is_online()
+		_leave("res://src/lobby/lobby.tscn", buttons, true)
+	var refresh := func() -> void:
+		again.disabled = not Net.is_host
+		again.text = "CEREMONY_AGAIN" if Net.is_host else "CEREMONY_WAIT_HOST"
+	refresh.call()
+	again.pressed.connect(func() -> void:
+		if Net.is_host:
+			Net.broadcast("lobby_again")
+			go.call())
+	Net.host_changed.connect(func(_id: int) -> void: refresh.call())
+	Net.received.connect(func(from: int, kind: String, _p: Dictionary) -> void:
+		if kind == "lobby_again" and from == Online.host_id and not _going:
+			go.call())
+	quit.pressed.connect(_leave.bind("res://src/title/title.tscn", buttons, false))
 
 
 # The music fades, the match is cleared, and the curtain closes as it did on the board before the
@@ -540,6 +569,8 @@ func _leave(path: String, buttons: Array, paper: bool) -> void:
 		button.leave()
 	Sound.play_music("")
 	Sound.play_ambience("")
+	if Online.active and path.ends_with("title.tscn"):
+		Online.leave_match()
 	Match.reset()
 	Sound.play("fly", -3.0)
 	await _curtain.move(1.0, 1.3, 0.0).finished

@@ -18,8 +18,12 @@ const LIFTED_DROP := 36.0
 const ROW_Y := 890.0 # the middle of the monsters' stands
 const ROW_STEP := 220.0
 const PROMPT_Y := 330.0
-const CANDLE_BASE_Y := 450.0
-const CANDLE_SCALE := 0.5
+const POWER_Y := 420.0
+const CONFIRM_AT := Vector2(960, 505)
+const CONFIRM_SIZE := Vector2(340, 76)
+const POWER_SIZE := 44
+const COUNT_Y := 390.0
+const COUNT_SCALE := 0.8
 const PICK_SECONDS := 30.0
 const CREAM := Color("efe4cc")
 
@@ -34,8 +38,12 @@ var _stack: Array[PlayerCard] = [] # bottom to top, the same as the child order
 var _pieces: Array[MonsterPiece] = [] # in the order of characters.md
 var _prompt: Label
 var _prompt_shown := false
-var _candle: Candle
+var _countdown: Countdown
 var _waiting := false # a player is picking right now
+var _note: TurnNote # online: whose pick it is
+var _power: Label # the selected monster's power, under the prompt
+var _confirm: PaperButton
+var _selected: MonsterPiece
 
 
 func _ready() -> void:
@@ -198,12 +206,13 @@ func _strip_position(turn: int) -> Vector2:
 # to the first.
 func _select_monsters() -> void:
 	Sound.play_music("select")
-	_candle = Candle.new()
-	_candle.visible = false
-	_candle.scale = Vector2.ONE * CANDLE_SCALE
-	_candle.set_meta("rest_scale", _candle.scale)
-	_candle.timed_out.connect(_on_timed_out)
-	add_child(_candle)
+	_countdown = Countdown.new()
+	_countdown.visible = false
+	_countdown.scale = Vector2.ONE * COUNT_SCALE
+	_countdown.set_meta("rest_scale", _countdown.scale)
+	if not Online.active: # online, the host's timer ends a pick; the countdown is only for show
+		_countdown.timed_out.connect(_on_timed_out)
+	add_child(_countdown)
 	_prompt = Label.new()
 	_prompt.size = Vector2(1100, 70)
 	_prompt.position = Vector2(960.0 - _prompt.size.x / 2, PROMPT_Y - _prompt.size.y / 2)
@@ -214,12 +223,39 @@ func _select_monsters() -> void:
 	_prompt.scale = Vector2.ZERO
 	_prompt.set_meta("rest_scale", Vector2.ONE)
 	add_child(_prompt)
+	_power = Label.new()
+	_power.size = Vector2(1300, 64)
+	_power.position = Vector2(960.0 - _power.size.x / 2, POWER_Y - _power.size.y / 2)
+	_power.pivot_offset = _power.size / 2
+	_power.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_power.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	_power.add_theme_font_override("font", preload("res://assets/fonts/display.ttf"))
+	_power.add_theme_font_size_override("font_size", POWER_SIZE)
+	_power.add_theme_color_override("font_outline_color", Color("1a1022"))
+	_power.add_theme_constant_override("outline_size", 8)
+	_power.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_power.modulate.a = 0.0
+	add_child(_power)
+	_confirm = PaperButton.new()
+	_confirm.text = "PICK_CONFIRM"
+	_confirm.size = CONFIRM_SIZE
+	_confirm.position = CONFIRM_AT - CONFIRM_SIZE / 2.0
+	_confirm.disabled = true
+	_confirm.visible = false
+	_confirm.pressed.connect(_on_confirm)
+	add_child(_confirm)
+	if Online.active:
+		_note = TurnNote.new()
+		add_child(_note)
 	await _drop_monsters()
 	for turn in range(Match.players.size() - 1, -1, -1):
 		await _pick_for(Match.players[turn], turn)
 	PaperMotion.pop_out(_prompt)
-	if _candle.visible:
-		PaperMotion.pop_out(_candle)
+	_power.modulate.a = 0.0
+	if _note:
+		_note.clear()
+	if _countdown.visible:
+		PaperMotion.pop_out(_countdown)
 	await get_tree().create_timer(1.2, false).timeout
 
 
@@ -258,18 +294,31 @@ func _pick_for(player: Dictionary, turn: int) -> void:
 		id = free[0]
 	else:
 		_waiting = true
+		var mine := Online.is_mine(player)
 		for piece in _pieces:
-			piece.enabled = not piece.taken
-		_candle.start(PICK_SECONDS)
-		id = await _chosen
+			piece.enabled = mine and not piece.taken
+		_countdown.start(PICK_SECONDS)
+		_begin_choosing(mine)
+		if Online.active:
+			_note.say(tr("ONLINE_PICK_MINE") if mine else tr("ONLINE_PICKING") % player.name, mine)
+			var open := free.duplicate()
+			var answer := await Online.decide("monster", player, PICK_SECONDS,
+					func() -> String: return _selected.id if _selected else open.pick_random(),
+					func(v: Variant) -> bool: return v is String and v in open)
+			id = answer.value
+			if answer.auto:
+				_note.say(tr("POP_AUTO"))
+		else:
+			id = await _chosen
 		_waiting = false
-		_candle.stop()
+		_countdown.stop()
 		for piece in _pieces:
 			piece.enabled = false
+		_end_choosing()
 	await _pick(player, card, turn, id)
 
 
-# A pick, whether it came from a click, the candle running out, or the last monster being left.
+# A pick, whether it came from a click, the countdown running out, or the last monster being left.
 func _pick(player: Dictionary, card: PlayerCard, turn: int, id: String) -> void:
 	var piece := _piece_for(id)
 	Match.pick_monster(player, id)
@@ -295,12 +344,16 @@ func _pick(player: Dictionary, card: PlayerCard, turn: int, id: String) -> void:
 	await get_tree().create_timer(0.6, false).timeout
 
 
-# The prompt swaps with a small flip, and the candle comes along beside it.
-func _show_prompt(player_name: String, with_candle: bool) -> void:
+# The prompt swaps with a small flip, and the countdown comes along beside it.
+func _show_prompt(player_name: String, with_count: bool) -> void:
 	var text := TranslationServer.translate("PICK_PROMPT") % player_name
 	var font := _prompt.get_theme_font("font")
 	var width := font.get_string_size(text, HORIZONTAL_ALIGNMENT_LEFT, -1, 54).x
-	var spot := Vector2(960.0 + width / 2.0 + 90.0, CANDLE_BASE_Y)
+	# The countdown stands clear of both the prompt and the longest power line that can show under it.
+	var font_power := _power.get_theme_font("font")
+	for id in Monsters.IDS:
+		width = maxf(width, font_power.get_string_size(tr(Monsters.power_key(id)), HORIZONTAL_ALIGNMENT_LEFT, -1, POWER_SIZE).x)
+	var spot := Vector2(960.0 + width / 2.0 + 70.0, COUNT_Y)
 	if not _prompt_shown:
 		_prompt_shown = true
 		_prompt.text = text
@@ -308,28 +361,69 @@ func _show_prompt(player_name: String, with_candle: bool) -> void:
 	else:
 		PaperMotion.flip(_prompt, func() -> void: _prompt.text = text)
 	Sound.play("flip", -10.0)
-	if with_candle and not _candle.visible:
-		_candle.position = spot
-		_candle.set_meta("rest_position", spot)
-		_candle.visible = true
-		PaperMotion.pop_in(_candle)
-	elif with_candle:
-		PaperMotion.move_to(_candle, spot)
-	elif _candle.visible:
-		await PaperMotion.pop_out(_candle).finished
-		_candle.visible = false
+	if with_count and not _countdown.visible:
+		_countdown.position = spot
+		_countdown.set_meta("rest_position", spot)
+		_countdown.visible = true
+		PaperMotion.pop_in(_countdown)
+	elif with_count:
+		PaperMotion.move_to(_countdown, spot)
+	elif _countdown.visible:
+		await PaperMotion.pop_out(_countdown).finished
+		_countdown.visible = false
 	await get_tree().create_timer(0.5, false).timeout
 
 
+# A click only selects: the monster lifts and its power is written on the screen. Confirm picks it.
 func _on_monster_clicked(piece: MonsterPiece) -> void:
-	if _waiting and piece.enabled and not piece.taken:
-		_chosen.emit(piece.id)
+	if not (_waiting and piece.enabled and not piece.taken) or piece == _selected:
+		return
+	if _selected:
+		_selected.selected = false
+	_selected = piece
+	piece.selected = true
+	Sound.play("ui_click", -4.0)
+	_power.text = tr(Monsters.power_key(piece.id))
+	_power.add_theme_color_override("font_color", Monsters.color(piece.id).lightened(0.35))
+	PaperMotion.pop_in(_power)
+	_power.modulate.a = 1.0
+	_confirm.disabled = false
 
 
-# The candle ran out: a random free monster is picked, as if the player had clicked it.
+func _on_confirm() -> void:
+	if not (_waiting and _selected):
+		return
+	if Online.active:
+		Online.submit(_selected.id)
+	else:
+		_chosen.emit(_selected.id)
+
+
+# A pick opens: the picker gets a greyed-out Confirm button until a monster is selected.
+func _begin_choosing(mine: bool) -> void:
+	_selected = null
+	_power.text = ""
+	_power.modulate.a = 0.0
+	_confirm.disabled = true
+	if mine:
+		_confirm.visible = true
+		_confirm.enter()
+
+
+# A pick is over: the selection drops back (a taken monster greys out) and Confirm goes away.
+func _end_choosing() -> void:
+	if _selected and not _selected.taken:
+		_selected.selected = false
+	_selected = null
+	_power.modulate.a = 0.0
+	if _confirm.visible:
+		_confirm.leave()
+
+
+# The countdown ran out: the selected monster is picked, or a random free one if none is selected.
 func _on_timed_out() -> void:
 	if _waiting:
-		_chosen.emit(Match.free_monsters().pick_random())
+		_chosen.emit(_selected.id if _selected else Match.free_monsters().pick_random())
 
 
 func _piece_for(id: String) -> MonsterPiece:

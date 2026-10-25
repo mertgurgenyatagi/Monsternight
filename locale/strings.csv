@@ -1,5 +1,6 @@
 keys,en,tr
-TITLE_PLAY,Play,Oyna
+TITLE_ONLINE,Online,Çevrimiçi
+TITLE_SAME,Same screen,Aynı ekran
 TITLE_SETTINGS,Settings,Ayarlar
 TITLE_QUIT,Quit,Çık
 SETTINGS_TITLE,Settings,Ayarlar
@@ -21,6 +22,7 @@ MONSTER_HYDE,Mr. Hyde,Bay Hyde
 MONSTER_CTHULHU,Cthulhu,Cthulhu
 MONSTER_WOLFMAN,The Wolf Man,Kurt Adam
 MONSTER_DORIAN,Dorian Gray,Dorian Gray
+PICK_CONFIRM,Confirm,Onayla
 PICK_PROMPT,"%s, pick your monster","%s, canavarını seç"
 TURN_COUNTER,Turn %d of %d,Tur %d / %d
 STRETCH_CHURCH,Church,Kilise
@@ -32,6 +34,9 @@ CHALLENGE_STAKE,Pick a stake,Bahis seç
 STAKE_GOLD,Take 1 coin,1 altın al
 STAKE_BLOOD,Take 1 blood,1 kan al
 STAKE_SWAP,Swap places,Yer değiştir
+CHALLENGE_WALK,Walk away,Vazgeç
+CHALLENGE_BACK,Back,Geri
+CHALLENGE_NOTHING,Nothing to win here,Burada kazanılacak bir şey yok
 DUEL_VS,VS,VS
 DUEL_CHALLENGER,Challenger,Meydan okuyan
 DUEL_WINS,%s wins!,%s kazandı!
@@ -67,3 +72,103 @@ STAT_QUIET,A very quiet night,Çok sakin bir gece
 CEREMONY_AGAIN,Play again,Tekrar oyna
 SETTINGS_LANGUAGE,Language,Dil
 SETTINGS_IN_MATCH,The night goes on,Gece devam ediyor
+POWER_DRACULA,Steals blood from players nearby,Yakındaki oyuncuların kanını emer
+POWER_MEDUSA,Players nearby miss a turn,Yakındakiler bir tur kaçırır
+POWER_FRANKENSTEIN,Loses nothing as challenger,Meydan okurken hiçbir şey kaybetmez
+POWER_DEATH,Can't be killed,Öldürülemez
+POWER_HYDE,His guess counts as 20% closer in duels he starts,Başlattığı düellolarda tahmini %20 daha yakın sayılır
+POWER_CTHULHU,Starts with 4 blood and 1 coin,4 kan ve 1 altınla başlar
+POWER_WOLFMAN,+1 per die on every roll,Her zarda +1
+POWER_DORIAN,Wins a swap with 1 win,Takası 1 galibiyetle kazanır
+POP_PLUS_TWO,+2,+2
+POP_SAFE,Safe!,Güvende!
+POP_FREE,Free!,Bedava!
+POP_EASY,Easy!,Kolay!
+POP_DRAIN,Drain!,Emiş!
+POP_STONE,Stone!,Taş!
+POP_TURN,turn,tur
+POP_CRACK,Crack!,Çatırt!
+KEYS_MOVE,Move,Hareket
+KEYS_UPDOWN,Move up and down,Yukarı aşağı
+KEYS_RUN,Run,Koş
+KEYS_JUMP,Jump,Zıpla
+KEYS_KICK,Kick,Vur
+KEYS_MASH,Mash to pull,Çekmek için bas bas
+MASH_HINT,Mash %s,%s'ye bas
+MINI_TIE,"A tie! New question","Berabere! Yeni soru"
+LOBBY_TITLE,Play,Oyna
+LOBBY_HOST,Host a room,Oda kur
+LOBBY_JOIN,Join,Katıl
+LOBBY_CODE_HINT,Room code,Oda kodu
+LOBBY_LOCAL,Same screen,Aynı ekran
+LOBBY_BACK,Back,Geri
+LOBBY_COPY,Copy link,Bağlantıyı kopyala
+LOBBY_COPIED,Copied!,Kopyalandı!
+LOBBY_NAME_HINT,Your name,Adın
+LOBBY_READY,Ready,Hazır
+LOBBY_NOT_READY,Not ready,Hazır değil
+LOBBY_START,Start,Başlat
+LOBBY_LEAVE,Leave,Ayrıl
+LOBBY_FULL,This room is full,Oda dolu
+LOBBY_MISSING,No such room,Böyle bir oda yok
+LOBBY_BAD_CODE,Type the 4 letters,4 harfi yaz
+LOBBY_DROPPED,The connection dropped,Bağlantı koptu
+LOBBY_CANT_CONNECT,"Can't reach the room. Check your connection.",Odaya ulaşılamıyor. Bağlantını kontrol et.
+LOBBY_NAME_TAKEN,That name is taken,Bu ad alınmış
+LOBBY_HOST_LEFT,The host left,Oda sahibi ayrıldı
+LOBBY_NEED_PLAYERS,"3 to 8 players, all ready","3 ile 8 oyuncu, hepsi hazır"
+LOBBY_WAITING,Waiting for the host,Oda sahibi bekleniyor
+POP_AUTO,Auto,Otomatik
+ONLINE_YOUR_TURN,Your turn,Senin sıran
+ONLINE_ROLLING,%s is rolling...,%s zar atıyor...
+ONLINE_PATH,%s is choosing a path...,%s yol seçiyor...
+ONLINE_CHALLENGE,%s is challenging...,%s meydan okuyor...
+ONLINE_PICKING,%s is picking a monster...,%s canavar seçiyor...
+ONLINE_ROLL_MINE,Roll the dice!,Zarları at!
+ONLINE_PATH_MINE,Pick a path!,Bir yol seç!
+ONLINE_CHALLENGE_MINE,Pick an opponent!,Bir rakip seç!
+ONLINE_PICK_MINE,Pick a monster!,Bir canavar seç!
+MINI_WATCHING,Watching,İzliyorsun
+MINI_NAMES,%s vs %s,%s ve %s karşı karşıya
+MINI_WAITING,Waiting for %s...,%s bekleniyor...
+PRESENCE_DROPPED,Reconnecting,Bağlanıyor
+PRESENCE_AWAY,Away,Uzakta
+BANNER_DROPPED,%s lost the connection,%s bağlantıyı kaybetti
+BANNER_AWAY,%s is away,%s uzakta
+BANNER_HOST,%s is the host now,%s artık oda sahibi
+CEREMONY_WAIT_HOST,Waiting for the host,Oda sahibi bekleniyor
+SETTINGS_LEAVE,Leave,Ayrıl
+TITLE_REJOIN,Rejoin,Geri dön
+REJOIN_FAILED,Can't rejoin that room,O odaya geri dönülemiyor
+REJOINING,Rejoining...,Geri dönülüyor...
+CATCHING_UP,Catching up...,Yetişiliyor...
+BANNER_BACK,%s is back,%s geri döndü
+BANNER_CLOSED,The room closed,Oda kapandı
+SITD_GROUP_ATLAS,The Atlas,Atlas
+SITD_GROUP_ARCHIVE,The Archive,Arşiv
+SITD_GROUP_LAB,The Lab,Laboratuvar
+SITD_GROUP_STAGE,The Stage,Sahne
+SITD_COVER,"%s: look, the others look away","%s: ekrana sen bak, diğerleri bakmasın"
+SITD_READY,I'm ready,Hazırım
+SITD_LOCK,Lock in,Kilitle
+SITD_LOCKED,Locked,Kilitli
+SITD_NOTHING,No answer,Cevap yok
+SITD_ANSWER,The answer,Cevap
+SITD_OFF_BY,off by %s,%s fark
+SITD_NO_GUESS,no guess,tahmin yok
+SITD_CLOSEST,Closest!,En yakın!
+SITD_YOU,You,Sen
+SITD_WAITING,Waiting for %s,%s bekleniyor
+POWER_LONG_DRACULA,"When he lands, every player nearby with 2 or more blood loses 1 and he gains 1 for each, up to 3.","İndiğinde yakındaki, 2 veya daha fazla kanı olan her oyuncu 1 kan kaybeder ve o her biri için 1 kan kazanır, en fazla 3'e kadar."
+POWER_LONG_MEDUSA,"When she lands, every player nearby turns to stone and misses their next turn. Nobody misses two turns in a row.","İndiğinde yakındaki her oyuncu taşa döner ve bir sonraki turunu kaçırır. Kimse üst üste iki tur kaçırmaz."
+POWER_LONG_FRANKENSTEIN,"Loses nothing when he loses a duel he started, not even blood. The winner gains nothing either.","Başlattığı bir düelloyu kaybedince hiçbir şey kaybetmez, kan bile. Kazanan da bir şey kazanmaz."
+POWER_LONG_DEATH,"His blood never drops below 1. He can't win or lose blood in a Blood duel at 1 blood.","Kanı hiçbir zaman 1'in altına düşmez. 1 kanı varken Kan düellosunda kan kazanıp kaybedemez."
+POWER_LONG_HYDE,"In a duel he starts, his guess counts as 20% closer to the answer.","Başlattığı düellolarda tahmini cevaba %20 daha yakın sayılır."
+POWER_LONG_CTHULHU,"Starts with 4 blood and 1 coin. 4 is his blood cap, and he comes back from death with 4.","4 kan ve 1 altınla başlar. Kan sınırı 4'tür ve ölünce 4 kanla geri döner."
+POWER_LONG_WOLFMAN,"Every roll gets +1 per die, +2 in all, so he moves 4 to 14 spaces.","Her atışa zar başına +1, toplam +2 eklenir; 4 ile 14 kare ilerler."
+POWER_LONG_DORIAN,"In a swap duel he starts, 1 win is enough instead of 2.","Başlattığı takas düellosunda 2 yerine 1 galibiyet yeter."
+CARD_BLOOD,Blood,Kan
+CARD_COINS,Coins,Altın
+CARD_STONE,Misses the next turn,Sonraki turu kaçırır
+CARD_FINISHED,Reached the castle,Kaleye ulaştı
+CARD_ACTIVE,Playing now,Şu an oynuyor

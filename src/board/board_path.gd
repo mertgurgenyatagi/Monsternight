@@ -7,32 +7,31 @@ class_name BoardPath
 const START := "start"
 const FINISH := "finish"
 
-## What each letter of a stretch's kinds stands for.
+## What each letter of a stretch's kinds stands for. The four Shot in the Dark groups are the duel spaces.
 const KINDS := {
 	".": "empty", "c": "coin", "s": "spikes", "t": "thief", "h": "church",
-	"p": "pong", "x": "haxball", "r": "racing", "f": "fps",
+	"a": "atlas", "r": "archive", "l": "lab", "g": "stage",
 }
 
-## The stretches in order. `kinds` is the type sequence, rolled once by `tools/board/roll_board.py`
-## (seed 1031), never written by hand, so the board is the same every match. board.md has the
-## bags it is rolled from. A dot is an empty space, where nothing happens: one of every two
-## spaces is empty. The spaces lie evenly along the lane's curve between `from` and `to`, which
-## are inset from the location's ends.
+## The stretches in order. Their kinds are rolled fresh for every match by `BoardRoller` and handed
+## to `configure`; board.md has the bags. A dot is an empty space, where nothing happens: one of
+## every two spaces is empty. The spaces lie evenly along the lane's curve between `from` and `to`,
+## which are inset from the location's ends.
 const STRETCHES := [
 	{"id": "village", "prefix": "v", "location": "village", "lane": BoardLayout.Lane.MAIN,
-			"kinds": ".hf..x..ssct", "from": BoardLayout.LEAD_IN, "to": 0.0},
+			"from": BoardLayout.LEAD_IN, "to": 0.0},
 	{"id": "church", "prefix": "c", "location": "graveyard", "lane": BoardLayout.Lane.UPPER,
-			"kinds": ".hc.chr.h...", "from": 100.0, "to": 100.0},
+			"from": 100.0, "to": 100.0},
 	{"id": "graveyard", "prefix": "g", "location": "graveyard", "lane": BoardLayout.Lane.LOWER,
-			"kinds": ".s..stt.", "from": 250.0, "to": 250.0},
+			"from": 250.0, "to": 250.0},
 	{"id": "forest", "prefix": "f", "location": "forest", "lane": BoardLayout.Lane.MAIN,
-			"kinds": ".t.st......h", "from": 0.0, "to": 0.0},
+			"from": 0.0, "to": 0.0},
 	{"id": "boardwalk", "prefix": "b", "location": "swamp", "lane": BoardLayout.Lane.UPPER,
-			"kinds": "...x..ptct", "from": 220.0, "to": 220.0},
+			"from": 220.0, "to": 220.0},
 	{"id": "bog", "prefix": "m", "location": "swamp", "lane": BoardLayout.Lane.LOWER,
-			"kinds": ".h...f.hhr", "from": 220.0, "to": 220.0},
+			"from": 220.0, "to": 220.0},
 	{"id": "castle", "prefix": "k", "location": "castle", "lane": BoardLayout.Lane.MAIN,
-			"kinds": "t.cshr...c..h.p", "from": 0.0, "to": BoardLayout.LEAD_OUT},
+			"from": 0.0, "to": BoardLayout.LEAD_OUT},
 ]
 
 ## Where the start token lies, in the village's lead-in.
@@ -40,6 +39,18 @@ const START_X := BoardLayout.LEAD_IN * 0.56
 
 static var _nodes := {}
 static var _stretch_ids := {} # stretch id -> its space ids in order
+static var _kinds := {} # stretch id -> its kinds string, from `configure`
+static var _previous := {} # id -> the ids that lead to it, built with `_nodes`
+
+
+## Sets up the road for a lobby of `size` players with these rolled `kinds` (`BoardRoller.roll`),
+## and drops the old one. Also configures `BoardLayout`, so the two always agree.
+static func configure(size: int, kinds: Dictionary) -> void:
+	BoardLayout.configure(size)
+	_kinds = kinds
+	_nodes.clear()
+	_stretch_ids.clear()
+	_previous.clear()
 
 
 static func node(id: String) -> Dictionary:
@@ -62,6 +73,27 @@ static func next(id: String) -> Array:
 
 static func is_fork(id: String) -> bool:
 	return next(id).size() > 1
+
+
+## The ids that lead to this one: two where the paths join, nothing at the start.
+static func previous(id: String) -> Array:
+	_build()
+	return _previous.get(id, [])
+
+
+## The ids that count as nearby for a landing on `id`: the space itself, one behind and one ahead,
+## following the road (characters.md). At a fork, ahead is the first space of both paths; where the
+## paths join, behind is the last space of both. The start and the finish are safe, so they are never
+## nearby, and nothing is nearby for a landing on them.
+static func nearby(id: String) -> Array:
+	var node_ := node(id)
+	if node_.is_empty() or id == START or id == FINISH:
+		return []
+	var result := [id]
+	for other in previous(id) + next(id):
+		if other != START and other != FINISH and other not in result:
+			result.append(other)
+	return result
 
 
 ## Every node's id, the start first.
@@ -103,16 +135,19 @@ static func report() -> Array[String]:
 static func _build() -> void:
 	if not _nodes.is_empty():
 		return
+	_previous.clear()
+	if _kinds.is_empty():
+		configure(4, BoardRoller.roll(4, RandomNumberGenerator.new()))
 	_add(START, Vector2(START_X, BoardLayout.lane_y(BoardLayout.Lane.MAIN, START_X)),
 			BoardLayout.Lane.MAIN, "start", "village")
 	for each in STRETCHES:
 		var location := BoardLayout.location(each.location)
-		var xs := _spread(each.lane, location.from + each.from, location.to - each.to, each.kinds.length())
+		var xs := _spread(each.lane, location.from + each.from, location.to - each.to, _kinds[each.id].length())
 		var ids := []
 		for i in xs.size():
 			var id: String = "%s%d" % [each.prefix, i + 1]
 			_add(id, Vector2(xs[i], BoardLayout.lane_y(each.lane, xs[i])), each.lane,
-					KINDS[each.kinds[i]], each.id)
+					KINDS[_kinds[each.id][i]], each.id)
 			ids.append(id)
 		_stretch_ids[each.id] = ids
 	var x := BoardLayout.gate_x()
@@ -138,6 +173,8 @@ static func _add(id: String, pos: Vector2, lane: BoardLayout.Lane, kind: String,
 
 static func _link(id: String, following: Array) -> void:
 	_nodes[id].next = following
+	for other in following:
+		_previous[other] = _previous.get(other, []) + [id]
 
 
 # The x of `count` spaces spread evenly along a lane's curve, by its length, not just by x, so a

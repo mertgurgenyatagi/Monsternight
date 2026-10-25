@@ -11,6 +11,7 @@ signal branch_chosen(id: String)
 
 const BALL_TEXTURE := preload("res://assets/art/monsters/crumpled.png")
 const BALL_SIZE := 96.0 # across, on screen
+const STONE := Color(0.5, 0.53, 0.6) # the grey of a stone piece (Medusa)
 
 ## The crumpled paper ball a dead piece turns into. It sits in the piece's origin, which is its
 ## feet, and shows only between `fold(true)` and `fold(false)`.
@@ -63,6 +64,14 @@ func wait() -> void:
 	stop_sway()
 	var period := randf_range(6.5, 8.0)
 	PaperMotion.sway(_body, randf_range(0.8, 1.2), period).custom_step(randf_range(0.0, period))
+
+
+## Turns the body to grey stone (`on`) or back to its own colours, over `duration`. Coming back, it
+## starts from a bright flash. The paper shadow and the stand keep their colour.
+func set_stone(on: bool, duration := 0.4) -> void:
+	if not on:
+		_body.self_modulate = Color(1.6, 1.5, 1.3)
+	create_tween().tween_property(_body, "self_modulate", STONE if on else Color.WHITE, duration)
 
 
 ## Swaps the monster for its paper ball (`on`), or the ball for the monster. The piece must have

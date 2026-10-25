@@ -27,6 +27,7 @@ const TRIM := {
 	"respawn": -2.5,
 	"spikes": 2.0,
 	"stat": -1.0,
+	"stone": 3.0,
 	"timer_low": 1.5,
 	"timer_out": -1.0,
 	"ui_click": 1.0,

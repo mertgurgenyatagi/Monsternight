@@ -1,10 +1,10 @@
 # Asset prompts
 
-A Gemini prompt for each of the 84 images in [assets.md](assets.md), except the paper texture, which Claude made with a script. Fonts and sounds aren't included. Every path below is inside `assets/art/`.
+A Gemini prompt for each of the 98 images in [assets.md](assets.md), except the paper texture, which Claude made with a script. Fonts and sounds aren't included. Every path below is inside `assets/art/`.
 
-**Status:** all 83 images are made, approved by the user, and processed. The raws are in `images_raw/` as `.jfif` files (JPEG), and `tools/images/process_images.py` turns them into `assets/art/`.
+**Status:** the first playable's 83 images are made, approved by the user, and processed. The raws are in `images_raw/` as `.jfif` files (JPEG), and `tools/images/process_images.py` turns them into `assets/art/`. The final game adds 10, marked "New in part 26": the sumo and tug of war icons, and the Minigames section at the end. Microplan 15 added 4 category icons (the section before the itch.io images), made and processed; the Minigames section's images stop being used once part 45 removes the four old games.
 
-The prompts are in the order to make them, not the order of assets.md. Some prompts need an earlier image attached so that a set matches: the icons follow the coin, the monsters follow Dracula, each portrait follows its body, and the scenery strips follow the village's.
+The prompts are in the order to make them, not the order of assets.md. Some prompts need an earlier image attached so that a set matches: the icons follow the coin, the monsters follow Dracula, each portrait follows its body, the scenery strips follow the village's, and the minigame pieces follow the icons.
 
 ## Making an image
 
@@ -44,6 +44,7 @@ Each prompt ends with a one-line note: the background to remove, the final size,
 4. Resize it, keeping its proportions. "600 tall" sets the height. A box size fits the shape inside the box and centers it. The cursor goes in the top-left corner instead.
    - The panel, button, card and curtain fill their box exactly: they're fitted, then their plain middle third is stretched, so the corners keep their shape.
    - Strips are scaled to their width, then cut to their height on the plain side (the earth, water or posts), never on the detailed edge. A strip that comes out too short is extended on its plain side with a mirror image of itself.
+   - A strip with only a width, like the rope, keeps the height it comes out at, because both its edges show.
    - The curtain's top border was drawn much narrower than 1920 × 200, so it's made into a seamless strip that repeats twice across its width, cut on its straight top edge.
 5. If it tiles, fix the seam: cut each end where the two ends match best, then join them along the line where they differ least, so the copies meet without a visible line or a ghosted double.
 6. Save it as a PNG with transparency, under its name and folder in `assets/art/`.
@@ -158,6 +159,38 @@ Match the paper style of the attached coin. Draw a game of Pong as a flat paper-
 Style: flat construction-paper cutout, like the South Park movie's paper animation. Built from a few layered pieces of colored paper with slightly uneven hand-cut edges and a faint paper-fiber texture. Few colors, each one flat. Playful and spooky, colorful rather than bleak, not realistic. No shine, glow, gradients, outlines or 3D effects.
 
 Composition: The two paddles and the ball only, centered, filling most of the frame with a little empty space around them. Nothing else in the frame: no table, net or lines. Plain, flat, pure white background (#FFFFFF), and no white anywhere on the subject. No shadow, no border or outline around the shape, and no text, letters or numbers.
+
+Output: a square image.
+```
+
+**Processing:** remove white, 128 × 128.
+
+### `icons/sumo.png`
+
+New in part 26. **Attach:** your image for `icons/coin.png`.
+
+```text
+Match the paper style of the attached coin. Draw a game of sumo as a flat paper-cutout game icon, seen straight from above: a round ring of warm clay-brown paper, edged all the way around with a thick braided rope of golden-yellow straw, with two round pieces pressed together in its middle, one pumpkin orange and one violet.
+
+Style: flat construction-paper cutout, like the South Park movie's paper animation. Built from a few layered pieces of colored paper with slightly uneven hand-cut edges and a faint paper-fiber texture. Few colors, each one flat. Playful and spooky, colorful rather than bleak, not realistic. No shine, glow, gradients, outlines or 3D effects.
+
+Composition: The ring and the two pieces only, centered, filling most of the frame with a little empty space around them. Perfectly round. Nothing else in the frame. Plain, flat, pure white background (#FFFFFF), and no white anywhere on the subject. No shadow, no border or outline around the shape, and no text, letters or numbers.
+
+Output: a square image.
+```
+
+**Processing:** remove white, 128 × 128.
+
+### `icons/tug_of_war.png`
+
+New in part 26. **Attach:** your image for `icons/coin.png`.
+
+```text
+Match the paper style of the attached coin. Draw a tug-of-war rope as a flat paper-cutout game icon: a short, thick, twisted rope of tan paper, pulled tight and running diagonally from the bottom left to the top right, with frayed ends, and a small bright red ribbon tied in a knot around its middle. The rope's twists are slanted strips of slightly darker tan.
+
+Style: flat construction-paper cutout, like the South Park movie's paper animation. Built from a few layered pieces of colored paper with slightly uneven hand-cut edges and a faint paper-fiber texture. Few colors, each one flat. Playful and spooky, colorful rather than bleak, not realistic. No shine, glow, gradients, outlines or 3D effects.
+
+Composition: One rope only, centered, filling most of the frame with a little empty space around it. Nothing else in the frame: no hands, players or ground. Plain, flat, pure white background (#FFFFFF), and no white anywhere on the subject. No shadow, no border or outline around the shape, and no text, letters or numbers.
 
 Output: a square image.
 ```
@@ -1337,3 +1370,206 @@ Output: a tall image, taller than it is wide.
 ```
 
 **Processing:** remove white, mirror it if it faces left, 250 tall.
+
+## Minigames: `minigames/`
+
+New in part 26: the minigames' pieces, for the painted table of [minigames.md](minigames.md). Make the two icons above first, because the ring follows the sumo icon. The paddle and the boot are grey, so the game can tint them in each monster's color.
+
+### `minigames/pong_table.png`
+
+**Attach:** your image for `icons/coin.png`.
+
+```text
+Match the paper style of the attached coin. Draw a Pong table seen straight from above, like a painted ping-pong table: a wide rectangle of deep bottle-green paper with slightly rounded corners, about twice as wide as it is tall, with a thin pale-yellow strip running all the way around its edge and a dashed pale-yellow line running straight down its middle from top to bottom. The rest of the table is completely plain.
+
+Style: flat construction-paper cutout, like the South Park movie's paper animation. Built from a few layered pieces of colored paper with slightly uneven hand-cut edges and a faint paper-fiber texture. Few colors, each one flat. Playful and spooky, colorful rather than bleak, not realistic. No shine, glow, gradients, outlines or 3D effects.
+
+Composition: One table only, centered, filling most of the frame with a little empty space around it. Nothing else in the frame: no net, paddles, ball, legs or floor. Plain, flat, pure white background (#FFFFFF), and no white anywhere on the subject. No shadow, no border or outline around the shape, and no text, letters or numbers.
+
+Output: a wide image, wider than it is tall.
+```
+
+**Processing:** remove white, 1600 × 900.
+
+### `minigames/paddle.png`
+
+**Attach:** your image for `icons/pong.png`.
+
+```text
+Match the paper style and the paddle shape of the attached icon. Draw a single cardboard paddle seen straight from above: a tall, thin, upright rectangle with rounded ends, about five times as tall as it is wide, cut from light grey paper with a slightly smaller, paler grey layer on top, leaving an even rim all the way around. Neutral greys with no color tint, so the game can color it.
+
+Style: flat construction-paper cutout, like the South Park movie's paper animation. Built from a few layered pieces of colored paper with slightly uneven hand-cut edges and a faint paper-fiber texture. Few colors, each one flat. Playful and spooky, colorful rather than bleak, not realistic. No shine, glow, gradients, outlines or 3D effects.
+
+Composition: One paddle only, standing upright, centered, filling most of the frame's height. Nothing else in the frame: no ball or table. Plain, flat, pure green background (#00FF00), and no green anywhere on the subject. No shadow, no border or outline around the shape, and no text, letters or numbers.
+
+Output: a tall image, taller than it is wide.
+```
+
+**Processing:** remove green, 300 tall.
+
+### `minigames/sumo_ring.png`
+
+**Attach:** your image for `icons/sumo.png`.
+
+```text
+Match the paper style and colors of the ring in the attached icon. Draw a sumo ring seen straight from above: a big round disc of warm clay-brown paper, edged all the way around with a thick braided rope of golden-yellow straw. The clay inside the rope is completely plain, with nothing standing on it.
+
+Style: flat construction-paper cutout, like the South Park movie's paper animation. Built from a few layered pieces of colored paper with slightly uneven hand-cut edges and a faint paper-fiber texture. Few colors, each one flat. Playful and spooky, colorful rather than bleak, not realistic. No shine, glow, gradients, outlines or 3D effects.
+
+Composition: One ring only, centered, filling most of the frame with a little empty space around it. Perfectly round. Nothing else in the frame: no pieces, players or floor. Plain, flat, pure white background (#FFFFFF), and no white anywhere on the subject. No shadow, no border or outline around the shape, and no text, letters or numbers.
+
+Output: a square image.
+```
+
+**Processing:** remove white, 1000 × 1000.
+
+### `minigames/goal.png`
+
+```text
+A football goal seen exactly from the side, as in a side-on 2D football game, with its open mouth facing right: one upright post on the right made of a big cream-colored bone, a crossbar made of another bone running from the top of the post back to the left, and a net of thin dark grey string hanging from the crossbar down to the ground behind the post, in a loose square grid with large open gaps between the strings.
+
+Style: flat construction-paper cutout, like the South Park movie's paper animation. Built from a few layered pieces of colored paper with slightly uneven hand-cut edges and a faint paper-fiber texture. Few colors, each one flat. Playful and spooky, colorful rather than bleak, not realistic. No shine, glow, gradients, outlines or 3D effects.
+
+Composition: One goal only, standing upright, centered, filling most of the frame's height. Nothing else in the frame: no ground, field, ball or players. Plain, flat, pure green background (#00FF00), and no green anywhere on the subject. No shadow, no border or outline around the shape, and no text, letters or numbers.
+
+Output: a tall image, taller than it is wide.
+```
+
+**Processing:** remove green, mirror it if it faces left, 500 tall.
+
+### `minigames/ball.png`
+
+**Attach:** your image for `icons/haxball.png`.
+
+```text
+Match the paper style and colors of the ball in the attached icon. Draw a single football seen straight from the front: a round ball of pumpkin-orange paper with a few dark purple patches, like the panels of a football.
+
+Style: flat construction-paper cutout, like the South Park movie's paper animation. Built from a few layered pieces of colored paper with slightly uneven hand-cut edges and a faint paper-fiber texture. Few colors, each one flat. Playful and spooky, colorful rather than bleak, not realistic. No shine, glow, gradients, outlines or 3D effects.
+
+Composition: One ball only, centered, filling most of the frame with a little empty space around it. Perfectly round. Nothing else in the frame: no goalposts or ground. Plain, flat, pure white background (#FFFFFF), and no white anywhere on the subject. No shadow, no border or outline around the shape, and no text, letters or numbers.
+
+Output: a square image.
+```
+
+**Processing:** remove white, 128 × 128.
+
+### `minigames/boot.png`
+
+```text
+A little boot for a cardboard game piece, seen from the side with its toe pointing right: a short, chunky ankle boot with a big rounded toe and a low flat heel, cut from light grey paper, with a darker grey sole and a few darker grey laces. Neutral greys with no color tint, so the game can color it.
+
+Style: flat construction-paper cutout, like the South Park movie's paper animation. Built from a few layered pieces of colored paper with slightly uneven hand-cut edges and a faint paper-fiber texture. Few colors, each one flat. Playful and spooky, colorful rather than bleak, not realistic. No shine, glow, gradients, outlines or 3D effects.
+
+Composition: One boot only, centered, filling most of the frame with a little empty space around it. Nothing else in the frame: no leg, foot, ball or ground. Plain, flat, pure green background (#00FF00), and no green anywhere on the subject. No shadow, no border or outline around the shape, and no text, letters or numbers.
+
+Output: a wide image, wider than it is tall.
+```
+
+**Processing:** remove green, mirror it if it faces left, 160 × 100.
+
+### `minigames/rope.png`
+
+**Attach:** your image for `icons/tug_of_war.png`.
+
+```text
+Match the paper style and colors of the rope in the attached icon. Draw a long, thick, twisted rope as a horizontal strip seen from the side, lying perfectly straight and level: tan paper, with its twists shown as evenly spaced, slanted strips of slightly darker tan. No knots, ribbon or frayed ends.
+
+Style: flat construction-paper cutout, like the South Park movie's paper animation. Built from a few layered pieces of colored paper with slightly uneven hand-cut edges and a faint paper-fiber texture. Few colors, each one flat. Playful and spooky, colorful rather than bleak, not realistic. No shine, glow, gradients, outlines or 3D effects.
+
+Composition: One continuous rope across the full width of the image, running off the left and right edges, in the middle of the frame and taking up about a tenth of its height, with plain background above and below it. Nothing else in the frame. The left and right ends look alike, with the rope at the same height and thickness on both sides and its twists evenly spaced, so copies can be placed side by side. Plain, flat, pure white background (#FFFFFF), and no white anywhere on the subject. No shadow, no border or outline around the shape, and no text, letters or numbers.
+
+Output: a wide image, wider than it is tall.
+```
+
+**Processing:** remove white, 1024 wide, tiles sideways.
+
+### `minigames/ribbon.png`
+
+**Attach:** your image for `icons/tug_of_war.png`.
+
+```text
+Match the paper style and colors of the ribbon in the attached icon. Draw a bright red cloth ribbon tied in a tight knot, seen from the front: a small round knot in the middle, with two short, wavy tails hanging down from it at slightly different angles, their ends cut in a V. A slightly darker red layer shows the folds of the knot.
+
+Style: flat construction-paper cutout, like the South Park movie's paper animation. Built from a few layered pieces of colored paper with slightly uneven hand-cut edges and a faint paper-fiber texture. Few colors, each one flat. Playful and spooky, colorful rather than bleak, not realistic. No shine, glow, gradients, outlines or 3D effects.
+
+Composition: One ribbon only, centered, filling most of the frame with a little empty space around it. Nothing else in the frame: no rope. Plain, flat, pure white background (#FFFFFF), and no white anywhere on the subject. No shadow, no border or outline around the shape, and no text, letters or numbers.
+
+Output: a square image.
+```
+
+**Processing:** remove white, 128 × 128.
+
+## Category icons: `icons/`
+
+New in Microplan 15 (part 45), for the four Shot in the Dark spaces. They replace the pong, sumo, head soccer and tug of war icons on the board. The category names and their question tags are in [microplan.md](microplan.md#question-data-format).
+
+### `icons/atlas.png`
+
+The Atlas: geography. **Attach:** your image for `icons/coin.png`.
+
+```text
+Match the paper style of the attached coin. Draw a small world globe as a flat paper-cutout game icon, seen from the front: a round ball of teal paper with a few simple, blobby continents cut from green paper, tilted slightly on its axis, held in a curved arm of violet paper that ends in a small round violet base.
+
+Style: flat construction-paper cutout, like the South Park movie's paper animation. Built from a few layered pieces of colored paper with slightly uneven hand-cut edges and a faint paper-fiber texture. Few colors, each one flat. Playful and spooky, colorful rather than bleak, not realistic. No shine, glow, gradients, outlines or 3D effects.
+
+Composition: The globe, its arm and its base only, centered, filling most of the frame with a little empty space around it. Nothing else in the frame. Plain, flat, pure white background (#FFFFFF), and no white anywhere on the subject. No shadow, no border or outline around the shape, and no text, letters or numbers.
+
+Output: a square image.
+```
+
+**Processing:** remove white, 128 × 128.
+
+### `icons/archive.png`
+
+The Archive: history. **Attach:** your image for `icons/coin.png`.
+
+```text
+Match the paper style of the attached coin. Draw an old scroll as a flat paper-cutout game icon, seen from the front: a sheet of warm tan parchment paper, rolled up into a thick curl at the top and at the bottom, with a gap of flat parchment between the two curls, and a round blob of dark red wax stuck on the flat part like a seal, with a short red ribbon hanging from it. The parchment's edges are uneven and a little torn.
+
+Style: flat construction-paper cutout, like the South Park movie's paper animation. Built from a few layered pieces of colored paper with slightly uneven hand-cut edges and a faint paper-fiber texture. Few colors, each one flat. Playful and spooky, colorful rather than bleak, not realistic. No shine, glow, gradients, outlines or 3D effects.
+
+Composition: The scroll and its seal only, centered, filling most of the frame with a little empty space around it. Nothing else in the frame. Plain, flat, pure white background (#FFFFFF), and no white anywhere on the subject. No shadow, no border or outline around the shape, and no text, letters or numbers.
+
+Output: a square image.
+```
+
+**Processing:** remove white, 128 × 128.
+
+### `icons/lab.png`
+
+The Lab: science and nature. **Attach:** your image for `icons/coin.png`.
+
+```text
+Match the paper style of the attached coin. Draw a round-bottomed laboratory flask as a flat paper-cutout game icon, seen from the front: a pale sky-blue flask with a long neck, a small tan cork in its mouth, filled two-thirds full with bright green liquid cut from green paper, with three round bubbles of lighter green rising from the liquid, one of them floating above the flask's neck.
+
+Style: flat construction-paper cutout, like the South Park movie's paper animation. Built from a few layered pieces of colored paper with slightly uneven hand-cut edges and a faint paper-fiber texture. Few colors, each one flat. Playful and spooky, colorful rather than bleak, not realistic. No shine, glow, gradients, outlines or 3D effects.
+
+Composition: The flask, its liquid and its bubbles only, centered, filling most of the frame with a little empty space around it. Nothing else in the frame. Plain, flat, pure white background (#FFFFFF), and no white anywhere on the subject. No shadow, no border or outline around the shape, and no text, letters or numbers.
+
+Output: a square image.
+```
+
+**Processing:** remove white, 128 × 128.
+
+### `icons/stage.png`
+
+The Stage: culture and entertainment. **Attach:** your image for `icons/coin.png`.
+
+```text
+Match the paper style of the attached coin. Draw two theatre masks as a flat paper-cutout game icon, seen from the front, overlapping: a smiling pumpkin-orange mask in front, and a frowning violet mask behind it, tilted a little to the right. Each mask has two almond-shaped eye holes and a simple curved mouth cut out, and a short yellow ribbon trails from the violet one.
+
+Style: flat construction-paper cutout, like the South Park movie's paper animation. Built from a few layered pieces of colored paper with slightly uneven hand-cut edges and a faint paper-fiber texture. Few colors, each one flat. Playful and spooky, colorful rather than bleak, not realistic. No shine, glow, gradients, outlines or 3D effects.
+
+Composition: The two masks only, centered, filling most of the frame with a little empty space around it. Nothing else in the frame. Plain, flat, pure white background (#FFFFFF), and no white anywhere on the subject. No shadow, no border or outline around the shape, and no text, letters or numbers.
+
+Output: a square image.
+```
+
+**Processing:** remove white, 128 × 128.
+
+## itch.io page images
+
+Made by hand for the itch.io page (not part of the game). Not yet made.
+
+- **Cover, 630 x 500:** the title logo, centered, over the purple paper night with the full moon and a few stars, the red curtains at both sides. Flat construction-paper cutout style, as the other images.
+- **Thumbnail, 315 x 250:** the same, with only the logo and the moon, readable when small.

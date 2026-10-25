@@ -14,6 +14,14 @@ func _ready() -> void:
 	button_down.connect(_on_button_down)
 
 
+# A disabled button is greyed out and ignores the mouse's hover.
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_DISABLED:
+		self_modulate = Color(0.55, 0.55, 0.58, 0.8)
+	elif what == NOTIFICATION_ENABLED:
+		self_modulate = Color.WHITE
+
+
 ## Pops in after `delay` seconds, then answers the mouse.
 func enter(delay := 0.0) -> void:
 	await PaperMotion.pop_in(self, delay).finished
@@ -27,6 +35,8 @@ func leave(delay := 0.0) -> Tween:
 
 
 func _on_mouse_entered() -> void:
+	if disabled:
+		return
 	Sound.play("ui_hover")
 	PaperMotion.lift(self, true)
 

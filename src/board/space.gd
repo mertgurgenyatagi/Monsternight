@@ -22,9 +22,9 @@ const TINTS := {
 	"spikes": Color("4f8ad8"),
 	"thief": Color("2fb06f"),
 	"church": Color("fff0c8"),
-	"pong": DUEL, "haxball": DUEL, "racing": DUEL, "fps": DUEL,
+	"atlas": DUEL, "archive": DUEL, "lab": DUEL, "stage": DUEL,
 }
-const DUELS := ["pong", "haxball", "racing", "fps"]
+const DUELS := ["atlas", "archive", "lab", "stage"]
 const JUMP := 22.0 # how high an icon jumps when a piece lands
 const CHURCH_LIGHT := Color(1.0, 0.78, 0.4, 0.5)
 

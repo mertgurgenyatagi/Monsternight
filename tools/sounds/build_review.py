@@ -1,4 +1,4 @@
-# Builds the sound review page from docs/sound_prompts.md and the processed files in assets/audio/.
+﻿# Builds the sound review page from docs/sound_prompts.md and the processed files in assets/audio/.
 # Usage: python build_review.py <repo root> <template> <out.html> [--raw] [<name> ...]
 #   --raw reviews the raw files in audio_raw/ instead, with the thief in two parts. Names limit the page to those sounds.
 # The processed review also decodes each OGG to a WAV in review_wav/ next to the page, for browsers that can't play OGG.
@@ -60,7 +60,7 @@ else:
         assert (ROOT / "assets" / "audio" / f"{s['path']}.ogg").exists(), s["path"]
         s["src"] = f"assets/audio/{s['path']}.ogg"
         s["fallback"] = f"review_wav/{s['path']}.wav"
-    assert len(sounds) == 60, len(sounds)
+    assert len(sounds) == 74, len(sounds)
 
 if WANTED:
     assert WANTED <= {s["name"] for s in sounds}, WANTED - {s["name"] for s in sounds}
