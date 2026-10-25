@@ -194,7 +194,7 @@ func land(player: Dictionary, id: String) -> void:
 		await _power_stone(player)
 	var result := Match.land(player)
 	var kind: String = result.kind
-	var forced := Net.debug_value("mini") # a test can force every landing to be this minigame
+	var forced := Net.debug_value("group") # a test can force every landing to be this question group
 	if forced in Space.DUELS and kind not in Space.DUELS:
 		kind = forced
 	if kind in Space.DUELS:

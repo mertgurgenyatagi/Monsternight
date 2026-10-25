@@ -2,7 +2,7 @@
 
 Run it from the repository root: python tools/release/build_release.py [<out_dir>]
        python tools/release/build_release.py --web [--debug] [<out_dir>]   (the itch.io zip: build/web/ and monsternight_web.zip;
-                    --debug keeps ?bot, ?turns and ?mini for browser tests: build/web_debug/, no zip)
+                    --debug keeps ?bot, ?turns and ?group for browser tests: build/web_debug/, no zip)
        python tools/release/build_release.py --stage <empty_dir>   (only the stripped copy, to test it)
 
 It copies only what the game needs into a scratch folder, drops the MCP's three autoloads and its
@@ -20,7 +20,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 ENGINE = ROOT / "Godot_v4.7.2-stable_win64_console.exe"
-KEEP = ["assets", "src", "locale", "web", "default_bus_layout.tres", "project.godot", "export_presets.cfg"]
+KEEP = ["assets", "src", "locale", "data", "web", "default_bus_layout.tres", "project.godot", "export_presets.cfg"]
 MCP_LINES = re.compile(r'^(MCP\w+="\*res://addons/godot_mcp/.*)\n', re.M)
 ITCH_MAX_FILES = 1000
 ITCH_MAX_FILE = 200 * 1000 * 1000

@@ -18,7 +18,7 @@ The brief settled the host: **itch.io, in the browser**. The user left the rest 
 - **Spike result (part 32):** the protocol is our own JSON over a plain `WebSocketPeer` (relay in `tools/relay/`, see the part 32 notes in [microplan.md](microplan.md)). The web export without threads is about 74 MB (34 MB pck, 39.5 MB wasm), about 44 MB gzipped, and the title is ready in about 5 s on localhost. The Godot web export templates install with only the `web_nothreads` zips.
 - Each player runs their own copy of the game. **The host's game runs the rules** and sends the results to everyone; the others send only their clicks and keys, and draw what the host sends. Anyone can host.
 - The players live in different cities in Turkey.
-- Duels are real-time 1v1 games, and everyone else watches them live. Minigame input goes through one seam, so the local keyboard and the network feed it the same way.
+- **A duel is a few messages, not a stream** (part 46). The host decides the question (`decided`), each duelist's copy sends its number only to the host (`shot_lock`), the host tells everyone who has locked (`shot_status`, never the number) and, when both have or 20 s plus 1 s of grace have passed, sends the answers (`shot_reveal`). Every copy then runs the same reveal and `ShotGame.judge`. Nothing real-time crosses the relay, which is what a free relay can carry. A duelist who is the host knows both numbers on their own computer (accepted: it is not hidden from their own client). A dropped or away duelist has no answer and holds the host up for 3 s at most; if the host leaves, a duelist's copy sends its locked number again to the new host, which restarts the clock with what is left (2 s at least).
 - **Decisions have timers.** When one runs out, a random valid choice is made (see [game_rules.md](game_rules.md#decision-timers)). This also covers disconnected and away players.
 - **Rejoining:** a player who drops or reloads keeps their seat, and gets it back by opening the room's link again. Until then, the timers play for them.
 - **If the host drops,** everyone waits up to a minute for them to come back. If they don't, the match ends.
@@ -32,7 +32,7 @@ The brief settled the host: **itch.io, in the browser**. The user left the rest 
 
 ## Input
 
-The board is all mouse clicks, and minigames use the keyboard. See [screens.md](screens.md#mouse-controls) and [minigames.md](minigames.md#controls).
+The board is all mouse clicks, and Shot in the Dark uses the keyboard or its paper keypad. See [screens.md](screens.md#mouse-controls) and [minigames.md](minigames.md#controls).
 
 ## Assets
 
@@ -47,6 +47,6 @@ Players get the web build (above). The Windows release below stays for testing. 
 ## Online deploy (part 42)
 
 - **Relay:** `tools/relay/deploy.md` has the steps; not deployed yet (not logged in to Cloudflare). Local round trip through the relay: median 5.8 ms, p95 9.1 ms (200 samples); the real one is not measured.
-- **Free plan (estimate, unmeasured):** a night of 8 players for 2 hours sends about 15 messages a second from the host during minigames, about 110,000 messages. Incoming WebSocket messages count 20 to 1 as requests, so about 5,500 requests against the 100,000 a day. Rooms hibernate when quiet. Well inside the plan.
-- **Web build:** `python tools/release/build_release.py --web` (zip for itch.io), `--web --debug` for browser tests. `web/shell.html` is the loading page. Release builds ignore `?bot`, `?turns` and `?mini`.
+- **Free plan (estimate, unmeasured):** a night of 8 players for 2 hours sends about 3 messages per duel, a few thousand for the night. Incoming WebSocket messages count 20 to 1 as requests, so well under 1,000 requests against the 100,000 a day. Rooms hibernate when quiet. Well inside the plan.
+- **Web build:** `python tools/release/build_release.py --web` (zip for itch.io), `--web --debug` for browser tests. `web/shell.html` is the loading page. Release builds ignore `?bot`, `?turns` and `?group` (`?group=atlas|archive|lab|stage` makes every landing a duel of that category). The staging copy keeps `data/`, where the questions are.
 - **Links on itch:** the iframe's address is not shareable, so `Net.PAGE_URL` is the page address Copy link uses. Whether itch forwards `?room=` to the iframe is untested; if not, a joiner types the code.

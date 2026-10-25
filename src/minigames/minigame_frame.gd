@@ -6,7 +6,7 @@ extends CanvasLayer
 ## the card; a draw asks another question (three draws in a row lose it for the challenger). `play`
 ## gives `{winner, loser, rounds}` for `Board.duel_end` to apply, `rounds` being who took each round
 ## (true for the challenger). It changes nothing on the board, and it covers every click while it is up.
-## Online, until the questions go over the network, the host's fair coin decides each round.
+## Online, the host picks each round's question and `Online.shot` carries the secret answers.
 
 const CENTER := Vector2(960, 470)
 const STRIP_SIZE := Vector2(740, 250)
@@ -86,19 +86,24 @@ func play(challenger: Dictionary, opponent: Dictionary, stake: String, group: St
 	var draws := 0
 	while settled(rounds, needed) < 0:
 		_faces_in(players)
+		var asked: Dictionary
+		if Online.active:
+			# The host picks the question and every copy shows it in its own language.
+			var picked := await Online.decide("question", challenger, 0.0,
+					func() -> int: return int(Questions.pick(group, Match.asked, _asked_rng).id))
+			asked = Questions.by_id(int(picked.value))
+			Match.asked[int(asked.id)] = true
+		else:
+			asked = Questions.pick(group, Match.asked, _asked_rng)
+		var game := ShotGame.new()
+		game.setup(challenger, opponent, asked, group, hyde)
+		_front.add_child(game)
 		var side: int
 		if Online.active:
-			# Until part 46 puts the questions on the wire, the host flips a fair coin for each round.
-			var fate := await Online.decide("minigame", challenger, 0.0,
-					func() -> int: return randi() % 2)
-			await _plain_banner("MINI_FATE")
-			side = int(fate.value)
+			side = await game.run_online()
 		else:
-			var game := ShotGame.new()
-			game.setup(challenger, opponent, Questions.pick(group, Match.asked, _asked_rng), group, hyde)
-			_front.add_child(game)
 			side = await game.run()
-			game.queue_free()
+		game.queue_free()
 		if side == ShotGame.DRAW:
 			draws += 1
 			if draws >= MAX_DRAWS:

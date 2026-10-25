@@ -8,4 +8,4 @@
 - **Tags:** party game, local multiplayer, online multiplayer, Halloween, paper, board game
 - **Controls:** left player WASD + Q E R, right player arrows + K L ;. The board is played with the mouse.
 - **Cover (630 x 500) and thumbnail (315 x 250):** the user makes them by hand, prompts in `docs/asset_prompts.md`.
-- Test builds: `--web --debug` keeps `?bot`, `?turns`, `?mini` (release builds ignore them).
+- Test builds: `--web --debug` keeps `?bot`, `?turns`, `?group` (release builds ignore them).
