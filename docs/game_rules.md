@@ -10,12 +10,12 @@ How a match of Monsternight is played. The goal is to keep the rules relatively 
 
 | Players | Turns | Board length (the average of the shortest and longest way) |
 |---|---|---|
-| 3 | 20 | 65 |
-| 4 | 17 | 60 |
-| 5 | 15 | 55 |
-| 6 | 14 | 51 |
-| 7 | 13 | 48 |
-| 8 | 12 | 46 |
+| 3 | 11 | 65 |
+| 4 | 10 | 60 |
+| 5 | 9 | 55 |
+| 6 | 8 | 51 |
+| 7 | 8 | 48 |
+| 8 | 7 | 46 |
 
 - The match ends after the last turn, or **right away once all players but one have reached the end**.
 - The board's length is fixed for each lobby size, and its spaces are shuffled fresh every match. See [board.md](board.md).
@@ -31,7 +31,7 @@ How a match of Monsternight is played. The goal is to keep the rules relatively 
 
 ## Moving
 
-- Roll **one six-sided die**. The Wolf Man adds 1.
+- Roll **two six-sided dice** and move the sum (2 to 12). The Wolf Man adds 1 per die (+2). Part 51 tunes the turns.
 - A space only does something if you **land** on it. Passing over a space does nothing.
 - Several players can stand on the same space. Nothing happens when they do.
 - Any roll that reaches the end counts. You don't need the exact number.
@@ -88,7 +88,7 @@ Every decision has a time limit. When it runs out, a random valid choice is made
 |---|---|
 | Roll the die | 5 s |
 | Pick a path at a split | 10 s |
-| Pick an opponent and a stake, or walk away | 20 s for both together |
+| Pick an opponent and a stake (or Back, or walk away) | 20 s for all of it together |
 | Pick a monster | 30 s |
 
 ## Cruelty

@@ -4,7 +4,7 @@ extends CanvasLayer
 ## a 3, 2, 1, and a coin flip that decides the winner, who is announced. It changes nothing on the
 ## board; `play` gives `{winner, loser, rounds}` (player dictionaries) for `Board.duel_end` to apply. The
 ## flips are `_decide`, and a minigame will replace it as a whole. A swap is rigged: the challenger must
-## win 3 flips before the opponent wins 1, and a tally under the VS shows the rounds.
+## win 2 flips before the opponent wins 1, and a tally under the VS shows the rounds.
 
 const CENTER := Vector2(960, 470)
 const CARD_SCALE := 0.9 # card.png is 400 x 560
@@ -17,7 +17,7 @@ const ICONS := {
 	"blood": preload("res://assets/art/icons/blood.png"),
 	"swap": preload("res://assets/art/icons/swap.png"),
 }
-const SWAP_ROUNDS := 3 # the flips the challenger must win in a row to win a swap
+const SWAP_ROUNDS := 2 # the flips the challenger must win in a row to win a swap
 const TALLY_AT := Vector2(960, 745)
 const COIN_SIZE := 150.0
 const COIN_REST_Y := 600.0

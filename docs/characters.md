@@ -10,8 +10,8 @@ There are 8 playable classic horror monsters. Each one has its own color, which 
 | Death (Grim Reaper) | Violet | Can't be killed |
 | Mr. Hyde | Orange | His guess counts as 20% closer in duels he starts |
 | Cthulhu | Teal | Starts with 4 blood and 1 coin, and 4 is the cap |
-| The Wolf Man | Blue | +1 to every roll |
-| Dorian Gray | Pink | Wins a swap duel with 1 win instead of 3 |
+| The Wolf Man | Blue | +1 per die on every roll |
+| Dorian Gray | Pink | Wins a swap duel with 1 win instead of 2 |
 
 ## Selection
 
@@ -47,13 +47,13 @@ Dracula's and Medusa's powers reach the space they land on, one space behind it,
 ### Frankenstein's Monster
 
 - Losing a duel as the challenger costs nothing: no coin, no blood, not even the last drop in a death match.
-- The stake rules don't change, and a lost duel still counts as a loss in the fun stats.
+- A lost duel as the challenger still counts as a loss in the fun stats. When he loses, the winner gains nothing either (stakes are zero-sum, see [minigames.md](minigames.md#stakes)). A blood or gold duel he starts only needs to be possible for him to win.
 - As the one challenged, Frankenstein's Monster wins and loses like anyone.
 
 ### Death
 
 - Death's blood never drops below 1. Spikes at 1 blood do nothing.
-- A blood stake is greyed out whenever Death has 1 blood, as the challenger or the one challenged.
+- A blood stake is greyed out whenever Death has 1 blood, as the challenger or the one challenged: Death at 1 blood is neither payer nor taker.
 - Death earns and loses gold like everyone else (the brief).
 
 ### Mr. Hyde
@@ -68,15 +68,15 @@ Only when he is the challenger (Q16, changed in Microplan 15): in Shot in the Da
 
 ### The Wolf Man
 
-- Every roll gets +1, so he moves 2 to 7. The die shows its face, and a "+1" pops beside it.
+- Every roll gets +1 per die (+2), so he moves 4 to 14. The dice show their faces, and a "+2" pops beside them.
 
 ### Dorian Gray
 
-- In a swap duel Dorian Gray starts, 1 win is enough instead of 3. Challenged to a swap, the challenger still needs 3.
+- In a swap duel Dorian Gray starts, 1 win is enough instead of 2. Challenged to a swap, the challenger still needs 2.
 
 ## Learning the powers
 
 - In monster select, every monster's name always shows under its stand. Clicking a monster selects it (it lifts) and writes its power on the screen in one short line (the table's wording); a Confirm button, greyed out until something is selected, picks it. When the candle runs out the selected monster is picked, or a random one if none is.
-- When a power fires on the board, a small word pops over the piece with a sound: "+1" by the Wolf Man's die, "Stone!" over Medusa's victims, and so on. Dracula's drain and Medusa's gaze also shoot a paper wedge in the monster's color from them to each victim.
+- When a power fires on the board, a small word pops over the piece with a sound: "+2" by the Wolf Man's dice, "Stone!" over Medusa's victims, and so on. Dracula's drain and Medusa's gaze also shoot a paper wedge in the monster's color from them to each victim.
 - Every gain or loss of blood or coins, from a space, a duel or a power, shows as a tag over the piece, like "-1" with a blood drop, red for a loss and green for a gain. Medusa's victims get "-1 turn".
 - There is no list of the powers anywhere else.
