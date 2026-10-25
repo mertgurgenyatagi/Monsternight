@@ -15,7 +15,7 @@ The user's three rules for everything that gets built (Q15). The bold lines are 
 - **Not:** pixel art, 3D (like Coraline), silhouette shadow puppets (like Lotte Reiniger), Tearaway, or Hollow Knight.
 - **Mood:** hellishly colorful and animated, never bleak. The horror is played for fun.
 - The board should be full of lively Halloween animation: drifting fog, flapping bats, flickering candles and torches.
-- **Minigames keep the paper look**, like Pong played with cardboard paddles and a paper ball on a painted table (Q12).
+- **Shot in the Dark keeps the paper look**: a paper card, paper number boxes and a paper keypad.
 
 ## Frame rate
 
@@ -48,7 +48,7 @@ The user picked the instruments and left the rest to Claude (Q13).
 - **One main melody,** the Monsternight theme, runs through all the music. Every track is a version of it.
 - **The board music follows the leader.** Each location has its own version of the theme, and the one that plays is wherever the leading player is, so the music moves from the village to the castle as the race goes on. Following the camera would switch tracks every turn. The board tracks share one tempo and key, so they crossfade cleanly.
 - **Ambience follows the camera:** wind, crows, owls, frogs, and thunder, quietly under the music.
-- **Minigames have no music** (Q17), only their own sounds.
+- Shot in the Dark has its own sounds; its music loop (`shot`) comes with the user's music files.
 - **Every action has a sound:** the die, each hop, flips, each kind of space, duels, the timer countdown.
 - **Each monster has three sounds:** when it's picked, when it wins, and when it loses. They're laughs, howls, and hisses with no words, so nothing needs translating.
 - No narrator.

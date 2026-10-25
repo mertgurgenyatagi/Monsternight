@@ -31,7 +31,7 @@ How a match of Monsternight is played. The goal is to keep the rules relatively 
 
 ## Moving
 
-- Roll **two six-sided dice** and move the sum (2 to 12). The Wolf Man adds 1 per die (+2). Part 51 tunes the turns.
+- Roll **two six-sided dice** and move the sum (2 to 12). The Wolf Man adds 1 per die (+2)..
 - A space only does something if you **land** on it. Passing over a space does nothing.
 - Several players can stand on the same space. Nothing happens when they do.
 - Any roll that reaches the end counts. You don't need the exact number.
