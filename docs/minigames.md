@@ -6,7 +6,7 @@ There is one minigame: **Shot in the Dark** (Microplan 15, 2026-10-25). It repla
 
 A question with a number for an answer ("How tall is the Eiffel Tower, in meters?"). Both players type a guess in secret and lock it in, the answer is revealed, and **the closest guess wins**.
 
-- Each side has **20 seconds**, or until it locks in. A guess typed when the time runs out is locked as it is; no guess loses to any guess.
+- Each side has **30 seconds**, or until it locks in. A guess typed when the time runs out is locked as it is; no guess loses to any guess.
 - **Typing:** digits, a minus (first only), one decimal mark (`.` or `,` both work), Backspace, Enter to lock. Up to 9 digits. A paper keypad does the same with the mouse. Numbers are shown with a thin space between thousands, and the decimal comma in Turkish.
 - **The score:** the smaller `|guess - answer|` wins. **Mr. Hyde, when he starts the duel, has his distance multiplied by 0.8** ("20% closer"). An exact tie, or two blanks, is a draw.
 - **A draw** asks a new question. A swap duel's round only counts when someone wins. After **3 draws in a row** the challenger loses, so a duel cannot hang.
@@ -33,12 +33,12 @@ Every minigame is a **1v1 duel**.
 
 1. A player lands on a minigame space.
 2. They challenge **any** other player who hasn't finished. The challenged player can't refuse.
-3. They choose the stake (below). Picking the opponent and the stake share one 20-second timer.
+3. They choose the stake (below), or press **Back** under the cards to pick another opponent. Picking the opponent and the stake share one 20-second timer, which keeps running through a Back.
 4. The two players play Shot in the Dark. Everyone else watches. There is no text chat.
 
 If there's nobody to duel, the space acts as a coin space.
 
-**Walking away** (the brief): when swap is the only valid stake against every opponent, the challenger may walk away instead. A "Walk away" button sits beside the stake cards, and the space then does nothing, like an empty one (Claude's call, Q18).
+**Walking away** (the brief): when swap is the only valid stake against every opponent (no one offers gold or blood), the challenger may walk away instead. A "Walk away" button sits beside the stake cards and "Back", and the space then does nothing, like an empty one (Claude's call, Q18).
 
 How a duel opens and closes is in [screens.md](screens.md#duels).
 
@@ -46,18 +46,20 @@ How a duel opens and closes is in [screens.md](screens.md#duels).
 
 | Stake | If the challenger wins | If the challenger loses |
 |---|---|---|
-| Gold | Takes 1 coin from the opponent | Pays 1 coin to the opponent |
-| Blood | Opponent loses 1 blood | Challenger loses 1 blood |
+| Gold | Takes 1 coin from the opponent | Pays 1 coin to the opponent (both need a coin to start) |
+| Blood | Opponent loses 1 blood, the challenger gains 1 | Challenger loses 1 blood, the opponent gains 1 |
 | Swap | Challenger and opponent swap places | Nothing happens |
 
-(Part 47 changes the stakes to zero-sum, and the swap handicap to 2 wins before 1 loss.)
+Every stake is **zero-sum**: what one side loses, the other gains. Nothing is created or destroyed. The swap handicap is 2 wins before 1 loss.
 
 - **Invalid stakes are greyed out** and can't be picked. Every rule applies to both players, the challenger included:
   - **Gold** needs both players to have at least 1 coin.
+  - **Blood** needs both players **below their most blood** (3, or 4 for Cthulhu), because the winner gains the blood the loser loses. Blood duels will be rare, since blood sits at its cap most of the time; the church matters more.
   - **Blood** against a player with 1 blood is a **death match**. It's only allowed if that player has **0 coins**. A challenger with 1 blood counts too.
   - **Blood** is never allowed while Death has 1 blood, on either side (see [characters.md](characters.md#death)).
-  - **Swap** is always allowed.
-- **Swap handicap:** in a swap duel, the challenger has to win **3 rounds** before the opponent wins **1**. Dorian Gray needs only 1.
+  - **Swap** needs two different spaces.
+  - Frankenstein's Monster as the challenger only needs what he needs to win, since he loses nothing.
+- **Swap handicap:** in a swap duel, the challenger has to win **2 rounds** before the opponent wins **1**. Dorian Gray needs only 1.
 - Frankenstein's Monster loses nothing as the challenger, and Mr. Hyde's guess counts as closer when he challenges. See [characters.md](characters.md#powers).
 - Whoever loses their last drop of blood in a duel dies (see [game_rules.md](game_rules.md#blood-health)).
 - Every duel win counts toward the "most minigames won" trophy, including swap duels.

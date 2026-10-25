@@ -11,7 +11,7 @@ extends Node2D
 ## back both answers for the reveal, which every copy runs and judges alike.
 
 const DRAW := -1
-const SECONDS := 20.0
+const SECONDS := 30.0
 const MAX_DIGITS := 9
 const HYDE_FACTOR := 0.8 # Mr. Hyde as the challenger: his distance counts this much
 const LOW_SECONDS := 5
@@ -56,7 +56,7 @@ var _keys: Array[PaperButton] = []
 var _stamps: Array[Label] = [null, null]
 var _online := false
 var _mine: Array[bool] = [true, true] # the sides this computer types for
-var _clock_start := -1.0 # online: when the 20 seconds began, in ticks (negative while off)
+var _clock_start := -1.0 # online: when the 30 seconds began, in ticks (negative while off)
 var _last_shown := -1
 var _waiting: Label
 var _result: Dictionary = {} # online: both answers, once the host has revealed them

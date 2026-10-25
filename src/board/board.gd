@@ -35,7 +35,7 @@ const CROWD_BACK := 34.0 # how far each row further back stands higher
 const TURN_SECONDS := 5.0 # the candle for a roll
 const DIE_RISE := 300.0 # from the piece's feet to the die's middle, over its head
 const CANDLE_SCALE := 0.5 / BoardCamera.ZOOM
-const CANDLE_SIDE := Vector2(126, 70) # from the die's middle to the candle's base
+const CANDLE_SIDE := Vector2(226, 70) # from the die's middle to the candle's base
 const SHOW_BEAT := 0.25 # the rolled number stays on show this long
 const TURN_BEAT := 0.15 # after a piece lands, before the camera glides on
 const COIN_ICON := preload("res://assets/art/icons/coin_rim.png")
@@ -47,7 +47,7 @@ const BLOOD_HUD := 28.0
 const POP_SCALE := 1.0 / BoardCamera.ZOOM # a pop in the world keeps the size it has on screen
 const BEAM_HEIGHT := 110.0 # from a piece's feet to the middle of its body, where a beam starts
 const POP_ABOVE := 190.0 # from a piece's feet to a pop over it
-const DIE_POP := Vector2(170, -60) # from the die's middle to the "+1" beside it
+const DIE_POP := Vector2(290, -60) # from the die's middle to the "+1" beside it
 const BONUS_BEAT := 0.6 # the "+1" stays on show this long before the die leaves
 const BALL_SCALE := 0.4 # a crumpled piece, against its full size
 const BALL_RISE := 150.0 # the ball lifts this far before it flies
@@ -90,7 +90,7 @@ var _front: Node2D # over the pieces: an icon that springs up stands here, so no
 var _settling: Tween # the camera's glide onto a piece that has just stopped
 var _last_turn_shown := false
 var _note: TurnNote # online: whose move it is
-var _rolled := 0 # online: the face the host rolled for this turn
+var _rolled: Array = [] # online: the two faces the host rolled for this turn
 var _track_name := "" # the board music now chosen, by where the leader is
 
 
@@ -346,8 +346,12 @@ func duel_end(winner: Dictionary, loser: Dictionary, challenger: Dictionary, sta
 		await _duel_coin(winner, loser)
 		_delta(winner, result.coins, "coins")
 	if result.blood != 0:
-		_hud.show_blood(loser)
 		_delta(loser, -result.blood, "blood")
+		if result.gain != 0: # the blood drop flies from the loser's portrait to the winner's
+			await _duel_blood(winner, loser)
+			_delta(winner, result.gain, "blood")
+		else:
+			_hud.show_blood(loser)
 		await get_tree().create_timer(0.9, false).timeout
 	if result.died:
 		if not is_same(loser, challenger):
@@ -399,20 +403,22 @@ func _play_turns() -> void:
 		_say("ONLINE_ROLLING", "ONLINE_ROLL_MINE", player)
 		var by_click := await _offer_die(piece)
 		_say_clear()
-		var face := Match.roll(_rolled)
+		var dice := Match.roll(_rolled)
 		var bonus := Match.roll_bonus(player)
 		if not by_click:
 			await _die.nudge().finished
 			if Online.active:
 				PowerPop.show_over(_front, _die.position + DIE_POP * POP_SCALE, tr("POP_AUTO"), POP_SCALE)
 		_lift_candle()
-		await _die.tumble(face)
+		await _die.tumble(dice)
+		if dice[0] == dice[1]: # a double: the piece hops once more
+			PaperMotion.hop(piece, 40.0)
 		await get_tree().create_timer(SHOW_BEAT, false).timeout
-		if bonus > 0: # the die keeps its real face; the bonus pops beside it
-			PowerPop.show_over(_front, _die.position + DIE_POP * POP_SCALE, tr("POP_PLUS_ONE"), POP_SCALE)
+		if bonus > 0: # the dice keep their real faces; the bonus pops beside them
+			PowerPop.show_over(_front, _die.position + DIE_POP * POP_SCALE, tr("POP_PLUS_TWO"), POP_SCALE)
 			await get_tree().create_timer(BONUS_BEAT, false).timeout
 		_die.leave()
-		await walk(player, face + bonus)
+		await walk(player, dice[0] + dice[1] + bonus)
 		if player.space == BoardPath.FINISH:
 			await finish(player)
 			if Match.over():
@@ -713,6 +719,17 @@ func _duel_coin(winner: Dictionary, loser: Dictionary) -> void:
 	await get_tree().create_timer(0.5, false).timeout
 
 
+func _duel_blood(winner: Dictionary, loser: Dictionary) -> void:
+	var drop := _flyer(BLOOD_ICON, _hud.anchor(loser, "blood"), BLOOD_HUD)
+	Sound.play("fly")
+	_hud.show_blood(loser) # the count ticks down as the drop leaves
+	await PaperMotion.fly_to(drop, _hud.anchor(winner, "blood"),
+			Vector2.ONE * BLOOD_HUD / BLOOD_ICON.get_width(), 0.7, 0.0, 110.0).finished
+	drop.queue_free()
+	_hud.show_blood(winner)
+	await get_tree().create_timer(0.3, false).timeout
+
+
 # The two pieces lift, swap places along crossing arcs and set down. The camera rides with the
 # challenger, so the other piece crosses the screen on the way. The crowds are re-run, and nobody
 # gets a space's effect from it. `Match.duel_result` has already swapped the spaces.
@@ -963,7 +980,7 @@ func _offer_die(piece: BoardPiece) -> bool:
 	PaperMotion.pop_in(_candle)
 	_candle.start(TURN_SECONDS)
 	if Online.active:
-		# The host rolls: the click only asks, and the face comes back with everyone's answer.
+		# The host rolls: the click only asks, and the faces come back with everyone's answer.
 		var player: Dictionary = piece.player
 		var on_ask := Online.submit.bind({})
 		if Online.is_mine(player):
@@ -971,12 +988,12 @@ func _offer_die(piece: BoardPiece) -> bool:
 		var answer := await Online.decide("roll", player, TURN_SECONDS,
 				func() -> Dictionary: return {},
 				func(_v: Variant) -> bool: return true,
-				func(_v: Variant) -> Dictionary: return {"face": randi_range(1, 6)})
+				func(_v: Variant) -> Dictionary: return {"dice": [randi_range(1, 6), randi_range(1, 6)]})
 		if Online.is_mine(player):
 			_die.clicked.disconnect(on_ask)
-		_rolled = int(answer.value.face)
+		_rolled = answer.value.dice
 		return not answer.auto
-	_rolled = 0
+	_rolled = []
 	var on_click := _decided.emit.bind(true)
 	var on_out := _decided.emit.bind(false)
 	_die.clicked.connect(on_click)

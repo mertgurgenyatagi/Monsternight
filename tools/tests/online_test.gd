@@ -56,8 +56,8 @@ func _run() -> void:
 	_check(r.auto, "a value the rules refuse is ignored")
 	# Zero seconds is immediate, and settle fills the value.
 	r = await online.decide("roll", ann, 0.0, func() -> Dictionary: return {},
-			Callable(), func(_v: Variant) -> Dictionary: return {"face": 4})
-	_check(r.auto and r.value.face == 4, "zero seconds picks at once; settle adds the face")
+			Callable(), func(_v: Variant) -> Dictionary: return {"dice": [4, 2]})
+	_check(r.auto and r.value.dice == [4, 2], "zero seconds picks at once; settle adds the face")
 	# An answer that came before the host got there waits for it.
 	online._on_received(2, "submit", {"seq": 7, "kind": "pick", "value": "early"})
 	r = await online.decide("pick", ann, 0.0, func() -> String: return "auto")  # seq 7, but Ann's
@@ -67,18 +67,18 @@ func _run() -> void:
 	net.is_host = false
 	net.my_id = 3
 	online.begin(1)
-	online._on_received(1, "decided", {"seq": 1, "kind": "roll", "value": {"face": 6}, "auto": false})
+	online._on_received(1, "decided", {"seq": 1, "kind": "roll", "value": {"dice": [6, 1]}, "auto": false})
 	r = await online.decide("roll", ann, 5.0, func() -> Dictionary: return {})
-	_check(r.value.face == 6 and not r.auto, "a result that arrived early is used")
+	_check(int(r.value.dice[0]) == 6 and not r.auto, "a result that arrived early is used")
 	_later(func() -> void: online._on_received(1, "decided", {"seq": 2, "kind": "pick", "value": "m", "auto": true}), 0.05)
 	r = await online.decide("pick", ann, 5.0, func() -> String: return "no")
 	_check(r.value == "m" and r.auto, "the client waits for the host's result")
 	_check(not online.is_mine(ann) and online.is_mine({"name": "Cy"}), "is_mine follows the seat's peer id")
 	_check(not online.can_submit(), "no answer is open between decisions")
 	# JSON round trip of a result.
-	var text: String = net.encode(0, "decided", {"seq": 9, "kind": "roll", "value": {"face": 3}, "auto": true})
+	var text: String = net.encode(0, "decided", {"seq": 9, "kind": "roll", "value": {"dice": [3, 5]}, "auto": true})
 	var back: Dictionary = net.decode(JSON.stringify({"t": "msg", "from": 1, "data": JSON.parse_string(text).data}))
-	_check(back.kind == "decided" and int(back.payload.value.face) == 3, "a result survives the JSON trip")
+	_check(back.kind == "decided" and int(back.payload.value.dice[1]) == 5, "a result survives the JSON trip")
 
 
 	# --- the host leaves ---
@@ -172,7 +172,7 @@ func _run() -> void:
 	net.my_id = 1
 	online.begin(1, 77)
 	await online.decide("roll", ann, 0.0, func() -> Dictionary: return {},
-			Callable(), func(_v: Variant) -> Dictionary: return {"face": 5})
+			Callable(), func(_v: Variant) -> Dictionary: return {"dice": [5, 5]})
 	await online.decide("branch", bob, 0.0, func() -> int: return 1)
 	_later(func() -> void:
 		online.shot_lock(0, 7.0)
@@ -193,7 +193,7 @@ func _run() -> void:
 	online.catching_up = true
 	t = Time.get_ticks_msec()
 	r = await online.decide("roll", ann, 20.0, func() -> Dictionary: return {})
-	_check(int(r.value.face) == 5 and r.auto and Time.get_ticks_msec() - t < 200, "a logged decision is answered at once")
+	_check(int(r.value.dice[0]) == 5 and r.auto and Time.get_ticks_msec() - t < 200, "a logged decision is answered at once")
 	await online.decide("branch", bob, 20.0, func() -> int: return 0)
 	r = await online.shot(sides, 20.0)
 	_check(r.a == 7.0 and r.b == 3.0 and Time.get_ticks_msec() - t < 300, "a logged shot comes back at once")
