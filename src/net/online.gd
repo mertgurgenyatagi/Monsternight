@@ -1,7 +1,7 @@
 extends Node
 ## Online play's decisions. Every copy of a started match runs the same board code on the same
 ## `Match`, so the only things that must come from one place are the choices: the die's face, a
-## path, an opponent and a stake, a monster, a minigame's winner. The host is that place. A decision
+## path, an opponent and a stake, a monster, a question. The host is that place. A decision
 ## is one `decide` call, made at the same point of the code on every copy and numbered by a counter
 ## that therefore agrees: the player it belongs to may `submit` a value (their copy sends it to the
 ## host), the host checks it against the rules, and its timer picks a random valid choice when the
@@ -23,6 +23,9 @@ signal rejoined(name: String)
 signal room_lost
 ## A rejoin did not work: `reason` is "missing", "full", "closed" or "held".
 signal rejoin_failed(reason: String)
+## The host says the duelist on `side` of the Shot in the Dark of decision `seq` has locked in
+## (never the number).
+signal shot_status(seq: int, side: int)
 
 ## Extra seconds the host waits for a remote player's answer, for the trip over the relay.
 const GRACE := 1.0
@@ -34,6 +37,9 @@ const SHORT_SECONDS := {"roll": 1.0, "branch": 2.0, "opponent": 3.0, "stake": 3.
 ## The least a new host gives the decision it takes over, so the answer the old host's copy had
 ## already sent can reach it.
 const TAKEOVER_MIN := 2.0
+## Seconds the host still waits for a Shot in the Dark answer from a duelist who is dropped or away,
+## once the present duelist has locked.
+const SHOT_DROP_GRACE := 3.0
 ## How fast a rejoining copy replays the decisions it missed (the engine's time scale).
 const CATCH_UP_SPEED := 12.0
 ## A rejoin asks again this often, this many times, before giving up.
@@ -54,9 +60,12 @@ var _open := {} # the decision this copy is on: {seq, kind, name, sent, value, s
 var _dropped := {} # player name -> true, once their connection left
 var _autos := {} # player name -> automatic choices in a row
 var _away := {} # player name -> true
-var _log: Array = [] # every decision and minigame verdict so far, in order: a rejoiner replays it
-var _replay := {} # while catching up: seq -> the logged decision
-var _replay_minis: Array = [] # while catching up: the logged minigame verdicts, in order
+var _log: Array = [] # every decision and Shot in the Dark so far, in order: a rejoiner replays it
+var _replay := {} # while catching up: seq -> the logged decision or shot
+var _shot := {} # the Shot in the Dark this copy is on: {seq, names, seconds, start, mine}
+var _shot_locks := {} # host: seq -> the locks that came in, [{from, side, value}]
+var _shot_results := {} # seq -> {a, b}, the host's reveal waiting for a copy to reach its shot
+var _shot_marks := {} # seq -> [bool, bool], who the host said has locked
 var _replay_total := 0
 var _replay_done := 0
 var _rejoin_name := ""
@@ -93,7 +102,10 @@ func begin(host: int, seed := 0, names: Array = []) -> void:
 	_away.clear()
 	_log.clear()
 	_replay.clear()
-	_replay_minis.clear()
+	_shot = {}
+	_shot_locks.clear()
+	_shot_results.clear()
+	_shot_marks.clear()
 	_remember()
 
 
@@ -117,6 +129,7 @@ func stop() -> void:
 	_open = {}
 	_results.clear()
 	_submits.clear()
+	_shot = {}
 	_arrived.emit()
 
 
@@ -162,7 +175,7 @@ func decide(kind: String, player: Dictionary, seconds: float, auto: Callable,
 	_seq += 1
 	var seq := _seq
 	if catching_up:
-		if _replay.has(seq):
+		if _replay.has(seq) and _replay[seq].k == "d":
 			return _replayed(seq, kind, player, seconds)
 		_end_catch_up() # the log has run out: this decision is live
 	_open = {"seq": seq, "kind": kind, "name": player.name, "sent": not is_mine(player),
@@ -188,7 +201,7 @@ func decide(kind: String, player: Dictionary, seconds: float, auto: Callable,
 			push_error("Online: decision %d is %s here and %s on the host" % [seq, kind, result.kind])
 	_open = {}
 	_log.append({"k": "d", "seq": seq, "kind": kind, "value": result.value, "auto": result.auto})
-	_note_choice(player.name, seconds > 0.0 and kind != "minigame", result.auto)
+	_note_choice(player.name, seconds > 0.0, result.auto)
 	return {"value": result.value, "auto": result.auto}
 
 
@@ -256,24 +269,140 @@ var match_seed := 0
 var match_names: Array = []
 
 
-## A minigame round's verdict (the winning side or `Minigame.DRAW`), kept for a rejoiner.
-func log_mini(winner: int) -> void:
-	if active:
-		_log.append({"k": "m", "winner": winner})
-
-
-## While catching up, the next logged minigame verdict, so the frame can skip the game. Null when it
-## is live: not catching up, or the log ran out, meaning the round was on when the rejoiner arrived,
-## so it is played (or watched) from here.
-func take_mini() -> Variant:
-	if not catching_up:
-		return null
-	if _replay_minis.is_empty():
+## One Shot in the Dark: both duelists (`sides`, the challenger first) type a number in secret for
+## `seconds`. Call it at the same point on every copy. A duelist's copy sends the lock only to the host
+## (`shot_lock`), the host tells everyone who has locked (`shot_status`, no number) and, when both have
+## or the clock and its grace run out, sends the reveal (`shot_reveal`) that every copy gets back here as
+## `{a, b}` (a number, or null for no answer). A dropped or away duelist does not hold the host up
+## for more than `SHOT_DROP_GRACE`.
+func shot(sides: Array[Dictionary], seconds: float) -> Dictionary:
+	_seq += 1
+	var seq := _seq
+	if catching_up:
+		if _replay.has(seq) and _replay[seq].k == "s":
+			return _replayed_shot(seq, sides)
 		_end_catch_up()
-		return null
-	var winner := int(_replay_minis.pop_front())
-	_log.append({"k": "m", "winner": winner})
-	return winner
+	_shot = {"seq": seq, "names": [sides[0].name, sides[1].name], "seconds": seconds,
+			"start": Time.get_ticks_msec(), "mine": [null, null]}
+	var result := {}
+	var promoted := false
+	if not Net.is_host:
+		while not _shot_results.has(seq) and not Net.is_host:
+			if not active:
+				_shot = {}
+				return {"a": null, "b": null}
+			await _arrived
+		promoted = Net.is_host and not _shot_results.has(seq)
+	if Net.is_host:
+		var left := seconds
+		if promoted:
+			left = maxf(seconds - (Time.get_ticks_msec() - _shot.start) / 1000.0, TAKEOVER_MIN)
+		result = await _host_shot(seq, sides, left)
+		Net.broadcast("shot_reveal", {"seq": seq, "a": result.a, "b": result.b})
+	else:
+		result = _shot_results[seq]
+		_shot_results.erase(seq)
+	_shot = {}
+	_shot_locks.erase(seq)
+	_shot_marks.erase(seq)
+	_log.append({"k": "s", "seq": seq, "a": result.a, "b": result.b})
+	_note_shot(sides, result)
+	return {"a": result.a, "b": result.b}
+
+
+## What the host tells everyone when a duelist locks: who, never the number.
+static func shot_status_payload(seq: int, side: int) -> Dictionary:
+	return {"seq": seq, "side": side}
+
+
+## This copy's duelist on `side` locks in `value`. Only the host learns it.
+func shot_lock(side: int, value: float) -> void:
+	if _shot.is_empty() or _shot.mine[side] != null:
+		return
+	_shot.mine[side] = value
+	_send_lock(side, value)
+
+
+## True once the host has said (or this copy knows) that `side` of the open shot has locked.
+func shot_marked(side: int) -> bool:
+	return not _shot.is_empty() and _shot_marks.get(_shot.seq, [false, false])[side]
+
+
+func _send_lock(side: int, value: float) -> void:
+	if Net.is_host:
+		_add_lock({"from": Net.my_id, "seq": _shot.seq, "side": side, "value": value})
+	else:
+		Net.send(host_id, "shot_lock", {"seq": _shot.seq, "side": side, "value": value})
+
+
+func _add_lock(entry: Dictionary) -> void:
+	var seq := int(entry.seq)
+	entry.erase("seq")
+	if not _shot_locks.has(seq):
+		_shot_locks[seq] = []
+	_shot_locks[seq].append(entry)
+
+
+func _mark(seq: int, side: int) -> void:
+	if not _shot_marks.has(seq):
+		_shot_marks[seq] = [false, false]
+	if not _shot_marks[seq][side]:
+		_shot_marks[seq][side] = true
+		shot_status.emit(seq, side)
+
+
+func _host_shot(seq: int, sides: Array[Dictionary], seconds: float) -> Dictionary:
+	var values: Array = [null, null]
+	var locked: Array = [false, false]
+	var deadline := Time.get_ticks_msec() + (seconds + GRACE) * 1000.0
+	var drop_end := -1.0
+	while active:
+		for entry: Dictionary in _shot_locks.get(seq, []):
+			var side := int(entry.get("side", -1))
+			var value: Variant = entry.get("value")
+			if side < 0 or side > 1 or locked[side] or int(entry.from) != int(Net.id_by_name.get(sides[side].name, -1)):
+				continue # not that duelist's own lock
+			if not (value is float or value is int) or not is_finite(float(value)):
+				continue
+			locked[side] = true
+			values[side] = float(value)
+			_mark(seq, side)
+			Net.broadcast("shot_status", shot_status_payload(seq, side))
+		_shot_locks.erase(seq)
+		if locked[0] and locked[1]:
+			break
+		var held := false # a present duelist has not locked yet
+		for i in 2:
+			if not locked[i] and status(sides[i].name) == "":
+				held = true
+		var now := Time.get_ticks_msec()
+		if not held:
+			if drop_end < 0.0:
+				drop_end = now + SHOT_DROP_GRACE * 1000.0
+			if now >= drop_end:
+				break
+		if now >= deadline:
+			break
+		await get_tree().process_frame
+	return {"a": values[0], "b": values[1]}
+
+
+# The same for everyone: each duelist's answer counts as their own choice, a missing one as automatic.
+func _note_shot(sides: Array[Dictionary], result: Dictionary) -> void:
+	_note_choice(sides[0].name, true, result.a == null)
+	_note_choice(sides[1].name, true, result.b == null)
+
+
+func _replayed_shot(seq: int, sides: Array[Dictionary]) -> Dictionary:
+	var entry: Dictionary = _replay[seq]
+	_replay.erase(seq)
+	_log.append(entry)
+	_replay_done += 1
+	if _curtain:
+		_curtain.progress = _replay_done / float(maxi(_replay_total, 1))
+	var result := {"a": entry.a, "b": entry.b}
+	_note_shot(sides, result)
+	return result
 
 
 # A decision answered from the log, at once.
@@ -287,7 +416,7 @@ func _replayed(seq: int, kind: String, player: Dictionary, seconds: float) -> Di
 	_replay_done += 1
 	if _curtain:
 		_curtain.progress = _replay_done / float(maxi(_replay_total, 1))
-	_note_choice(player.name, seconds > 0.0 and kind != "minigame", bool(entry.auto))
+	_note_choice(player.name, seconds > 0.0, bool(entry.auto))
 	return {"value": entry.value, "auto": bool(entry.auto)}
 
 
@@ -299,7 +428,6 @@ func _end_catch_up() -> void:
 	Engine.time_scale = 1.0
 	AudioServer.set_bus_mute(0, false)
 	_replay.clear()
-	_replay_minis.clear()
 	if _curtain:
 		_curtain.open()
 		_curtain = null
@@ -433,7 +561,7 @@ func _on_resume(payload: Dictionary) -> void:
 			_replay[int(entry.seq)] = {"k": "d", "seq": int(entry.seq), "kind": str(entry.kind),
 					"value": entry.value, "auto": bool(entry.auto)}
 		else:
-			_replay_minis.append(int(entry.winner))
+			_replay[int(entry.seq)] = {"k": "s", "seq": int(entry.seq), "a": entry.a, "b": entry.b}
 	_replay_total = _replay.size()
 	_replay_done = 0
 	if not _replay.is_empty():
@@ -466,6 +594,10 @@ func _on_host_changed(id: int) -> void:
 			_submits[_open.seq] = {"from": Net.my_id, "kind": _open.kind, "value": _open.value}
 		else:
 			Net.send(host_id, "submit", {"seq": _open.seq, "kind": _open.kind, "value": _open.value})
+	if not _shot.is_empty(): # the answers that went to the old host are given again
+		for side in 2:
+			if _shot.mine[side] != null:
+				_send_lock(side, _shot.mine[side])
 	if Net.is_host:
 		became_host.emit()
 	_arrived.emit()
@@ -495,6 +627,20 @@ func _on_received(from: int, kind: String, payload: Dictionary) -> void:
 			if Net.is_host and not _submits.has(int(payload.get("seq", 0))):
 				_submits[int(payload.get("seq", 0))] = {"from": from, "kind": str(payload.get("kind", "")),
 						"value": payload.get("value")}
+				_arrived.emit()
+		"shot_lock":
+			if Net.is_host:
+				_add_lock({"from": from, "seq": int(payload.get("seq", 0)), "side": int(payload.get("side", -1)),
+						"value": payload.get("value")})
+		"shot_status":
+			if from == host_id and not Net.is_host:
+				_mark(int(payload.get("seq", 0)), clampi(int(payload.get("side", 0)), 0, 1))
+		"shot_reveal":
+			if from == host_id and not Net.is_host:
+				var a: Variant = payload.get("a")
+				var b: Variant = payload.get("b")
+				_shot_results[int(payload.get("seq", 0))] = {"a": null if a == null else float(a),
+						"b": null if b == null else float(b)}
 				_arrived.emit()
 		"decided":
 			if from == host_id:

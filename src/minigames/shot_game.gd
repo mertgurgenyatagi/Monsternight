@@ -5,7 +5,10 @@ extends Node2D
 ## keypad. Each side types its guess in secret and locks it in; the answers are revealed and the
 ## closest one wins. Played on one screen, the challenger types first behind a cover card, then the
 ## cover passes to the opponent, each with `SECONDS`. `run` plays one question and gives the winning
-## side (0 the challenger, 1 the opponent) or `DRAW`.
+## side (0 the challenger, 1 the opponent) or `DRAW`. Online (`run_online`) the layout is the same for
+## every copy: the two duelists type at the same time on their own computers (the keypad and a "You"
+## tag only on their own side), everyone else watches the boxes get stamped, and `Online.shot` brings
+## back both answers for the reveal, which every copy runs and judges alike.
 
 const DRAW := -1
 const SECONDS := 20.0
@@ -51,6 +54,12 @@ var _skip := false
 var _lock_button: PaperButton
 var _keys: Array[PaperButton] = []
 var _stamps: Array[Label] = [null, null]
+var _online := false
+var _mine: Array[bool] = [true, true] # the sides this computer types for
+var _clock_start := -1.0 # online: when the 20 seconds began, in ticks (negative while off)
+var _last_shown := -1
+var _waiting: Label
+var _result: Dictionary = {} # online: both answers, once the host has revealed them
 
 
 func setup(left: Dictionary, right: Dictionary, asked: Dictionary, group_: String, hyde := -1) -> void:
@@ -118,6 +127,95 @@ func run() -> int:
 	return await _reveal()
 
 
+## Plays one question over the relay and gives the winning side or `DRAW`, the same on every copy.
+## Add the game to the tree first. The countdown is only a display: the host decides when time is up.
+func run_online() -> int:
+	_online = true
+	_mine = [Online.is_mine(players[0]), Online.is_mine(players[1])]
+	_build()
+	for side in 2:
+		if _mine[side]:
+			_side = side
+			_typing = true
+			_text = ""
+			_show_text()
+			PaperMotion.lift(_boxes[side], true)
+	Online.shot_status.connect(_on_status)
+	_clock_start = Time.get_ticks_msec()
+	_fetch.call() # not awaited here: the keys and the clock keep working while the shot is open
+	for side in 2: # a status that arrived before this copy got here
+		if Online.shot_marked(side):
+			_on_status(0, side)
+	if Online.bot and _typing:
+		_bot_types()
+	while _result.is_empty():
+		await get_tree().process_frame
+	var result := _result
+	_clock_start = -1.0
+	_typing = false
+	Online.shot_status.disconnect(_on_status)
+	_waiting.visible = false
+	_guesses = [result.a, result.b]
+	return await _reveal()
+
+
+func _fetch() -> void:
+	_result = await Online.shot(players, SECONDS)
+
+
+func _process(_delta: float) -> void:
+	if _clock_start < 0.0:
+		return
+	var left := SECONDS - (Time.get_ticks_msec() - _clock_start) / 1000.0
+	var shown := maxi(ceili(left), 0)
+	if shown != _last_shown:
+		_last_shown = shown
+		_tick(shown)
+	if left <= 0.0 and _typing:
+		Sound.play("timer_out")
+		_online_lock()
+
+
+# This side's guess is final: it goes to the host, and the box wears its stamp.
+func _online_lock() -> void:
+	_typing = false
+	_guesses[_side] = value_of(_text)
+	if _guesses[_side] != null:
+		Online.shot_lock(_side, float(_guesses[_side]))
+	_stamp(_side, _guesses[_side] != null)
+	PaperMotion.lift(_boxes[_side], false)
+	_update_waiting()
+
+
+# The host said `side` has locked in; a side this computer types for was stamped when it locked.
+func _on_status(_seq: int, side: int) -> void:
+	if _stamps[side] == null and not _mine[side]:
+		_stamp(side)
+		PaperMotion.squash(_boxes[side])
+	_update_waiting()
+
+
+# "Waiting for Name" while one duelist has locked and the other, who is not this computer's, has not.
+func _update_waiting() -> void:
+	var locked := [_stamps[0] != null, _stamps[1] != null]
+	var slow := -1
+	if locked[0] != locked[1]:
+		slow = 1 if locked[0] else 0
+	_waiting.visible = slow >= 0 and not _mine[slow]
+	if _waiting.visible:
+		_waiting.text = tr("SITD_WAITING") % players[slow].name
+		PaperMotion.squash(_waiting)
+
+
+# A test bot types a plausible number after a few seconds and locks it.
+func _bot_types() -> void:
+	await get_tree().create_timer(randf_range(3.0, 8.0), false).timeout
+	if _typing:
+		_text = str(roundi(float(question.answer) * randf_range(0.5, 1.5)))
+		_show_text()
+		_press("lock")
+
+
 func _build() -> void:
 	_card = Node2D.new()
 	_card.position = CARD_AT
@@ -158,7 +256,13 @@ func _build() -> void:
 	_count.position = Vector2(-150, -100)
 	_count_holder.add_child(_count)
 	PaperMotion.pop_in(_count_holder, 0.6)
-	_keypad()
+	if _online:
+		_waiting = _label("", 36, INK, 700.0)
+		_waiting.position = Vector2(960 - 350, 735)
+		_waiting.visible = false
+		add_child(_waiting)
+	if not _online or _mine[0] or _mine[1]:
+		_keypad()
 
 
 # The question, wrapped to the card and shrunk until it fits, its lines popping in one by one.
@@ -216,11 +320,15 @@ func _box(side: int) -> void:
 	who.add_theme_constant_override("outline_size", 6)
 	who.position = Vector2(-BOX_SIZE.x / 2.0 + 15.0, -BOX_SIZE.y / 2.0 + 8.0)
 	box.add_child(who)
-	var number := _label("?", 80, INK, BOX_SIZE.x - 30.0)
+	var number := _label("..." if _online and not _mine[side] else "?", 80, INK, BOX_SIZE.x - 30.0)
 	number.size = Vector2(BOX_SIZE.x - 30.0, 100)
 	number.position = Vector2(-BOX_SIZE.x / 2.0 + 15.0, -30.0)
 	number.pivot_offset = number.size / 2.0
 	box.add_child(number)
+	if _online and _mine[side]:
+		var you := _label(tr("SITD_YOU"), 28, INK, 200.0)
+		you.position = Vector2(BOX_SIZE.x / 2.0 - 215.0, BOX_SIZE.y / 2.0 - 46.0)
+		box.add_child(you)
 	_boxes.append(box)
 	_numbers.append(number)
 	PaperMotion.pop_in(box, 0.5 + 0.1 * side)
@@ -315,7 +423,7 @@ func _type_turn(side: int) -> void:
 	_guesses[side] = value_of(_text)
 	_count.text = "0" if not _locked else _count.text
 	_count.add_theme_color_override("font_color", INK)
-	_stamp(side)
+	_stamp(side, _guesses[side] != null)
 	PaperMotion.lift(_boxes[side], false)
 	await get_tree().create_timer(0.5, false).timeout
 
@@ -324,7 +432,8 @@ func _tick(seconds: int) -> void:
 	_count.text = str(seconds)
 	if seconds <= LOW_SECONDS:
 		_count.add_theme_color_override("font_color", RED)
-		Sound.play("timer_low")
+		if seconds > 0:
+			Sound.play("timer_low")
 		PaperMotion.squash(_count_holder)
 		PaperMotion.shake(_count_holder)
 	else:
@@ -332,15 +441,16 @@ func _tick(seconds: int) -> void:
 
 
 # The box wears a stamp and hides its number until the reveal.
-func _stamp(side: int) -> void:
-	var stamp := _label(tr("SITD_LOCKED") if _guesses[side] != null else tr("SITD_NOTHING"), 44, RED, 300.0)
+func _stamp(side: int, has_guess := true, quiet := false) -> void:
+	var stamp := _label(tr("SITD_LOCKED") if has_guess else tr("SITD_NOTHING"), 44, RED, 300.0)
 	stamp.rotation_degrees = -8.0
 	stamp.position = Vector2(-150, -36)
 	_boxes[side].add_child(stamp)
 	_stamps[side] = stamp
 	_numbers[side].text = ""
 	PaperMotion.pop_in(stamp)
-	Sound.play("ready")
+	if not quiet:
+		Sound.play("ready")
 
 
 func _show_text() -> void:
@@ -354,7 +464,10 @@ func _press(id: String) -> void:
 		if value_of(_text) == null:
 			_deny()
 			return
-		_locked = true
+		if _online:
+			_online_lock()
+		else:
+			_locked = true
 		return
 	var typed := type_key(_text, id)
 	if typed == _text:
@@ -405,6 +518,9 @@ func _reveal() -> int:
 	for button in _keys:
 		button.leave()
 	PaperMotion.pop_out(_count_holder)
+	for side in 2: # a side that never locked still shows its stamp before it turns over
+		if _stamps[side] == null:
+			_stamp(side, _guesses[side] != null, true)
 	Sound.play("drumroll")
 	await _wait(1.3)
 

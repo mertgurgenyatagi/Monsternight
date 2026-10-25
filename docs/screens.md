@@ -60,7 +60,7 @@ When a power fires, a small word pops over the piece with a sound (see [characte
 ## Duels
 
 1. A paper "VS" card slams down with both monsters' portraits and the stake.
-2. The round: Shot in the Dark (see [minigames.md](minigames.md)). Online, until part 46, the host's coin flip.
+2. The round: Shot in the Dark (see [minigames.md](minigames.md)). Online, everyone sees one layout: the challenger's box on the left, the opponent's on the right, the question and the countdown. A duelist's own box has a "You" tag and the keypad; everybody else sees no keypad and a "..." in the boxes that turns into a "Locked" stamp as each duelist locks, and "Waiting for Name" while one has locked and the other has not. Then every copy runs the same reveal.
 3. The winner does a short victory pose, the loser crumples like paper, and the coins or blood fly across to the board.
 
 Everyone else watches. The duel music plays under the VS card, and stops when the round starts.

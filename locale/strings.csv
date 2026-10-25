@@ -95,7 +95,6 @@ KEYS_KICK,Kick,Vur
 KEYS_MASH,Mash to pull,Çekmek için bas bas
 MASH_HINT,Mash %s,%s'ye bas
 MINI_TIE,"A tie! New question","Berabere! Yeni soru"
-MINI_FATE,Fate decides,Kader karar veriyor
 LOBBY_TITLE,Play,Oyna
 LOBBY_HOST,Host a room,Oda kur
 LOBBY_JOIN,Join,Katıl
@@ -157,3 +156,5 @@ SITD_ANSWER,The answer,Cevap
 SITD_OFF_BY,off by %s,%s fark
 SITD_NO_GUESS,no guess,tahmin yok
 SITD_CLOSEST,Closest!,En yakın!
+SITD_YOU,You,Sen
+SITD_WAITING,Waiting for %s,%s bekleniyor

@@ -12,7 +12,7 @@ A question with a number for an answer ("How tall is the Eiffel Tower, in meters
 - **A draw** asks a new question. A swap duel's round only counts when someone wins. After **3 draws in a row** the challenger loses, so a duel cannot hang.
 - A match never asks the same question twice (`Match.asked`); a group that runs dry starts over.
 - **One screen (pass the keyboard):** the challenger types first behind a cover card ("Name: look, the others look away" and an "I'm ready" button), then the cover passes to the opponent. Online, both type at once on their own computers (part 46).
-- **Online, until part 46:** the host flips a fair coin for each round ("Fate decides").
+- **Online:** the host picks the question; each duelist's number goes only to the host, who reveals both when both have locked or the time (and 1 s of grace) is up. A dropped or away duelist has no guess (the host waits 3 s at most). See [tech.md](tech.md#multiplayer).
 
 ### The four spaces
 
@@ -64,7 +64,7 @@ How a duel opens and closes is in [screens.md](screens.md#duels).
 
 ### Absent players
 
-A player who is away or disconnected types nothing, so they have no guess and lose (online).
+A player who is away or disconnected types nothing, so they have no guess and lose (online). If both are gone, it is a draw and a new question is asked.
 
 ## Controls
 
