@@ -7,7 +7,7 @@ extends Node2D
 
 ## Every piece has landed on the start.
 signal pieces_landed
-## A turn's die was clicked (true), or the candle went out (false).
+## A turn's die was clicked (true), or the countdown went out (false).
 signal _decided(by_click: bool)
 
 ## Each location's sky, top and bottom: colorful, never bleak.
@@ -32,10 +32,10 @@ const CROWD_STEP := 52.0 # across a space, from one piece to the next
 const CROWD_ROW := 4 # pieces in a row, then the next row stands behind
 const CROWD_FRONT := Vector2(0, 16) # the front row's feet, from the token's middle
 const CROWD_BACK := 34.0 # how far each row further back stands higher
-const TURN_SECONDS := 5.0 # the candle for a roll
+const TURN_SECONDS := 5.0 # the countdown for a roll
 const DIE_RISE := 300.0 # from the piece's feet to the die's middle, over its head
-const CANDLE_SCALE := 0.5 / BoardCamera.ZOOM
-const CANDLE_SIDE := Vector2(226, 70) # from the die's middle to the candle's base
+const COUNT_SCALE := 0.8 / BoardCamera.ZOOM
+const COUNT_SIDE := Vector2(272, -30) # from the die's middle to the countdown's middle
 const SHOW_BEAT := 0.25 # the rolled number stays on show this long
 const TURN_BEAT := 0.15 # after a piece lands, before the camera glides on
 const COIN_ICON := preload("res://assets/art/icons/coin_rim.png")
@@ -80,7 +80,7 @@ var _by_monster := {} # monster id -> its BoardPiece
 var _hud: Hud
 var _crowds := {} # path id -> the pieces standing there, in the order they arrived
 var _die: Die
-var _candle: Candle
+var _countdown: Countdown
 var _path_view: BoardPathView
 var _branch: BranchChoice
 var _challenge: Challenge
@@ -146,10 +146,10 @@ func _ready() -> void:
 	pieces_landed.connect(_follow_leader)
 	pieces_landed.connect(_play_turns)
 	_die = Die.new()
-	_candle = Candle.new()
-	_candle.scale = Vector2.ONE * CANDLE_SCALE
-	_candle.set_meta("rest_scale", _candle.scale)
-	for node in [_die, _candle]:
+	_countdown = Countdown.new()
+	_countdown.scale = Vector2.ONE * COUNT_SCALE
+	_countdown.set_meta("rest_scale", _countdown.scale)
+	for node in [_die, _countdown]:
 		node.visible = false
 		lanes.add_child(node) # over the pieces, so a crowd never hides them
 	_camera.jump_to(BoardLayout.width())
@@ -381,8 +381,8 @@ func walk(player: Dictionary, steps: int) -> Signal:
 	return piece.walked
 
 
-## A piece that reaches a fork asks its player: the signpost's two arrows spring up with a candle,
-## and the camera eases out so both paths are in view. A click on an arrow, or the candle going out
+## A piece that reaches a fork asks its player: the signpost's two arrows spring up with a countdown,
+## and the camera eases out so both paths are in view. A click on an arrow, or the countdown going out
 ## (a random path), decides. Awaiting the signal gives the chosen id.
 func choose_branch(player: Dictionary, fork: String) -> Signal:
 	var piece := piece_for(player)
@@ -390,7 +390,7 @@ func choose_branch(player: Dictionary, fork: String) -> Signal:
 	return piece.branch_chosen
 
 
-# The turn loop: glide to the active player, offer the die with the candle, roll, walk, land, and
+# The turn loop: glide to the active player, offer the die with the countdown, roll, walk, land, and
 # pass the turn on, until `Match` says the last turn is over.
 func _play_turns() -> void:
 	await get_tree().create_timer(Match.players.size() * Hud.DROP_GAP + 1.2, false).timeout
@@ -409,7 +409,7 @@ func _play_turns() -> void:
 			await _die.nudge().finished
 			if Online.active:
 				PowerPop.show_over(_front, _die.position + DIE_POP * POP_SCALE, tr("POP_AUTO"), POP_SCALE)
-		_lift_candle()
+		_lift_countdown()
 		await _die.tumble(dice)
 		if dice[0] == dice[1]: # a double: the piece hops once more
 			PaperMotion.hop(piece, 40.0)
@@ -571,13 +571,13 @@ func _crack(player: Dictionary) -> void:
 
 
 # Turn `turns` begins: a sting, a flash of the sky, the counter pops and a banner drops in with a
-# slight shake. A candle on screen sputters. Only the first time.
+# slight shake. A countdown on screen sputters. Only the first time.
 func _last_turn() -> void:
 	_last_turn_shown = true
 	Sound.sting("sting_final_turn", 3.0)
 	_sky.flash()
-	if _candle.visible:
-		_candle.gust()
+	if _countdown.visible:
+		PaperMotion.squash(_countdown)
 	await get_tree().create_timer(0.5, false).timeout
 	_hud.last_turn()
 	await _banner(tr("BANNER_LAST_TURN"), 1.6, true)
@@ -965,20 +965,20 @@ func _glint(sprite: Sprite2D) -> void:
 	tween.chain().tween_callback(glint.queue_free)
 
 
-# Sets the die and the candle over the piece, and waits for a click on the die (true) or for the
-# candle to go out (false).
+# Sets the die and the countdown over the piece, and waits for a click on the die (true) or for the
+# countdown to go out (false).
 func _offer_die(piece: BoardPiece) -> bool:
 	var rows := ceili(_crowds.get(piece.player.space, []).size() / float(CROWD_ROW))
 	var at: Vector2 = piece.position - Vector2(0, DIE_RISE + CROWD_BACK * maxi(rows - 1, 0))
 	_die.place(at)
 	_die.clickable = Online.is_mine(piece.player)
-	_candle.rotation = 0.0
-	_candle.position = at + CANDLE_SIDE
-	_candle.set_meta("rest_position", _candle.position)
+	_countdown.rotation = 0.0
+	_countdown.position = at + COUNT_SIDE
+	_countdown.set_meta("rest_position", _countdown.position)
 	await _die.offer()
-	_candle.visible = true
-	PaperMotion.pop_in(_candle)
-	_candle.start(TURN_SECONDS)
+	_countdown.visible = true
+	PaperMotion.pop_in(_countdown)
+	_countdown.start(TURN_SECONDS)
 	if Online.active:
 		# The host rolls: the click only asks, and the faces come back with everyone's answer.
 		var player: Dictionary = piece.player
@@ -997,18 +997,18 @@ func _offer_die(piece: BoardPiece) -> bool:
 	var on_click := _decided.emit.bind(true)
 	var on_out := _decided.emit.bind(false)
 	_die.clicked.connect(on_click)
-	_candle.timed_out.connect(on_out)
+	_countdown.timed_out.connect(on_out)
 	var by_click: bool = await _decided
 	_die.clicked.disconnect(on_click)
-	_candle.timed_out.disconnect(on_out)
+	_countdown.timed_out.disconnect(on_out)
 	return by_click
 
 
-# The candle is snuffed (if it still burns) and lifts away.
-func _lift_candle() -> void:
-	_candle.stop()
-	await PaperMotion.lift_away(_candle, 500.0, 0.4).finished
-	_candle.visible = false
+# The countdown is stopped (if it still runs) and lifts away.
+func _lift_countdown() -> void:
+	_countdown.stop()
+	await PaperMotion.lift_away(_countdown, 500.0, 0.4).finished
+	_countdown.visible = false
 
 
 func _add_piece(player: Dictionary) -> void:

@@ -76,7 +76,7 @@ Only when he is the challenger (Q16, changed in Microplan 15): in Shot in the Da
 
 ## Learning the powers
 
-- In monster select, every monster's name always shows under its stand. Clicking a monster selects it (it lifts) and writes its power on the screen in one short line (the table's wording); a Confirm button, greyed out until something is selected, picks it. When the candle runs out the selected monster is picked, or a random one if none is.
+- In monster select, every monster's name always shows under its stand. Clicking a monster selects it (it lifts) and writes its power on the screen in one short line (the table's wording); a Confirm button, greyed out until something is selected, picks it. When the countdown runs out the selected monster is picked, or a random one if none is.
 - When a power fires on the board, a small word pops over the piece with a sound: "+2" by the Wolf Man's dice, "Stone!" over Medusa's victims, and so on. Dracula's drain and Medusa's gaze also shoot a paper wedge in the monster's color from them to each victim.
 - Every gain or loss of blood or coins, from a space, a duel or a power, shows as a tag over the piece, like "-1" with a blood drop, red for a loss and green for a gain. Medusa's victims get "-1 turn".
 - There is no list of the powers anywhere else.

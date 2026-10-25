@@ -30,6 +30,8 @@ const GREY_TIME := 0.5
 signal picked
 ## The portrait was clicked while it is pickable but not a valid choice.
 signal denied
+## The portrait was clicked while no choice is open: the HUD shows its power card.
+signal inspected
 
 const DIM := Color(0.5, 0.5, 0.55)
 const BOB := 5.0
@@ -135,7 +137,7 @@ func _ready() -> void:
 	shape.shape.size = Vector2(FRAME_SIZE, FRAME_SIZE)
 	shape.position = FRAME_CENTER
 	_area.add_child(shape)
-	_area.input_pickable = false
+	_area.input_pickable = true
 	_area.input_event.connect(_on_input)
 	_area.mouse_entered.connect(_on_mouse_entered)
 	_area.mouse_exited.connect(_on_mouse_exited)
@@ -206,7 +208,6 @@ func set_pickable(mode: String) -> void:
 	if mode == pickable:
 		return
 	pickable = mode
-	_area.input_pickable = mode != ""
 	if _bob and _bob.is_valid():
 		_bob.kill()
 	_set_bob(0.0)
@@ -313,8 +314,10 @@ func _set_bob(amount: float) -> void:
 
 
 func _on_input(_viewport: Node, event: InputEvent, _shape: int) -> void:
-	if pickable != "" and event is InputEventMouseButton and event.pressed 			and event.button_index == MOUSE_BUTTON_LEFT:
-		if pickable == "valid":
+	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+		if pickable == "":
+			inspected.emit()
+		elif pickable == "valid":
 			Sound.play("ui_click")
 			PaperMotion.squash(self)
 			picked.emit()

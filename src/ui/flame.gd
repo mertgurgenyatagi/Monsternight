@@ -1,7 +1,7 @@
 class_name Flame
 extends Node2D
 ## A flickering paper flame. Its origin is the bottom of the flame, so it sits on a wick or a
-## torch. It steps at the game's 25 FPS like everything else. Candles and torches both use it.
+## torch. It steps at the game's 25 FPS like everything else. The board's torches use it.
 
 const SIZE := Vector2(64, 96)
 

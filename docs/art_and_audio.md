@@ -49,7 +49,7 @@ The user picked the instruments and left the rest to Claude (Q13).
 - **The board music follows the leader.** Each location has its own version of the theme, and the one that plays is wherever the leading player is, so the music moves from the village to the castle as the race goes on. Following the camera would switch tracks every turn. The board tracks share one tempo and key, so they crossfade cleanly.
 - **Ambience follows the camera:** wind, crows, owls, frogs, and thunder, quietly under the music.
 - **Minigames have no music** (Q17), only their own sounds.
-- **Every action has a sound:** the die, each hop, flips, each kind of space, duels, the timer candle.
+- **Every action has a sound:** the die, each hop, flips, each kind of space, duels, the timer countdown.
 - **Each monster has three sounds:** when it's picked, when it wins, and when it loses. They're laughs, howls, and hisses with no words, so nothing needs translating.
 - No narrator.
 

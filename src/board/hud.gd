@@ -23,6 +23,7 @@ var _track: ProgressTrack
 var _tag_paper: Sprite2D
 var _tag_label: Label
 var _shown_turn := 1
+var _card: PowerCard
 
 
 func _init() -> void:
@@ -40,6 +41,7 @@ func _ready() -> void:
 		add_child(portrait)
 		_portraits[player.monster] = portrait
 		portrait.picked.connect(portrait_clicked.emit.bind(player))
+		portrait.inspected.connect(_toggle_card.bind(player))
 	_make_tag()
 	_track = ProgressTrack.new()
 	_track.position = TRACK_AT
@@ -159,6 +161,24 @@ func show_coins(player: Dictionary, at_once := false) -> void:
 ## The screen position of the player's "blood" or "coins" counter, for icons flying to it.
 func anchor(player: Dictionary, what: String) -> Vector2:
 	return _portraits[player.monster].anchor(what)
+
+
+## The power card of the clicked portrait opens, or closes if it is that portrait's own. Only one
+## card is open at a time.
+func _toggle_card(player: Dictionary) -> void:
+	var same := is_instance_valid(_card) and is_same(_card.player, player)
+	if is_instance_valid(_card):
+		_card.close()
+	if same:
+		return
+	var portrait: HudPortrait = _portraits[player.monster]
+	_card = PowerCard.new(player, portrait)
+	var x := clampf(portrait.global_position.x, PowerCard.WIDTH / 2.0 + 10.0, 1920.0 - PowerCard.WIDTH / 2.0 - 10.0)
+	_card.position = Vector2(x, PowerCard.TOP_Y)
+	_card.set_meta("rest_position", _card.position)
+	add_child(_card)
+	PaperMotion.lift(portrait, true)
+	_card.closed.connect(func() -> void: PaperMotion.lift(portrait, false))
 
 
 func _make_tag() -> void:
