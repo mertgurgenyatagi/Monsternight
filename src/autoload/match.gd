@@ -24,6 +24,8 @@ static var turns := 17
 ## The kinds of this match's board, rolled by `start` for the lobby's size (`BoardRoller`), as
 ## {stretch id: kinds string}. The board hands them to `BoardPath.configure`.
 var board_kinds := {}
+## The Shot in the Dark questions asked so far in this match (ids), so none comes twice.
+var asked := {}
 
 ## Rolls the board. `start` seeds it fresh, or from `--seed N` after `--` on the command line.
 var board_rng := RandomNumberGenerator.new()
@@ -89,6 +91,7 @@ func start(raw_names: Array[String], seed := -1) -> bool:
 	_seed_board(seed)
 	board_kinds = BoardRoller.roll(raw_names.size(), board_rng)
 	finish_order.clear()
+	asked.clear()
 	cracked.clear()
 	turn = 1
 	current = 0

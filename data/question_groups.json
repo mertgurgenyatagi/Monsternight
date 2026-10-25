@@ -1,0 +1,22 @@
+{
+	"default": "stage",
+	"groups": {
+		"atlas": ["Landmarks & Architecture", "Geography & Nature", "Geography & Geopolitics", "Geography & Cities",
+			"Transport & Aviation", "Demographics & Cities", "Oceans & Polar", "Exploration & Records",
+			"Geology & Earth", "Atmosphere & Weather", "Transport & Infrastructure", "Aviation & Records",
+			"Landmarks & Monuments", "Theme Parks & World", "Space & Astronomy", "Astronomy & Universe"],
+		"archive": ["History", "History & Archaeology", "History & Ancient Rome", "History & Ancient Greece",
+			"History & Egypt", "History & Medieval", "History & Ottoman", "History & Royalty", "History & Asia",
+			"History & Americas", "History & USA", "History & Cold War", "History & Disasters",
+			"History & Medicine", "Art & Masters", "Literature & Books", "Languages & Linguistics",
+			"Science & Nobel", "Inventions & Tech", "Brands & Business", "Economy & Finance"],
+		"lab": ["Science & Physics", "Science & Chemistry", "Biology & Anatomy", "Animals & Nature",
+			"Human Body & Medicine", "Health & Diseases", "Human Records", "Microbiology & Biology",
+			"Nature & Botany", "Animals & Predators", "Marine Life", "Marine Life & Reptiles",
+			"Birds & Flight", "Insects & Invertebrates", "Mammals & Primates", "Canines & Pets",
+			"Felines & Pets", "Farm Animals", "Extreme Wildlife", "Agriculture & Produce"],
+		"stage": ["Baking & Desserts", "Beverages & Drinks", "Cinema & Film", "Comics & Animation", "Culinary & Cooking", "Food & Consumption", "Food & Dairy", "Food & Fast Food", "Games & Chess",
+			"Internet & Digital Media", "Music & Bands", "Music & Classical", "Music & Pop", "Restaurants & Michelin", "Spices & Luxury Food", "Sports & Basketball", "Sports & Combat", "Sports & Football",
+			"Sports & Formula 1", "Sports & Olympics", "Sports & Others", "Sports & Swimming", "Sports & Tennis", "Sports & Winter", "Television & Series", "Toys & Board Games", "Video Games & Pop Culture"]
+	}
+}

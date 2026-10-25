@@ -2,11 +2,11 @@ class_name BoardRoller
 ## Rolls the kinds of the board's spaces, fresh for every match (board.md, Space mix). Each stretch
 ## of the road is a bag with exact counts, shuffled with no other rule on the order: half of its
 ## spaces are empty, half of the rest are minigames and the others are quick spaces. The minigames
-## are the four games in equal numbers, and so are the quick kinds the stretch allows. Whenever a
+## are the four question groups in equal numbers, and so are the quick kinds the stretch allows. Whenever a
 ## count doesn't split evenly, the odd space goes to a random side or a random kind.
 
 ## The minigames' letters, as in `BoardPath.KINDS`.
-const MINIGAMES: Array[String] = ["p", "u", "e", "w"]
+const MINIGAMES: Array[String] = ["a", "r", "l", "g"]
 const QUICK: Array[String] = ["c", "s", "t", "h"]
 
 ## Each stretch's length when it doesn't come from the lobby's size, and the quick kinds it allows.

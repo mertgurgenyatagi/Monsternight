@@ -8,7 +8,7 @@ There are 8 playable classic horror monsters. Each one has its own color, which 
 | Medusa | Green | Players nearby when she lands miss their next turn |
 | Frankenstein's Monster | Yellow | Loses nothing as the challenger |
 | Death (Grim Reaper) | Violet | Can't be killed |
-| Mr. Hyde | Orange | An edge in every duel he starts |
+| Mr. Hyde | Orange | His guess counts as 20% closer in duels he starts |
 | Cthulhu | Teal | Starts with 4 blood and 1 coin, and 4 is the cap |
 | The Wolf Man | Blue | +1 to every roll |
 | Dorian Gray | Pink | Wins a swap duel with 1 win instead of 3 |
@@ -58,16 +58,7 @@ Dracula's and Medusa's powers reach the space they land on, one space behind it,
 
 ### Mr. Hyde
 
-Only when he is the challenger (Q16):
-
-| Minigame | Hyde's edge |
-|---|---|
-| Pong | A very slightly faster paddle |
-| Sumo | Slightly faster and heavier |
-| Head Soccer | Slightly faster |
-| Tug of War | A slightly stronger pull |
-
-Each minigame's part tunes the numbers, starting at about 10%.
+Only when he is the challenger (Q16, changed in Microplan 15): in Shot in the Dark his distance from the answer is multiplied by 0.8, so his guess counts as 20% closer.
 
 ### Cthulhu
 

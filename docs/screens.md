@@ -60,11 +60,10 @@ When a power fires, a small word pops over the piece with a sound (see [characte
 ## Duels
 
 1. A paper "VS" card slams down with both monsters' portraits and the stake.
-2. A 3, 2, 1 countdown.
-3. The round: the space's minigame (see [minigames.md](minigames.md#minigame-list)). Until a game is built, its duels are a coin flip.
-4. The winner does a short victory pose, the loser crumples like paper, and the coins or blood fly across to the board.
+2. The round: Shot in the Dark (see [minigames.md](minigames.md)). Online, until part 46, the host's coin flip.
+3. The winner does a short victory pose, the loser crumples like paper, and the coins or blood fly across to the board.
 
-Everyone else watches. The duel music plays under the VS card and the countdown, and stops when the round starts, since minigames have no music (Q17).
+Everyone else watches. The duel music plays under the VS card, and stops when the round starts.
 
 ## Trophy ceremony
 

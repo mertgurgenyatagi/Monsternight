@@ -75,7 +75,7 @@ POWER_DRACULA,Steals blood from players nearby,Yakındaki oyuncuların kanını 
 POWER_MEDUSA,Players nearby miss a turn,Yakındakiler bir tur kaçırır
 POWER_FRANKENSTEIN,Loses nothing as challenger,Meydan okurken hiçbir şey kaybetmez
 POWER_DEATH,Can't be killed,Öldürülemez
-POWER_HYDE,An edge in duels he starts,Başlattığı düellolarda avantajlı
+POWER_HYDE,His guess counts as 20% closer in duels he starts,Başlattığı düellolarda tahmini %20 daha yakın sayılır
 POWER_CTHULHU,Starts with 4 blood and 1 coin,4 kan ve 1 altınla başlar
 POWER_WOLFMAN,+1 to every roll,Her zara +1
 POWER_DORIAN,Wins a swap with 1 win,Takası 1 galibiyetle kazanır
@@ -94,9 +94,8 @@ KEYS_JUMP,Jump,Zıpla
 KEYS_KICK,Kick,Vur
 KEYS_MASH,Mash to pull,Çekmek için bas bas
 MASH_HINT,Mash %s,%s'ye bas
-MINI_GET_READY,Get ready,Hazır ol
-MINI_DRAW,"Draw, again!","Berabere, tekrar!"
-MINI_ROUND,Round %d,%d. tur
+MINI_TIE,"A tie! New question","Berabere! Yeni soru"
+MINI_FATE,Fate decides,Kader karar veriyor
 LOBBY_TITLE,Play,Oyna
 LOBBY_HOST,Host a room,Oda kur
 LOBBY_JOIN,Join,Katıl
@@ -145,3 +144,16 @@ REJOINING,Rejoining...,Geri dönülüyor...
 CATCHING_UP,Catching up...,Yetişiliyor...
 BANNER_BACK,%s is back,%s geri döndü
 BANNER_CLOSED,The room closed,Oda kapandı
+SITD_GROUP_ATLAS,The Atlas,Atlas
+SITD_GROUP_ARCHIVE,The Archive,Arşiv
+SITD_GROUP_LAB,The Lab,Laboratuvar
+SITD_GROUP_STAGE,The Stage,Sahne
+SITD_COVER,"%s: look, the others look away","%s: sen bak, diğerleri baksın"
+SITD_READY,I'm ready,Hazırım
+SITD_LOCK,Lock in,Kilitle
+SITD_LOCKED,Locked,Kilitli
+SITD_NOTHING,No answer,Cevap yok
+SITD_ANSWER,The answer,Cevap
+SITD_OFF_BY,off by %s,%s fark
+SITD_NO_GUESS,no guess,tahmin yok
+SITD_CLOSEST,Closest!,En yakın!

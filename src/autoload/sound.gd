@@ -24,7 +24,6 @@ const TRIM := {
 	"hop_1": -3.0,
 	"hop_2": -3.0,
 	"hop_3": -2.5,
-	"paddle_hit": 3.0, # for the minigames, part 33 on
 	"respawn": -2.5,
 	"spikes": 2.0,
 	"stat": -1.0,

@@ -14,10 +14,10 @@ signal host_changed(id: int) ## the host left and the relay named a new one (pos
 signal received(from: int, kind: String, payload: Dictionary)
 
 const LOCAL_RELAY := "ws://127.0.0.1:8787"
-## The deployed relay, a `wss://monsternight-relay.<account>.workers.dev` address. Empty until the
+## The deployed relay, a `wss://monsternight-relay.ciplaksamuray12.workers.dev` address. Empty until the
 ## relay is deployed (tools/relay/deploy.md), and then every build uses the local one.
 const PRODUCTION_RELAY := ""
-## The game's itch.io page, `https://<user>.itch.io/<game>`. The page runs inside an iframe whose own
+## The game's itch.io page, `https://ciplaksamuray.itch.io/monsternight`. The page runs inside an iframe whose own
 ## address is not one to share, so Copy link builds on this instead. Empty: the page's own address.
 const PAGE_URL := ""
 ## No I, O, 0 or 1: they look alike.
